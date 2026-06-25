@@ -301,7 +301,7 @@ willDisplayCell:(id)cell
     [panel setAllowsMultipleSelection:NO];
 
     NSInteger result = [panel runModal];
-    if (result == NSFileHandlingPanelOKButton) {
+    if (result == NSModalResponseOK) {
         [self _addFileAtURL:[panel URL]];
     }
 }
@@ -362,7 +362,7 @@ willDisplayCell:(id)cell
         /* Single file — ask where to save it. */
         NSSavePanel *panel = [NSSavePanel savePanel];
         [panel setNameFieldStringValue:selPath.lastPathComponent];
-        if ([panel runModal] == NSFileHandlingPanelOKButton) {
+        if ([panel runModal] == NSModalResponseOK) {
             [self _extractEntryAtPath:selPath toURL:[panel URL]];
         }
     } else {
@@ -372,7 +372,7 @@ willDisplayCell:(id)cell
         [panel setCanChooseFiles:NO];
         [panel setCanChooseDirectories:YES];
         [panel setCanCreateDirectories:YES];
-        if ([panel runModal] == NSFileHandlingPanelOKButton) {
+        if ([panel runModal] == NSModalResponseOK) {
             [self _extractDirectoryAtPath:selPath toDirectoryURL:[panel URL]];
         }
     }

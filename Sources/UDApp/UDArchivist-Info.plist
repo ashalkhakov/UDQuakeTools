@@ -21,6 +21,9 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 
+    <key>NSMainNibFile</key>
+    <string>MainMenu</string>
+
     <key>NSDelegate</key>
     <string>UDAppDelegate</string>
 

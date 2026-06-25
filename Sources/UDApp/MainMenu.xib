@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MainMenu.xib  —  Application menu bar and delegate wiring for UDArchivist.
+  Generated for use with Xcode / native macOS Cocoa (not GNUstep).
+
+  Provides:
+    • Full macOS menu bar (Apple, File, Edit, Format, View, Window, Help)
+    • UDAppDelegate wired as NSApplication.delegate
+    • Standard document-based File menu actions (first-responder targets)
+-->
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0"
+          toolsVersion="21507" targetRuntime="MacOSX.Cocoa"
+          propertyAccessControl="none"
+          customObjectInstantiationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+
+        <!-- ── Standard placeholders ─────────────────────────────────── -->
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="MMAD-01" id="MMAD-C1"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"     customClass="NSObject"/>
+
+        <!-- ── App Delegate ───────────────────────────────────────────── -->
+        <customObject id="MMAD-01" customClass="UDAppDelegate"/>
+
+        <!-- ── Menu Bar ───────────────────────────────────────────────── -->
+        <menu title="Main Menu" systemMenu="main" id="MM-01">
+            <items>
+
+                <!-- Apple menu -->
+                <menuItem title="UDArchivist" id="MM-AI-01">
+                    <menu title="UDArchivist" systemMenu="apple" id="MM-AM-01">
+                        <items>
+                            <menuItem title="About UDArchivist"
+                                      action="orderFrontStandardAboutPanel:"
+                                      id="MM-AI-About"/>
+                            <menuItem isSeparatorItem="YES" id="MM-AI-Sep1"/>
+                            <menuItem title="Preferences…" keyEquivalent="," id="MM-AI-Prefs">
+                                <connections>
+                                    <action selector="showPreferences:" target="-1" id="MM-AI-Prefs-A"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="MM-AI-Sep2"/>
+                            <menuItem title="Services" id="MM-AI-Svc">
+                                <menu title="Services" systemMenu="services" id="MM-AI-SvcM"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="MM-AI-Sep3"/>
+                            <menuItem title="Hide UDArchivist"
+                                      keyEquivalent="h"
+                                      action="hide:"
+                                      id="MM-AI-Hide"/>
+                            <menuItem title="Hide Others"
+                                      keyEquivalent="h"
+                                      action="hideOtherApplications:"
+                                      id="MM-AI-HideOthers">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              option="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Show All"
+                                      action="unhideAllApplications:"
+                                      id="MM-AI-ShowAll"/>
+                            <menuItem isSeparatorItem="YES" id="MM-AI-Sep4"/>
+                            <menuItem title="Quit UDArchivist"
+                                      keyEquivalent="q"
+                                      action="terminate:"
+                                      id="MM-AI-Quit"/>
+                        </items>
+                    </menu>
+                </menuItem>
+
+                <!-- File menu -->
+                <menuItem title="File" id="MM-FI-01">
+                    <menu title="File" id="MM-FM-01">
+                        <items>
+                            <menuItem title="New"
+                                      keyEquivalent="n"
+                                      action="newDocument:"
+                                      id="MM-FM-New"/>
+                            <menuItem title="Open…"
+                                      keyEquivalent="o"
+                                      action="openDocument:"
+                                      id="MM-FM-Open"/>
+                            <menuItem title="Open Recent" id="MM-FM-ORI">
+                                <menu title="Open Recent" systemMenu="recentDocuments" id="MM-FM-ORM">
+                                    <items>
+                                        <menuItem title="Clear Menu"
+                                                  action="clearRecentDocuments:"
+                                                  id="MM-FM-ClearRecent"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="MM-FM-Sep1"/>
+                            <menuItem title="Close"
+                                      keyEquivalent="w"
+                                      action="performClose:"
+                                      id="MM-FM-Close"/>
+                            <menuItem title="Save"
+                                      keyEquivalent="s"
+                                      action="saveDocument:"
+                                      id="MM-FM-Save"/>
+                            <menuItem title="Save As…"
+                                      keyEquivalent="S"
+                                      action="saveDocumentAs:"
+                                      id="MM-FM-SaveAs">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              shift="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Revert to Saved"
+                                      action="revertDocumentToSaved:"
+                                      id="MM-FM-Revert"/>
+                            <menuItem isSeparatorItem="YES" id="MM-FM-Sep2"/>
+                            <menuItem title="Page Setup…"
+                                      keyEquivalent="P"
+                                      action="runPageLayout:"
+                                      id="MM-FM-PageSetup">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              shift="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Print…"
+                                      keyEquivalent="p"
+                                      action="print:"
+                                      id="MM-FM-Print"/>
+                        </items>
+                    </menu>
+                </menuItem>
+
+                <!-- Edit menu -->
+                <menuItem title="Edit" id="MM-EI-01">
+                    <menu title="Edit" id="MM-EM-01">
+                        <items>
+                            <menuItem title="Undo"
+                                      keyEquivalent="z"
+                                      action="undo:"
+                                      id="MM-EM-Undo"/>
+                            <menuItem title="Redo"
+                                      keyEquivalent="Z"
+                                      action="redo:"
+                                      id="MM-EM-Redo">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              shift="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="MM-EM-Sep1"/>
+                            <menuItem title="Cut"
+                                      keyEquivalent="x"
+                                      action="cut:"
+                                      id="MM-EM-Cut"/>
+                            <menuItem title="Copy"
+                                      keyEquivalent="c"
+                                      action="copy:"
+                                      id="MM-EM-Copy"/>
+                            <menuItem title="Paste"
+                                      keyEquivalent="v"
+                                      action="paste:"
+                                      id="MM-EM-Paste"/>
+                            <menuItem title="Delete"
+                                      action="delete:"
+                                      id="MM-EM-Delete"/>
+                            <menuItem title="Select All"
+                                      keyEquivalent="a"
+                                      action="selectAll:"
+                                      id="MM-EM-SelAll"/>
+                            <menuItem isSeparatorItem="YES" id="MM-EM-Sep2"/>
+                            <!-- Find submenu -->
+                            <menuItem title="Find" id="MM-EM-FindItem">
+                                <menu title="Find" id="MM-EM-FindMenu">
+                                    <items>
+                                        <menuItem title="Find…"
+                                                  tag="1"
+                                                  keyEquivalent="f"
+                                                  action="performFindPanelAction:"
+                                                  id="MM-Find-1"/>
+                                        <menuItem title="Find and Replace…"
+                                                  tag="12"
+                                                  keyEquivalent="f"
+                                                  action="performFindPanelAction:"
+                                                  id="MM-Find-12">
+                                            <modifierMask key="keyEquivalentModifierMask"
+                                                          option="YES" command="YES"/>
+                                        </menuItem>
+                                        <menuItem title="Find Next"
+                                                  tag="2"
+                                                  keyEquivalent="g"
+                                                  action="performFindPanelAction:"
+                                                  id="MM-Find-2"/>
+                                        <menuItem title="Find Previous"
+                                                  tag="3"
+                                                  keyEquivalent="G"
+                                                  action="performFindPanelAction:"
+                                                  id="MM-Find-3">
+                                            <modifierMask key="keyEquivalentModifierMask"
+                                                          shift="YES" command="YES"/>
+                                        </menuItem>
+                                        <menuItem title="Use Selection for Find"
+                                                  tag="7"
+                                                  keyEquivalent="e"
+                                                  action="performFindPanelAction:"
+                                                  id="MM-Find-7"/>
+                                        <menuItem title="Jump to Selection"
+                                                  keyEquivalent="j"
+                                                  action="centerSelectionInVisibleArea:"
+                                                  id="MM-Find-J"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <!-- Spelling -->
+                            <menuItem title="Spelling and Grammar" id="MM-EM-SpellItem">
+                                <menu title="Spelling" id="MM-EM-SpellMenu">
+                                    <items>
+                                        <menuItem title="Show Spelling and Grammar…"
+                                                  keyEquivalent=":"
+                                                  action="showGuessPanel:"
+                                                  id="MM-Spell-1"/>
+                                        <menuItem title="Check Document Now"
+                                                  keyEquivalent=";"
+                                                  action="checkSpelling:"
+                                                  id="MM-Spell-2"/>
+                                        <menuItem isSeparatorItem="YES" id="MM-Spell-Sep"/>
+                                        <menuItem title="Check Spelling While Typing"
+                                                  action="toggleContinuousSpellChecking:"
+                                                  id="MM-Spell-3"/>
+                                        <menuItem title="Check Grammar With Spelling"
+                                                  action="toggleGrammarChecking:"
+                                                  id="MM-Spell-4"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <!-- Substitutions -->
+                            <menuItem title="Substitutions" id="MM-EM-SubstItem">
+                                <menu title="Substitutions" id="MM-EM-SubstMenu">
+                                    <items>
+                                        <menuItem title="Show Substitutions"
+                                                  action="orderFrontSubstitutionsPanel:"
+                                                  id="MM-Subst-1"/>
+                                        <menuItem isSeparatorItem="YES" id="MM-Subst-Sep"/>
+                                        <menuItem title="Smart Copy/Paste"
+                                                  action="toggleSmartInsertDelete:"
+                                                  id="MM-Subst-2"/>
+                                        <menuItem title="Smart Quotes"
+                                                  action="toggleAutomaticQuoteSubstitution:"
+                                                  id="MM-Subst-3"/>
+                                        <menuItem title="Smart Dashes"
+                                                  action="toggleAutomaticDashSubstitution:"
+                                                  id="MM-Subst-4"/>
+                                        <menuItem title="Smart Links"
+                                                  action="toggleAutomaticLinkDetection:"
+                                                  id="MM-Subst-5"/>
+                                        <menuItem title="Data Detectors"
+                                                  action="toggleAutomaticDataDetection:"
+                                                  id="MM-Subst-6"/>
+                                        <menuItem title="Text Replacement"
+                                                  action="toggleAutomaticTextReplacement:"
+                                                  id="MM-Subst-7"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <!-- Transformations -->
+                            <menuItem title="Transformations" id="MM-EM-TransItem">
+                                <menu title="Transformations" id="MM-EM-TransMenu">
+                                    <items>
+                                        <menuItem title="Make Upper Case"
+                                                  action="uppercaseWord:"
+                                                  id="MM-Trans-1"/>
+                                        <menuItem title="Make Lower Case"
+                                                  action="lowercaseWord:"
+                                                  id="MM-Trans-2"/>
+                                        <menuItem title="Capitalize"
+                                                  action="capitalizeWord:"
+                                                  id="MM-Trans-3"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <!-- Speech -->
+                            <menuItem title="Speech" id="MM-EM-SpeechItem">
+                                <menu title="Speech" id="MM-EM-SpeechMenu">
+                                    <items>
+                                        <menuItem title="Start Speaking"
+                                                  action="startSpeaking:"
+                                                  id="MM-Speech-1"/>
+                                        <menuItem title="Stop Speaking"
+                                                  action="stopSpeaking:"
+                                                  id="MM-Speech-2"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+
+                <!-- View menu -->
+                <menuItem title="View" id="MM-VI-01">
+                    <menu title="View" id="MM-VM-01">
+                        <items>
+                            <menuItem title="Show Toolbar"
+                                      keyEquivalent="t"
+                                      action="toggleToolbarShown:"
+                                      id="MM-VM-Toolbar">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              option="YES" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Customize Toolbar…"
+                                      action="runToolbarCustomizationPalette:"
+                                      id="MM-VM-CustomizeToolbar"/>
+                            <menuItem isSeparatorItem="YES" id="MM-VM-Sep1"/>
+                            <menuItem title="Enter Full Screen"
+                                      keyEquivalent="f"
+                                      action="toggleFullScreen:"
+                                      id="MM-VM-FullScreen">
+                                <modifierMask key="keyEquivalentModifierMask"
+                                              control="YES" command="YES"/>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+
+                <!-- Window menu -->
+                <menuItem title="Window" id="MM-WI-01">
+                    <menu title="Window" systemMenu="window" id="MM-WM-01">
+                        <items>
+                            <menuItem title="Minimize"
+                                      keyEquivalent="m"
+                                      action="performMiniaturize:"
+                                      id="MM-WM-Minimize"/>
+                            <menuItem title="Zoom"
+                                      action="performZoom:"
+                                      id="MM-WM-Zoom"/>
+                            <menuItem isSeparatorItem="YES" id="MM-WM-Sep1"/>
+                            <menuItem title="Bring All to Front"
+                                      action="arrangeInFront:"
+                                      id="MM-WM-ArrangeInFront"/>
+                        </items>
+                    </menu>
+                </menuItem>
+
+                <!-- Help menu -->
+                <menuItem title="Help" id="MM-HI-01">
+                    <menu title="Help" systemMenu="help" id="MM-HM-01">
+                        <items>
+                            <menuItem title="UDArchivist Help"
+                                      keyEquivalent="?"
+                                      action="showHelp:"
+                                      id="MM-HM-Help"/>
+                        </items>
+                    </menu>
+                </menuItem>
+
+            </items>
+        </menu>
+
+    </objects>
+</document>

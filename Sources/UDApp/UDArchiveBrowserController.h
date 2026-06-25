@@ -26,12 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
     UDDirectoryNode   *_rootNode;
 }
 
-@property (nonatomic, assign) IBOutlet NSBrowser    *browser;
-@property (nonatomic, assign) IBOutlet NSTextField  *statusLabel;
-@property (nonatomic, assign) IBOutlet NSButton     *addButton;
-@property (nonatomic, assign) IBOutlet NSButton     *deleteButton;
-@property (nonatomic, assign) IBOutlet NSButton     *extractButton;
-@property (nonatomic, assign) IBOutlet NSButton     *openButton;
+@property (nonatomic, weak) IBOutlet NSBrowser    *browser;
+@property (nonatomic, weak) IBOutlet NSTextField  *statusLabel;
+@property (nonatomic, weak) IBOutlet NSButton     *addButton;
+@property (nonatomic, weak) IBOutlet NSButton     *deleteButton;
+@property (nonatomic, weak) IBOutlet NSButton     *extractButton;
+@property (nonatomic, weak) IBOutlet NSButton     *openButton;
 
 - (instancetype)initWithDocument:(UDArchiveDocument *)document;
 

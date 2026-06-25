@@ -9,7 +9,7 @@
 @synthesize codecs = _codecs;
 
 + (instancetype)sharedRegistry {
-    static UDCodecRegistry *registry;
+    static UDCodecRegistry * __strong registry;
     @synchronized (self) {
         if (!registry) {
             registry = [[self alloc] init];

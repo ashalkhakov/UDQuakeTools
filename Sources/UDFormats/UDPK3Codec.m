@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, UDPK3CodecErrorCode) {
     /* For files with a recognised game-archive extension that belongs to a
      * different codec, do not claim ownership — extension takes precedence
      * over magic to avoid pk3 vs pk4 ambiguity. */
-    static NSArray *knownExtensions = nil;
+    static NSArray * __strong knownExtensions = nil;
     @synchronized ([UDPK3Codec class]) {
         if (!knownExtensions) {
             knownExtensions = [NSArray arrayWithObjects:@"pak", @"pk3", @"pk4", nil];

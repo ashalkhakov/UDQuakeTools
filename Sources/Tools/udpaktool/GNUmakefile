@@ -1,3 +1,7 @@
+OBJC_RUNTIME_LIB = ng
+RUNTIME_VERSION = gnustep-2.0
+GS_WITH_ARC = 1
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
 CC = clang

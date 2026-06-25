@@ -262,15 +262,14 @@ static int cmdExtract(NSArray *args) {
 #pragma mark - main
 
 int main(int argc, const char *argv[]) {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    int exitCode = 0;
+    @autoreleasepool {
+        registerCodecs();
 
-    registerCodecs();
+        if (argc < 2) {
+            printUsage();
+            return 1;
+        }
 
-    if (argc < 2) {
-        printUsage();
-        exitCode = 1;
-    } else {
         NSString *command = [NSString stringWithUTF8String:argv[1]];
 
         /* Collect remaining arguments as an NSArray. */
@@ -280,16 +279,13 @@ int main(int argc, const char *argv[]) {
         }
 
         if ([command isEqualToString:@"list"]) {
-            exitCode = cmdList(args);
+            return cmdList(args);
         } else if ([command isEqualToString:@"extract"]) {
-            exitCode = cmdExtract(args);
+            return cmdExtract(args);
         } else {
             fprintf(stderr, "error: unknown command '%s'\n", argv[1]);
             printUsage();
-            exitCode = 1;
+            return 1;
         }
     }
-
-    [pool drain];
-    return exitCode;
 }

@@ -44,3 +44,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .DS_Store
+Tests/obj/

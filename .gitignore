@@ -44,4 +44,8 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .DS_Store
-Tests/obj/
+
+# GNUstep / clang build artifacts
+obj/
+*.o
+*.d

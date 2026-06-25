@@ -58,6 +58,12 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
     return nil;
 }
 
+/** Return the effective content source for an entry: staged source if present,
+ *  otherwise the original source. */
+- (nullable id<UDContentSource>)_effectiveSourceForEntry:(UDArchiveEntry *)entry {
+    return entry.stagedSource ? entry.stagedSource : entry.source;
+}
+
 /* ------------------------------------------------------------------ */
 #pragma mark - Mutations
 
@@ -160,7 +166,7 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
                 size:entry.size
          contentType:entry.contentType
           modifiedAt:entry.modifiedAt
-              source:(entry.stagedSource ? entry.stagedSource : entry.source)];
+              source:[self _effectiveSourceForEntry:entry]];
 
     [_currentEntries replaceObjectAtIndex:idx withObject:moved];
 
@@ -218,7 +224,7 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         return nil;
     }
 
-    id<UDContentSource> src = entry.stagedSource ? entry.stagedSource : entry.source;
+    id<UDContentSource> src = [self _effectiveSourceForEntry:entry];
     if (!src) {
         if (error) {
             *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain

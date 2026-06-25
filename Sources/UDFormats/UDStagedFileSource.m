@@ -46,6 +46,18 @@ typedef NS_ENUM(NSInteger, UDStagedFileSourceErrorCode) {
         return [NSData data];
     }
 
+    /* Validate the full range against the file size before doing any I/O. */
+    uint64_t fileLen = self.length;
+    if ((uint64_t)range.location + (uint64_t)range.length > fileLen) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDStagedFileSourceErrorDomain
+                                         code:UDStagedFileSourceErrorCodeOutOfBounds
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                                    @"Requested range is beyond staged file bounds."}];
+        }
+        return nil;
+    }
+
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:_fileURL.path];
     if (!handle) {
         if (error) {
@@ -60,16 +72,6 @@ typedef NS_ENUM(NSInteger, UDStagedFileSourceErrorCode) {
     [handle seekToFileOffset:(unsigned long long)range.location];
     NSData *data = [handle readDataOfLength:range.length];
     [handle closeFile];
-
-    if (data.length < range.length) {
-        if (error) {
-            *error = [NSError errorWithDomain:UDStagedFileSourceErrorDomain
-                                         code:UDStagedFileSourceErrorCodeOutOfBounds
-                                     userInfo:@{NSLocalizedDescriptionKey:
-                                                    @"Requested range is beyond staged file bounds."}];
-        }
-        return nil;
-    }
 
     return data;
 }

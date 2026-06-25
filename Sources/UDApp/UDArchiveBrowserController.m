@@ -25,6 +25,8 @@
 - (NSString *)_currentDirectoryPath;
 - (void)_reloadBrowser;
 - (void)_updateStatusAndButtons;
+/** Returns "entry" or "entries" for a given count. */
+- (NSString *)_entryPlural:(NSUInteger)count;
 - (void)_addFileAtURL:(NSURL *)fileURL;
 - (void)_extractEntryAtPath:(NSString *)archivePath toURL:(NSURL *)destURL;
 - (void)_extractDirectoryAtPath:(NSString *)dirPath toDirectoryURL:(NSURL *)destDir;
@@ -183,6 +185,10 @@
     return @"";
 }
 
+- (NSString *)_entryPlural:(NSUInteger)count {
+    return (count == 1) ? @"y" : @"ies";
+}
+
 - (void)_updateStatusAndButtons {
     NSArray *entries   = _archiveDocument.editor.currentEntries;
     NSString *selPath  = [self _selectedPath];
@@ -202,24 +208,24 @@
             if (entry) {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@ (%llu bytes)",
                           (unsigned long)entries.count,
-                          entries.count == 1 ? @"y" : @"ies",
+                          [self _entryPlural:entries.count],
                           selPath, entry.size];
             } else {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@",
                           (unsigned long)entries.count,
-                          entries.count == 1 ? @"y" : @"ies",
+                          [self _entryPlural:entries.count],
                           selPath];
             }
         } else {
             status = [NSString stringWithFormat:@"%lu entr%@ — %@/",
                       (unsigned long)entries.count,
-                      entries.count == 1 ? @"y" : @"ies",
+                      [self _entryPlural:entries.count],
                       selPath];
         }
     } else {
         status = [NSString stringWithFormat:@"%lu entr%@",
                   (unsigned long)entries.count,
-                  entries.count == 1 ? @"y" : @"ies"];
+                  [self _entryPlural:entries.count]];
     }
 
     [_statusLabel   setStringValue:status];

@@ -14,8 +14,8 @@
         if (!registry) {
             registry = [[self alloc] init];
         }
+        return registry;
     }
-    return registry;
 }
 
 - (instancetype)init {

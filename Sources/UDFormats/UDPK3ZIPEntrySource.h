@@ -10,6 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
  * sources can coexist without keeping the file descriptor open permanently.
  * Both stored (method 0) and deflate-compressed (method 8) entries are
  * supported transparently by libzip.
+ *
+ * @note Because ZIP DEFLATE streams are not seekable, @c readRange:error:
+ * decompresses the entire entry and slices the result.  For workloads that
+ * repeatedly read small ranges of large entries, consider calling
+ * @c readAll:error: once and caching the resulting @c NSData.
  */
 @interface UDPK3ZIPEntrySource : NSObject <UDContentSource> {
     NSURL *_fileURL;

@@ -44,8 +44,10 @@ typedef NS_ENUM(NSInteger, UDPK3CodecErrorCode) {
      * different codec, do not claim ownership — extension takes precedence
      * over magic to avoid pk3 vs pk4 ambiguity. */
     static NSArray *knownExtensions = nil;
-    if (!knownExtensions) {
-        knownExtensions = @[@"pak", @"pk3", @"pk4"];
+    @synchronized ([UDPK3Codec class]) {
+        if (!knownExtensions) {
+            knownExtensions = [NSArray arrayWithObjects:@"pak", @"pk3", @"pk4", nil];
+        }
     }
     if ([knownExtensions containsObject:ext]) {
         return NO;

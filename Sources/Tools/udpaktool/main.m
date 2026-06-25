@@ -242,7 +242,8 @@ static int cmdExtract(NSArray *args) {
     }
 
     if (failures > 0) {
-        fprintf(stderr, "\n%d entry/entries failed to extract.\n", failures);
+        fprintf(stderr, "\n%d %s failed to extract.\n",
+                failures, failures == 1 ? "entry" : "entries");
         return 1;
     }
 

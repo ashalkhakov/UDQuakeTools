@@ -26,7 +26,7 @@
 - (void)_reloadBrowser;
 - (void)_updateStatusAndButtons;
 /** Returns "entry" or "entries" for a given count. */
-- (NSString *)_entryPlural:(NSUInteger)count;
+- (NSString *)_entryPluralSuffix:(NSUInteger)count;
 - (void)_addFileAtURL:(NSURL *)fileURL;
 - (void)_extractEntryAtPath:(NSString *)archivePath toURL:(NSURL *)destURL;
 - (void)_extractDirectoryAtPath:(NSString *)dirPath toDirectoryURL:(NSURL *)destDir;
@@ -185,7 +185,7 @@
     return @"";
 }
 
-- (NSString *)_entryPlural:(NSUInteger)count {
+- (NSString *)_entryPluralSuffix:(NSUInteger)count {
     return (count == 1) ? @"y" : @"ies";
 }
 
@@ -208,24 +208,24 @@
             if (entry) {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@ (%llu bytes)",
                           (unsigned long)entries.count,
-                          [self _entryPlural:entries.count],
+                          [self _entryPluralSuffix:entries.count],
                           selPath, entry.size];
             } else {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@",
                           (unsigned long)entries.count,
-                          [self _entryPlural:entries.count],
+                          [self _entryPluralSuffix:entries.count],
                           selPath];
             }
         } else {
             status = [NSString stringWithFormat:@"%lu entr%@ — %@/",
                       (unsigned long)entries.count,
-                      [self _entryPlural:entries.count],
+                      [self _entryPluralSuffix:entries.count],
                       selPath];
         }
     } else {
         status = [NSString stringWithFormat:@"%lu entr%@",
                   (unsigned long)entries.count,
-                  [self _entryPlural:entries.count]];
+                  [self _entryPluralSuffix:entries.count]];
     }
 
     [_statusLabel   setStringValue:status];

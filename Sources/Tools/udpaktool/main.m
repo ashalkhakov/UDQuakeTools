@@ -1,19 +1,20 @@
 /*
- * udpaktool — Command-line tool for inspecting and extracting PAK archives.
+ * udpaktool — Command-line tool for inspecting and extracting game archives.
  *
  * Usage:
- *   udpaktool list    <archive.pak> [--format <id>]
- *   udpaktool extract <archive.pak> [<dest-dir>] [--format <id>]
+ *   udpaktool list    <archive> [--format <id>]
+ *   udpaktool extract <archive> [<dest-dir>] [--format <id>]
  *
  * --format selects a codec by its format identifier, e.g.:
- *   com.udquake.pak          Quake I  (default auto-detect)
- *   com.udquake.pak2         Quake II
+ *   com.udquake.pak            Quake I   (default for .pak files)
+ *   com.udquake.pak2           Quake II
  *   com.udquake.daikatana-pak  Daikatana
+ *   com.udquake.pk3            Quake III (default for .pk3 files)
+ *   com.udquake.pk4            Doom 3    (default for .pk4 files)
  *
- * When --format is omitted the codec registry auto-detects based on the
- * file signature (all three variants share the "PACK" magic, so the first
- * registered codec — Quake I — wins for auto-detect).  Pass --format
- * explicitly to tag extracted archives with the correct game label.
+ * When --format is omitted the codec registry auto-detects based on the file
+ * extension and signature.  Pass --format explicitly to tag archives with the
+ * correct game label when the extension alone is ambiguous.
  */
 
 #import <Foundation/Foundation.h>
@@ -25,6 +26,8 @@
 #import "UDPAKCodec.h"
 #import "UDPAK2Codec.h"
 #import "UDDaikatanaPAKCodec.h"
+#import "UDPK3Codec.h"
+#import "UDPK4Codec.h"
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Helpers
@@ -32,22 +35,26 @@
 static void printUsage(void) {
     fprintf(stderr,
         "Usage:\n"
-        "  udpaktool list    <archive.pak> [--format <id>]\n"
-        "  udpaktool extract <archive.pak> [<dest-dir>] [--format <id>]\n"
+        "  udpaktool list    <archive> [--format <id>]\n"
+        "  udpaktool extract <archive> [<dest-dir>] [--format <id>]\n"
         "\n"
         "Format identifiers:\n"
-        "  com.udquake.pak             Quake I (default)\n"
+        "  com.udquake.pak             Quake I (default for .pak)\n"
         "  com.udquake.pak2            Quake II\n"
         "  com.udquake.daikatana-pak   Daikatana\n"
+        "  com.udquake.pk3             Quake III (default for .pk3)\n"
+        "  com.udquake.pk4             Doom 3 (default for .pk4)\n"
     );
 }
 
-/** Register every supported PAK codec with the shared registry. */
+/** Register every supported codec with the shared registry. */
 static void registerCodecs(void) {
     UDCodecRegistry *reg = [UDCodecRegistry sharedRegistry];
     [reg registerCodec:[[UDPAKCodec alloc] init]];
     [reg registerCodec:[[UDPAK2Codec alloc] init]];
     [reg registerCodec:[[UDDaikatanaPAKCodec alloc] init]];
+    [reg registerCodec:[[UDPK3Codec alloc] init]];
+    [reg registerCodec:[[UDPK4Codec alloc] init]];
 }
 
 /**

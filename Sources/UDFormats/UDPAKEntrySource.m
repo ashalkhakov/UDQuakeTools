@@ -40,7 +40,18 @@ typedef NS_ENUM(NSInteger, UDPAKEntrySourceErrorCode) {
 }
 
 - (NSData *)readRange:(NSRange)range error:(NSError **)error {
-    if ((uint64_t)range.location > self.lengthValue || (uint64_t)range.length > self.lengthValue || ((uint64_t)range.location + (uint64_t)range.length) > self.lengthValue) {
+    uint64_t rangeStart = (uint64_t)range.location;
+    uint64_t rangeLength = (uint64_t)range.length;
+    if (rangeStart > UINT64_MAX - rangeLength) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
+                                         code:UDPAKEntrySourceErrorCodeOutOfBounds
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Requested range is outside entry bounds."}];
+        }
+        return nil;
+    }
+    uint64_t rangeEnd = rangeStart + rangeLength;
+    if (rangeEnd > self.lengthValue) {
         if (error) {
             *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
                                          code:UDPAKEntrySourceErrorCodeOutOfBounds
@@ -49,8 +60,8 @@ typedef NS_ENUM(NSInteger, UDPAKEntrySourceErrorCode) {
         return nil;
     }
 
-    NSData *fileData = [NSData dataWithContentsOfFile:self.fileURL.path];
-    if (!fileData) {
+    NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:self.fileURL.path];
+    if (!handle) {
         if (error) {
             *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
                                          code:UDPAKEntrySourceErrorCodeUnreadableFile
@@ -59,9 +70,33 @@ typedef NS_ENUM(NSInteger, UDPAKEntrySourceErrorCode) {
         return nil;
     }
 
-    NSUInteger readStart = (NSUInteger)(self.offset + (uint64_t)range.location);
-    NSUInteger readLength = range.length;
-    if (readStart > fileData.length || readLength > (fileData.length - readStart)) {
+    if (self.offset > UINT64_MAX - rangeStart) {
+        [handle closeFile];
+        if (error) {
+            *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
+                                         code:UDPAKEntrySourceErrorCodeOutOfBounds
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Requested range exceeds platform limits."}];
+        }
+        return nil;
+    }
+
+    uint64_t absoluteReadStart = self.offset + rangeStart;
+    if (absoluteReadStart > NSUIntegerMax || rangeLength > NSUIntegerMax) {
+        [handle closeFile];
+        if (error) {
+            *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
+                                         code:UDPAKEntrySourceErrorCodeOutOfBounds
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Requested range exceeds platform limits."}];
+        }
+        return nil;
+    }
+
+    NSUInteger readStart = (NSUInteger)absoluteReadStart;
+    NSUInteger readLength = (NSUInteger)rangeLength;
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:self.fileURL.path error:NULL];
+    uint64_t fileLength = [[attributes objectForKey:NSFileSize] unsignedLongLongValue];
+    if (readStart > fileLength || readLength > (fileLength - readStart)) {
+        [handle closeFile];
         if (error) {
             *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
                                          code:UDPAKEntrySourceErrorCodeOutOfBounds
@@ -70,7 +105,10 @@ typedef NS_ENUM(NSInteger, UDPAKEntrySourceErrorCode) {
         return nil;
     }
 
-    return [fileData subdataWithRange:NSMakeRange(readStart, readLength)];
+    [handle seekToFileOffset:readStart];
+    NSData *slice = [handle readDataOfLength:readLength];
+    [handle closeFile];
+    return slice;
 }
 
 - (NSData *)readAll:(NSError **)error {

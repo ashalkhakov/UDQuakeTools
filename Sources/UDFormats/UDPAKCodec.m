@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, UDPAKCodecErrorCode) {
     UDPAKCodecErrorCodeCorruptDirectory = 3,
 };
 
+/* Reads a 32-bit unsigned integer in little-endian byte order. */
 static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
     return ((uint32_t)bytes[0]) | ((uint32_t)bytes[1] << 8) | ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
 }
@@ -35,7 +36,13 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
         return YES;
     }
 
-    NSData *headerData = [NSData dataWithContentsOfFile:url.path];
+    NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:url.path];
+    if (!handle) {
+        return NO;
+    }
+
+    NSData *headerData = [handle readDataOfLength:4];
+    [handle closeFile];
     if (headerData.length < 4) {
         return NO;
     }
@@ -119,7 +126,7 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
 
     NSMutableArray<UDArchiveEntry *> *entries = [NSMutableArray array];
     NSUInteger count = directorySize / 64;
-    NSDate *now = [NSDate date];
+    NSDate *defaultModifiedAt = [NSDate dateWithTimeIntervalSince1970:0];
 
     for (NSUInteger index = 0; index < count; index++) {
         NSUInteger rowOffset = (NSUInteger)directoryOffset + index * 64;
@@ -131,12 +138,13 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
             name = @"";
         }
 
-        NSRange nulRange = [name rangeOfString:@"\0"];
-        if (nulRange.location != NSNotFound) {
-            name = [name substringToIndex:nulRange.location];
+        NSRange nullRange = [name rangeOfString:@"\0"];
+        if (nullRange.location != NSNotFound) {
+            name = [name substringToIndex:nullRange.location];
         }
 
-        name = [[name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        name = [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        name = [name stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
 
         if (name.length == 0) {
             continue;
@@ -158,7 +166,7 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
         UDArchiveEntry *entry = [[UDArchiveEntry alloc] initWithPath:name
                                                                 size:fileSize
                                                          contentType:@"application/octet-stream"
-                                                          modifiedAt:now
+                                                         modifiedAt:defaultModifiedAt
                                                               source:source];
         [entries addObject:entry];
     }

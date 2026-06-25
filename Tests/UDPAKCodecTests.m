@@ -18,7 +18,11 @@ static NSURL *UDWriteTemporaryFileWithData(NSData *data, NSString *suffix) {
     NSString *tempFileName = [NSString stringWithFormat:@"udquake-%@-%@", [[NSUUID UUID] UUIDString], suffix];
     NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:tempFileName];
     NSURL *url = [NSURL fileURLWithPath:path];
-    [data writeToURL:url atomically:YES];
+    NSError *writeError = nil;
+    BOOL wrote = [data writeToURL:url options:0 error:&writeError];
+    if (!wrote || writeError) {
+        return nil;
+    }
     return url;
 }
 
@@ -37,6 +41,7 @@ static NSData *UDQuakePAKDataWithEntries(void) {
     const char *name = "maps/e1m1.bsp";
     memcpy(entry, name, strlen(name));
 
+    /* First payload starts immediately after 12-byte PAK header. */
     uint32_t fileOffset = 12;
     uint32_t fileSize = 4;
     memcpy(entry + 56, &fileOffset, 4);
@@ -53,9 +58,11 @@ BOOL UDRunPAKCodecTests(void) {
 
     NSData *pakData = UDQuakePAKDataWithEntries();
     NSURL *sigURL = UDWriteTemporaryFileWithData(pakData, @"sample.dat");
+    ok = UDCheck(sigURL != nil, @"Test setup should create temp file") && ok;
     ok = UDCheck([codec canReadURL:sigURL], @"UDPAKCodec should recognize PACK signature") && ok;
 
     NSURL *pakURL = UDWriteTemporaryFileWithData(pakData, @"sample.pak");
+    ok = UDCheck(pakURL != nil, @"Test setup should create PAK file") && ok;
     NSError *readError = nil;
     UDArchive *archive = [codec readArchiveFromURL:pakURL error:&readError];
     ok = UDCheck(readError == nil, @"UDPAKCodec should parse valid archive") && ok;
@@ -93,14 +100,15 @@ BOOL UDRunPAKCodecTests(void) {
 
     UDPAKEntrySource *source = [[UDPAKEntrySource alloc] initWithFileURL:pakURL offset:12 length:4];
     NSError *sliceError = nil;
+    /* Entry length is 4 bytes; reading from 3 for 2 bytes crosses the boundary. */
     NSData *slice = [source readRange:NSMakeRange(3, 2) error:&sliceError];
     ok = UDCheck(slice == nil, @"Out of bounds range should fail") && ok;
     ok = UDCheck(sliceError != nil, @"Out of bounds range should set error") && ok;
 
     UDCodecRegistry *registry = [[UDCodecRegistry alloc] init];
     [registry registerCodec:codec];
-    id resolved = [registry codecForFormatIdentifier:@"com.udquake.pak"];
-    ok = UDCheck(resolved == codec, @"Registry should resolve codec by identifier") && ok;
+    id resolvedCodec = [registry codecForFormatIdentifier:@"com.udquake.pak"];
+    ok = UDCheck(resolvedCodec == codec, @"Registry should resolve codec by identifier") && ok;
 
     if (ok) {
         printf("UDPAKCodecTests passed.\n");

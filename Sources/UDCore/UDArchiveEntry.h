@@ -21,9 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) id<UDContentSource> source;
 @property (nonatomic, strong, nullable) id<UDContentSource> stagedSource;
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 - (instancetype)initWithPath:(NSString *)path
                         size:(uint64_t)size
                  contentType:(NSString *)contentType

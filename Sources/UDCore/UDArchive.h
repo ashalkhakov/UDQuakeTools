@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) NSArray<UDArchiveEntry *> *entries;
 @property (nonatomic, readonly, copy) NSDictionary<NSString *, id> *metadata;
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 - (instancetype)initWithDisplayName:(NSString *)displayName
                             entries:(NSArray<UDArchiveEntry *> *)entries
                            metadata:(NSDictionary<NSString *, id> *)metadata NS_DESIGNATED_INITIALIZER;

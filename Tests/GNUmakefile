@@ -1,6 +1,7 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 CC = clang
+GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
 
 TOOL_NAME = udquaketools-tests
 
@@ -19,8 +20,8 @@ udquaketools-tests_INCLUDE_DIRS = \
     -I../Sources/UDFormats
 
 udquaketools-tests_LIBRARIES = objc gnustep-base
-ADDITIONAL_OBJCFLAGS += -I/usr/lib/gcc/x86_64-linux-gnu/13/include
-ADDITIONAL_LDFLAGS += -L/usr/lib/gcc/x86_64-linux-gnu/13
+ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
+ADDITIONAL_LDFLAGS += -L$(GCC_LIB_DIR)
 
 .PHONY: run-tests
 run-tests: all

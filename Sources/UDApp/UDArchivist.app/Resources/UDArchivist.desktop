@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Categories=X-GNUstep;
-Name=UDArchivist
-StartupWMClass=UDArchivist
-Exec=/usr/bin/openapp UDArchivist
-MimeType=

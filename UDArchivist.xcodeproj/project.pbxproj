@@ -434,7 +434,6 @@
 		AA05000200000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSET_CATALOG_COMPILER_OPTIMIZATION = ;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -443,9 +442,9 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore" "$(SRCROOT)/Sources/UDFormats" /opt/homebrew/include /usr/local/include);
+				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore", "$(SRCROOT)/Sources/UDFormats", /opt/homebrew/include, /usr/local/include);
 				INFOPLIST_FILE = Sources/UDApp/UDArchivist-Info.plist;
-				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib /usr/local/lib);
+				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib, /usr/local/lib);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
@@ -465,9 +464,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore" "$(SRCROOT)/Sources/UDFormats" /opt/homebrew/include /usr/local/include);
+				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore", "$(SRCROOT)/Sources/UDFormats", /opt/homebrew/include, /usr/local/include);
 				INFOPLIST_FILE = Sources/UDApp/UDArchivist-Info.plist;
-				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib /usr/local/lib);
+				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib, /usr/local/lib);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 
 				OTHER_LDFLAGS = "-lzip";
@@ -486,8 +485,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore" "$(SRCROOT)/Sources/UDFormats" /opt/homebrew/include /usr/local/include);
-				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib /usr/local/lib);
+				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore", "$(SRCROOT)/Sources/UDFormats", /opt/homebrew/include, /usr/local/include);
+				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib, /usr/local/lib);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;
@@ -503,8 +502,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore" "$(SRCROOT)/Sources/UDFormats" /opt/homebrew/include /usr/local/include);
-				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib /usr/local/lib);
+				HEADER_SEARCH_PATHS = ("$(SRCROOT)/Sources/UDCore", "$(SRCROOT)/Sources/UDFormats", /opt/homebrew/include, /usr/local/include);
+				LIBRARY_SEARCH_PATHS = (/opt/homebrew/lib, /usr/local/lib);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;

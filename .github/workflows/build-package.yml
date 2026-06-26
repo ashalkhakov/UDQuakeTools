@@ -87,7 +87,7 @@ jobs:
 
       - name: Build macOS App with Xcode
         run: |
-          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release SYMROOT=Build CODE_SIGN_IDENTITY="-"
+          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release SYMROOT=Build CODE_SIGN_IDENTITY="-" ARCHS="arm64"
 
       - name: Package macOS App
         run: |

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDArchiveBrowserController">
+            <connections>
+                <outlet property="addButton" destination="BTN-ADD" id="CO-04"/>
+                <outlet property="browser" destination="BRW-01" id="CO-02"/>
+                <outlet property="deleteButton" destination="BTN-DEL" id="CO-05"/>
+                <outlet property="extractButton" destination="BTN-EXT" id="CO-06"/>
+                <outlet property="gamePopUpButton" destination="POP-GME" id="CO-08"/>
+                <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
+                <outlet property="searchField" destination="SRH-01" id="CO-09"/>
+                <outlet property="statusLabel" destination="STL-01" id="CO-03"/>
+                <outlet property="window" destination="WND-01" id="CO-01"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Archive" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="WND-01">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <rect key="contentRect" x="196" y="240" width="750" height="500"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
+            <view key="contentView" id="CNT-01">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="500"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="STL-01">
+                        <rect key="frame" x="4" y="2" width="742" height="18"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Ready" id="STL-01-cell">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <browser fixedFrame="YES" allowsEmptySelection="YES" defaultColumnWidth="100" minColumnWidth="120" maxVisibleColumns="4" titled="YES" separatesColumns="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BRW-01">
+                        <rect key="frame" x="0.0" y="22" width="750" height="450"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <connections>
+                            <action selector="browserSingleClick:" target="-2" id="BRW-01-act"/>
+                            <outlet property="delegate" destination="-2" id="BRW-01-del"/>
+                        </connections>
+                    </browser>
+                    <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BBR-01" userLabel="buttonBar">
+                        <rect key="frame" x="0.0" y="472" width="750" height="28"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-ADD">
+                                <rect key="frame" x="8" y="4" width="64" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADD-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="addFile:" target="-2" id="BTN-ADD-act"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-DEL">
+                                <rect key="frame" x="80" y="4" width="72" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-DEL-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="deleteSelected:" target="-2" id="BTN-DEL-act"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-EXT">
+                                <rect key="frame" x="160" y="4" width="80" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Extract" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-EXT-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="extractSelected:" target="-2" id="BTN-EXT-act"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-OPN">
+                                <rect key="frame" x="248" y="4" width="64" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Open" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-OPN-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="openSelected:" target="-2" id="BTN-OPN-act"/>
+                                </connections>
+                            </button>
+                            <searchField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
+                                <rect key="frame" x="320" y="3" width="210" height="22"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search..." bezelStyle="round" id="SRH-01-cell">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </searchFieldCell>
+                                <connections>
+                                    <action selector="searchChanged:" target="-2" id="SRH-01-act"/>
+                                </connections>
+                            </searchField>
+                            <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-GME">
+                                <rect key="frame" x="540" y="4" width="200" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-GME-cell">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="message"/>
+                                    <menu key="menu" id="POP-GME-menu">
+                                        <items>
+                                            <menuItem title="Auto Detect" id="POP-GME-item0"/>
+                                            <menuItem title="Quake 1" id="POP-GME-item1"/>
+                                            <menuItem title="Quake 2" id="POP-GME-item2"/>
+                                            <menuItem title="Daikatana" id="POP-GME-item3"/>
+                                            <menuItem title="Quake 3" id="POP-GME-item4"/>
+                                            <menuItem title="Doom 3" id="POP-GME-item5"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="gameChanged:" target="-2" id="POP-GME-act"/>
+                                </connections>
+                            </popUpButton>
+                        </subviews>
+                    </view>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="0.0" y="144"/>
+        </window>
+    </objects>
+</document>

@@ -73,13 +73,13 @@ jobs:
       - name: Package AppImage
         run: |
           export PATH="$(pwd)/squashfs-root/usr/bin:$(pwd)/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
-         export VERSION="${{ env.APP_VERSION }}"
+          export VERSION="${{ env.APP_VERSION }}"
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir --output appimage
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4
         with:
-         name: PakManager-Linux-${{ env.APP_VERSION }}
+          name: PakManager-Linux-${{ env.APP_VERSION }}
           path: "*.AppImage"
 
   build-macos-app:
@@ -89,21 +89,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set Version Environment Variable
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "APP_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
+          fi
+
       - name: Install dependencies
         run: |
           brew install libzip
 
       - name: Build macOS App with Xcode
         run: |
-          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release SYMROOT=Build CODE_SIGN_IDENTITY="-" ARCHS="arm64"
+          xcodebuild -project PakManager.xcodeproj \
+            -target "Pak Manager" \
+            -configuration Release \
+            SYMROOT=Build \
+            CODE_SIGN_IDENTITY="-" \
+            ARCHS="arm64" \
+            MARKETING_VERSION="${{ env.APP_VERSION }}" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
       - name: Package macOS App
         run: |
           cd Build/Release
-          zip -r ../../PakManager-macOS.zip PakManager.app
+          zip -r ../../PakManager-macOS-${{ env.APP_VERSION }}.zip PakManager.app
 
       - name: Upload macOS App Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PakManager-macOS-App
-          path: PakManager-macOS.zip
+          name: PakManager-macOS-${{ env.APP_VERSION }}
+          path: PakManager-macOS-${{ env.APP_VERSION }}.zip

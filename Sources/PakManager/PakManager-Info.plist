@@ -56,7 +56,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>PakManager</string>
+	<string>Pak Manager</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.udquake.pakmanager</string>
 	<key>CFBundleShortVersionString</key>

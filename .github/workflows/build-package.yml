@@ -1,0 +1,100 @@
+name: Build and Package
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-linux-appimage:
+    name: Build and Package Linux AppImage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install GNUstep and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnustep-devel libgnustep-gui-dev libzip-dev clang libblocksruntime-dev
+
+      - name: Build PakManager App
+        run: |
+          cd Sources/PakManager
+          . /usr/share/GNUstep/Makefiles/GNUstep.sh
+          make
+
+      - name: Prepare AppDir
+        run: |
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+
+          cp Sources/PakManager/PakManager.app/PakManager AppDir/usr/bin/
+          cp -r Sources/PakManager/PakManager.app/Resources AppDir/usr/bin/
+
+          cat << 'EOF' > AppDir/PakManager.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=Pak Manager
+          Exec=PakManager
+          Icon=PakManager
+          Categories=Utility;
+          Comment=Manage Quake PAK and PK3/PK4 archive files.
+          Terminal=false
+          EOF
+
+          python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
+          cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
+
+      - name: Download linuxdeploy
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage --appimage-extract
+          ./linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
+
+      - name: Package AppImage
+        run: |
+          export PATH="$(pwd)/squashfs-root/usr/bin:$(pwd)/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
+          export VERSION="1.0"
+          squashfs-root/usr/bin/linuxdeploy --appdir AppDir --output appimage
+
+      - name: Upload Linux AppImage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PakManager-Linux-AppImage
+          path: "*.AppImage"
+
+  build-macos-app:
+    name: Build and Package Mac App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install libzip
+
+      - name: Build macOS App with Xcode
+        run: |
+          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release -derivedDataPath Build CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE="Manual"
+
+      - name: Package macOS App
+        run: |
+          cd Build/Build/Products/Release
+          zip -r ../../../../PakManager-macOS.zip "Pak Manager.app"
+
+      - name: Upload macOS App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PakManager-macOS-App
+          path: PakManager-macOS.zip

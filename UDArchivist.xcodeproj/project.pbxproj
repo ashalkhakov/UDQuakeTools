@@ -11,6 +11,7 @@
 		AA01000100000000000000AA /* UDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010100000000000000AA /* UDAppDelegate.m */; };
 		AA01000200000000000000AA /* UDArchiveDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010200000000000000AA /* UDArchiveDocument.m */; };
 		AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010300000000000000AA /* UDArchiveBrowserController.m */; };
+		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
 		AA01000400000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
 		AA01000500000000000000AA /* UDArchiveEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010500000000000000AA /* UDArchiveEditor.m */; };
 		AA01000600000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
@@ -47,6 +48,8 @@
 		AA00010100000000000000AA /* UDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDelegate.m; sourceTree = "<group>"; };
 		AA00010200000000000000AA /* UDArchiveDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveDocument.m; sourceTree = "<group>"; };
 		AA00010300000000000000AA /* UDArchiveBrowserController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveBrowserController.m; sourceTree = "<group>"; };
+		AA00012000000000000000AA /* UDTextPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPreviewController.m; sourceTree = "<group>"; };
+		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00010400000000000000AA /* UDArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchive.m; sourceTree = "<group>"; };
 		AA00010500000000000000AA /* UDArchiveEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditor.m; sourceTree = "<group>"; };
 		AA00010600000000000000AA /* UDArchiveEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntry.m; sourceTree = "<group>"; };
@@ -140,6 +143,8 @@
 				AA00010200000000000000AA /* UDArchiveDocument.m */,
 				AA00020200000000000000AA /* UDArchiveBrowserController.h */,
 				AA00010300000000000000AA /* UDArchiveBrowserController.m */,
+				AA00022000000000000000AA /* UDTextPreviewController.h */,
+				AA00012000000000000000AA /* UDTextPreviewController.m */,
 				AA00010000000000000000AA /* main.m */,
 				AA00030100000000000000AA /* UDArchiveDocument.xib */,
 				AA00030200000000000000AA /* UDArchivist-Info.plist */,
@@ -314,6 +319,7 @@
 				AA01000100000000000000AA /* UDAppDelegate.m in Sources */,
 				AA01000200000000000000AA /* UDArchiveDocument.m in Sources */,
 				AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */,
+				AA01002000000000000000AA /* UDTextPreviewController.m in Sources */,
 				AA01000400000000000000AA /* UDArchive.m in Sources */,
 				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
 				AA01000600000000000000AA /* UDArchiveEntry.m in Sources */,

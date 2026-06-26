@@ -14,6 +14,7 @@ UDArchivist_OBJC_FILES = \
     UDAppDelegate.m \
     UDArchiveDocument.m \
     UDArchiveBrowserController.m \
+    UDTextPreviewController.m \
     ../UDCore/UDArchive.m \
     ../UDCore/UDArchiveEntry.m \
     ../UDCore/UDDirectoryNode.m \

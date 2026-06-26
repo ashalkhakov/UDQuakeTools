@@ -77,9 +77,19 @@ typedef NS_ENUM(NSInteger, UDStagedFileSourceErrorCode) {
 }
 
 - (nullable NSData *)readAll:(NSError **)error {
+#ifdef GNUSTEP
+    NSData *data = [NSData dataWithContentsOfFile:_fileURL.path];
+    if (!data && error) {
+        *error = [NSError errorWithDomain:UDStagedFileSourceErrorDomain
+                                     code:UDStagedFileSourceErrorCodeUnreadable
+                                 userInfo:@{NSLocalizedDescriptionKey:
+                                                @"Unable to open staged file for reading."}];
+    }
+#else
     NSData *data = [NSData dataWithContentsOfFile:_fileURL.path
                                           options:0
                                             error:error];
+#endif
     return data;
 }
 

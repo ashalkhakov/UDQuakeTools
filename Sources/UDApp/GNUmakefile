@@ -14,24 +14,24 @@ UDArchivist_OBJC_FILES = \
     UDAppDelegate.m \
     UDArchiveDocument.m \
     UDArchiveBrowserController.m \
-    ../../UDCore/UDArchive.m \
-    ../../UDCore/UDArchiveEntry.m \
-    ../../UDCore/UDDirectoryNode.m \
-    ../../UDCore/UDArchiveMutation.m \
-    ../../UDCore/UDArchiveEditor.m \
-    ../../UDFormats/UDCodecRegistry.m \
-    ../../UDFormats/UDPAKCodec.m \
-    ../../UDFormats/UDPAKEntrySource.m \
-    ../../UDFormats/UDStagedFileSource.m \
-    ../../UDFormats/UDPAK2Codec.m \
-    ../../UDFormats/UDDaikatanaPAKCodec.m \
-    ../../UDFormats/UDPK3Codec.m \
-    ../../UDFormats/UDPK3ZIPEntrySource.m \
-    ../../UDFormats/UDPK4Codec.m
+    ../UDCore/UDArchive.m \
+    ../UDCore/UDArchiveEntry.m \
+    ../UDCore/UDDirectoryNode.m \
+    ../UDCore/UDArchiveMutation.m \
+    ../UDCore/UDArchiveEditor.m \
+    ../UDFormats/UDCodecRegistry.m \
+    ../UDFormats/UDPAKCodec.m \
+    ../UDFormats/UDPAKEntrySource.m \
+    ../UDFormats/UDStagedFileSource.m \
+    ../UDFormats/UDPAK2Codec.m \
+    ../UDFormats/UDDaikatanaPAKCodec.m \
+    ../UDFormats/UDPK3Codec.m \
+    ../UDFormats/UDPK3ZIPEntrySource.m \
+    ../UDFormats/UDPK4Codec.m
 
 UDArchivist_INCLUDE_DIRS = \
-    -I../../UDCore \
-    -I../../UDFormats
+    -I../UDCore \
+    -I../UDFormats
 
 UDArchivist_RESOURCE_FILES = \
     UDArchiveDocument.xib \

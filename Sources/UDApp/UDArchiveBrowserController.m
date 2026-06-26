@@ -11,6 +11,9 @@
 #import "UDArchive.h"
 #import "UDTextPreviewController.h"
 #import "UDArchiveCodec.h"
+#import "UDGame.h"
+#import "UDGameDetectionService.h"
+#import "UDFileActionService.h"
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Private interface
@@ -34,19 +37,19 @@
 - (void)_extractEntryAtPath:(NSString *)archivePath toURL:(NSURL *)destURL;
 - (void)_extractDirectoryAtPath:(NSString *)dirPath toDirectoryURL:(NSURL *)destDir;
 - (void)_detectGame;
-- (nullable NSString *)_customCommandForExtension:(NSString *)ext;
 @end
 
 /* ------------------------------------------------------------------ */
 
 @implementation UDArchiveBrowserController
 
-@synthesize browser       = _browser;
-@synthesize statusLabel   = _statusLabel;
-@synthesize addButton     = _addButton;
-@synthesize deleteButton  = _deleteButton;
-@synthesize extractButton = _extractButton;
-@synthesize openButton    = _openButton;
+@synthesize browser         = _browser;
+@synthesize statusLabel     = _statusLabel;
+@synthesize addButton       = _addButton;
+@synthesize deleteButton    = _deleteButton;
+@synthesize extractButton   = _extractButton;
+@synthesize openButton      = _openButton;
+@synthesize gamePopUpButton = _gamePopUpButton;
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Init
@@ -57,6 +60,8 @@
         return nil;
     }
     _archiveDocument = document;
+    _gameDetectionService = [[UDGameDetectionService alloc] init];
+    _fileActionService = [[UDFileActionService alloc] init];
     return self;
 }
 
@@ -78,31 +83,11 @@
     [_browser setSeparatesColumns:YES];
     [_browser setTitled:YES];
 
-    /* Add the game selection PopUpButton dynamically on the right side of buttonBar */
-    NSView *buttonBar = [_openButton superview];
-    if (buttonBar) {
-        NSRect frame = NSMakeRect(buttonBar.bounds.size.width - 210, 3, 200, 22);
-        NSPopUpButton *gamePopUp = [[NSPopUpButton alloc] initWithFrame:frame pullsDown:NO];
-        [gamePopUp setAutoresizingMask:NSViewMinXMargin];
-
-        [gamePopUp addItemWithTitle:@"Auto Detect"];
-        [gamePopUp addItemWithTitle:@"Quake 1"];
-        [gamePopUp addItemWithTitle:@"Quake 2"];
-        [gamePopUp addItemWithTitle:@"Daikatana"];
-        [gamePopUp addItemWithTitle:@"Quake 3"];
-        [gamePopUp addItemWithTitle:@"Doom 3"];
-
-        [gamePopUp setTarget:self];
-        [gamePopUp setAction:@selector(gameChanged:)];
-
-        [buttonBar addSubview:gamePopUp];
-        _gamePopUpButton = gamePopUp;
-    }
-
     /* Auto detect game and set popup item title */
     [self _detectGame];
+    _activeGame = _detectedGame;
     if (_gamePopUpButton) {
-        [[_gamePopUpButton itemAtIndex:0] setTitle:[NSString stringWithFormat:@"Auto Detect (%@)", _detectedGame]];
+        [[_gamePopUpButton itemAtIndex:0] setTitle:[NSString stringWithFormat:@"Auto Detect (%@)", _detectedGame.displayName]];
     }
 
     /* Populate the tree. */
@@ -494,9 +479,9 @@ willDisplayCell:(id)cell
         return;
     }
 
-    /* Extract to a per-archive temporary path, then open with the OS or custom tool. */
+    /* Extract to a per-archive temporary path, then open with the action service. */
     NSString *tempBase = [NSTemporaryDirectory()
-                          stringByAppendingPathComponent:@"UDArchivist"];
+                         stringByAppendingPathComponent:@"UDArchivist"];
     NSString *tempPath = [tempBase stringByAppendingPathComponent:selPath];
     NSURL    *tempURL  = [NSURL fileURLWithPath:tempPath];
 
@@ -512,8 +497,8 @@ willDisplayCell:(id)cell
 
     NSData *data = [_archiveDocument.editor
         contentForEntryAtPath:selPath
-                        range:NSMakeRange(0, (NSUInteger)entry.size)
-                        error:&err];
+                       range:NSMakeRange(0, (NSUInteger)entry.size)
+                       error:&err];
     if (!data) {
         [[NSAlert alertWithError:err] runModal];
         return;
@@ -523,183 +508,29 @@ willDisplayCell:(id)cell
         return;
     }
 
-    NSString *ext = [selPath pathExtension].lowercaseString;
-
-    // 1. Check if the file is plain text data (built-in previewer)
-    if ([UDArchiveBrowserController isPlainTextData:data extension:ext]) {
-        NSString *textString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        if (!textString) {
-            textString = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-        }
-        if (textString) {
-            _activeTextPreview = [[UDTextPreviewController alloc] initWithText:textString title:selPath];
-            [NSApp beginSheet:[_activeTextPreview window]
-               modalForWindow:[self window]
-                modalDelegate:self
-               didEndSelector:@selector(textPreviewSheetDidEnd:returnCode:contextInfo:)
-                  contextInfo:NULL];
-            return;
-        }
-    }
-
-    // 2. Check Custom Mappings from user preferences
-    NSString *cmdTemplate = [self _customCommandForExtension:ext];
-    if (cmdTemplate.length > 0) {
-        NSString *cmd = [cmdTemplate stringByReplacingOccurrencesOfString:@"%f" withString:tempPath];
-        @try {
-            NSTask *task = [[NSTask alloc] init];
-            [task setLaunchPath:@"/bin/sh"];
-            [task setArguments:@[@"-c", cmd]];
-            [task launch];
-            return;
-        } @catch (NSException *exception) {
-            NSLog(@"Failed to launch custom command '%@': %@", cmd, exception);
-        }
-    }
-
-    // 3. Fallback to NSWorkspace openFile
-    BOOL success = [[NSWorkspace sharedWorkspace] openFile:tempPath];
-    if (!success) {
-        // 4. GNUstep/Linux fallback: xdg-open
-        NSFileManager *fm = [NSFileManager defaultManager];
-        if ([fm fileExistsAtPath:@"/usr/bin/xdg-open"] || [fm fileExistsAtPath:@"/usr/local/bin/xdg-open"]) {
-            @try {
-                NSTask *task = [[NSTask alloc] init];
-                [task setLaunchPath:@"/usr/bin/xdg-open"];
-                [task setArguments:@[tempPath]];
-                [task launch];
-            } @catch (NSException *exception) {
-                NSLog(@"Failed to launch xdg-open: %@", exception);
-                NSAlert *alert = [[NSAlert alloc] init];
-                [alert setMessageText:@"Failed to Open File"];
-                [alert setInformativeText:[NSString stringWithFormat:@"Neither the default application nor xdg-open could open '%@'.", selPath.lastPathComponent]];
-                [alert addButtonWithTitle:@"OK"];
-                [alert runModal];
-            }
-        } else {
-            NSAlert *alert = [[NSAlert alloc] init];
-            [alert setMessageText:@"Failed to Open File"];
-            [alert setInformativeText:[NSString stringWithFormat:@"No application associated with '%@'. Configure a custom helper in preferences.", ext]];
-            [alert addButtonWithTitle:@"OK"];
-            [alert runModal];
-        }
-    }
+    _activeTextPreview = [_fileActionService openFileAtPath:tempPath
+                                                  withData:data
+                                              parentWindow:[self window]
+                                             modalDelegate:self
+                                            didEndSelector:@selector(textPreviewSheetDidEnd:returnCode:contextInfo:)];
 }
 
 - (IBAction)gameChanged:(id)sender {
     NSInteger index = [_gamePopUpButton indexOfSelectedItem];
     if (index == 0) {
         [self _detectGame];
+        _activeGame = _detectedGame;
     } else {
-        _detectedGame = [_gamePopUpButton titleOfSelectedItem];
+        _activeGame = [UDGame gameWithDisplayName:[_gamePopUpButton titleOfSelectedItem]];
     }
-    NSLog(@"Active game profile set to: %@", _detectedGame);
+    NSLog(@"Active game profile set to: %@", _activeGame.displayName);
 }
 
 - (void)_detectGame {
-    NSURL *url = _archiveDocument.fileURL;
-    NSString *detected = nil;
-
-    // 1. Analyze parent directory name
-    if (url) {
-        NSString *parentDirName = [[url.path stringByDeletingLastPathComponent] lastPathComponent].lowercaseString;
-        if ([parentDirName isEqualToString:@"id1"]) {
-            detected = @"Quake 1";
-        } else if ([parentDirName isEqualToString:@"baseq2"] || [parentDirName isEqualToString:@"rogue"] || [parentDirName isEqualToString:@"xatrix"]) {
-            detected = @"Quake 2";
-        } else if ([parentDirName isEqualToString:@"baseq3"] || [parentDirName isEqualToString:@"missionpack"]) {
-            detected = @"Quake 3";
-        } else if ([parentDirName isEqualToString:@"base"] || [parentDirName isEqualToString:@"d3xp"]) {
-            detected = @"Doom 3";
-        } else if ([parentDirName isEqualToString:@"data"]) {
-            detected = @"Daikatana";
-        }
-    }
-
-    // 2. Analyze filename if not detected yet
-    if (!detected && url) {
-        NSString *ext = url.pathExtension.lowercaseString;
-        if ([ext isEqualToString:@"pk4"]) {
-            detected = @"Doom 3";
-        } else if ([ext isEqualToString:@"pk3"]) {
-            detected = @"Quake 3";
-        }
-    }
-
-    // 3. Analyze internal file structure by probing entry paths
-    if (!detected) {
-        NSArray *entries = _archiveDocument.editor.currentEntries;
-        NSUInteger walCount = 0;
-        NSUInteger mtrCount = 0;
-        NSUInteger d3Folders = 0;
-        NSUInteger q2Folders = 0;
-
-        for (UDArchiveEntry *entry in entries) {
-            NSString *path = entry.path.lowercaseString;
-            if ([path hasSuffix:@".wal"]) {
-                walCount++;
-            } else if ([path hasSuffix:@".mtr"] || [path hasSuffix:@".def"] || [path hasSuffix:@".script"]) {
-                mtrCount++;
-            }
-            if ([path hasPrefix:@"materials/"] || [path hasPrefix:@"def/"] || [path hasPrefix:@"script/"]) {
-                d3Folders++;
-            }
-            if ([path hasPrefix:@"pics/"] || [path hasPrefix:@"players/"]) {
-                q2Folders++;
-            }
-        }
-
-        if (d3Folders > 0 || mtrCount > 0) {
-            detected = @"Doom 3";
-        } else if (walCount > 0 || q2Folders > 0) {
-            detected = @"Quake 2";
-        } else if ([_archiveDocument.codec.formatIdentifier isEqualToString:@"com.udquake.daikatana-pak"]) {
-            detected = @"Daikatana";
-        }
-    }
-
-    if (!detected) {
-        detected = @"Quake 1"; // Default fallback for pak files
-    }
-
-    _detectedGame = detected;
-    NSLog(@"Auto-detected game: %@", _detectedGame);
-}
-
-- (nullable NSString *)_customCommandForExtension:(NSString *)ext {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary *associations = [defaults dictionaryForKey:@"UDCustomFileAssociations"];
-    if (associations) {
-        return [associations objectForKey:[ext lowercaseString]];
-    }
-    return nil;
-}
-
-+ (BOOL)isPlainTextData:(NSData *)data extension:(NSString *)ext {
-    static NSArray *textExts = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        textExts = @[@"txt", @"cfg", @"mtr", @"def", @"script", @"shader", @"rc", @"menu", @"qc", @"lst", @"font", @"skin", @"map", @"ini", @"json"];
-    });
-    if ([textExts containsObject:[ext lowercaseString]]) {
-        return YES;
-    }
-
-    NSUInteger len = MIN(data.length, 512);
-    if (len == 0) {
-        return YES;
-    }
-    const char *bytes = data.bytes;
-    for (NSUInteger i = 0; i < len; i++) {
-        char c = bytes[i];
-        if (c == '\0') {
-            return NO;
-        }
-        if ((unsigned char)c < 32 && c != '\t' && c != '\n' && c != '\r') {
-            return NO;
-        }
-    }
-    return YES;
+    _detectedGame = [_gameDetectionService detectGameForURL:_archiveDocument.fileURL
+                                                   entries:_archiveDocument.editor.currentEntries
+                                           codecIdentifier:_archiveDocument.codec.formatIdentifier];
+    NSLog(@"Auto-detected game: %@", _detectedGame.displayName);
 }
 
 - (void)textPreviewSheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo {

@@ -13,6 +13,7 @@
                 <outlet property="deleteButton" destination="BTN-DEL" id="CO-05"/>
                 <outlet property="extractButton" destination="BTN-EXT" id="CO-06"/>
                 <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
+                <outlet property="gamePopUpButton" destination="POP-GME" id="CO-08"/>
                 <outlet property="statusLabel" destination="STL-01" id="CO-03"/>
                 <outlet property="window" destination="WND-01" id="CO-01"/>
             </connections>
@@ -92,6 +93,27 @@
                                     <action selector="openSelected:" target="-2" id="BTN-OPN-act"/>
                                 </connections>
                             </button>
+                            <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-GME">
+                                <rect key="frame" x="540" y="4" width="200" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                <popUpButtonCell key="cell" type="push" title="Auto Detect" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-GME-cell">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <menu key="menu" id="POP-GME-menu">
+                                        <items>
+                                            <menuItem title="Auto Detect" id="POP-GME-item0"/>
+                                            <menuItem title="Quake 1" id="POP-GME-item1"/>
+                                            <menuItem title="Quake 2" id="POP-GME-item2"/>
+                                            <menuItem title="Daikatana" id="POP-GME-item3"/>
+                                            <menuItem title="Quake 3" id="POP-GME-item4"/>
+                                            <menuItem title="Doom 3" id="POP-GME-item5"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="gameChanged:" target="-2" id="POP-GME-act"/>
+                                </connections>
+                            </popUpButton>
                         </subviews>
                     </view>
                 </subviews>

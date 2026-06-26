@@ -12,6 +12,9 @@
 @class UDArchiveDocument;
 @class UDDirectoryNode;
 @class UDTextPreviewController;
+@class UDGame;
+@class UDGameDetectionService;
+@class UDFileActionService;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,13 +25,17 @@ NS_ASSUME_NONNULL_BEGIN
     __weak IBOutlet NSButton     *_deleteButton;
     __weak IBOutlet NSButton     *_extractButton;
     __weak IBOutlet NSButton     *_openButton;
+    __weak IBOutlet NSPopUpButton *_gamePopUpButton;
 
     UDArchiveDocument *_archiveDocument;
     UDDirectoryNode   *_rootNode;
 
-    NSPopUpButton           *_gamePopUpButton;
-    NSString                *_detectedGame;
+    UDGame                  *_activeGame;
+    UDGame                  *_detectedGame;
     UDTextPreviewController *_activeTextPreview;
+
+    UDGameDetectionService  *_gameDetectionService;
+    UDFileActionService     *_fileActionService;
 }
 
 @property (nonatomic, weak) IBOutlet NSBrowser    *browser;
@@ -37,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSButton     *deleteButton;
 @property (nonatomic, weak) IBOutlet NSButton     *extractButton;
 @property (nonatomic, weak) IBOutlet NSButton     *openButton;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *gamePopUpButton;
 
 - (instancetype)initWithDocument:(UDArchiveDocument *)document;
 
@@ -48,8 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)extractSelected:(id)sender;
 - (IBAction)openSelected:(id)sender;
 - (IBAction)gameChanged:(id)sender;
-
-+ (BOOL)isPlainTextData:(NSData *)data extension:(NSString *)ext;
 
 @end
 

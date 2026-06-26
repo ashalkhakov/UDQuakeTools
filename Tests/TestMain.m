@@ -3,6 +3,7 @@
 BOOL UDRunArchiveEntryTests(void);
 BOOL UDRunPAKCodecTests(void);
 BOOL UDRunPK3CodecTests(void);
+BOOL UDRunGameDetectionTests(void);
 
 int main(void) {
     @autoreleasepool {
@@ -10,6 +11,7 @@ int main(void) {
         success = UDRunArchiveEntryTests() && success;
         success = UDRunPAKCodecTests() && success;
         success = UDRunPK3CodecTests() && success;
+        success = UDRunGameDetectionTests() && success;
 
         if (success) {
             printf("All tests passed.\n");

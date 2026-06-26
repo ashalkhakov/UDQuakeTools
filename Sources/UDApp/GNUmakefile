@@ -1,6 +1,6 @@
-OBJC_RUNTIME_LIB = ng
-RUNTIME_VERSION = gnustep-2.0
-GS_WITH_ARC = 1
+# OBJC_RUNTIME_LIB = ng
+# RUNTIME_VERSION = gnustep-2.0
+# GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -15,6 +15,9 @@ UDArchivist_OBJC_FILES = \
     UDArchiveDocument.m \
     UDArchiveBrowserController.m \
     UDTextPreviewController.m \
+    UDFileActionService.m \
+    ../UDCore/UDGame.m \
+    ../UDCore/UDGameDetectionService.m \
     ../UDCore/UDArchive.m \
     ../UDCore/UDArchiveEntry.m \
     ../UDCore/UDDirectoryNode.m \
@@ -40,7 +43,9 @@ UDArchivist_RESOURCE_FILES = \
 
 UDArchivist_LIBRARIES = objc gnustep-base gnustep-gui
 
-ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_LDFLAGS   += -L$(GCC_LIB_DIR) -lzip
+# ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
+ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep
+ADDITIONAL_LDFLAGS   += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base
+ADDITIONAL_APP_LIBS += -lgnustep-base
 
 include $(GNUSTEP_MAKEFILES)/application.make

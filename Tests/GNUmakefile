@@ -1,6 +1,6 @@
-OBJC_RUNTIME_LIB = ng
-RUNTIME_VERSION = gnustep-2.0
-GS_WITH_ARC = 1
+# OBJC_RUNTIME_LIB = ng
+# RUNTIME_VERSION = gnustep-2.0
+# GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -14,6 +14,9 @@ udquaketools-tests_OBJC_FILES = \
     UDArchiveEntryTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
+    UDGameDetectionTests.m \
+    ../Sources/UDCore/UDGame.m \
+    ../Sources/UDCore/UDGameDetectionService.m \
     ../Sources/UDCore/UDArchive.m \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDFormats/UDCodecRegistry.m \
@@ -29,7 +32,9 @@ udquaketools-tests_INCLUDE_DIRS = \
 
 udquaketools-tests_LIBRARIES = objc gnustep-base
 # ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_LDFLAGS += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip
+ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep
+ADDITIONAL_LDFLAGS += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base
+ADDITIONAL_TOOL_LIBS += -lgnustep-base
 
 .PHONY: run-tests
 run-tests: all

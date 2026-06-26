@@ -94,7 +94,7 @@
                                     <action selector="openSelected:" target="-2" id="BTN-OPN-act"/>
                                 </connections>
                             </button>
-                            <searchField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
+                            <searchField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
                                 <rect key="frame" x="320" y="3" width="210" height="22"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search..." bezelStyle="round" id="SRH-01-cell">

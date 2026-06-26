@@ -87,12 +87,12 @@ jobs:
 
       - name: Build macOS App with Xcode
         run: |
-          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release -derivedDataPath Build CODE_SIGN_IDENTITY="-"
+          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release SYMROOT=Build CODE_SIGN_IDENTITY="-"
 
       - name: Package macOS App
         run: |
-          cd Build/Build/Products/Release
-          zip -r ../../../../PakManager-macOS.zip "Pak Manager.app"
+          cd Build/Release
+          zip -r ../../PakManager-macOS.zip "Pak Manager.app"
 
       - name: Upload macOS App Artifact
         uses: actions/upload-artifact@v4

@@ -83,6 +83,17 @@
     [_browser setSeparatesColumns:YES];
     [_browser setTitled:YES];
 
+    /* Add NSSearchField programmatically to the toolbar. */
+    NSView *toolbar = [_addButton superview];
+    if (toolbar) {
+        NSSearchField *searchField = [[NSSearchField alloc] initWithFrame:NSMakeRect(320, 3, 210, 22)];
+        [searchField setPlaceholderString:@"Search..."];
+        [searchField setTarget:self];
+        [searchField setAction:@selector(searchChanged:)];
+        [searchField setAutoresizingMask:NSViewWidthSizable];
+        [toolbar addSubview:searchField];
+    }
+
     /* Auto detect game and set popup item title */
     [self _detectGame];
     _activeGame = _detectedGame;
@@ -94,11 +105,26 @@
     [self _reloadBrowser];
 }
 
+- (void)searchChanged:(id)sender {
+    _searchString = [sender stringValue];
+    [self _reloadBrowser];
+}
+
 /* ------------------------------------------------------------------ */
 #pragma mark - Tree management
 
 - (void)_reloadBrowser {
     NSArray *entries = _archiveDocument.editor.currentEntries;
+    if (_searchString && _searchString.length > 0) {
+        NSMutableArray *filtered = [NSMutableArray array];
+        for (UDArchiveEntry *entry in entries) {
+            NSRange r = [entry.path rangeOfString:_searchString options:NSCaseInsensitiveSearch];
+            if (r.location != NSNotFound) {
+                [filtered addObject:entry];
+            }
+        }
+        entries = filtered;
+    }
     _rootNode = [UDDirectoryNode rootNodeFromEntries:entries];
     [_browser loadColumnZero];
     [self _updateStatusAndButtons];

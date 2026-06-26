@@ -14,6 +14,7 @@
                 <outlet property="extractButton" destination="BTN-EXT" id="CO-06"/>
                 <outlet property="gamePopUpButton" destination="POP-GME" id="CO-08"/>
                 <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
+                <outlet property="searchField" destination="SRH-01" id="CO-09"/>
                 <outlet property="statusLabel" destination="STL-01" id="CO-03"/>
                 <outlet property="window" destination="WND-01" id="CO-01"/>
             </connections>
@@ -93,6 +94,18 @@
                                     <action selector="openSelected:" target="-2" id="BTN-OPN-act"/>
                                 </connections>
                             </button>
+                            <searchField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
+                                <rect key="frame" x="320" y="3" width="210" height="22"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search..." bezelStyle="round" id="SRH-01-cell">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </searchFieldCell>
+                                <connections>
+                                    <action selector="searchChanged:" target="-2" id="SRH-01-act"/>
+                                </connections>
+                            </searchField>
                             <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-GME">
                                 <rect key="frame" x="540" y="4" width="200" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>

@@ -50,6 +50,7 @@
 @synthesize extractButton   = _extractButton;
 @synthesize openButton      = _openButton;
 @synthesize gamePopUpButton = _gamePopUpButton;
+@synthesize searchField     = _searchField;
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Init
@@ -82,17 +83,6 @@
     [_browser setAllowsMultipleSelection:NO];
     [_browser setSeparatesColumns:YES];
     [_browser setTitled:YES];
-
-    /* Add NSSearchField programmatically to the toolbar. */
-    NSView *toolbar = [_addButton superview];
-    if (toolbar) {
-        NSSearchField *searchField = [[NSSearchField alloc] initWithFrame:NSMakeRect(320, 3, 210, 22)];
-        [searchField setPlaceholderString:@"Search..."];
-        [searchField setTarget:self];
-        [searchField setAction:@selector(searchChanged:)];
-        [searchField setAutoresizingMask:NSViewWidthSizable];
-        [toolbar addSubview:searchField];
-    }
 
     /* Auto detect game and set popup item title */
     [self _detectGame];

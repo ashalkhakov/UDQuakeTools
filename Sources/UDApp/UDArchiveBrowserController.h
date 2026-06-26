@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak IBOutlet NSButton     *_extractButton;
     __weak IBOutlet NSButton     *_openButton;
     __weak IBOutlet NSPopUpButton *_gamePopUpButton;
+    __weak IBOutlet NSSearchField *_searchField;
 
     UDArchiveDocument *_archiveDocument;
     UDDirectoryNode   *_rootNode;
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSButton     *extractButton;
 @property (nonatomic, weak) IBOutlet NSButton     *openButton;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *gamePopUpButton;
+@property (nonatomic, weak) IBOutlet NSSearchField *searchField;
 
 - (instancetype)initWithDocument:(UDArchiveDocument *)document;
 

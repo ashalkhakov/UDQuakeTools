@@ -43,9 +43,9 @@ UDArchivist_RESOURCE_FILES = \
 
 UDArchivist_LIBRARIES = objc gnustep-base gnustep-gui
 
-# ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep
-ADDITIONAL_LDFLAGS   += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base
+ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
+ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep -D__weak= -Dweak=assign -fblocks
+ADDITIONAL_LDFLAGS   += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base -lBlocksRuntime
 ADDITIONAL_APP_LIBS += -lgnustep-base
 
 include $(GNUSTEP_MAKEFILES)/application.make

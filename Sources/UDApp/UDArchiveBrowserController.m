@@ -130,7 +130,7 @@
     if (selectedRow < 0 || selectedRow >= (NSInteger)parentNode.children.count) {
         return nil;
     }
-    return parentNode.children[(NSUInteger)selectedRow];
+    return [parentNode.children objectAtIndex:(NSUInteger)selectedRow];
 }
 
 /**
@@ -152,7 +152,7 @@
         if (row >= (NSInteger)parentNode.children.count) {
             continue;
         }
-        return parentNode.children[(NSUInteger)row];
+        return [parentNode.children objectAtIndex:(NSUInteger)row];
     }
     return nil;
 }
@@ -275,7 +275,7 @@ willDisplayCell:(id)cell
         return;
     }
 
-    id child = parentNode.children[(NSUInteger)row];
+    id child = [parentNode.children objectAtIndex:(NSUInteger)row];
     NSString *title;
     BOOL      isLeaf;
 

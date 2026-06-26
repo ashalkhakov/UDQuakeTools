@@ -64,7 +64,7 @@
         NSRect buttonFrame = NSMakeRect(500, 10, 90, 28);
         NSButton *closeButton = [[NSButton alloc] initWithFrame:buttonFrame];
         [closeButton setTitle:@"Close"];
-        [closeButton setBezelStyle:NSBezelStylePush];
+        [closeButton setBezelStyle:NSRoundedBezelStyle];
         [closeButton setTarget:self];
         [closeButton setAction:@selector(closePreview:)];
         [closeButton setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];

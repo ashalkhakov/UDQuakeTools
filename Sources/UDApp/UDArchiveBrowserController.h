@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UDGameDetectionService  *_gameDetectionService;
     UDFileActionService     *_fileActionService;
+    NSString                *_searchString;
 }
 
 @property (nonatomic, weak) IBOutlet NSBrowser    *browser;

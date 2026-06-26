@@ -69,10 +69,12 @@
         } else {
             /* Entry lives in a sub-directory of this node. */
             NSString *dirName = [relative substringToIndex:slashRange.location];
-            if (!dirMap[dirName]) {
-                dirMap[dirName] = [NSMutableArray array];
+            NSMutableArray *dirArray = [dirMap objectForKey:dirName];
+            if (!dirArray) {
+                dirArray = [NSMutableArray array];
+                [dirMap setObject:dirArray forKey:dirName];
             }
-            [dirMap[dirName] addObject:entry];
+            [dirArray addObject:entry];
         }
     }
 

@@ -4,8 +4,16 @@
  */
 
 #import <AppKit/AppKit.h>
+#import "UDAppDelegate.h"
 
 int main(int argc, const char *argv[])
 {
+#ifndef GNUSTEP
+    @autoreleasepool {
+        [NSApplication sharedApplication];
+        UDAppDelegate *delegate = [[UDAppDelegate alloc] init];
+        [NSApp setDelegate:delegate];
+    }
+#endif
     return NSApplicationMain(argc, argv);
 }

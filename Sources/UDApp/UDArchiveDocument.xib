@@ -12,8 +12,8 @@
                 <outlet property="browser" destination="BRW-01" id="CO-02"/>
                 <outlet property="deleteButton" destination="BTN-DEL" id="CO-05"/>
                 <outlet property="extractButton" destination="BTN-EXT" id="CO-06"/>
-                <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
                 <outlet property="gamePopUpButton" destination="POP-GME" id="CO-08"/>
+                <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
                 <outlet property="statusLabel" destination="STL-01" id="CO-03"/>
                 <outlet property="window" destination="WND-01" id="CO-01"/>
             </connections>
@@ -96,9 +96,9 @@
                             <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-GME">
                                 <rect key="frame" x="540" y="4" width="200" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Auto Detect" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-GME-cell">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-GME-cell">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="POP-GME-menu">
                                         <items>
                                             <menuItem title="Auto Detect" id="POP-GME-item0"/>

@@ -11,7 +11,6 @@
 		AA01000100000000000000AA /* UDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010100000000000000AA /* UDAppDelegate.m */; };
 		AA01000200000000000000AA /* UDArchiveDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010200000000000000AA /* UDArchiveDocument.m */; };
 		AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010300000000000000AA /* UDArchiveBrowserController.m */; };
-		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
 		AA01000400000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
 		AA01000500000000000000AA /* UDArchiveEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010500000000000000AA /* UDArchiveEditor.m */; };
 		AA01000600000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
@@ -26,6 +25,7 @@
 		AA01000F00000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
 		AA01001000000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
 		AA01001100000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
+		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
 		AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA00030100000000000000AA /* UDArchiveDocument.xib */; };
 		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
@@ -41,6 +41,9 @@
 		AA02000A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
 		AA02001000000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
 		CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */; };
+		CE1151622FEE7744005C6DA3 /* UDFileActionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151612FEE7744005C6DA3 /* UDFileActionService.m */; };
+		CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
+		CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,8 +51,6 @@
 		AA00010100000000000000AA /* UDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDelegate.m; sourceTree = "<group>"; };
 		AA00010200000000000000AA /* UDArchiveDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveDocument.m; sourceTree = "<group>"; };
 		AA00010300000000000000AA /* UDArchiveBrowserController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveBrowserController.m; sourceTree = "<group>"; };
-		AA00012000000000000000AA /* UDTextPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPreviewController.m; sourceTree = "<group>"; };
-		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00010400000000000000AA /* UDArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchive.m; sourceTree = "<group>"; };
 		AA00010500000000000000AA /* UDArchiveEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditor.m; sourceTree = "<group>"; };
 		AA00010600000000000000AA /* UDArchiveEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntry.m; sourceTree = "<group>"; };
@@ -64,6 +65,7 @@
 		AA00010F00000000000000AA /* UDPK3Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3Codec.m; sourceTree = "<group>"; };
 		AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3ZIPEntrySource.m; sourceTree = "<group>"; };
 		AA00011100000000000000AA /* UDPK4Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK4Codec.m; sourceTree = "<group>"; };
+		AA00012000000000000000AA /* UDTextPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPreviewController.m; sourceTree = "<group>"; };
 		AA00020000000000000000AA /* UDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAppDelegate.h; sourceTree = "<group>"; };
 		AA00020100000000000000AA /* UDArchiveDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveDocument.h; sourceTree = "<group>"; };
 		AA00020200000000000000AA /* UDArchiveBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveBrowserController.h; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		AA00021000000000000000AA /* UDPK3Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK3Codec.h; sourceTree = "<group>"; };
 		AA00021100000000000000AA /* UDPK3ZIPEntrySource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK3ZIPEntrySource.h; sourceTree = "<group>"; };
 		AA00021200000000000000AA /* UDPK4Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK4Codec.h; sourceTree = "<group>"; };
+		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
 		AA00030200000000000000AA /* UDArchivist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDArchivist-Info.plist"; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -91,6 +94,12 @@
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		CE1151602FEE7744005C6DA3 /* UDFileActionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFileActionService.h; sourceTree = "<group>"; };
+		CE1151612FEE7744005C6DA3 /* UDFileActionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFileActionService.m; sourceTree = "<group>"; };
+		CE1151632FEE7777005C6DA3 /* UDGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGame.h; sourceTree = "<group>"; };
+		CE1151642FEE7777005C6DA3 /* UDGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGame.m; sourceTree = "<group>"; };
+		CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameDetectionService.h; sourceTree = "<group>"; };
+		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +146,8 @@
 		AA00000400000000000000AA /* UDApp */ = {
 			isa = PBXGroup;
 			children = (
+				CE1151602FEE7744005C6DA3 /* UDFileActionService.h */,
+				CE1151612FEE7744005C6DA3 /* UDFileActionService.m */,
 				AA00020000000000000000AA /* UDAppDelegate.h */,
 				AA00010100000000000000AA /* UDAppDelegate.m */,
 				AA00020100000000000000AA /* UDArchiveDocument.h */,
@@ -157,6 +168,10 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
+				CE1151632FEE7777005C6DA3 /* UDGame.h */,
+				CE1151642FEE7777005C6DA3 /* UDGame.m */,
+				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
+				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
 				AA00020300000000000000AA /* UDArchive.h */,
 				AA00010400000000000000AA /* UDArchive.m */,
 				AA00020400000000000000AA /* UDArchiveEditor.h */,
@@ -315,6 +330,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE1151622FEE7744005C6DA3 /* UDFileActionService.m in Sources */,
 				AA01000000000000000000AA /* main.m in Sources */,
 				AA01000100000000000000AA /* UDAppDelegate.m in Sources */,
 				AA01000200000000000000AA /* UDArchiveDocument.m in Sources */,
@@ -331,6 +347,8 @@
 				AA01000C00000000000000AA /* UDStagedFileSource.m in Sources */,
 				AA01000D00000000000000AA /* UDPAK2Codec.m in Sources */,
 				AA01000E00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */,
+				CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */,
 				AA01000F00000000000000AA /* UDPK3Codec.m in Sources */,
 				AA01001000000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
 				AA01001100000000000000AA /* UDPK4Codec.m in Sources */,

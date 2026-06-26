@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+#import <XCTest/XCTest.h>
 #include <zip.h>
 
 #import "UDArchive.h"
@@ -7,16 +7,13 @@
 #import "UDPK4Codec.h"
 #import "UDPK3ZIPEntrySource.h"
 
-static BOOL UDZIPCheck(BOOL condition, NSString *message) {
-    if (!condition) {
-        fprintf(stderr, "FAIL: %s\n", message.UTF8String);
-        return NO;
-    }
-    return YES;
-}
+@interface UDPK3CodecTests : XCTestCase
+@end
+
+@implementation UDPK3CodecTests
 
 /* Write data to a temporary file and return its URL. */
-static NSURL *UDZIPWriteTempFile(NSData *data, NSString *suffix) {
+- (NSURL *)writeTempFileWithData:(NSData *)data suffix:(NSString *)suffix {
     NSString *name = [NSString stringWithFormat:@"udquake-ziptest-%@-%@",
                       [[NSUUID UUID] UUIDString], suffix];
     NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:name];
@@ -35,7 +32,7 @@ static NSURL *UDZIPWriteTempFile(NSData *data, NSString *suffix) {
  *
  * We use libzip to create the in-memory archive so the test does not
  * depend on an external tool. */
-static NSData *UDMakeTestZIPData(void) {
+- (NSData *)makeTestZIPData {
     zip_source_t *src = zip_source_buffer_create(NULL, 0, 0, NULL);
     if (!src) {
         return nil;
@@ -90,36 +87,34 @@ static NSData *UDMakeTestZIPData(void) {
     return data;
 }
 
-BOOL UDRunPK3CodecTests(void) {
-    BOOL ok = YES;
-
-    NSData *zipData = UDMakeTestZIPData();
-    ok = UDZIPCheck(zipData != nil, @"Test setup: ZIP data should be created") && ok;
+- (void)testPK3Codec {
+    NSData *zipData = [self makeTestZIPData];
+    XCTAssertNotNil(zipData, @"Test setup: ZIP data should be created");
     if (!zipData) {
-        return NO;
+        return;
     }
 
     /* ---- PK3 ---- */
-    NSURL *pk3URL = UDZIPWriteTempFile(zipData, @"sample.pk3");
-    ok = UDZIPCheck(pk3URL != nil, @"Test setup: PK3 temp file should be created") && ok;
+    NSURL *pk3URL = [self writeTempFileWithData:zipData suffix:@"sample.pk3"];
+    XCTAssertNotNil(pk3URL, @"Test setup: PK3 temp file should be created");
 
     UDPK3Codec *pk3Codec = [[UDPK3Codec alloc] init];
-    ok = UDZIPCheck([pk3Codec canReadURL:pk3URL], @"UDPK3Codec should recognise .pk3 extension") && ok;
+    XCTAssertTrue([pk3Codec canReadURL:pk3URL], @"UDPK3Codec should recognise .pk3 extension");
 
     NSError *err = nil;
     UDArchive *pk3Archive = [pk3Codec readArchiveFromURL:pk3URL error:&err];
-    ok = UDZIPCheck(err == nil,        @"UDPK3Codec should parse valid PK3 without error") && ok;
-    ok = UDZIPCheck(pk3Archive != nil, @"UDPK3Codec should return an archive") && ok;
+    XCTAssertNil(err,        @"UDPK3Codec should parse valid PK3 without error");
+    XCTAssertNotNil(pk3Archive, @"UDPK3Codec should return an archive");
 
     if (pk3Archive) {
-        ok = UDZIPCheck([pk3Archive.displayName hasSuffix:@"sample.pk3"],
-                        @"PK3 archive displayName should match filename") && ok;
-        ok = UDZIPCheck(pk3Archive.entries.count == 2,
-                        @"PK3 archive should contain 2 entries") && ok;
+        XCTAssertTrue([pk3Archive.displayName hasSuffix:@"sample.pk3"],
+                        @"PK3 archive displayName should match filename");
+        XCTAssertEqual(pk3Archive.entries.count, 2U,
+                        @"PK3 archive should contain 2 entries");
 
         NSString *game = [pk3Archive.metadata objectForKey:@"game"];
-        ok = UDZIPCheck([game isEqualToString:@"quake3"],
-                        @"PK3 archive metadata game should be quake3") && ok;
+        XCTAssertEqualObjects(game, @"quake3",
+                        @"PK3 archive metadata game should be quake3");
 
         /* Find entries by path. */
         UDArchiveEntry *bspEntry = nil;
@@ -132,79 +127,76 @@ BOOL UDRunPK3CodecTests(void) {
             }
         }
 
-        ok = UDZIPCheck(bspEntry != nil,    @"PK3 should have maps/q3dm1.bsp entry") && ok;
-        ok = UDZIPCheck(shaderEntry != nil, @"PK3 should have scripts/base.shader entry") && ok;
+        XCTAssertNotNil(bspEntry,    @"PK3 should have maps/q3dm1.bsp entry");
+        XCTAssertNotNil(shaderEntry, @"PK3 should have scripts/base.shader entry");
 
         if (bspEntry) {
-            ok = UDZIPCheck(bspEntry.size == 9,
-                            @"PK3 bsp entry size should be 9") && ok;
-            ok = UDZIPCheck([bspEntry.name isEqualToString:@"q3dm1.bsp"],
-                            @"PK3 bsp entry name should be q3dm1.bsp") && ok;
+            XCTAssertEqual(bspEntry.size, 9ULL,
+                            @"PK3 bsp entry size should be 9");
+            XCTAssertEqualObjects(bspEntry.name, @"q3dm1.bsp",
+                            @"PK3 bsp entry name should be q3dm1.bsp");
 
             NSError *readErr = nil;
             NSData *payload = [bspEntry.source readAll:&readErr];
-            ok = UDZIPCheck(readErr == nil, @"PK3 bsp entry readAll should succeed") && ok;
-            ok = UDZIPCheck(payload != nil, @"PK3 bsp entry readAll should return data") && ok;
+            XCTAssertNil(readErr, @"PK3 bsp entry readAll should succeed");
+            XCTAssertNotNil(payload, @"PK3 bsp entry readAll should return data");
             if (payload) {
                 NSString *text = [[NSString alloc] initWithData:payload
                                                        encoding:NSASCIIStringEncoding];
-                ok = UDZIPCheck([text isEqualToString:@"hello pk3"],
-                                @"PK3 bsp entry payload should match") && ok;
+                XCTAssertEqualObjects(text, @"hello pk3",
+                                @"PK3 bsp entry payload should match");
             }
 
             /* readRange: slice test. */
             NSError *sliceErr = nil;
             NSData *slice = [bspEntry.source readRange:NSMakeRange(0, 5) error:&sliceErr];
-            ok = UDZIPCheck(sliceErr == nil, @"PK3 bsp entry readRange should succeed") && ok;
+            XCTAssertNil(sliceErr, @"PK3 bsp entry readRange should succeed");
             if (slice) {
                 NSString *sliceText = [[NSString alloc] initWithData:slice
                                                             encoding:NSASCIIStringEncoding];
-                ok = UDZIPCheck([sliceText isEqualToString:@"hello"],
-                                @"PK3 bsp entry readRange(0,5) should return 'hello'") && ok;
+                XCTAssertEqualObjects(sliceText, @"hello",
+                                @"PK3 bsp entry readRange(0,5) should return 'hello'");
             }
 
             /* Out-of-bounds range. */
             NSError *oobErr = nil;
             NSData *oob = [bspEntry.source readRange:NSMakeRange(8, 5) error:&oobErr];
-            ok = UDZIPCheck(oob == nil,    @"PK3 out-of-bounds readRange should return nil") && ok;
-            ok = UDZIPCheck(oobErr != nil, @"PK3 out-of-bounds readRange should set error") && ok;
+            XCTAssertNil(oob,    @"PK3 out-of-bounds readRange should return nil");
+            XCTAssertNotNil(oobErr, @"PK3 out-of-bounds readRange should set error");
         }
     }
 
     /* ---- PK4 ---- */
-    NSURL *pk4URL = UDZIPWriteTempFile(zipData, @"sample.pk4");
-    ok = UDZIPCheck(pk4URL != nil, @"Test setup: PK4 temp file should be created") && ok;
+    NSURL *pk4URL = [self writeTempFileWithData:zipData suffix:@"sample.pk4"];
+    XCTAssertNotNil(pk4URL, @"Test setup: PK4 temp file should be created");
 
     UDPK4Codec *pk4Codec = [[UDPK4Codec alloc] init];
-    ok = UDZIPCheck([pk4Codec canReadURL:pk4URL],
-                    @"UDPK4Codec should recognise .pk4 extension") && ok;
-    ok = UDZIPCheck(![pk3Codec canReadURL:pk4URL],
-                    @"UDPK3Codec should NOT claim a .pk4 file") && ok;
+    XCTAssertTrue([pk4Codec canReadURL:pk4URL],
+                    @"UDPK4Codec should recognise .pk4 extension");
+    XCTAssertFalse([pk3Codec canReadURL:pk4URL],
+                    @"UDPK3Codec should NOT claim a .pk4 file");
 
     NSError *pk4Err = nil;
     UDArchive *pk4Archive = [pk4Codec readArchiveFromURL:pk4URL error:&pk4Err];
-    ok = UDZIPCheck(pk4Err == nil,        @"UDPK4Codec should parse valid PK4 without error") && ok;
-    ok = UDZIPCheck(pk4Archive != nil,    @"UDPK4Codec should return an archive") && ok;
+    XCTAssertNil(pk4Err,        @"UDPK4Codec should parse valid PK4 without error");
+    XCTAssertNotNil(pk4Archive,    @"UDPK4Codec should return an archive");
 
     if (pk4Archive) {
         NSString *game = [pk4Archive.metadata objectForKey:@"game"];
-        ok = UDZIPCheck([game isEqualToString:@"doom3"],
-                        @"PK4 archive metadata game should be doom3") && ok;
-        ok = UDZIPCheck(pk4Archive.entries.count == 2,
-                        @"PK4 archive should contain 2 entries") && ok;
+        XCTAssertEqualObjects(game, @"doom3",
+                        @"PK4 archive metadata game should be doom3");
+        XCTAssertEqual(pk4Archive.entries.count, 2U,
+                        @"PK4 archive should contain 2 entries");
     }
 
     /* ---- Error case: bad file ---- */
     NSData *junk = [@"not a zip" dataUsingEncoding:NSASCIIStringEncoding];
-    NSURL *badURL = UDZIPWriteTempFile(junk, @"bad.pk3");
+    NSURL *badURL = [self writeTempFileWithData:junk suffix:@"bad.pk3"];
     NSError *badErr = nil;
     UDArchive *badArchive = [pk3Codec readArchiveFromURL:badURL error:&badErr];
-    ok = UDZIPCheck(badArchive == nil, @"UDPK3Codec should return nil for corrupt file") && ok;
-    ok = UDZIPCheck(badErr != nil,     @"UDPK3Codec should set error for corrupt file") && ok;
-
-    if (ok) {
-        printf("UDPK3CodecTests passed.\n");
-    }
-
-    return ok;
+    XCTAssertNil(badArchive, @"UDPK3Codec should return nil for corrupt file");
+    XCTAssertNotNil(badErr,     @"UDPK3Codec should set error for corrupt file");
 }
+
+@end
+

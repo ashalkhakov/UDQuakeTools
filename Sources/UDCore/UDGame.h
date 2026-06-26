@@ -16,7 +16,11 @@ typedef NS_ENUM(NSInteger, UDGameType) {
     UDGameTypeDoom3
 };
 
-@interface UDGame : NSObject
+@interface UDGame : NSObject {
+    UDGameType _type;
+    NSString *_displayName;
+    NSString *_identifier;
+}
 
 @property (nonatomic, readonly) UDGameType type;
 @property (nonatomic, readonly, copy) NSString *displayName;

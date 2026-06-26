@@ -7,6 +7,10 @@
 
 @implementation UDGame
 
+@synthesize type = _type;
+@synthesize displayName = _displayName;
+@synthesize identifier = _identifier;
+
 - (instancetype)initWithType:(UDGameType)type
                  displayName:(NSString *)displayName
                   identifier:(NSString *)identifier {
@@ -45,7 +49,7 @@
             return g;
         }
     }
-    return [self allGames][0]; // default to Unknown/Auto Detect
+    return [[self allGames] objectAtIndex:0]; // default to Unknown/Auto Detect
 }
 
 + (nullable UDGame *)gameWithDisplayName:(NSString *)displayName {

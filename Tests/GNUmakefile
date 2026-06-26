@@ -1,16 +1,11 @@
-# OBJC_RUNTIME_LIB = ng
-# RUNTIME_VERSION = gnustep-2.0
-# GS_WITH_ARC = 1
-
 include $(GNUSTEP_MAKEFILES)/common.make
 
 CC = clang
 GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
 
-TOOL_NAME = udquaketools-tests
+BUNDLE_NAME = UDQuakeToolsTests
 
-udquaketools-tests_OBJC_FILES = \
-    TestMain.m \
+UDQuakeToolsTests_OBJC_FILES = \
     UDArchiveEntryTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
@@ -26,18 +21,22 @@ udquaketools-tests_OBJC_FILES = \
     ../Sources/UDFormats/UDPK3ZIPEntrySource.m \
     ../Sources/UDFormats/UDPK4Codec.m
 
-udquaketools-tests_INCLUDE_DIRS = \
+UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
 
-udquaketools-tests_LIBRARIES = objc gnustep-base
-# ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep
-ADDITIONAL_LDFLAGS += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base
-ADDITIONAL_TOOL_LIBS += -lgnustep-base
+UDQuakeToolsTests_LIBRARIES = objc gnustep-base XCTest
+
+ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include -I/usr/local/include/GNUstep
+ADDITIONAL_LDFLAGS += -L$(GCC_LIB_DIR) -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lzip -lgnustep-base -lXCTest
+
+XCTEST ?= xctest
 
 .PHONY: run-tests
-run-tests: all
-	./obj/udquaketools-tests
+run-tests: all $(BUNDLE_NAME).bundle
+	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
+	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
+	$(XCTEST) "$(BUNDLE_NAME).bundle"
 
-include $(GNUSTEP_MAKEFILES)/tool.make
+include $(GNUSTEP_MAKEFILES)/bundle.make
+

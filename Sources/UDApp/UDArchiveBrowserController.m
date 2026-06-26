@@ -8,6 +8,7 @@
 #import "UDArchiveEntry.h"
 #import "UDDirectoryNode.h"
 #import "UDStagedFileSource.h"
+#import "UDArchive.h"
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Private interface

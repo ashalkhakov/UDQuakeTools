@@ -1,225 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  UDArchiveDocument.xib
-  Window XIB for UDArchiveBrowserController.
-
-  Layout (struts / autoresizing, no Auto Layout):
-    ┌─────────────────────────────────────────┐  y=472 h=28  button bar
-    │ [Add]  [Delete]  [Extract]  [Open]       │
-    ├─────────────────────────────────────────┤  y=22  h=450 NSBrowser
-    │                                         │
-    │            NSBrowser (columns)          │
-    │                                         │
-    ├─────────────────────────────────────────┤  y=0   h=22  status label
-    │ 42 entries — selected: maps/e1m1.bsp    │
-    └─────────────────────────────────────────┘
-
-  Outlets / actions are wired to File's Owner (UDArchiveBrowserController).
--->
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0"
-          toolsVersion="21507" targetRuntime="MacOSX.Cocoa"
-          propertyAccessControl="none"
-          useAutolayout="NO"
-          customObjectInstantiationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <!-- File's Owner -->
-        <customObject id="-2" userLabel="File's Owner"
-                      customClass="UDArchiveBrowserController">
+        <customObject id="-2" userLabel="File's Owner" customClass="UDArchiveBrowserController">
             <connections>
-                <outlet property="window"        destination="WND-01" id="CO-01"/>
-                <outlet property="browser"       destination="BRW-01" id="CO-02"/>
-                <outlet property="statusLabel"   destination="STL-01" id="CO-03"/>
-                <outlet property="addButton"     destination="BTN-ADD" id="CO-04"/>
-                <outlet property="deleteButton"  destination="BTN-DEL" id="CO-05"/>
+                <outlet property="addButton" destination="BTN-ADD" id="CO-04"/>
+                <outlet property="browser" destination="BRW-01" id="CO-02"/>
+                <outlet property="deleteButton" destination="BTN-DEL" id="CO-05"/>
                 <outlet property="extractButton" destination="BTN-EXT" id="CO-06"/>
-                <outlet property="openButton"    destination="BTN-OPN" id="CO-07"/>
+                <outlet property="openButton" destination="BTN-OPN" id="CO-07"/>
+                <outlet property="statusLabel" destination="STL-01" id="CO-03"/>
+                <outlet property="window" destination="WND-01" id="CO-01"/>
             </connections>
         </customObject>
-        <customObject id="-1" userLabel="First Responder"
-                      customClass="FirstResponder"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-
-        <!-- Window -->
-        <window id="WND-01" title="Archive"
-                allowsToolTipsWhenApplicationIsInactive="NO"
-                autorecalculatesKeyViewLoop="NO"
-                visibleAtLaunch="NO"
-                animationBehavior="frontTransition">
-            <windowStyleMask key="styleMask"
-                             titled="YES" closable="YES"
-                             miniaturizable="YES" resizable="YES"/>
+        <window title="Archive" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="WND-01">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="750" height="500"/>
-            <rect key="screenRect"  x="0.0" y="0.0" width="1440" height="900"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="CNT-01">
                 <rect key="frame" x="0.0" y="0.0" width="750" height="500"/>
-                <autoresizingMask key="autoresizingMask"
-                                  widthSizable="YES" heightSizable="YES"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-
-                    <!-- ── Status label (bottom, h=22) ── -->
-                    <textField id="STL-01"
-                               verticalHuggingPriority="750"
-                               horizontalCompressionResistancePriority="250"
-                               editable="NO" selectable="NO" bezeled="NO"
-                               drawsBackground="NO">
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="STL-01">
                         <rect key="frame" x="4" y="2" width="742" height="18"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                        <textFieldCell key="cell" scrollable="YES"
-                                       lineBreakMode="clipping"
-                                       sendsActionOnEndEditing="NO"
-                                       alignment="left"
-                                       title="Ready"
-                                       id="STL-01-cell">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Ready" id="STL-01-cell">
                             <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor"
-                                   name="secondaryLabelColor"
-                                   catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor"
-                                   name="controlColor"
-                                   catalog="System" colorSpace="catalog"/>
+                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-
-                    <!-- ── NSBrowser (middle, fills remaining space) ── -->
-                    <browser id="BRW-01"
-                             action="browserSingleClick:"
-                             allowsMultipleSelection="NO"
-                             allowsEmptySelection="YES"
-                             maxVisibleColumns="4"
-                             minColumnWidth="120"
-                             reusesColumns="YES"
-                             separatesColumns="YES"
-                             titled="YES">
+                    <browser fixedFrame="YES" allowsEmptySelection="YES" defaultColumnWidth="100" minColumnWidth="120" maxVisibleColumns="4" titled="YES" separatesColumns="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BRW-01">
                         <rect key="frame" x="0.0" y="22" width="750" height="450"/>
-                        <autoresizingMask key="autoresizingMask"
-                                          widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <connections>
-                            <outlet property="delegate" destination="-2" id="BRW-01-del"/>
                             <action selector="browserSingleClick:" target="-2" id="BRW-01-act"/>
+                            <outlet property="delegate" destination="-2" id="BRW-01-del"/>
                         </connections>
                     </browser>
-
-                    <!-- ── Button bar (top, h=28) ── -->
-                    <view id="BBR-01" userLabel="buttonBar">
+                    <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BBR-01" userLabel="buttonBar">
                         <rect key="frame" x="0.0" y="472" width="750" height="28"/>
-                        <autoresizingMask key="autoresizingMask"
-                                          widthSizable="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <subviews>
-
-                            <!-- Add -->
-                            <button id="BTN-ADD">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-ADD">
                                 <rect key="frame" x="8" y="4" width="64" height="22"/>
-                                <autoresizingMask key="autoresizingMask"
-                                                  flexibleMaxX="YES"/>
-                                <buttonCell key="cell"
-                                            type="push"
-                                            title="Add"
-                                            bezelStyle="rounded"
-                                            alignment="center"
-                                            borderStyle="border"
-                                            imageScaling="proportionallyDown"
-                                            inset="2"
-                                            id="BTN-ADD-cell">
-                                    <behavior key="behavior"
-                                              pushIn="YES"
-                                              lightByBackground="YES"
-                                              lightByGray="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADD-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="addFile:" target="-2"
-                                            id="BTN-ADD-act"/>
+                                    <action selector="addFile:" target="-2" id="BTN-ADD-act"/>
                                 </connections>
                             </button>
-
-                            <!-- Delete -->
-                            <button id="BTN-DEL">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-DEL">
                                 <rect key="frame" x="80" y="4" width="72" height="22"/>
-                                <autoresizingMask key="autoresizingMask"
-                                                  flexibleMaxX="YES"/>
-                                <buttonCell key="cell"
-                                            type="push"
-                                            title="Delete"
-                                            bezelStyle="rounded"
-                                            alignment="center"
-                                            borderStyle="border"
-                                            imageScaling="proportionallyDown"
-                                            inset="2"
-                                            id="BTN-DEL-cell">
-                                    <behavior key="behavior"
-                                              pushIn="YES"
-                                              lightByBackground="YES"
-                                              lightByGray="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-DEL-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="deleteSelected:" target="-2"
-                                            id="BTN-DEL-act"/>
+                                    <action selector="deleteSelected:" target="-2" id="BTN-DEL-act"/>
                                 </connections>
                             </button>
-
-                            <!-- Extract -->
-                            <button id="BTN-EXT">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-EXT">
                                 <rect key="frame" x="160" y="4" width="80" height="22"/>
-                                <autoresizingMask key="autoresizingMask"
-                                                  flexibleMaxX="YES"/>
-                                <buttonCell key="cell"
-                                            type="push"
-                                            title="Extract"
-                                            bezelStyle="rounded"
-                                            alignment="center"
-                                            borderStyle="border"
-                                            imageScaling="proportionallyDown"
-                                            inset="2"
-                                            id="BTN-EXT-cell">
-                                    <behavior key="behavior"
-                                              pushIn="YES"
-                                              lightByBackground="YES"
-                                              lightByGray="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Extract" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-EXT-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="extractSelected:" target="-2"
-                                            id="BTN-EXT-act"/>
+                                    <action selector="extractSelected:" target="-2" id="BTN-EXT-act"/>
                                 </connections>
                             </button>
-
-                            <!-- Open -->
-                            <button id="BTN-OPN">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-OPN">
                                 <rect key="frame" x="248" y="4" width="64" height="22"/>
-                                <autoresizingMask key="autoresizingMask"
-                                                  flexibleMaxX="YES"/>
-                                <buttonCell key="cell"
-                                            type="push"
-                                            title="Open"
-                                            bezelStyle="rounded"
-                                            alignment="center"
-                                            borderStyle="border"
-                                            imageScaling="proportionallyDown"
-                                            inset="2"
-                                            id="BTN-OPN-cell">
-                                    <behavior key="behavior"
-                                              pushIn="YES"
-                                              lightByBackground="YES"
-                                              lightByGray="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Open" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-OPN-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="openSelected:" target="-2"
-                                            id="BTN-OPN-act"/>
+                                    <action selector="openSelected:" target="-2" id="BTN-OPN-act"/>
                                 </connections>
                             </button>
-
                         </subviews>
                     </view>
-                    <!-- end button bar -->
-
                 </subviews>
             </view>
+            <point key="canvasLocation" x="0.0" y="144"/>
         </window>
     </objects>
 </document>

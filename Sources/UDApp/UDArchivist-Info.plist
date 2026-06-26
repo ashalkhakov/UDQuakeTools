@@ -1,120 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>ApplicationName</key>
-    <string>UDArchivist</string>
-
-    <key>CFBundleExecutable</key>
-    <string>UDArchivist</string>
-
-    <key>CFBundleIdentifier</key>
-    <string>com.udquake.archivist</string>
-
-    <key>CFBundleVersion</key>
-    <string>1.0</string>
-
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-
-    <key>NSPrincipalClass</key>
-    <string>NSApplication</string>
-
-    <key>NSMainNibFile</key>
-    <string>MainMenu</string>
-
-    <key>NSDelegate</key>
-    <string>UDAppDelegate</string>
-
-    <!--
-        GNUstep uses NSTypes; macOS uses CFBundleDocumentTypes.
-        Both are listed here for portability.
-    -->
-    <key>NSTypes</key>
-    <array>
-        <dict>
-            <key>NSName</key>
-            <string>Quake PAK Archive</string>
-            <key>NSHumanReadableName</key>
-            <string>Quake PAK Archive</string>
-            <key>NSUnixExtensions</key>
-            <array><string>pak</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>NSRole</key>
-            <string>Editor</string>
-            <key>NSTypeName</key>
-            <string>com.udquake.pak</string>
-        </dict>
-        <dict>
-            <key>NSName</key>
-            <string>Quake III PK3 Archive</string>
-            <key>NSHumanReadableName</key>
-            <string>Quake III PK3 Archive</string>
-            <key>NSUnixExtensions</key>
-            <array><string>pk3</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>NSRole</key>
-            <string>Editor</string>
-            <key>NSTypeName</key>
-            <string>com.udquake.pk3</string>
-        </dict>
-        <dict>
-            <key>NSName</key>
-            <string>Doom 3 PK4 Archive</string>
-            <key>NSHumanReadableName</key>
-            <string>Doom 3 PK4 Archive</string>
-            <key>NSUnixExtensions</key>
-            <array><string>pk4</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>NSRole</key>
-            <string>Editor</string>
-            <key>NSTypeName</key>
-            <string>com.udquake.pk4</string>
-        </dict>
-    </array>
-
-    <key>CFBundleDocumentTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeName</key>
-            <string>Quake PAK Archive</string>
-            <key>CFBundleTypeExtensions</key>
-            <array><string>pak</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>LSItemContentTypes</key>
-            <array><string>com.udquake.pak</string></array>
-        </dict>
-        <dict>
-            <key>CFBundleTypeName</key>
-            <string>Quake III PK3 Archive</string>
-            <key>CFBundleTypeExtensions</key>
-            <array><string>pk3</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>LSItemContentTypes</key>
-            <array><string>com.udquake.pk3</string></array>
-        </dict>
-        <dict>
-            <key>CFBundleTypeName</key>
-            <string>Doom 3 PK4 Archive</string>
-            <key>CFBundleTypeExtensions</key>
-            <array><string>pk4</string></array>
-            <key>NSDocumentClass</key>
-            <string>UDArchiveDocument</string>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>LSItemContentTypes</key>
-            <array><string>com.udquake.pk4</string></array>
-        </dict>
-    </array>
+	<key>ApplicationName</key>
+	<string>UDArchivist</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pak</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Quake PAK Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.udquake.pak</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pk3</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Quake III PK3 Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.udquake.pk3</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pk4</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Doom 3 PK4 Archive</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.udquake.pk4</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>UDArchivist</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.udquake.archivist</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>NSDelegate</key>
+	<string>UDAppDelegate</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSTypes</key>
+	<array>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+			<key>NSHumanReadableName</key>
+			<string>Quake PAK Archive</string>
+			<key>NSName</key>
+			<string>Quake PAK Archive</string>
+			<key>NSRole</key>
+			<string>Editor</string>
+			<key>NSTypeName</key>
+			<string>com.udquake.pak</string>
+			<key>NSUnixExtensions</key>
+			<array>
+				<string>pak</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+			<key>NSHumanReadableName</key>
+			<string>Quake III PK3 Archive</string>
+			<key>NSName</key>
+			<string>Quake III PK3 Archive</string>
+			<key>NSRole</key>
+			<string>Editor</string>
+			<key>NSTypeName</key>
+			<string>com.udquake.pk3</string>
+			<key>NSUnixExtensions</key>
+			<array>
+				<string>pk3</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>UDArchiveDocument</string>
+			<key>NSHumanReadableName</key>
+			<string>Doom 3 PK4 Archive</string>
+			<key>NSName</key>
+			<string>Doom 3 PK4 Archive</string>
+			<key>NSRole</key>
+			<string>Editor</string>
+			<key>NSTypeName</key>
+			<string>com.udquake.pk4</string>
+			<key>NSUnixExtensions</key>
+			<array>
+				<string>pk4</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

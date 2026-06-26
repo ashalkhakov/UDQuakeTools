@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UDArchiveBrowserController : NSWindowController <NSBrowserDelegate> {
-    IBOutlet NSBrowser    *_browser;
-    IBOutlet NSTextField  *_statusLabel;
-    IBOutlet NSButton     *_addButton;
-    IBOutlet NSButton     *_deleteButton;
-    IBOutlet NSButton     *_extractButton;
-    IBOutlet NSButton     *_openButton;
+    __weak IBOutlet NSBrowser    *_browser;
+    __weak IBOutlet NSTextField  *_statusLabel;
+    __weak IBOutlet NSButton     *_addButton;
+    __weak IBOutlet NSButton     *_deleteButton;
+    __weak IBOutlet NSButton     *_extractButton;
+    __weak IBOutlet NSButton     *_openButton;
 
     UDArchiveDocument *_archiveDocument;
     UDDirectoryNode   *_rootNode;

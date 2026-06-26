@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB01000100000000000000AA /* UDArchiveEntryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB00000100000000000000AA /* UDArchiveEntryTests.m */; };
+		BB01000200000000000000AA /* UDPAKCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB00000200000000000000AA /* UDPAKCodecTests.m */; };
+		BB01000300000000000000AA /* UDPK3CodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB00000300000000000000AA /* UDPK3CodecTests.m */; };
+		BB01000400000000000000AA /* UDGameDetectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB00000400000000000000AA /* UDGameDetectionTests.m */; };
+		BB01003100000000000000AA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		BB01003200000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		BB01010100000000000000AA /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
+		BB01010200000000000000AA /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
+		BB01010300000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
+		BB01010400000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
+		BB01010500000000000000AA /* UDCodecRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010900000000000000AA /* UDCodecRegistry.m */; };
+		BB01010600000000000000AA /* UDPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A00000000000000AA /* UDPAKCodec.m */; };
+		BB01010700000000000000AA /* UDPAKEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010B00000000000000AA /* UDPAKEntrySource.m */; };
+		BB01010800000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
+		BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
+		BB01010A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
 		AA01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010000000000000000AA /* main.m */; };
 		AA01000100000000000000AA /* UDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010100000000000000AA /* UDAppDelegate.m */; };
 		AA01000200000000000000AA /* UDArchiveDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010200000000000000AA /* UDArchiveDocument.m */; };
@@ -47,6 +63,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB00000100000000000000AA /* UDArchiveEntryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UDArchiveEntryTests.m; path = Tests/UDArchiveEntryTests.m; sourceTree = "<group>"; };
+		BB00000200000000000000AA /* UDPAKCodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UDPAKCodecTests.m; path = Tests/UDPAKCodecTests.m; sourceTree = "<group>"; };
+		BB00000300000000000000AA /* UDPK3CodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UDPK3CodecTests.m; path = Tests/UDPK3CodecTests.m; sourceTree = "<group>"; };
+		BB00000400000000000000AA /* UDGameDetectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UDGameDetectionTests.m; path = Tests/UDGameDetectionTests.m; sourceTree = "<group>"; };
+		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		AA00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AA00010100000000000000AA /* UDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDelegate.m; sourceTree = "<group>"; };
 		AA00010200000000000000AA /* UDArchiveDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveDocument.m; sourceTree = "<group>"; };
@@ -103,6 +125,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BB03000500000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
+				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA03000200000000000000AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -122,9 +153,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB00000500000000000000AA /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				BB00000100000000000000AA /* UDArchiveEntryTests.m */,
+				BB00000200000000000000AA /* UDPAKCodecTests.m */,
+				BB00000300000000000000AA /* UDPK3CodecTests.m */,
+				BB00000400000000000000AA /* UDGameDetectionTests.m */,
+			);
+			name = Tests;
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		AA00000200000000000000AA = {
 			isa = PBXGroup;
 			children = (
+				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* UDApp */,
 				AA00000500000000000000AA /* UDCore */,
 				AA00000600000000000000AA /* UDFormats */,
@@ -137,6 +181,7 @@
 		AA00000300000000000000AA /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
 				AA00050000000000000000AA /* UDArchivist.app */,
 				AA00050100000000000000AA /* udpaktool */,
 			);
@@ -244,6 +289,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BB04000200000000000000AA /* UDQuakeToolsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */;
+			buildPhases = (
+				BB03000000000000000000AA /* Sources */,
+				BB03000500000000000000AA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UDQuakeToolsTests;
+			productName = UDQuakeToolsTests;
+			productReference = BB00000000000000000000AA /* UDQuakeToolsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		AA04000000000000000000AA /* UDArchivist */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "UDArchivist" */;
@@ -307,6 +368,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* UDArchivist */,
 				AA04000100000000000000AA /* udpaktool */,
 			);
@@ -326,6 +388,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BB03000000000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB01000100000000000000AA /* UDArchiveEntryTests.m in Sources */,
+				BB01000200000000000000AA /* UDPAKCodecTests.m in Sources */,
+				BB01000300000000000000AA /* UDPK3CodecTests.m in Sources */,
+				BB01000400000000000000AA /* UDGameDetectionTests.m in Sources */,
+				BB01010100000000000000AA /* UDGame.m in Sources */,
+				BB01010200000000000000AA /* UDGameDetectionService.m in Sources */,
+				BB01010300000000000000AA /* UDArchive.m in Sources */,
+				BB01010400000000000000AA /* UDArchiveEntry.m in Sources */,
+				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
+				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,
+				BB01010700000000000000AA /* UDPAKEntrySource.m in Sources */,
+				BB01010800000000000000AA /* UDPK3Codec.m in Sources */,
+				BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				BB01010A00000000000000AA /* UDPK4Codec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA03000000000000000000AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -376,6 +459,65 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		BB05000600000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = (
+					"-lzip",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
+				PRODUCT_NAME = UDQuakeToolsTests;
+			};
+			name = Debug;
+		};
+		BB05000700000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = (
+					"-lzip",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
+				PRODUCT_NAME = UDQuakeToolsTests;
+			};
+			name = Release;
+		};
 		AA05000000000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -609,6 +751,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB05000600000000000000AA /* Debug */,
+				BB05000700000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AA06000000000000000000AA /* Build configuration list for PBXProject "UDArchivist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

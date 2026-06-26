@@ -675,7 +675,11 @@ willDisplayCell:(id)cell
 }
 
 + (BOOL)isPlainTextData:(NSData *)data extension:(NSString *)ext {
-    NSArray *textExts = @[@"txt", @"cfg", @"mtr", @"def", @"script", @"shader", @"rc", @"menu", @"qc", @"lst", @"font", @"skin", @"map", @"ini", @"json"];
+    static NSArray *textExts = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        textExts = @[@"txt", @"cfg", @"mtr", @"def", @"script", @"shader", @"rc", @"menu", @"qc", @"lst", @"font", @"skin", @"map", @"ini", @"json"];
+    });
     if ([textExts containsObject:[ext lowercaseString]]) {
         return YES;
     }

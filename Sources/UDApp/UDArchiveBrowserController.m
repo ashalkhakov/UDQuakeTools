@@ -10,6 +10,7 @@
 #import "UDStagedFileSource.h"
 #import "UDArchive.h"
 #import "UDTextPreviewController.h"
+#import "UDArchiveCodec.h"
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Private interface

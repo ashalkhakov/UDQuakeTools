@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Categories=X-GNUstep;
-Name=Pak Manager
-StartupWMClass=Pak Manager
-Exec=/usr/bin/openapp PakManager
-MimeType=

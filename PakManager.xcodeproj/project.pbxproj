@@ -105,7 +105,7 @@
 		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
 		AA00030200000000000000AA /* PakManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PakManager-Info.plist"; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		AA00050000000000000000AA /* Pak Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pak Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -170,7 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
-				AA00050000000000000000AA /* Pak Manager.app */,
+				AA00050000000000000000AA /* PakManager.app */,
 				AA00050100000000000000AA /* udpaktool */,
 			);
 			name = Products;
@@ -303,7 +303,7 @@
 			);
 			name = "Pak Manager";
 			productName = "Pak Manager";
-			productReference = AA00050000000000000000AA /* Pak Manager.app */;
+			productReference = AA00050000000000000000AA /* PakManager.app */;
 			productType = "com.apple.product-type.application";
 		};
 		AA04000100000000000000AA /* udpaktool */ = {
@@ -355,7 +355,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA06000000000000000000AA /* Build configuration list for PBXProject "Pak Manager" */;
+			buildConfigurationList = AA06000000000000000000AA /* Build configuration list for PBXProject "PakManager" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -556,7 +556,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
@@ -590,7 +590,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
-				PRODUCT_NAME = "Pak Manager";
+				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
@@ -605,7 +605,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -635,7 +635,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
-				PRODUCT_NAME = "Pak Manager";
+				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -763,7 +763,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA06000000000000000000AA /* Build configuration list for PBXProject "Pak Manager" */ = {
+		AA06000000000000000000AA /* Build configuration list for PBXProject "PakManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA05000000000000000000AA /* Debug */,

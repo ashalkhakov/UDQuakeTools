@@ -652,7 +652,7 @@ willDisplayCell:(id)cell
             detected = @"Doom 3";
         } else if (walCount > 0 || q2Folders > 0) {
             detected = @"Quake 2";
-        } else if ([_archiveDocument.codec.formatIdentifier isEqualToString:@"DKPAK"]) {
+        } else if ([_archiveDocument.codec.formatIdentifier isEqualToString:@"com.udquake.daikatana-pak"]) {
             detected = @"Daikatana";
         }
     }
@@ -690,7 +690,7 @@ willDisplayCell:(id)cell
         if (c == '\0') {
             return NO;
         }
-        if ((unsigned char)c < 32 && c != '\t' && c != '\n' && c != '\r' && c != '\b') {
+        if ((unsigned char)c < 32 && c != '\t' && c != '\n' && c != '\r') {
             return NO;
         }
     }

@@ -13,7 +13,7 @@
 - (instancetype)initWithText:(NSString *)text title:(NSString *)title {
     NSRect frame = NSMakeRect(0, 0, 600, 440);
     NSWindow *window = [[NSWindow alloc] initWithContentRect:frame
-                                                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable
+                                                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable
                                                      backing:NSBackingStoreBuffered
                                                        defer:NO];
     [window setTitle:title];

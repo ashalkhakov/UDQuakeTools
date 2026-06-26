@@ -86,7 +86,7 @@ jobs:
 
       - name: Build macOS App with Xcode
         run: |
-          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release -derivedDataPath Build CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE="Manual"
+          xcodebuild -project PakManager.xcodeproj -target "Pak Manager" -configuration Release -derivedDataPath Build CODE_SIGN_IDENTITY="-"
 
       - name: Package macOS App
         run: |

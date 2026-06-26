@@ -1,0 +1,121 @@
+{
+    ApplicationName = "Pak Manager";
+    CFBundleDocumentTypes = (
+	{
+	    CFBundleTypeExtensions = (
+		pak
+	    );
+	    CFBundleTypeName = "Quake PAK Archive";
+	    CFBundleTypeRole = Editor;
+	    LSItemContentTypes = (
+		"com.udquake.pak"
+	    );
+	    NSDocumentClass = UDArchiveDocument;
+	},
+	{
+	    CFBundleTypeExtensions = (
+		pk3
+	    );
+	    CFBundleTypeName = "Quake III PK3 Archive";
+	    CFBundleTypeRole = Editor;
+	    LSItemContentTypes = (
+		"com.udquake.pk3"
+	    );
+	    NSDocumentClass = UDArchiveDocument;
+	},
+	{
+	    CFBundleTypeExtensions = (
+		pk4
+	    );
+	    CFBundleTypeName = "Doom 3 PK4 Archive";
+	    CFBundleTypeRole = Editor;
+	    LSItemContentTypes = (
+		"com.udquake.pk4"
+	    );
+	    NSDocumentClass = UDArchiveDocument;
+	}
+    );
+    CFBundleExecutable = PakManager;
+    CFBundleIdentifier = "com.udquake.pakmanager";
+    CFBundleShortVersionString = "1.0";
+    CFBundleVersion = "1.0";
+    GSMainMarkupFile = "";
+    NOTE = "Automatically generated, do not edit!";
+    NSDelegate = UDAppDelegate;
+    NSExecutable = PakManager;
+    NSMainNibFile = MainMenu;
+    NSMainStoryboardFile = "";
+    NSPrincipalClass = NSApplication;
+    NSTypes = (
+	{
+	    NSDocumentClass = UDArchiveDocument;
+	    NSHumanReadableName = "Quake PAK Archive";
+	    NSName = "Quake PAK Archive";
+	    NSRole = Editor;
+	    NSTypeName = "com.udquake.pak";
+	    NSUnixExtensions = (
+		pak
+	    );
+	},
+	{
+	    NSDocumentClass = UDArchiveDocument;
+	    NSHumanReadableName = "Quake III PK3 Archive";
+	    NSName = "Quake III PK3 Archive";
+	    NSRole = Editor;
+	    NSTypeName = "com.udquake.pk3";
+	    NSUnixExtensions = (
+		pk3
+	    );
+	},
+	{
+	    NSDocumentClass = UDArchiveDocument;
+	    NSHumanReadableName = "Doom 3 PK4 Archive";
+	    NSName = "Doom 3 PK4 Archive";
+	    NSRole = Editor;
+	    NSTypeName = "com.udquake.pk4";
+	    NSUnixExtensions = (
+		pk4
+	    );
+	}
+    );
+    UTExportedTypeDeclarations = (
+	{
+	    UTTypeConformsTo = (
+		"public.data"
+	    );
+	    UTTypeDescription = "Quake PAK Archive";
+	    UTTypeIdentifier = "com.udquake.pak";
+	    UTTypeTagSpecification = {
+		"public.filename-extension" = (
+		    pak
+		);
+	    };
+	},
+	{
+	    UTTypeConformsTo = (
+		"com.pkware.zip-archive",
+		"public.data"
+	    );
+	    UTTypeDescription = "Quake III PK3 Archive";
+	    UTTypeIdentifier = "com.udquake.pk3";
+	    UTTypeTagSpecification = {
+		"public.filename-extension" = (
+		    pk3
+		);
+	    };
+	},
+	{
+	    UTTypeConformsTo = (
+		"com.pkware.zip-archive",
+		"public.data"
+	    );
+	    UTTypeDescription = "Doom 3 PK4 Archive";
+	    UTTypeIdentifier = "com.udquake.pk4";
+	    UTTypeTagSpecification = {
+		"public.filename-extension" = (
+		    pk4
+		);
+	    };
+	}
+    );
+}

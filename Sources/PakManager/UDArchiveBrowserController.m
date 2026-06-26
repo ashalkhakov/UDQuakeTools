@@ -497,7 +497,7 @@ willDisplayCell:(id)cell
 
     /* Extract to a per-archive temporary path, then open with the action service. */
     NSString *tempBase = [NSTemporaryDirectory()
-                         stringByAppendingPathComponent:@"UDArchivist"];
+                         stringByAppendingPathComponent:@"PakManager"];
     NSString *tempPath = [tempBase stringByAppendingPathComponent:selPath];
     NSURL    *tempURL  = [NSURL fileURLWithPath:tempPath];
 

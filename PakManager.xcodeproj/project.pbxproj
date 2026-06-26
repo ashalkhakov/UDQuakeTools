@@ -103,9 +103,9 @@
 		AA00021200000000000000AA /* UDPK4Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK4Codec.h; sourceTree = "<group>"; };
 		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
-		AA00030200000000000000AA /* UDArchivist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDArchivist-Info.plist"; sourceTree = "<group>"; };
+		AA00030200000000000000AA /* PakManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PakManager-Info.plist"; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		AA00050000000000000000AA /* UDArchivist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UDArchivist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00050000000000000000AA /* Pak Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pak Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -157,7 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				BB00000500000000000000AA /* Tests */,
-				AA00000400000000000000AA /* UDApp */,
+				AA00000400000000000000AA /* PakManager */,
 				AA00000500000000000000AA /* UDCore */,
 				AA00000600000000000000AA /* UDFormats */,
 				AA00000700000000000000AA /* Tools */,
@@ -170,13 +170,13 @@
 			isa = PBXGroup;
 			children = (
 				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
-				AA00050000000000000000AA /* UDArchivist.app */,
+				AA00050000000000000000AA /* Pak Manager.app */,
 				AA00050100000000000000AA /* udpaktool */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AA00000400000000000000AA /* UDApp */ = {
+		AA00000400000000000000AA /* PakManager */ = {
 			isa = PBXGroup;
 			children = (
 				CE1151602FEE7744005C6DA3 /* UDFileActionService.h */,
@@ -191,11 +191,11 @@
 				AA00012000000000000000AA /* UDTextPreviewController.m */,
 				AA00010000000000000000AA /* main.m */,
 				AA00030100000000000000AA /* UDArchiveDocument.xib */,
-				AA00030200000000000000AA /* UDArchivist-Info.plist */,
+				AA00030200000000000000AA /* PakManager-Info.plist */,
 				CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */,
 			);
-			name = UDApp;
-			path = Sources/UDApp;
+			name = PakManager;
+			path = Sources/PakManager;
 			sourceTree = "<group>";
 		};
 		AA00000500000000000000AA /* UDCore */ = {
@@ -289,9 +289,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA04000000000000000000AA /* UDArchivist */ = {
+		AA04000000000000000000AA /* Pak Manager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "UDArchivist" */;
+			buildConfigurationList = AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "Pak Manager" */;
 			buildPhases = (
 				AA03000000000000000000AA /* Sources */,
 				AA03000200000000000000AA /* Frameworks */,
@@ -301,9 +301,9 @@
 			);
 			dependencies = (
 			);
-			name = UDArchivist;
-			productName = UDArchivist;
-			productReference = AA00050000000000000000AA /* UDArchivist.app */;
+			name = "Pak Manager";
+			productName = "Pak Manager";
+			productReference = AA00050000000000000000AA /* Pak Manager.app */;
 			productType = "com.apple.product-type.application";
 		};
 		AA04000100000000000000AA /* udpaktool */ = {
@@ -355,7 +355,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA06000000000000000000AA /* Build configuration list for PBXProject "UDArchivist" */;
+			buildConfigurationList = AA06000000000000000000AA /* Build configuration list for PBXProject "Pak Manager" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -369,7 +369,7 @@
 			projectRoot = "";
 			targets = (
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
-				AA04000000000000000000AA /* UDArchivist */,
+				AA04000000000000000000AA /* Pak Manager */,
 				AA04000100000000000000AA /* udpaktool */,
 			);
 		};
@@ -580,7 +580,7 @@
 					/opt/homebrew/include,
 					/usr/local/include,
 				);
-				INFOPLIST_FILE = "Sources/UDApp/UDArchivist-Info.plist";
+				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,
@@ -589,8 +589,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.archivist;
-				PRODUCT_NAME = UDArchivist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
+				PRODUCT_NAME = "Pak Manager";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
@@ -626,7 +626,7 @@
 					/opt/homebrew/include,
 					/usr/local/include,
 				);
-				INFOPLIST_FILE = "Sources/UDApp/UDArchivist-Info.plist";
+				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,
@@ -634,8 +634,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				OTHER_LDFLAGS = "-lzip";
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.archivist;
-				PRODUCT_NAME = UDArchivist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
+				PRODUCT_NAME = "Pak Manager";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -763,7 +763,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA06000000000000000000AA /* Build configuration list for PBXProject "UDArchivist" */ = {
+		AA06000000000000000000AA /* Build configuration list for PBXProject "Pak Manager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA05000000000000000000AA /* Debug */,
@@ -772,7 +772,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "UDArchivist" */ = {
+		AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "Pak Manager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA05000200000000000000AA /* Debug */,

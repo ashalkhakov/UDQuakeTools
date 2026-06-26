@@ -121,7 +121,7 @@
                      error:(NSError **)error;
 @end
 
-#pragma mark - UDApp (AppKit)
+#pragma mark - PakManager (AppKit)
 
 /* UDArchiveDocument.h */
 @interface UDArchiveDocument : NSDocument

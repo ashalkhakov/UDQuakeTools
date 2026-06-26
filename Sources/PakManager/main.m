@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-2.0-or-later
- * UDArchivist — GNUstep AppKit application entry point.
+ * Pak Manager — GNUstep AppKit application entry point.
  */
 
 #import <AppKit/AppKit.h>

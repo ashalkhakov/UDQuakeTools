@@ -7,9 +7,9 @@ include $(GNUSTEP_MAKEFILES)/common.make
 CC = clang
 GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
 
-APP_NAME = UDArchivist
+APP_NAME = PakManager
 
-UDArchivist_OBJC_FILES = \
+PakManager_OBJC_FILES = \
     main.m \
     UDAppDelegate.m \
     UDArchiveDocument.m \
@@ -33,15 +33,15 @@ UDArchivist_OBJC_FILES = \
     ../UDFormats/UDPK3ZIPEntrySource.m \
     ../UDFormats/UDPK4Codec.m
 
-UDArchivist_INCLUDE_DIRS = \
+PakManager_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-UDArchivist_RESOURCE_FILES = \
+PakManager_RESOURCE_FILES = \
     UDArchiveDocument.xib \
-    UDArchivist-Info.plist
+    PakManager-Info.plist
 
-UDArchivist_LIBRARIES = objc gnustep-base gnustep-gui
+PakManager_LIBRARIES = objc gnustep-base gnustep-gui
 
 ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
 ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep -D__weak= -Dweak=assign -fblocks

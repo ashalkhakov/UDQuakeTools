@@ -274,6 +274,7 @@ willDisplayCell:(id)cell
     [cell setStringValue:title];
     [cell setLeaf:isLeaf];
     [cell setLoaded:YES];
+    [cell setEnabled:YES];
 }
 
 - (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column {

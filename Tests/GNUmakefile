@@ -28,8 +28,8 @@ udquaketools-tests_INCLUDE_DIRS = \
     -I../Sources/UDFormats
 
 udquaketools-tests_LIBRARIES = objc gnustep-base
-ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_LDFLAGS += -L$(GCC_LIB_DIR) -lzip
+# ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
+ADDITIONAL_LDFLAGS += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip
 
 .PHONY: run-tests
 run-tests: all

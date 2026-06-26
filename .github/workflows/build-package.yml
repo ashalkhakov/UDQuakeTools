@@ -92,7 +92,7 @@ jobs:
       - name: Package macOS App
         run: |
           cd Build/Release
-          zip -r ../../PakManager-macOS.zip "Pak Manager.app"
+          zip -r ../../PakManager-macOS.zip PakManager.app
 
       - name: Upload macOS App Artifact
         uses: actions/upload-artifact@v4

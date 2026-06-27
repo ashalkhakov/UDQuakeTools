@@ -35,6 +35,7 @@ PakManager_INCLUDE_DIRS = \
     -I../UDFormats
 
 PakManager_RESOURCE_FILES = \
+    MainMenu.xib \
     UDArchiveDocument.xib \
     PakManager-Info.plist
 

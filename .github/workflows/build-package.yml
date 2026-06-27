@@ -30,7 +30,49 @@ jobs:
       - name: Install GNUstep and dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gnustep-devel libgnustep-gui-dev libzip-dev clang libblocksruntime-dev
+          sudo apt-get install -y gnustep-devel libgnustep-gui-dev libzip-dev clang libblocksruntime-dev libxml2-dev libxslt1-dev libgnutls28-dev libicu-dev libgcrypt20-dev
+
+      - name: Build and install custom GNUstep in Standalone Deployment Mode
+        run: |
+          export CC=clang
+          export CXX=clang++
+          mkdir -p /tmp/gnustep-build
+          cd /tmp/gnustep-build
+
+          echo "=== Building gnustep-make ==="
+          git clone --depth 1 https://github.com/gnustep/tools-make.git
+          cd tools-make
+          ./configure --prefix=/usr --with-layout=fhs
+          make -j$(nproc)
+          sudo make install
+          cd ..
+
+          # Load the GNUstep environment
+          . /usr/share/GNUstep/Makefiles/GNUstep.sh
+
+          echo "=== Building gnustep-base ==="
+          git clone --depth 1 https://github.com/gnustep/libs-base.git
+          cd libs-base
+          ./configure --prefix=/usr --with-config-file=./GNUstep.conf --with-default-config=standalone.conf
+          make -j$(nproc)
+          sudo make install
+          cd ..
+
+          echo "=== Building gnustep-gui ==="
+          git clone --depth 1 https://github.com/gnustep/libs-gui.git
+          cd libs-gui
+          ./configure --prefix=/usr
+          make -j$(nproc)
+          sudo make install
+          cd ..
+
+          echo "=== Building gnustep-back ==="
+          git clone --depth 1 https://github.com/gnustep/libs-back.git
+          cd libs-back
+          ./configure --prefix=/usr
+          make -j$(nproc)
+          sudo make install
+          cd ..
 
       - name: Build PakManager App
         run: |
@@ -45,7 +87,6 @@ jobs:
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/lib
           mkdir -p AppDir/usr/local/bin
-          mkdir -p AppDir/usr/etc/GNUstep
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
@@ -55,24 +96,28 @@ jobs:
           make install DESTDIR=$(pwd)/../../AppDir GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
           cd ../..
 
-          # 3. Create GNUstep.conf inside AppDir
-          cat << 'EOF' > AppDir/usr/etc/GNUstep/GNUstep.conf
+          # 3. Create relocatable GNUstep.conf inside AppDir/usr/lib/
+          cat << 'EOF' > AppDir/usr/lib/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_LIBRARY=../../lib/GNUstep
-          GNUSTEP_LOCAL_LIBRARY=../../lib/GNUstep
-          GNUSTEP_NETWORK_LIBRARY=../../lib/GNUstep
-          GNUSTEP_SYSTEM_TOOLS=../../local/bin
-          GNUSTEP_LOCAL_TOOLS=../../local/bin
+          GNUSTEP_SYSTEM_LIBRARY=./
+          GNUSTEP_LOCAL_LIBRARY=./
+          GNUSTEP_NETWORK_LIBRARY=./
+          GNUSTEP_SYSTEM_TOOLS=./
+          GNUSTEP_LOCAL_TOOLS=./
           EOF
-          chmod 644 AppDir/usr/etc/GNUstep/GNUstep.conf
+          chmod 644 AppDir/usr/lib/GNUstep.conf
 
-          # 4. Copy GNUstep system tools
+          # 4. Copy GNUstep system tools to AppDir/usr/lib/ (where GNUstep-base looks for them in standalone mode)
+          # and also AppDir/usr/local/bin for standard execution
           . /usr/share/GNUstep/Makefiles/GNUstep.sh
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
+          cp -p $SYSTEM_TOOLS_DIR/gdnc AppDir/usr/lib/
+          cp -p $SYSTEM_TOOLS_DIR/gpbs AppDir/usr/lib/
+          cp -p $SYSTEM_TOOLS_DIR/make_services AppDir/usr/lib/
           cp -p $SYSTEM_TOOLS_DIR/gdnc AppDir/usr/local/bin/
           cp -p $SYSTEM_TOOLS_DIR/gpbs AppDir/usr/local/bin/
           cp -p $SYSTEM_TOOLS_DIR/make_services AppDir/usr/local/bin/
@@ -130,7 +175,7 @@ jobs:
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
           export GNUSTEP_NETWORK_ROOT="$HERE/usr"
-          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep/GNUstep.conf"
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/lib/GNUstep.conf"
           export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
           export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
@@ -169,12 +214,15 @@ jobs:
             fi
           done
           for tool in gdnc gpbs make_services; do
-            if [ -f "AppDir/usr/local/bin/$tool" ]; then
-              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/local/bin/$tool"
+            if [ -f "AppDir/usr/lib/$tool" ]; then
+              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
             fi
           done
 
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
+
+          # Clean up downloaded AppImages to ensure only PakManager is pushed
+          rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4

@@ -1,13 +1,10 @@
+TOOL_NAME = udpaktool
+
 OBJC_RUNTIME_LIB = ng
 RUNTIME_VERSION = gnustep-2.0
 GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
-
-CC = clang
-GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
-
-TOOL_NAME = udpaktool
 
 udpaktool_OBJC_FILES = \
     main.m \
@@ -26,8 +23,8 @@ udpaktool_INCLUDE_DIRS = \
     -I../../UDCore \
     -I../../UDFormats
 
-udpaktool_LIBRARIES = objc gnustep-base
-ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_LDFLAGS += -L$(GCC_LIB_DIR) -lzip
+udpaktool_LIBRARIES = gnustep-base
+
+ADDITIONAL_LDFLAGS += -lzip
 
 include $(GNUSTEP_MAKEFILES)/tool.make

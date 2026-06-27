@@ -35,7 +35,7 @@
 	    NSDocumentClass = UDArchiveDocument;
 	}
     );
-    CFBundleExecutable = PakManager;
+    CFBundleExecutable = "$(EXECUTABLE_NAME)";
     CFBundleIdentifier = "com.udquake.pakmanager";
     CFBundleShortVersionString = "1.0";
     CFBundleVersion = "1.0";

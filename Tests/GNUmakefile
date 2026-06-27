@@ -1,9 +1,10 @@
-include $(GNUSTEP_MAKEFILES)/common.make
-
-CC = clang
-GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
-
 BUNDLE_NAME = UDQuakeToolsTests
+
+OBJC_RUNTIME_LIB = ng
+RUNTIME_VERSION = gnustep-2.0
+GS_WITH_ARC = 1
+
+include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
     UDArchiveEntryTests.m \
@@ -25,10 +26,7 @@ UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
 
-UDQuakeToolsTests_LIBRARIES = objc gnustep-base XCTest
-
-ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include -I/usr/local/include/GNUstep
-ADDITIONAL_LDFLAGS += -L$(GCC_LIB_DIR) -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lzip -lgnustep-base -lXCTest
+ADDITIONAL_LDFLAGS += -lzip -lXCTest
 
 XCTEST ?= xctest
 

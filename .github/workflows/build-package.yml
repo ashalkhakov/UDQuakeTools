@@ -35,21 +35,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gnustep-devel libgnustep-gui-dev libzip-dev clang libblocksruntime-dev libxml2-dev libxslt1-dev libgnutls28-dev libicu-dev libgcrypt20-dev
 
-      - name: Build and install custom GNUstep in Standalone Deployment Mode
+      - name: Build and install custom GNUstep with modern Clang runtime and ARC
         run: |
           export CC=clang
           export CXX=clang++
-          export GCC_INCLUDE_DIR="$(gcc -print-file-name=include)"
-          export GCC_LIB_DIR="$(dirname "$(gcc -print-libgcc-file-name)")"
-          export CPPFLAGS="-I$GCC_INCLUDE_DIR"
-          export LDFLAGS="-L$GCC_LIB_DIR"
           mkdir -p /tmp/gnustep-build
           cd /tmp/gnustep-build
+
+          echo "=== Building libobjc2 ==="
+          git clone --depth 1 --recursive https://github.com/gnustep/libobjc2.git
+          cd libobjc2
+          cmake -B Build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build Build -j$(nproc)
+          sudo cmake --install Build
+          cd ..
 
           echo "=== Building gnustep-make ==="
           git clone --depth 1 https://github.com/gnustep/tools-make.git
           cd tools-make
-          ./configure --prefix=/usr --with-layout=fhs
+          ./configure --prefix=/usr --with-layout=fhs --with-library-combo=ng-gnu-gnu --enable-objc-arc CC=clang CXX=clang++
           make -j$(nproc)
           sudo make install
           cd ..
@@ -60,9 +64,6 @@ jobs:
           echo "=== Building gnustep-base ==="
           git clone --depth 1 https://github.com/gnustep/libs-base.git
           cd libs-base
-          # Patch GNUmakefile to include weak.m when compiling with clang on the GCC runtime.
-          # This prevents an undefined reference/hidden symbol error for GSWeakInit during linking.
-          sed -i 's/ADDITIONAL_OBJCFLAGS = -fblocks/ADDITIONAL_OBJCFLAGS = -fblocks\n  ObjectiveC2_OBJC_FILES += weak.m/' Source/ObjectiveC2/GNUmakefile
           ./configure --prefix=/usr --with-config-file=./GNUstep.conf --with-default-config=standalone.conf
           make -j$(nproc)
           sudo make install
@@ -84,11 +85,24 @@ jobs:
           sudo make install
           cd ..
 
+          echo "=== Building tools-xctest ==="
+          git clone --depth 1 https://github.com/gnustep/tools-xctest.git
+          cd tools-xctest
+          make -j$(nproc)
+          sudo make install
+          cd ..
+
       - name: Build PakManager App
         run: |
           cd Sources/PakManager
           . /usr/share/GNUstep/Makefiles/GNUstep.sh
           make
+
+      - name: Run Tests
+        run: |
+          cd Tests
+          . /usr/share/GNUstep/Makefiles/GNUstep.sh
+          make run-tests
 
       - name: Prepare AppDir
         run: |

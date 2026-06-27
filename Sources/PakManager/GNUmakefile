@@ -1,13 +1,10 @@
-# OBJC_RUNTIME_LIB = ng
-# RUNTIME_VERSION = gnustep-2.0
-# GS_WITH_ARC = 1
+APP_NAME = PakManager
+
+OBJC_RUNTIME_LIB = ng
+RUNTIME_VERSION = gnustep-2.0
+GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
-
-CC = clang
-GCC_LIB_DIR = $(shell dirname $(shell gcc -print-libgcc-file-name))
-
-APP_NAME = PakManager
 
 PakManager_OBJC_FILES = \
     main.m \
@@ -41,11 +38,6 @@ PakManager_RESOURCE_FILES = \
     UDArchiveDocument.xib \
     PakManager-Info.plist
 
-PakManager_LIBRARIES = objc gnustep-base gnustep-gui
-
-ADDITIONAL_OBJCFLAGS += -I$(GCC_LIB_DIR)/include
-ADDITIONAL_OBJCFLAGS += -I/usr/local/include/GNUstep -D__weak= -Dweak=assign -fblocks
-ADDITIONAL_LDFLAGS   += -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L$(GCC_LIB_DIR) -lzip -lgnustep-base -lBlocksRuntime
-ADDITIONAL_APP_LIBS += -lgnustep-base
+ADDITIONAL_LDFLAGS += -lzip
 
 include $(GNUSTEP_MAKEFILES)/application.make

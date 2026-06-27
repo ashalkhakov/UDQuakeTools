@@ -60,6 +60,8 @@ jobs:
           echo "=== Building gnustep-base ==="
           git clone --depth 1 https://github.com/gnustep/libs-base.git
           cd libs-base
+          # Patch GNUmakefile to include weak.m when compiling with clang on the GCC runtime.
+          # This prevents an undefined reference/hidden symbol error for GSWeakInit during linking.
           sed -i 's/ADDITIONAL_OBJCFLAGS = -fblocks/ADDITIONAL_OBJCFLAGS = -fblocks\n  ObjectiveC2_OBJC_FILES += weak.m/' Source/ObjectiveC2/GNUmakefile
           ./configure --prefix=/usr --with-config-file=./GNUstep.conf --with-default-config=standalone.conf
           make -j$(nproc)

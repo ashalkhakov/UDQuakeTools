@@ -40,13 +40,73 @@ jobs:
 
       - name: Prepare AppDir
         run: |
+          # 1. Clean and recreate directory structure
+          rm -rf AppDir
           mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib
+          mkdir -p AppDir/usr/local/bin
+          mkdir -p AppDir/usr/etc/GNUstep
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
-          cp Sources/PakManager/PakManager.app/PakManager AppDir/usr/bin/
-          cp -r Sources/PakManager/PakManager.app/Resources AppDir/usr/bin/
+          # 2. Install the app to AppDir
+          cd Sources/PakManager
+          . /usr/share/GNUstep/Makefiles/GNUstep.sh
+          make install DESTDIR=$(pwd)/../../AppDir GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
+          cd ../..
 
+          # 3. Create GNUstep.conf inside AppDir
+          cat << 'EOF' > AppDir/usr/etc/GNUstep/GNUstep.conf
+          GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
+          GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
+          GNUSTEP_SYSTEM_USERS_DIR=/home
+          GNUSTEP_NETWORK_USERS_DIR=/home
+          GNUSTEP_LOCAL_USERS_DIR=/home
+          GNUSTEP_SYSTEM_LIBRARY=../../lib/GNUstep
+          GNUSTEP_LOCAL_LIBRARY=../../lib/GNUstep
+          GNUSTEP_NETWORK_LIBRARY=../../lib/GNUstep
+          GNUSTEP_SYSTEM_TOOLS=../../local/bin
+          GNUSTEP_LOCAL_TOOLS=../../local/bin
+          EOF
+          chmod 644 AppDir/usr/etc/GNUstep/GNUstep.conf
+
+          # 4. Copy GNUstep system tools
+          . /usr/share/GNUstep/Makefiles/GNUstep.sh
+          SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
+          cp -p $SYSTEM_TOOLS_DIR/gdnc AppDir/usr/local/bin/
+          cp -p $SYSTEM_TOOLS_DIR/gpbs AppDir/usr/local/bin/
+          cp -p $SYSTEM_TOOLS_DIR/make_services AppDir/usr/local/bin/
+
+          # 5. Copy GNUstep Bundles and resources
+          cp -Rp /usr/lib/GNUstep AppDir/usr/lib/
+          BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep/Bundles -name "libgnustep-back-*.bundle" | head -n 1)
+          if [ -n "$BACKEND_BUNDLE" ]; then
+            ln -sf $(basename "$BACKEND_BUNDLE") AppDir/usr/lib/GNUstep/Bundles/libgnustep-back.bundle
+          fi
+
+          # 6. Build/Bundle Shared Libraries via iterative ldd scan
+          for i in {1..3}; do
+            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \)); do
+              ldd "$bin" 2>/dev/null | grep "=>" | while read -r line; do
+                lib=$(echo "$line" | awk '{print $3}')
+                if [ -n "$lib" ] && [ -f "$lib" ]; then
+                  libname=$(basename "$lib")
+                  case "$libname" in
+                    libc.so*|libpthread.so*|libdl.so*|libm.so*|librt.so*|libX11.so*|libXext.so*|libxcb.so*|libGL.so*|libGLdispatch.so*|libGLX.so*|libstdc++.so*|libgcc_s.so*)
+                      ;;
+                    *)
+                      if [ ! -f "AppDir/usr/lib/$libname" ]; then
+                        echo "Bundling library: $libname from $lib"
+                        cp -L "$lib" "AppDir/usr/lib/"
+                      fi
+                      ;;
+                  esac
+                fi
+              done
+            done
+          done
+
+          # 7. Create desktop file and placeholder PNG icon
           cat << 'EOF' > AppDir/PakManager.desktop
           [Desktop Entry]
           Type=Application
@@ -58,9 +118,34 @@ jobs:
           Terminal=false
           EOF
 
-          # Generate a 1x1 transparent placeholder PNG icon as there are no icon assets in the repository
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
+
+          # 8. Create dynamic AppRun script at the root of AppDir
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          export GNUSTEP_PREFIX="$HERE/usr"
+          export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
+          export GNUSTEP_LOCAL_ROOT="$HERE/usr"
+          export GNUSTEP_NETWORK_ROOT="$HERE/usr"
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep/GNUstep.conf"
+          export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
+          export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
+
+          # Find the actual ELF binary named PakManager inside PakManager.app
+          REAL_BIN=$(find "$HERE/usr/lib/GNUstep/Applications/PakManager.app" -type f -name "PakManager" -exec file {} \; | grep "ELF" | cut -d: -f1 | head -n 1)
+
+          if [ -z "$REAL_BIN" ]; then
+            # Fallback to the wrapper or whatever file is at the root of PakManager.app
+            REAL_BIN="$HERE/usr/lib/GNUstep/Applications/PakManager.app/PakManager"
+          fi
+
+          exec "$REAL_BIN" "$@"
+          EOF
+          chmod +x AppDir/AppRun
 
       - name: Download linuxdeploy
         run: |
@@ -74,7 +159,21 @@ jobs:
         run: |
           export PATH="$(pwd)/squashfs-root/usr/bin:$(pwd)/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
           export VERSION="${{ env.APP_VERSION }}"
-          squashfs-root/usr/bin/linuxdeploy --appdir AppDir --output appimage
+
+          # Find all actual ELF binaries to let linuxdeploy process them
+          ELF_ARGS=""
+          for f in $(find AppDir/usr/lib/GNUstep/Applications/PakManager.app -type f 2>/dev/null); do
+            if file "$f" | grep -q "ELF"; then
+              ELF_ARGS="$ELF_ARGS --executable $f"
+            fi
+          done
+          for tool in gdnc gpbs make_services; do
+            if [ -f "AppDir/usr/local/bin/$tool" ]; then
+              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/local/bin/$tool"
+            fi
+          done
+
+          squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4

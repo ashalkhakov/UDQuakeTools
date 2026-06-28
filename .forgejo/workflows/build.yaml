@@ -241,10 +241,12 @@ jobs:
           cp -v AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
           echo "==== DEBUG: Step 7 Complete ===="
 
-          echo "==== DEBUG: Step 8 - Structuring AppRun Executable ===="
+          # 8. Create dynamic AppRun script at the root of AppDir
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
+          # Get the absolute mounting path of the AppImage dynamically at runtime
           HERE="$(dirname "$(readlink -f "${0}")")"
+          
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
@@ -255,14 +257,19 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          REAL_BIN=$(find "$HERE/usr/lib/GNUstep/Applications/PakManager.app" -type f -name "PakManager" -exec file {} \; | grep "ELF" | cut -d: -f1 | head -n 1)
+          # FIX: Scan the entire $HERE mount directory for the real compiled ELF executable 
+          # instead of guessing a specific hardcoded GNUstep layout path.
+          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
+
           if [ -z "$REAL_BIN" ]; then
-            REAL_BIN="$HERE/usr/lib/GNUstep/Applications/PakManager.app/PakManager"
+            echo "❌ Error: Could not locate the PakManager ELF binary inside the AppImage!"
+            exit 1
           fi
+
+          # Launch the application passing through any original terminal arguments
           exec "$REAL_BIN" "$@"
           EOF
           chmod -v +x AppDir/AppRun
-          echo "==== DEBUG: Step 8 Complete ===="
           
           echo "🎉 End of Script Reached Safely!"
 

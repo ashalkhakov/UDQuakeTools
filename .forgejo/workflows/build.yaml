@@ -56,10 +56,16 @@ jobs:
           echo "=== Building gnustep-make ==="
           git clone --depth 1 https://github.com/gnustep/tools-make.git
           cd tools-make
+
+          # Force gnustep-make to explicitly bind its library and bundle lookups
+          # to match the exact FHS folder paths linuxdeploy uses.
           ./configure --prefix="${LOCAL_PREFIX}" \
             --with-layout=fhs \
             --with-library-combo=ng-gnu-gnu \
             --enable-objc-arc \
+            --with-system-apps="${LOCAL_PREFIX}/lib/GNUstep/Applications" \
+            --with-system-library="${LOCAL_PREFIX}/lib" \
+            --with-system-tools="${LOCAL_PREFIX}/bin" \
             CC=clang CXX=clang++
           make -j$(nproc)
           make install

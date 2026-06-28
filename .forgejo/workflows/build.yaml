@@ -58,10 +58,13 @@ jobs:
           cd tools-make
           
           # Force the cohesive native layout
+          # Explicitly feed the compiler the local search paths so it detects libobjc2
           ./configure --prefix="${LOCAL_PREFIX}" \
             --with-layout=gnustep \
             --with-library-combo=ng-gnu-gnu \
             --enable-objc-arc \
+            CPPFLAGS="-I${LOCAL_PREFIX}/include" \
+            LDFLAGS="-L${LOCAL_PREFIX}/lib -Wl,-rpath,${LOCAL_PREFIX}/lib" \
             CC=clang CXX=clang++
           make -j$(nproc)
           make install

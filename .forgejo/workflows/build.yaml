@@ -251,28 +251,31 @@ jobs:
           # 8. Create dynamic AppRun script at the root of AppDir
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
-          # Capture the absolute dynamic mount point of the AppImage namespace
           HERE="$(dirname "$(readlink -f "${0}")")"
           
-          # Force GNUstep engine variables to map absolutely to the active mount path
+          echo "=== APPIMAGE RUNTIME DIAGNOSTICS ==="
+          echo "Mount point (HERE): $HERE"
+          echo "--- Locating all bundle files inside AppImage ---"
+          find "$HERE" -name "*.bundle" -o -name "libgnustep-back*" 2>/dev/null
+          
+          echo "--- Checking compiled backend string fallback ---"
+          GUI_LIB=$(find "$HERE" -name "libgnustep-gui.so*" | head -n 1)
+          if [ -n "$GUI_LIB" ]; then
+            echo "Found GUI Library at: $GUI_LIB"
+            strings "$GUI_LIB" | grep -E "back\.bundle|libgnustep-back" | head -n 5
+          fi
+          echo "===================================="
+
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
           export GNUSTEP_NETWORK_ROOT="$HERE/usr"
-          
-          # Explicitly tell the system tools and library domains where they live
           export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/bin"
           export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
-          export GNUSTEP_SYSTEM_HEADERS="$HERE/usr/include"
-          
-          # Ensure linker and binary execution paths prioritize the AppImage workspace
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Bypass file-parsing ambiguities by targeting the backend bundle directory explicitly
-          export GNUSTEP_TARGET_DIR="$HERE/usr/lib/GNUstep/Bundles"
-          
-          # Find the real compiled ELF executable inside the AppDir namespace
+          # Force the global default backend name context explicitly via command-line defaults override
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
 
           if [ -z "$REAL_BIN" ]; then
@@ -280,8 +283,8 @@ jobs:
             exit 1
           fi
 
-          # Launch the application passing through original command line arguments
-          exec "$REAL_BIN" "$@"
+          # Launch the app forcing the backend domain name mapping flags natively
+          exec "$REAL_BIN" -GSBackend libgnustep-back-032 "$@"
           EOF
           chmod -v +x AppDir/AppRun
           

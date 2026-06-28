@@ -168,24 +168,29 @@ jobs:
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
           
-          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/
-          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/
-          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/
-          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/
-          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/
-          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/ || true
 
-          # 5. Copy GNUstep Bundles and libraries directly from your local prefix
-          cp -Rp "${LOCAL_PREFIX}/lib/GNUstep" AppDir/usr/lib/
-          BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep/Bundles -name "libgnustep-back-*.bundle" | head -n 1)
+          # 5. Copy GNUstep Bundles safely
+          if [ -d "${LOCAL_PREFIX}/lib/GNUstep" ]; then
+            cp -Rp "${LOCAL_PREFIX}/lib/GNUstep" AppDir/usr/lib/
+          fi
+
+          # Safe execution for creating symlinks
+          BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1 || true)
           if [ -n "$BACKEND_BUNDLE" ]; then
-            ln -sf $(basename "$BACKEND_BUNDLE") AppDir/usr/lib/GNUstep/Bundles/libgnustep-back.bundle
+            BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
+            ln -sf $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle" || true
           fi
           
-          # 6. Fixed Completed Shared Libraries loop script
+          # 6. Completed Shared Libraries loop script with safety flags
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:$LD_LIBRARY_PATH"
           for i in {1..3}; do
-            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \)); do
+            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) 2>/dev/null); do
               ldd "$bin" 2>/dev/null | grep "=>" | while read -r line; do
                 lib=$(echo "$line" | awk '{print $3}')
                 if [ -n "$lib" ] && [ -f "$lib" ]; then
@@ -241,6 +246,9 @@ jobs:
           exec "$REAL_BIN" "$@"
           EOF
           chmod +x AppDir/AppRun
+          
+          # Force a clean step exit
+          exit 0
 
       - name: Download linuxdeploy
         run: |

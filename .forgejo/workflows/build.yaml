@@ -56,8 +56,8 @@ jobs:
           echo "=== Building gnustep-make ==="
           git clone --depth 1 https://github.com/gnustep/tools-make.git
           cd tools-make
-
-          # Change layout to gnustep to keep the directory structure cohesive
+          
+          # Force the cohesive native layout
           ./configure --prefix="${LOCAL_PREFIX}" \
             --with-layout=gnustep \
             --with-library-combo=ng-gnu-gnu \
@@ -67,7 +67,7 @@ jobs:
           make install
           cd ..
 
-          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
           
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           export C_INCLUDE_PATH="${LOCAL_PREFIX}/include:${C_INCLUDE_PATH}"
@@ -113,7 +113,7 @@ jobs:
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
           cd Sources/PakManager
@@ -124,7 +124,7 @@ jobs:
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
           cd Tests
@@ -132,87 +132,72 @@ jobs:
 
       - name: Prepare AppDir
         run: |
-          # Enable print-commands mode so we see exactly what executes in the logs
-          set -x
-          
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          echo "==== DEBUG: Step 1 - Recreating Directories ===="
+          # 1. Recreate clean AppDir structural root
           rm -rf AppDir
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/lib
+          mkdir -p AppDir/usr/etc
           mkdir -p AppDir/usr/local/bin
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          echo "==== DEBUG: Step 1 Complete ===="
 
-          echo "==== DEBUG: Step 2 - Executing Make Install ===="
+          # 2. Install PakManager using native layout variables
           cd Sources/PakManager
-          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
           make install DESTDIR="${WORKSPACE_DIR}/AppDir" \
                        GNUSTEP_INSTALLATION_DOMAIN=SYSTEM \
                        GNUSTEP_SYSTEM_ROOT="/"
-          if [ $? -ne 0 ]; then echo "❌ CRITICAL FAILURE: 'make install' failed!"; exit 1; fi
           cd "${WORKSPACE_DIR}"
-          echo "==== DEBUG: Step 2 Complete ===="
 
-          echo "==== DEBUG: Step 3 - Generating GNUstep.conf ===="
-          # 3. Create a relocatable native GNUstep.conf inside AppDir/usr/etc/
+          # 3. Create a relocatable native GNUstep.conf
           cat << 'EOF' > AppDir/usr/etc/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
-
-          # Notice the shift back to singular keys without the FHS "S"
           GNUSTEP_SYSTEM_ROOT=./
           GNUSTEP_SYSTEM_LIBRARY=./Library
           GNUSTEP_SYSTEM_TOOLS=./Tools
           GNUSTEP_SYSTEM_APPS=./Applications
-
           GNUSTEP_LOCAL_ROOT=./
           GNUSTEP_LOCAL_LIBRARY=./Library
           GNUSTEP_LOCAL_TOOLS=./Tools
           GNUSTEP_LOCAL_APPS=./Applications
           EOF
           chmod 644 AppDir/usr/etc/GNUstep.conf
-          echo "==== DEBUG: Step 3 Complete ===="
 
-          echo "==== DEBUG: Step 4 - Copying System Tools ===="
-          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          # 4. Copy GNUstep system tools from the native Tools path
+          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
-          echo "DEBUG: SYSTEM_TOOLS_DIR discovered as: ${SYSTEM_TOOLS_DIR}"
           
-          cp -pv "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/ || echo "⚠️ Warning: gdnc fail"
-          cp -pv "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/ || echo "⚠️ Warning: gpbs fail"
-          cp -pv "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/ || echo "⚠️ Warning: make_services fail"
-          cp -pv "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/ || echo "⚠️ Warning: gdnc local fail"
-          cp -pv "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/ || echo "⚠️ Warning: gpbs local fail"
-          cp -pv "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/ || echo "⚠️ Warning: make_services local fail"
-          echo "==== DEBUG: Step 4 Complete ===="
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/ || true
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/ || true
 
-          echo "==== DEBUG: Step 5 - Splicing Bundles ===="
-          # Copy the unified Library directory over intact
+          # 5. Copy the unified Library hierarchy intact over to the AppDir
           if [ -d "${LOCAL_PREFIX}/Library" ]; then
             cp -Rp "${LOCAL_PREFIX}/Library" AppDir/usr/
           fi
           
-          # Maintain the unversioned symlink helper inside the unified Bundles tree
+          # Maintain versioned fallback bundle linking
           BACKEND_BUNDLE=$(find AppDir/usr/Library/GNUstep/Bundles -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
             ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"
           fi
-          echo "==== DEBUG: Step 5 Complete ===="
-          
-          echo "==== DEBUG: Step 6 - Starting Shared Libraries Loop ===="
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:$LD_LIBRARY_PATH"
+
+          # 6. Shared Libraries loop script (Scanning binaries to grab standard system dynamic libs)
+          # Note: We append the new Library paths so the loop copies them safely
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/Library/Libraries:$LD_LIBRARY_PATH"
           for i in {1..3}; do
-            echo "DEBUG: Running LDD iteration $i"
             for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) ! -name "*.desktop" 2>/dev/null); do
-              # FIX: Appended '|| true' to the grep command so zero-dependency libs don't crash the script
               ldd "$bin" 2>/dev/null | grep "=>" || true | while read -r line; do
                 lib=$(echo "$line" | awk '{print $3}')
                 if [ -n "$lib" ] && [ -f "$lib" ]; then
@@ -231,9 +216,8 @@ jobs:
               done
             done
           done
-          echo "==== DEBUG: Step 6 Complete ===="
 
-          echo "==== DEBUG: Step 7 - Writing Metadata ===="
+          # 7. Metadata Generation
           cat << 'EOF' > AppDir/PakManager.desktop
           [Desktop Entry]
           Type=Application
@@ -246,48 +230,34 @@ jobs:
           EOF
 
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
-          cp -v AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
-          echo "==== DEBUG: Step 7 Complete ===="
+          cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Create dynamic AppRun script at the root of AppDir
+          # 8. Optimized Native AppRun Runtime Bootstrapper
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
-
-          # 8.1. Base identity environments
+          
+          # Target paths absolutely using the classic layout keys
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
           export GNUSTEP_NETWORK_ROOT="$HERE/usr"
-
-          # 8.2. CRITICAL FHS LAYOUT KEYS: Match exactly what tools-make compiled
-          export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
-          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/bin"
-          export GNUSTEP_SYSTEM_APPS="$HERE/usr/lib/GNUstep/Applications"
-          export GNUSTEP_SYSTEM_HEADERS="$HERE/usr/include"
-
-          export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
-          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/bin"
-          export GNUSTEP_LOCAL_APPS="$HERE/usr/lib/GNUstep/Applications"
-
-          # 8.3. Standard execution environments
-          export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
+          
+          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/Library"
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/Tools"
+          export GNUSTEP_SYSTEM_APPS="$HERE/usr/Applications"
+          
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Locate the real compiled app binary
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
-
           if [ -z "$REAL_BIN" ]; then
-            echo "❌ Error: Could not locate the PakManager ELF binary inside the AppImage!"
-            exit 1
+            REAL_BIN="$HERE/usr/Applications/PakManager.app/PakManager"
           fi
-
-          # Launch naturally (without the broken explicit -GSBackend override)
           exec "$REAL_BIN" "$@"
           EOF
-          chmod -v +x AppDir/AppRun
-          
-          echo "🎉 End of Script Reached Safely!"
+          chmod +x AppDir/AppRun
 
       - name: Download linuxdeploy
         run: |

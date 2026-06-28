@@ -1,0 +1,250 @@
+name: Build and Package
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-linux-appimage:
+    name: Build and Package Linux AppImage
+    # CHANGE 1: Use your runner's specific host labels instead of ubuntu-latest
+    runs-on: [linux-amd64, clang]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Version Environment Variable
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "APP_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
+          fi
+
+      # CHANGE 2: Removed the "Install GNUstep and dependencies" step because
+      # your LXC host runner already has these tools configured natively!
+
+      - name: Build and install custom GNUstep with modern Clang runtime and ARC
+        run: |
+          export CC=clang
+          export CXX=clang++
+          
+          # 1. Define our sandbox prefix workspace
+          WORKSPACE_DIR=$(pwd)
+          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+          mkdir -p "${LOCAL_PREFIX}"
+          
+          # Setup temporary compilation directory
+          mkdir -p /tmp/gnustep-build
+          cd /tmp/gnustep-build
+
+          echo "=== Building libobjc2 ==="
+          git clone --depth 1 --recursive https://github.com/gnustep/libobjc2.git
+          cd libobjc2
+          # Pass LOCAL_PREFIX as the installation target
+          cmake -B Build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="${LOCAL_PREFIX}" \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build Build -j$(nproc)
+          cmake --install Build
+          cd ..
+
+          echo "=== Building gnustep-make ==="
+          git clone --depth 1 https://github.com/gnustep/tools-make.git
+          cd tools-make
+          # Point prefix to local space and match layout properties
+          ./configure --prefix="${LOCAL_PREFIX}" \
+            --with-layout=fhs \
+            --with-library-combo=ng-gnu-gnu \
+            --enable-objc-arc \
+            CC=clang CXX=clang++
+          make -j$(nproc)
+          make install
+          cd ..
+
+          # 2. SOURCE THE LOCAL ENVIRONMENT
+          # This ensures subsequent builds look inside our sandbox, not the system paths
+          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          
+          # Inject local library paths so compilers find libobjc2/make dependencies during build
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+          export C_INCLUDE_PATH="${LOCAL_PREFIX}/include:${C_INCLUDE_PATH}"
+          export CPLUS_INCLUDE_PATH="${LOCAL_PREFIX}/include:${CPLUS_INCLUDE_PATH}"
+
+          echo "=== Building gnustep-base ==="
+          git clone --depth 1 https://github.com/gnustep/libs-base.git
+          cd libs-base
+          ./configure --prefix="${LOCAL_PREFIX}" \
+            --with-config-file="${LOCAL_PREFIX}/etc/GNUstep.conf" \
+            --with-default-config=standalone.conf
+          make -j$(nproc)
+          make install
+          cd ..
+
+          echo "=== Building gnustep-gui ==="
+          git clone --depth 1 https://github.com/gnustep/libs-gui.git
+          cd libs-gui
+          ./configure --prefix="${LOCAL_PREFIX}"
+          make -j$(nproc)
+          make install
+          cd ..
+
+          echo "=== Building gnustep-back ==="
+          git clone --depth 1 https://github.com/gnustep/libs-back.git
+          cd libs-back
+          ./configure --prefix="${LOCAL_PREFIX}"
+          make -j$(nproc)
+          make install
+          cd ..
+
+          echo "=== Building tools-xctest ==="
+          git clone --depth 1 https://github.com/gnustep/tools-xctest.git
+          cd tools-xctest
+          make -j$(nproc)
+          make install
+          cd ..
+          
+          echo "=== GNUstep Local Stack Compilation Complete ==="
+
+      - name: Build PakManager App
+        run: |
+          # 1. Define the absolute path to your local prefix
+          WORKSPACE_DIR=$(pwd)
+          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+          
+          # 2. Source the local GNUstep environment instead of the host system
+          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          
+          # 3. Inject library paths so clang can link against the local build catalog
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+          
+          # 4. Compile the application
+          cd Sources/PakManager
+          make
+
+      - name: Run Tests
+        run: |
+          # 1. Define the absolute path to your local prefix
+          WORKSPACE_DIR=$(pwd)
+          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+          
+          # 2. Source the local GNUstep environment
+          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          
+          # 3. CRITICAL FOR RUNNING: The tests will crash if they cannot find your custom libobjc2.so
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+          
+          # 4. Execute the test suite
+          cd Tests
+          make run-tests
+
+      - name: Prepare AppDir
+        run: |
+          WORKSPACE_DIR=$(pwd)
+          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+          
+          # 1. Clean and recreate directory structure
+          rm -rf AppDir
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib
+          mkdir -p AppDir/usr/local/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+
+          # 2. Install PakManager directly to our target AppDir using local GNUstep settings
+          cd Sources/PakManager
+          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          make install DESTDIR="${WORKSPACE_DIR}/AppDir" GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
+          cd "${WORKSPACE_DIR}"
+
+          # 3. Create a relocatable GNUstep.conf inside AppDir/usr/lib/
+          # This implements the logic requested by the GNUstep tools-make PR #70 dynamically!
+          cat << 'EOF' > AppDir/usr/lib/GNUstep.conf
+          GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
+          GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
+          GNUSTEP_SYSTEM_USERS_DIR=/home
+          GNUSTEP_NETWORK_USERS_DIR=/home
+          GNUSTEP_LOCAL_USERS_DIR=/home
+          GNUSTEP_SYSTEM_LIBRARY=./
+          GNUSTEP_LOCAL_LIBRARY=./
+          GNUSTEP_NETWORK_LIBRARY=./
+          GNUSTEP_SYSTEM_TOOLS=./
+          GNUSTEP_LOCAL_TOOLS=./
+          EOF
+          chmod 644 AppDir/usr/lib/GNUstep.conf
+
+          # 4. Copy GNUstep system tools out of your LOCAL prefix instead of the host system
+          . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
+          SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
+          
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/
+          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/
+          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/
+          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/
+
+          # 5. Copy GNUstep Bundles and libraries directly from your local prefix
+          cp -Rp "${LOCAL_PREFIX}/lib/GNUstep" AppDir/usr/lib/
+          BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep/Bundles -name "libgnustep-back-*.bundle" | head -n 1)
+          if [ -n "$BACKEND_BUNDLE" ]; then
+            ln -sf $(basename "$BACKEND_BUNDLE") AppDir/usr/lib/GNUstep/Bundles/libgnustep-back.bundle
+          fi
+
+          # 6. Build/Bundle Shared Libraries via recursive ldd scan
+          # This scans the binaries and pulls in libobjc2.so and gnustep-base/gui/back .so files
+          # directly from your localized gnustep-prefix catalog.
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:$LD_LIBRARY_PATH"
+          for i in {1..3}; do
+            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \)); do
+              ldd "$bin" 2>/dev/null | grep "=>" | while read -r line; do
+                lib=$(echo "$line" | awk '{print $3}')
+                if [ -n "$lib" ] && [ -f "$lib" ]; then
+                  libname=$(basename "$lib")
+                  case "$libname" in
+                    libc.so*|libpthread.so*|libdl.so*|libm.
+
+      - name: Download linuxdeploy
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage --appimage-extract
+          ./linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
+
+      - name: Package AppImage
+        run: |
+          export PATH="$(pwd)/squashfs-root/usr/bin:$(pwd)/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
+          export VERSION="${{ env.APP_VERSION }}"
+
+          ELF_ARGS=""
+          for f in $(find AppDir/usr/lib/GNUstep/Applications/PakManager.app -type f 2>/dev/null); do
+            if file "$f" | grep -q "ELF"; then
+              ELF_ARGS="$ELF_ARGS --executable $f"
+            fi
+          done
+          for tool in gdnc gpbs make_services; do
+            if [ -f "AppDir/usr/lib/$tool" ]; then
+              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
+            fi
+          done
+
+          squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
+          rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
+
+      # CHANGE 3: Swapped generic artifact helper to natively match custom paths safely
+      - name: Upload Linux AppImage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PakManager-Linux-${{ env.APP_VERSION }}
+          path: ./*.AppImage

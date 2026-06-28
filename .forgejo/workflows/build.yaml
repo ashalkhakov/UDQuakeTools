@@ -251,21 +251,28 @@ jobs:
           # 8. Create dynamic AppRun script at the root of AppDir
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
-          # Get the absolute mounting path of the AppImage dynamically at runtime
+          # Capture the absolute dynamic mount point of the AppImage namespace
           HERE="$(dirname "$(readlink -f "${0}")")"
           
+          # Force GNUstep engine variables to map absolutely to the active mount path
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
           export GNUSTEP_NETWORK_ROOT="$HERE/usr"
-          export GNUSTEP_CONFIG_FILE="$HERE/usr/lib/GNUstep.conf"
+          
+          # Explicitly tell the system tools and library domains where they live
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/bin"
           export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
-          export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
+          export GNUSTEP_SYSTEM_HEADERS="$HERE/usr/include"
+          
+          # Ensure linker and binary execution paths prioritize the AppImage workspace
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # FIX: Scan the entire $HERE mount directory for the real compiled ELF executable 
-          # instead of guessing a specific hardcoded GNUstep layout path.
+          # Bypass file-parsing ambiguities by targeting the backend bundle directory explicitly
+          export GNUSTEP_TARGET_DIR="$HERE/usr/lib/GNUstep/Bundles"
+          
+          # Find the real compiled ELF executable inside the AppDir namespace
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
 
           if [ -z "$REAL_BIN" ]; then
@@ -273,7 +280,7 @@ jobs:
             exit 1
           fi
 
-          # Launch the application passing through any original terminal arguments
+          # Launch the application passing through original command line arguments
           exec "$REAL_BIN" "$@"
           EOF
           chmod -v +x AppDir/AppRun

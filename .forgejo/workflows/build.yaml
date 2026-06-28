@@ -162,17 +162,19 @@ jobs:
           echo "==== DEBUG: Step 2 Complete ===="
 
           echo "==== DEBUG: Step 3 - Generating GNUstep.conf ===="
+          # 3. Create a relocatable FHS-compliant GNUstep.conf inside AppDir/usr/lib/
           cat << 'EOF' > AppDir/usr/lib/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_LIBRARY=./
-          GNUSTEP_LOCAL_LIBRARY=./
-          GNUSTEP_NETWORK_LIBRARY=./
-          GNUSTEP_SYSTEM_TOOLS=./
-          GNUSTEP_LOCAL_TOOLS=./
+          GNUSTEP_SYSTEM_LIBRARIES=./
+          GNUSTEP_SYSTEM_TOOLS=../bin
+          GNUSTEP_SYSTEM_APPS=./GNUstep/Applications
+          GNUSTEP_LOCAL_LIBRARIES=./
+          GNUSTEP_LOCAL_TOOLS=../bin
+          GNUSTEP_LOCAL_APPS=./GNUstep/Applications
           EOF
           chmod 644 AppDir/usr/lib/GNUstep.conf
           echo "==== DEBUG: Step 3 Complete ===="
@@ -252,30 +254,28 @@ jobs:
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
-          
-          echo "=== APPIMAGE RUNTIME DIAGNOSTICS ==="
-          echo "Mount point (HERE): $HERE"
-          echo "--- Locating all bundle files inside AppImage ---"
-          find "$HERE" -name "*.bundle" -o -name "libgnustep-back*" 2>/dev/null
-          
-          echo "--- Checking compiled backend string fallback ---"
-          GUI_LIB=$(find "$HERE" -name "libgnustep-gui.so*" | head -n 1)
-          if [ -n "$GUI_LIB" ]; then
-            echo "Found GUI Library at: $GUI_LIB"
-            strings "$GUI_LIB" | grep -E "back\.bundle|libgnustep-back" | head -n 5
-          fi
-          echo "===================================="
 
+          # 8.1. Base identity environments
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
           export GNUSTEP_LOCAL_ROOT="$HERE/usr"
           export GNUSTEP_NETWORK_ROOT="$HERE/usr"
-          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/bin"
+
+          # 8.2. CRITICAL FHS LAYOUT KEYS: Match exactly what tools-make compiled
           export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/bin"
+          export GNUSTEP_SYSTEM_APPS="$HERE/usr/lib/GNUstep/Applications"
+          export GNUSTEP_SYSTEM_HEADERS="$HERE/usr/include"
+
+          export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
+          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/bin"
+          export GNUSTEP_LOCAL_APPS="$HERE/usr/lib/GNUstep/Applications"
+
+          # 8.3. Standard execution environments
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Force the global default backend name context explicitly via command-line defaults override
+          # Locate the real compiled app binary
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
 
           if [ -z "$REAL_BIN" ]; then
@@ -283,8 +283,8 @@ jobs:
             exit 1
           fi
 
-          # Launch the app forcing the backend domain name mapping flags natively
-          exec "$REAL_BIN" -GSBackend libgnustep-back-032 "$@"
+          # Launch naturally (without the broken explicit -GSBackend override)
+          exec "$REAL_BIN" "$@"
           EOF
           chmod -v +x AppDir/AppRun
           

@@ -31,9 +31,6 @@ jobs:
             echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
           fi
 
-      # CHANGE 2: Removed the "Install GNUstep and dependencies" step because
-      # your LXC host runner already has these tools configured natively!
-
       - name: Build and install custom GNUstep with modern Clang runtime and ARC
         run: |
           export CC=clang
@@ -201,7 +198,7 @@ jobs:
           if [ -n "$BACKEND_BUNDLE" ]; then
             ln -sf $(basename "$BACKEND_BUNDLE") AppDir/usr/lib/GNUstep/Bundles/libgnustep-back.bundle
           fi
-
+          
           # 6. Build/Bundle Shared Libraries via recursive ldd scan
           # This scans the binaries and pulls in libobjc2.so and gnustep-base/gui/back .so files
           # directly from your localized gnustep-prefix catalog.

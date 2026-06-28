@@ -57,15 +57,11 @@ jobs:
           git clone --depth 1 https://github.com/gnustep/tools-make.git
           cd tools-make
 
-          # Force gnustep-make to explicitly bind its library and bundle lookups
-          # to match the exact FHS folder paths linuxdeploy uses.
+          # Change layout to gnustep to keep the directory structure cohesive
           ./configure --prefix="${LOCAL_PREFIX}" \
-            --with-layout=fhs \
+            --with-layout=gnustep \
             --with-library-combo=ng-gnu-gnu \
             --enable-objc-arc \
-            --with-system-apps="${LOCAL_PREFIX}/lib/GNUstep/Applications" \
-            --with-system-library="${LOCAL_PREFIX}/lib" \
-            --with-system-tools="${LOCAL_PREFIX}/bin" \
             CC=clang CXX=clang++
           make -j$(nproc)
           make install
@@ -162,21 +158,26 @@ jobs:
           echo "==== DEBUG: Step 2 Complete ===="
 
           echo "==== DEBUG: Step 3 - Generating GNUstep.conf ===="
-          # 3. Create a relocatable FHS-compliant GNUstep.conf inside AppDir/usr/lib/
-          cat << 'EOF' > AppDir/usr/lib/GNUstep.conf
+          # 3. Create a relocatable native GNUstep.conf inside AppDir/usr/etc/
+          cat << 'EOF' > AppDir/usr/etc/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_LIBRARIES=./
-          GNUSTEP_SYSTEM_TOOLS=../bin
-          GNUSTEP_SYSTEM_APPS=./GNUstep/Applications
-          GNUSTEP_LOCAL_LIBRARIES=./
-          GNUSTEP_LOCAL_TOOLS=../bin
-          GNUSTEP_LOCAL_APPS=./GNUstep/Applications
+
+          # Notice the shift back to singular keys without the FHS "S"
+          GNUSTEP_SYSTEM_ROOT=./
+          GNUSTEP_SYSTEM_LIBRARY=./Library
+          GNUSTEP_SYSTEM_TOOLS=./Tools
+          GNUSTEP_SYSTEM_APPS=./Applications
+
+          GNUSTEP_LOCAL_ROOT=./
+          GNUSTEP_LOCAL_LIBRARY=./Library
+          GNUSTEP_LOCAL_TOOLS=./Tools
+          GNUSTEP_LOCAL_APPS=./Applications
           EOF
-          chmod 644 AppDir/usr/lib/GNUstep.conf
+          chmod 644 AppDir/usr/etc/GNUstep.conf
           echo "==== DEBUG: Step 3 Complete ===="
 
           echo "==== DEBUG: Step 4 - Copying System Tools ===="
@@ -193,15 +194,13 @@ jobs:
           echo "==== DEBUG: Step 4 Complete ===="
 
           echo "==== DEBUG: Step 5 - Splicing Bundles ===="
-          if [ -d "${LOCAL_PREFIX}/lib/GNUstep" ]; then
-            cp -Rp "${LOCAL_PREFIX}/lib/GNUstep" AppDir/usr/lib/
-          else
-            echo "⚠️ Warning: ${LOCAL_PREFIX}/lib/GNUstep missing"
+          # Copy the unified Library directory over intact
+          if [ -d "${LOCAL_PREFIX}/Library" ]; then
+            cp -Rp "${LOCAL_PREFIX}/Library" AppDir/usr/
           fi
           
-          # No hacky usr/Libraries symlinks needed!
-          # We just ensure the generic unversioned fallback bundle link exists inside the correct folder.
-          BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
+          # Maintain the unversioned symlink helper inside the unified Bundles tree
+          BACKEND_BUNDLE=$(find AppDir/usr/Library/GNUstep/Bundles -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
             ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"

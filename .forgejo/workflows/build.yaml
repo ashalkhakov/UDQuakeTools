@@ -45,6 +45,7 @@ jobs:
           mkdir -p "${LOCAL_PREFIX}"
           
           # Setup temporary compilation directory
+          rm -rf /tmp/gnustep-build
           mkdir -p /tmp/gnustep-build
           cd /tmp/gnustep-build
 

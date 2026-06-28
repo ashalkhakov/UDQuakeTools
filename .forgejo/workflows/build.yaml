@@ -203,7 +203,9 @@ jobs:
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:$LD_LIBRARY_PATH"
           for i in {1..3}; do
             echo "DEBUG: Running LDD iteration $i"
-            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) 2>/dev/null); do
+            # FIX: Added '! -name "*.desktop"' to prevent scanning text shortcuts
+            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) ! -name "*.desktop" 2>/dev/null); do
+              # FIX: Added '|| true' to grep so an empty match doesn't return status 1
               ldd "$bin" 2>/dev/null | grep "=>" | while read -r line; do
                 lib=$(echo "$line" | awk '{print $3}')
                 if [ -n "$lib" ] && [ -f "$lib" ]; then

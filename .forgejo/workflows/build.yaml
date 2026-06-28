@@ -197,8 +197,9 @@ jobs:
             echo "⚠️ Warning: ${LOCAL_PREFIX}/lib/GNUstep missing"
           fi
           
+          # No hacky usr/Libraries symlinks needed!
+          # We just ensure the generic unversioned fallback bundle link exists inside the correct folder.
           BACKEND_BUNDLE=$(find AppDir/usr/lib/GNUstep -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
-          echo "DEBUG: BACKEND_BUNDLE string found: ${BACKEND_BUNDLE}"
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
             ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"

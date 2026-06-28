@@ -285,7 +285,7 @@ jobs:
         run: |
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
-
+          
           export PATH="${WORKSPACE_DIR}/squashfs-root/usr/bin:${WORKSPACE_DIR}/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
           export VERSION="${{ env.APP_VERSION }}"
           export APPIMAGE_EXTRACT_AND_RUN=1
@@ -302,11 +302,13 @@ jobs:
             fi
           done
 
-          # FIX: Prepend the runtime search paths right before executing linuxdeploy 
-          # so it maps libgnustep-base.so and libobjc.so perfectly.
+          # FIX: Force linuxdeploy to whitelist and pack libzip by adding your AppDir/usr/lib 
+          # to BOTH LD_LIBRARY_PATH configurations.
+          export EXTRA_LD_LIBRARY_PATH="${WORKSPACE_DIR}/AppDir/usr/lib"
+          
           LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
-
+          
           rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
 
       - name: Upload Linux AppImage Artifact

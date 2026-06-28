@@ -17,7 +17,6 @@ permissions:
 jobs:
   build-linux-appimage:
     name: Build and Package Linux AppImage
-    # CHANGE 1: Use your runner's specific host labels instead of ubuntu-latest
     runs-on: [linux-amd64, clang]
     steps:
       - name: Checkout repository
@@ -36,12 +35,10 @@ jobs:
           export CC=clang
           export CXX=clang++
           
-          # 1. Define our sandbox prefix workspace
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           mkdir -p "${LOCAL_PREFIX}"
           
-          # Setup temporary compilation directory
           rm -rf /tmp/gnustep-build
           mkdir -p /tmp/gnustep-build
           cd /tmp/gnustep-build
@@ -49,7 +46,6 @@ jobs:
           echo "=== Building libobjc2 ==="
           git clone --depth 1 --recursive https://github.com/gnustep/libobjc2.git
           cd libobjc2
-          # Pass LOCAL_PREFIX as the installation target
           cmake -B Build -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="${LOCAL_PREFIX}" \
             -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
@@ -60,7 +56,6 @@ jobs:
           echo "=== Building gnustep-make ==="
           git clone --depth 1 https://github.com/gnustep/tools-make.git
           cd tools-make
-          # Point prefix to local space and match layout properties
           ./configure --prefix="${LOCAL_PREFIX}" \
             --with-layout=fhs \
             --with-library-combo=ng-gnu-gnu \
@@ -70,11 +65,8 @@ jobs:
           make install
           cd ..
 
-          # 2. SOURCE THE LOCAL ENVIRONMENT
-          # This ensures subsequent builds look inside our sandbox, not the system paths
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
           
-          # Inject local library paths so compilers find libobjc2/make dependencies during build
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           export C_INCLUDE_PATH="${LOCAL_PREFIX}/include:${C_INCLUDE_PATH}"
           export CPLUS_INCLUDE_PATH="${LOCAL_PREFIX}/include:${CPLUS_INCLUDE_PATH}"
@@ -116,33 +108,23 @@ jobs:
 
       - name: Build PakManager App
         run: |
-          # 1. Define the absolute path to your local prefix
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          # 2. Source the local GNUstep environment instead of the host system
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
-          
-          # 3. Inject library paths so clang can link against the local build catalog
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
-          # 4. Compile the application
           cd Sources/PakManager
           make
 
       - name: Run Tests
         run: |
-          # 1. Define the absolute path to your local prefix
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          # 2. Source the local GNUstep environment
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
-          
-          # 3. CRITICAL FOR RUNNING: The tests will crash if they cannot find your custom libobjc2.so
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
-          # 4. Execute the test suite
           cd Tests
           make run-tests
 
@@ -159,14 +141,15 @@ jobs:
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
-          # 2. Install PakManager directly to our target AppDir using local GNUstep settings
+          # 2. Fix the nested destination bug by explicitly setting targeting flags
           cd Sources/PakManager
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
-          make install DESTDIR="${WORKSPACE_DIR}/AppDir" GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
+          make install DESTDIR="${WORKSPACE_DIR}/AppDir" \
+                       GNUSTEP_INSTALLATION_DOMAIN=SYSTEM \
+                       GNUSTEP_SYSTEM_ROOT="/"
           cd "${WORKSPACE_DIR}"
 
           # 3. Create a relocatable GNUstep.conf inside AppDir/usr/lib/
-          # This implements the logic requested by the GNUstep tools-make PR #70 dynamically!
           cat << 'EOF' > AppDir/usr/lib/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
@@ -181,7 +164,7 @@ jobs:
           EOF
           chmod 644 AppDir/usr/lib/GNUstep.conf
 
-          # 4. Copy GNUstep system tools out of your LOCAL prefix instead of the host system
+          # 4. Copy GNUstep system tools out of your LOCAL prefix
           . "${LOCAL_PREFIX}/share/GNUstep/Makefiles/GNUstep.sh"
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
           
@@ -199,9 +182,7 @@ jobs:
             ln -sf $(basename "$BACKEND_BUNDLE") AppDir/usr/lib/GNUstep/Bundles/libgnustep-back.bundle
           fi
           
-          # 6. Build/Bundle Shared Libraries via recursive ldd scan
-          # This scans the binaries and pulls in libobjc2.so and gnustep-base/gui/back .so files
-          # directly from your localized gnustep-prefix catalog.
+          # 6. Fixed Completed Shared Libraries loop script
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:$LD_LIBRARY_PATH"
           for i in {1..3}; do
             for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \)); do
@@ -210,7 +191,56 @@ jobs:
                 if [ -n "$lib" ] && [ -f "$lib" ]; then
                   libname=$(basename "$lib")
                   case "$libname" in
-                    libc.so*|libpthread.so*|libdl.so*|libm.
+                    libc.so*|libpthread.so*|libdl.so*|libm.so*|librt.so*|libX11.so*|libXext.so*|libxcb.so*|libGL.so*|libGLdispatch.so*|libGLX.so*|libstdc++.so*|libgcc_s.so*)
+                      ;;
+                    *)
+                      if [ ! -f "AppDir/usr/lib/$libname" ]; then
+                        echo "Bundling library: $libname from $lib"
+                        cp -L "$lib" "AppDir/usr/lib/"
+                      fi
+                      ;;
+                  esac
+                fi
+              done
+            done
+          done
+
+          # 7. Create desktop file and placeholder PNG icon
+          cat << 'EOF' > AppDir/PakManager.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=Pak Manager
+          Exec=PakManager
+          Icon=PakManager
+          Categories=Utility;
+          Comment=Manage Quake PAK and PK3/PK4 archive files.
+          Terminal=false
+          EOF
+
+          python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
+          cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
+
+          # 8. Create dynamic AppRun script at the root of AppDir
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          export GNUSTEP_PREFIX="$HERE/usr"
+          export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
+          export GNUSTEP_LOCAL_ROOT="$HERE/usr"
+          export GNUSTEP_NETWORK_ROOT="$HERE/usr"
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/lib/GNUstep.conf"
+          export GNUSTEP_SYSTEM_LIBRARIES="$HERE/usr/lib"
+          export GNUSTEP_LOCAL_LIBRARIES="$HERE/usr/lib"
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
+
+          REAL_BIN=$(find "$HERE/usr/lib/GNUstep/Applications/PakManager.app" -type f -name "PakManager" -exec file {} \; | grep "ELF" | cut -d: -f1 | head -n 1)
+          if [ -z "$REAL_BIN" ]; then
+            REAL_BIN="$HERE/usr/lib/GNUstep/Applications/PakManager.app/PakManager"
+          fi
+          exec "$REAL_BIN" "$@"
+          EOF
+          chmod +x AppDir/AppRun
 
       - name: Download linuxdeploy
         run: |
@@ -240,7 +270,6 @@ jobs:
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
           rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
 
-      # CHANGE 3: Swapped generic artifact helper to natively match custom paths safely
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4
         with:

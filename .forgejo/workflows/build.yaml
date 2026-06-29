@@ -181,7 +181,7 @@ jobs:
             fi
           done
 
-          # 5. Pull BOTH System and Local hierarchies into AppDir/usr/
+# 5. Pull BOTH System and Local hierarchies into AppDir/usr/
           if [ -d "${LOCAL_PREFIX}/System" ]; then
             mkdir -p AppDir/usr/System
             cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/
@@ -191,13 +191,24 @@ jobs:
             cp -Rp "${LOCAL_PREFIX}/Local/"* AppDir/usr/Local/
           fi
           
-          # CRITICAL FIX: Explicitly bundle libobjc from the prefix base lib directory!
+          # Explicitly bundle libobjc from the prefix base lib directory
           if [ -f "${LOCAL_PREFIX}/lib/libobjc.so.4.6" ]; then
             echo "Found libobjc runtime in base prefix, bundling to usr/lib..."
             cp -p "${LOCAL_PREFIX}/lib/libobjc.so.4.6" AppDir/usr/lib/
-            # Create standard runtime linker symlinks for safety
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so.4
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so
+          fi
+
+          # FIX: Maintain BOTH versioned and unversioned fallback bundle linking names
+          BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
+          if [ -n "$BACKEND_BUNDLE" ]; then
+            BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
+            BUNDLE_NAME=$(basename "$BACKEND_BUNDLE")
+            
+            echo "Setting up bundle fallbacks in $BUNDLE_DIR targeting $BUNDLE_NAME"
+            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/libgnustep-back.bundle"
+            # This is the exact hardcoded string gnustep-gui checks during failure loops
+            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle"
           fi
           
           # Migrate the nested app bundle into its correct target layout domain
@@ -265,7 +276,7 @@ jobs:
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Clean AppRun with Hermetic Gconv Mapping
+          # 8. Optimized AppRun Script
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
@@ -286,20 +297,17 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # FORCE THE LINKER TO PRINT TRACE LOGS FOR DLOPEN FAILURES
-          export LD_DEBUG=files,libs
-
-          # FORCE glibc to use the bundled, matching character set modules
-          export GCONV_PATH="$HERE/usr/lib/gconv"
-          unset LC_ALL
-          export LANG=C.UTF-8
+          unset GCONV_PATH
+          export LC_ALL=C
+          export LANG=C
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           if [ -z "$REAL_BIN" ]; then
-            REAL_BIN="$HERE/usr/System/Applications/PakManager.app/PakManager"
+            REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi
           
-          exec "$REAL_BIN" "$@"
+          # FIX: Force execution using the explicit binary backend string mapping name
+          exec "$REAL_BIN" -GSBackend back "$@"
           EOF
           chmod +x AppDir/AppRun
 

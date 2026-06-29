@@ -228,6 +228,38 @@ jobs:
             cp -Rp "$DEEP_APP_DIR" AppDir/usr/Local/Applications/
           fi
 
+          # --- BUNDLE FONTS FOR PORTABILITY ---
+          # 1. Copy Liberation Sans into the AppDir
+          mkdir -p AppDir/usr/share/fonts/truetype/liberation
+          cp -Rp /usr/share/fonts/truetype/liberation/* AppDir/usr/share/fonts/truetype/liberation/
+
+          # 2. Create a custom Fontconfig file that intercepts Helvetica
+          mkdir -p AppDir/usr/etc
+          cat << 'EOF' > AppDir/usr/etc/fonts.conf
+          <?xml version="1.0"?>
+          <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+          <fontconfig>
+              <include ignore_missing="yes">/etc/fonts/fonts.conf</include>
+              
+              <dir prefix="relative">../share/fonts</dir>
+              
+              <cachedir>/tmp/fontconfig-cache-pakmanager</cachedir>
+              
+              <alias>
+                  <family>Helvetica</family>
+                  <prefer><family>Liberation Sans</family></prefer>
+              </alias>
+              <alias>
+                  <family>sans-serif</family>
+                  <prefer><family>Liberation Sans</family></prefer>
+              </alias>
+              <alias>
+                  <family>Courier</family>
+                  <prefer><family>Liberation Mono</family></prefer>
+              </alias>
+          </fontconfig>
+          EOF
+
           # Clean up residual folders
           find AppDir -maxdepth 1 -type d ! -name "AppDir" ! -name "usr" -exec rm -rf {} + 2>/dev/null || true
 
@@ -297,6 +329,8 @@ jobs:
           export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
           
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          # Force Fontconfig to use our bundled fonts and aliases
+          export FONTCONFIG_FILE="$HERE/usr/etc/fonts.conf"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
           # 3. Kill off localized encoding mismatches

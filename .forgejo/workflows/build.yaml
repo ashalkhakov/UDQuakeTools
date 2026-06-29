@@ -300,13 +300,15 @@ jobs:
           
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))" || true
 
-          # 2. Inject your Secret Sauce AppRun Script
+          # 2. Inject your Secret Sauce AppRun Script (Read-Only & Path Leak Safe)
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
           
-          mkdir -p "$HERE/usr/etc"
-          cat << IN_EOF > "$HERE/usr/etc/GNUstep.conf"
+          # 1. Write the config to the host's writable /tmp directory
+          export GNUSTEP_CONFIG_FILE="/tmp/GNUstep-PakManager-$$.conf"
+          
+          cat << IN_EOF > "$GNUSTEP_CONFIG_FILE"
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
@@ -322,18 +324,27 @@ jobs:
           GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
           IN_EOF
 
-          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
+          # 2. Manually inject the boundary variables (Bypassing the poisoned GNUstep.sh)
+          export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
+          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
+          export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
           
-          # THE SECRET SAUCE: Self-healing runtime paths
-          . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
+          export GNUSTEP_LOCAL_ROOT="$HERE/usr/Local"
+          export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
+          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
+          export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
           
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Kill off localized encoding mismatches
+          # 3. Kill off localized encoding mismatches
           unset GCONV_PATH
           export LC_ALL=C
           export LANG=C
+
+          # 4. Clean up the temp file when the application closes
+          trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then

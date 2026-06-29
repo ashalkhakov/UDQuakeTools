@@ -118,6 +118,10 @@ jobs:
           cmake --install Build
           cd ..
 
+          echo "=== Manually staging libdispatch ==="
+          cp "${LOCAL_PREFIX}/lib/libdispatch.so.1" "${WORKSPACE_DIR}/AppDir/usr/lib/" || true
+          cp -P "${LOCAL_PREFIX}/lib/libdispatch.so" "${WORKSPACE_DIR}/AppDir/usr/lib/" || true
+
           echo "=== Building Eau Theme ==="
           # Clone the theme from Gershwin / GNUstep ports
           git clone --depth 1 https://github.com/gershwin-desktop/gershwin-eau-theme.git Eau
@@ -294,21 +298,32 @@ jobs:
           trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT
 
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
-          if [ -x "$HERE/usr/Local/Tools/defaults" ]; then
-            echo "Running defaults command..."
-            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager GSTheme "Eau" || true
-            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager NSFont "Noto Sans" || true
-            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager NSUserFont "Noto Sans" || true
-            "$HERE/usr/local/Tools/defaults" write com.udquake.pakmanager NSUserFixedPitchFont "Monospace" || true
+          DEFAULTS_TOOL=$(find "$HERE" -name "defaults" -executable | head -n 1)
+          if [ -x "$DEFAULTS_TOOL" ]; then
+            echo "Running defaults command with $DEFAULTS_TOOL..."
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager GSTheme "Eau"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "Noto Sans"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "Noto Sans"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "Monospace"
           else
-            echo "ERROR: defaults tool not found at $HERE/usr/Local/Tools/defaults"
+            echo "ERROR: defaults tool not found!"
           fi
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi
-          
+
+          # Generate font cache inside the AppDir so Fontconfig finds the files
+          # Assuming you put your fonts in AppDir/usr/share/fonts
+          if [ -d "AppDir/usr/share/fonts" ]; then
+             # Install a dummy fontconfig cache tool or just let the app index it
+             # Ensure the directory structure is what Fontconfig expects
+             mkdir -p AppDir/etc/fonts/conf.d
+             # Copy your fonts.conf here so Fontconfig finds it at runtime
+             cp AppDir/usr/etc/fonts.conf AppDir/etc/fonts/fonts.conf
+          fi
+
           exec "$REAL_BIN" "$@"
           EOF
           chmod +x AppDir/AppRun

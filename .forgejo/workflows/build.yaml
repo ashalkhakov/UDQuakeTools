@@ -294,62 +294,56 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
 
-      - name: Download linuxdeploy
-        run: |
-          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
-          ./linuxdeploy-x86_64.AppImage --appimage-extract
-          ./linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
-
-      - name: Package AppImage
+      - name: Package AppImage Natively
         run: |
           WORKSPACE_DIR=$(pwd)
-          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          export PATH="${WORKSPACE_DIR}/squashfs-root/usr/bin:${WORKSPACE_DIR}/squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin:$PATH"
+          # 1. Download the raw appimagetool binary directly
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          
+          # 2. Fix your AppRun launcher to completely isolate the glibc environment
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          
+          # Core GNUstep Configuration Layout
+          export GNUSTEP_PREFIX="$HERE/usr"
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
+          
+          export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
+          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
+          export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
+          
+          export GNUSTEP_LOCAL_ROOT="$HERE/usr/Local"
+          export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
+          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
+          export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
+          
+          # Setup isolated library paths
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
+          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
+
+          # THE ULTIMATE GLIBC FIX: Unset host hooks and force raw POSIX fallback execution
+          unset GCONV_PATH
+          export LC_ALL=C
+          export LANG=C
+
+          # Find the compiled ELF binary safely
+          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
+          if [ -z "$REAL_BIN" ]; then
+            REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
+          fi
+          
+          exec "$REAL_BIN" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+
+          # 3. Build the final AppImage directly via appimagetool bypassing linuxdeploy
+          export ARCH=x86_64
           export VERSION="${{ env.APP_VERSION }}"
-          export APPIMAGE_EXTRACT_AND_RUN=1
-
-          # FIX: Directly smash the faulty internal strip utility with a dummy mock
-          if [ -f "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip" ]; then
-            echo "#!/bin/sh" > "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
-            echo "exit 0" >> "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
-            chmod +x "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
-            echo "✅ Successfully neutralized internal linuxdeploy strip tool!"
-          fi
-
-          ELF_ARGS=""
-          
-          # 1. Find the core application binary
-          REAL_APP_BIN=$(find AppDir -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
-          if [ -n "$REAL_APP_BIN" ]; then
-            echo "Found application binary for deployment: $REAL_APP_BIN"
-            ELF_ARGS="--executable $REAL_APP_BIN"
-          else
-            echo "❌ CRITICAL ERROR: Could not find PakManager binary!"
-            exit 1
-          fi
-
-          # 2. Include background services
-          for tool in gdnc gpbs make_services; do
-            if [ -f "AppDir/usr/lib/$tool" ]; then
-              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
-            fi
-          done
-
-          # 3. Include backend bundle binaries explicitly to preserve tracing paths
-          find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | while read -r bundle_bin; do
-            echo "Found bundle binary: $bundle_bin"
-            ELF_ARGS="$ELF_ARGS --executable $bundle_bin"
-          done
-
-          export EXTRA_LD_LIBRARY_PATH="${WORKSPACE_DIR}/AppDir/usr/lib"
-          
-          LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
-          squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
-          
-          rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
+          ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v3

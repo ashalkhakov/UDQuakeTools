@@ -298,49 +298,11 @@ jobs:
         run: |
           WORKSPACE_DIR=$(pwd)
           
-          # 1. Download the raw appimagetool binary directly
+          # Download low-level assembly engine
           wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
           chmod +x appimagetool-x86_64.AppImage
           
-          # 2. Fix your AppRun launcher to completely isolate the glibc environment
-          cat << 'EOF' > AppDir/AppRun
-          #!/bin/sh
-          HERE="$(dirname "$(readlink -f "${0}")")"
-          
-          # Core GNUstep Configuration Layout
-          export GNUSTEP_PREFIX="$HERE/usr"
-          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
-          
-          export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
-          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
-          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
-          export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
-          
-          export GNUSTEP_LOCAL_ROOT="$HERE/usr/Local"
-          export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
-          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
-          export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
-          
-          # Setup isolated library paths
-          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
-          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
-
-          # THE ULTIMATE GLIBC FIX: Unset host hooks and force raw POSIX fallback execution
-          unset GCONV_PATH
-          export LC_ALL=C
-          export LANG=C
-
-          # Find the compiled ELF binary safely
-          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
-          if [ -z "$REAL_BIN" ]; then
-            REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
-          fi
-          
-          exec "$REAL_BIN" "$@"
-          EOF
-          chmod +x AppDir/AppRun
-
-          # 3. Build the final AppImage directly via appimagetool bypassing linuxdeploy
+          # Package the asset cluster directly into the final standalone deployment target
           export ARCH=x86_64
           export VERSION="${{ env.APP_VERSION }}"
           ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir

@@ -155,25 +155,25 @@ jobs:
                        GNUSTEP_SYSTEM_ROOT="/"
           cd "${WORKSPACE_DIR}"
 
-          # 3. Create a relocatable native GNUstep.conf
+          # 3. Create a relocatable native GNUstep.conf in the fallback location
           cat << 'EOF' > AppDir/usr/etc/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_ROOT=./
-          GNUSTEP_SYSTEM_LIBRARY=./Library
-          GNUSTEP_SYSTEM_TOOLS=./Tools
-          GNUSTEP_SYSTEM_APPS=./Applications
-          GNUSTEP_LOCAL_ROOT=./
-          GNUSTEP_LOCAL_LIBRARY=./Library
-          GNUSTEP_LOCAL_TOOLS=./Tools
-          GNUSTEP_LOCAL_APPS=./Applications
+          GNUSTEP_SYSTEM_ROOT=./System
+          GNUSTEP_SYSTEM_LIBRARY=./System/Library
+          GNUSTEP_SYSTEM_TOOLS=./System/Tools
+          GNUSTEP_SYSTEM_APPS=./System/Applications
+          GNUSTEP_LOCAL_ROOT=./Local
+          GNUSTEP_LOCAL_LIBRARY=./Local/Library
+          GNUSTEP_LOCAL_TOOLS=./Local/Tools
+          GNUSTEP_LOCAL_APPS=./Local/Applications
           EOF
           chmod 644 AppDir/usr/etc/GNUstep.conf
 
-          # 4. Copy GNUstep system tools from the native Tools path
+          # 4. Copy GNUstep system daemons from the true System Tools path
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
           
@@ -184,21 +184,20 @@ jobs:
           cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/ || true
           cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/ || true
 
-          # 5. Copy the unified Library hierarchy intact over to the AppDir
-          if [ -d "${LOCAL_PREFIX}/Library" ]; then
-            cp -Rp "${LOCAL_PREFIX}/Library" AppDir/usr/
+          # 5. Splicing the compiled framework hierarchy into the AppDir
+          if [ -d "${LOCAL_PREFIX}/System" ]; then
+            cp -Rp "${LOCAL_PREFIX}/System" AppDir/usr/
           fi
           
-          # Maintain versioned fallback bundle linking
-          BACKEND_BUNDLE=$(find AppDir/usr/Library/GNUstep/Bundles -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
+          # Maintain unversioned bundle linking inside the System layout tree
+          BACKEND_BUNDLE=$(find AppDir/usr/System/Library/GNUstep/Bundles -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
             ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"
           fi
 
-          # 6. Shared Libraries loop script (Scanning binaries to grab standard system dynamic libs)
-          # Note: We append the new Library paths so the loop copies them safely
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/Library/Libraries:$LD_LIBRARY_PATH"
+          # 6. Shared Libraries loop script
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:$LD_LIBRARY_PATH"
           for i in {1..3}; do
             for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) ! -name "*.desktop" 2>/dev/null); do
               ldd "$bin" 2>/dev/null | grep "=>" || true | while read -r line; do
@@ -235,28 +234,26 @@ jobs:
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Optimized Native AppRun Runtime Bootstrapper
+          # 8. Optimized AppRun Launcher targeting the new System folder domains
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
           
-          # Target paths absolutely using the classic layout keys
           export GNUSTEP_PREFIX="$HERE/usr"
-          export GNUSTEP_SYSTEM_ROOT="$HERE/usr"
-          export GNUSTEP_LOCAL_ROOT="$HERE/usr"
-          export GNUSTEP_NETWORK_ROOT="$HERE/usr"
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
           
-          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/Library"
-          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/Tools"
-          export GNUSTEP_SYSTEM_APPS="$HERE/usr/Applications"
+          # Force the environment domains to look into the embedded System directories
+          export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
+          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
+          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
+          export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
           
-          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/Library/Libraries:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           if [ -z "$REAL_BIN" ]; then
-            REAL_BIN="$HERE/usr/Applications/PakManager.app/PakManager"
+            REAL_BIN="$HERE/usr/System/Applications/PakManager.app/PakManager"
           fi
           exec "$REAL_BIN" "$@"
           EOF

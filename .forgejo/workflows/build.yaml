@@ -204,13 +204,13 @@ jobs:
           fi
 
           # Bring in localized string formats safely
-          if [ -d "/usr/lib/x86_64-linux-gnu/gconv" ]; then
-            mkdir -p AppDir/usr/lib/gconv
-            cp -Rp /usr/lib/x86_64-linux-gnu/gconv/* AppDir/usr/lib/gconv/
-          elif [ -d "/usr/lib64/gconv" ]; then
-            mkdir -p AppDir/usr/lib/gconv
-            cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
-          fi
+          #if [ -d "/usr/lib/x86_64-linux-gnu/gconv" ]; then
+          #  mkdir -p AppDir/usr/lib/gconv
+          #  cp -Rp /usr/lib/x86_64-linux-gnu/gconv/* AppDir/usr/lib/gconv/
+          #elif [ -d "/usr/lib64/gconv" ]; then
+          #  mkdir -p AppDir/usr/lib/gconv
+          #  cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
+          #fi
 
           # 6. Shared Libraries collection (Pipefail-Immune!)
           #export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
@@ -257,9 +257,9 @@ jobs:
           . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
 
           # Kill off localized encoding mismatches
-          unset GCONV_PATH
-          export LC_ALL=C
-          export LANG=C
+          #unset GCONV_PATH
+          #export LC_ALL=C
+          #export LANG=C
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
@@ -342,9 +342,9 @@ jobs:
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
           # 3. Kill off localized encoding mismatches
-          unset GCONV_PATH
-          export LC_ALL=C
-          export LANG=C
+          #unset GCONV_PATH
+          #export LC_ALL=C
+          #export LANG=C
 
           # 4. Clean up the temp file when the application closes
           trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT

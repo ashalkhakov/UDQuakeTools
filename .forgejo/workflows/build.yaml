@@ -181,7 +181,7 @@ jobs:
             fi
           done
 
-          # 5. FIX: Pull BOTH System and Local hierarchies into AppDir/usr/
+          # 5. Pull BOTH System and Local hierarchies into AppDir/usr/
           if [ -d "${LOCAL_PREFIX}/System" ]; then
             mkdir -p AppDir/usr/System
             cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/
@@ -189,6 +189,15 @@ jobs:
           if [ -d "${LOCAL_PREFIX}/Local" ]; then
             mkdir -p AppDir/usr/Local
             cp -Rp "${LOCAL_PREFIX}/Local/"* AppDir/usr/Local/
+          fi
+          
+          # CRITICAL FIX: Explicitly bundle libobjc from the prefix base lib directory!
+          if [ -f "${LOCAL_PREFIX}/lib/libobjc.so.4.6" ]; then
+            echo "Found libobjc runtime in base prefix, bundling to usr/lib..."
+            cp -p "${LOCAL_PREFIX}/lib/libobjc.so.4.6" AppDir/usr/lib/
+            # Create standard runtime linker symlinks for safety
+            ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so.4
+            ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so
           fi
           
           # Migrate the nested app bundle into its correct target layout domain

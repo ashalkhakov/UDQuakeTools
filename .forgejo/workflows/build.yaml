@@ -109,6 +109,15 @@ jobs:
           make install
           cd ..
           
+          echo "=== Building libdispatch (runtime dependency for Eau) ==="
+          git clone --depth 1 https://github.com/apple/swift-corelibs-libdispatch.git libdispatch
+          cd libdispatch
+          cmake -B Build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="${LOCAL_PREFIX}"
+          cmake --build Build -j$(nproc)
+          cmake --install Build
+          cd ..
+
           echo "=== Building Eau Theme ==="
           # Clone the theme from Gershwin / GNUstep ports
           git clone --depth 1 https://github.com/gershwin-desktop/gershwin-eau-theme.git Eau

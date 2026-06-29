@@ -147,15 +147,13 @@ jobs:
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
-          # 2. Install PakManager using native layout variables
+          # 2. Install PakManager safely letting gnustep-make handle its defaults
           cd Sources/PakManager
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-          make install DESTDIR="${WORKSPACE_DIR}/AppDir" \
-                       GNUSTEP_INSTALLATION_DOMAIN=SYSTEM \
-                       GNUSTEP_SYSTEM_ROOT="/"
+          make install DESTDIR="${WORKSPACE_DIR}/AppDir"
           cd "${WORKSPACE_DIR}"
 
-          # 3. Create a relocatable native GNUstep.conf in the fallback location
+          # 3. Create a relocatable native GNUstep.conf
           cat << 'EOF' > AppDir/usr/etc/GNUstep.conf
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
@@ -173,23 +171,40 @@ jobs:
           EOF
           chmod 644 AppDir/usr/etc/GNUstep.conf
 
-          # 4. Copy GNUstep system daemons from the true System Tools path
-          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-          SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
-          
-          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/ || true
-          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/lib/ || true
-          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/lib/ || true
-          cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/local/bin/ || true
-          cp -p "$SYSTEM_TOOLS_DIR/gpbs" AppDir/usr/local/bin/ || true
-          cp -p "$SYSTEM_TOOLS_DIR/make_services" AppDir/usr/local/bin/ || true
+          # 4. FIX: Dynamically find the core background tools wherever they sit inside gnustep-prefix
+          for tool in gdnc gpbs make_services; do
+            FOUND_TOOL=$(find "${LOCAL_PREFIX}" -type f -name "$tool" 2>/dev/null | head -n 1)
+            if [ -n "$FOUND_TOOL" ]; then
+              echo "Found system tool $tool at: $FOUND_TOOL"
+              cp -p "$FOUND_TOOL" AppDir/usr/lib/
+              cp -p "$FOUND_TOOL" AppDir/usr/local/bin/
+            else
+              echo "⚠️ Warning: Could not locate tool $tool anywhere in prefix!"
+            fi
+          done
 
-          # 5. Splicing the compiled framework hierarchy into the AppDir
+          # 5. FIX: Dynamic frameworks structure lift
+          # If gnustep-make deeply nested the application inside AppDir/home/runner/..., 
+          # we pull it out and place it cleanly inside AppDir/usr/System/
+          mkdir -p AppDir/usr/System
+          
+          # Copy the compiled host environment files over to the AppDir
           if [ -d "${LOCAL_PREFIX}/System" ]; then
-            cp -Rp "${LOCAL_PREFIX}/System" AppDir/usr/
+            cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/
           fi
           
-          # Maintain unversioned bundle linking inside the System layout tree
+          # If the PakManager installation step nested things deep inside AppDir, migrate them down
+          DEEP_APP_DIR=$(find AppDir -type d -name "PakManager.app" 2>/dev/null | grep -v "usr/System" | head -n 1)
+          if [ -n "$DEEP_APP_DIR" ]; then
+            echo "Relocating nested app bundle from $DEEP_APP_DIR"
+            mkdir -p AppDir/usr/System/Applications
+            cp -Rp "$DEEP_APP_DIR" AppDir/usr/System/Applications/
+          fi
+
+          # Clean up any residual redundant deep folders to keep the AppImage lean
+          find AppDir -maxdepth 1 -type d ! -name "AppDir" ! -name "usr" -exec rm -rf {} + 2>/dev/null || true
+
+          # Maintain unversioned bundle linking inside the AppImage tree
           BACKEND_BUNDLE=$(find AppDir/usr/System/Library/GNUstep/Bundles -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
@@ -234,7 +249,7 @@ jobs:
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Optimized AppRun Launcher targeting the new System folder domains
+          # 8. Dynamic AppRun bootstrapper targeting the clean system locations
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
@@ -242,7 +257,6 @@ jobs:
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
           
-          # Force the environment domains to look into the embedded System directories
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
           export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
           export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"

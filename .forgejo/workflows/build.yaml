@@ -238,10 +238,11 @@ jobs:
             cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
           fi
 
-          # 6. Shared Libraries loop script
+          # 6. Shared Libraries loop script (Optimized to skip gconv module pollution)
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
           for i in {1..3}; do
-            for bin in $(find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) ! -name "*.desktop" 2>/dev/null); do
+            # FIX: Explicitly exclude the gconv subdirectory from the dependency scan
+            for bin in $(find AppDir -path "AppDir/usr/lib/gconv" -prune -o -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) ! -name "*.desktop" -print 2>/dev/null); do
               ldd "$bin" 2>/dev/null | grep "=>" || true | while read -r line; do
                 lib=$(echo "$line" | awk '{print $3}')
                 if [ -n "$lib" ] && [ -f "$lib" ]; then

@@ -144,8 +144,6 @@ jobs:
           mkdir -p AppDir/usr/lib
           mkdir -p AppDir/usr/etc
           mkdir -p AppDir/usr/local/bin
-          mkdir -p AppDir/usr/share/applications
-          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
           # 2. Install PakManager safely letting gnustep-make handle its defaults
           cd Sources/PakManager
@@ -153,35 +151,16 @@ jobs:
           make install DESTDIR="${WORKSPACE_DIR}/AppDir"
           cd "${WORKSPACE_DIR}"
 
-          # 3. Create a relocatable native GNUstep.conf that maps BOTH domains
-          cat << 'EOF' > AppDir/usr/etc/GNUstep.conf
-          GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
-          GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
-          GNUSTEP_SYSTEM_USERS_DIR=/home
-          GNUSTEP_NETWORK_USERS_DIR=/home
-          GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_ROOT=./System
-          GNUSTEP_SYSTEM_LIBRARY=./System/Library
-          GNUSTEP_SYSTEM_TOOLS=./System/Tools
-          GNUSTEP_SYSTEM_APPS=./System/Applications
-          GNUSTEP_LOCAL_ROOT=./Local
-          GNUSTEP_LOCAL_LIBRARY=./Local/Library
-          GNUSTEP_LOCAL_TOOLS=./Local/Tools
-          GNUSTEP_LOCAL_APPS=./Local/Applications
-          EOF
-          chmod 644 AppDir/usr/etc/GNUstep.conf
-
-          # 4. Dynamically locate the background tools wherever they sit inside the prefix
+          # 3. Dynamically locate the background tools
           for tool in gdnc gpbs make_services; do
-            FOUND_TOOL=$(find "${LOCAL_PREFIX}" -type f -name "$tool" 2>/dev/null | head -n 1)
+            FOUND_TOOL=$(find "${LOCAL_PREFIX}" -type f -name "$tool" 2>/dev/null | head -n 1 || true)
             if [ -n "$FOUND_TOOL" ]; then
-              echo "Found system tool $tool at: $FOUND_TOOL"
               cp -p "$FOUND_TOOL" AppDir/usr/lib/
               cp -p "$FOUND_TOOL" AppDir/usr/local/bin/
             fi
           done
 
-          # 5. Pull BOTH System and Local hierarchies into AppDir/usr/
+          # 4. Pull BOTH System and Local hierarchies into AppDir/usr/
           if [ -d "${LOCAL_PREFIX}/System" ]; then
             mkdir -p AppDir/usr/System
             cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/
@@ -191,45 +170,40 @@ jobs:
             cp -Rp "${LOCAL_PREFIX}/Local/"* AppDir/usr/Local/
           fi
           
-          # Explicitly bundle libobjc from the prefix base lib directory
+          # Bundle libobjc from the prefix base lib directory
           if [ -f "${LOCAL_PREFIX}/lib/libobjc.so.4.6" ]; then
-            echo "Found libobjc runtime in base prefix, bundling to usr/lib..."
             cp -p "${LOCAL_PREFIX}/lib/libobjc.so.4.6" AppDir/usr/lib/
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so.4
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so
           fi
 
-          # FIX: Maintain BOTH versioned and unversioned fallback bundle linking names
-          BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
+          # 5. Maintain versioned and unversioned fallback bundle linking
+          BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1 || true)
           if [ -n "$BACKEND_BUNDLE" ]; then
             BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
             BUNDLE_NAME=$(basename "$BACKEND_BUNDLE")
-            
-            echo "Setting up bundle fallbacks in $BUNDLE_DIR targeting $BUNDLE_NAME"
-            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/libgnustep-back.bundle"
-            # This is the exact hardcoded string gnustep-gui checks during failure loops
-            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle"
+            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/libgnustep-back.bundle" || true
+            ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle" || true
           fi
           
-          # Migrate the nested app bundle into its correct target layout domain
-          DEEP_APP_DIR=$(find AppDir -type d -name "PakManager.app" 2>/dev/null | grep -v "usr/" | head -n 1)
+          # Migrate the nested app bundle safely (immune to grep-v empty return traps)
+          DEEP_APP_DIR=$(find AppDir -type d -name "PakManager.app" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
           if [ -n "$DEEP_APP_DIR" ]; then
-            echo "Relocating nested app bundle from $DEEP_APP_DIR"
             mkdir -p AppDir/usr/Local/Applications
             cp -Rp "$DEEP_APP_DIR" AppDir/usr/Local/Applications/
           fi
 
-          # Clean up residual build artifact folders at the top level of AppDir
+          # Clean up residual folders
           find AppDir -maxdepth 1 -type d ! -name "AppDir" ! -name "usr" -exec rm -rf {} + 2>/dev/null || true
 
-          # Maintain versioned fallback bundle linking inside whichever tree has the backend
-          BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1)
-          if [ -n "$BACKEND_BUNDLE" ]; then
-            BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
-            ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"
+          # Repeat bundle link fix in case migration shifted the target
+          BACKEND_BUNDLE_TWO=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1 || true)
+          if [ -n "$BACKEND_BUNDLE_TWO" ]; then
+            BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE_TWO")
+            ln -sfv $(basename "$BACKEND_BUNDLE_TWO") "$BUNDLE_DIR/libgnustep-back.bundle" || true
           fi
 
-          # Copy matching gconv modules from the runner host into the AppImage
+          # Bring in localized string formats safely
           if [ -d "/usr/lib/x86_64-linux-gnu/gconv" ]; then
             mkdir -p AppDir/usr/lib/gconv
             cp -Rp /usr/lib/x86_64-linux-gnu/gconv/* AppDir/usr/lib/gconv/
@@ -241,22 +215,16 @@ jobs:
           # 6. Shared Libraries collection (Pipefail-Immune!)
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
           
-          # Initialize safely
           find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) 2>/dev/null | grep -v "usr/lib/gconv" > /tmp/scan_bins.txt || true
 
           for i in {1..3}; do
-            echo "=== Library Dependency Scan Pass $i ==="
             touch /tmp/discovered_libs.tmp
-
             while read -r bin; do
               [ -f "$bin" ] || continue
               
-              # FIX: Safely capture ldd output. If ldd returns 1 (e.g., on a wrapper script), 
-              # the '|| true' catches it, preventing GitHub Actions from killing the workflow.
               ldd_out=$(ldd "$bin" 2>/dev/null || true)
               [ -z "$ldd_out" ] && continue
               
-              # Parse the safely captured text block
               echo "$ldd_out" | awk '/=>/ && $3 ~ /^\// {print $3}' | while read -r lib; do
                 libname=$(basename "$lib")
                 case "$libname" in
@@ -264,7 +232,6 @@ jobs:
                     ;;
                   *)
                     if [ ! -f "AppDir/usr/lib/$libname" ]; then
-                      echo "Bundling library: $libname from $lib"
                       cp -L "$lib" "AppDir/usr/lib/" || true
                       echo "AppDir/usr/lib/$libname" >> /tmp/discovered_libs.tmp
                     fi
@@ -273,7 +240,6 @@ jobs:
               done
             done < /tmp/scan_bins.txt
 
-            # Merge new libraries cleanly into the scan list
             if [ -s /tmp/discovered_libs.tmp ]; then
               cat /tmp/discovered_libs.tmp >> /tmp/scan_bins.txt
               sort -u /tmp/scan_bins.txt > /tmp/scan_bins.tmp && mv /tmp/scan_bins.tmp /tmp/scan_bins.txt
@@ -282,29 +248,14 @@ jobs:
           done
           rm -f /tmp/scan_bins.txt
 
-          # 7. Metadata Generation
-          cat << 'EOF' > AppDir/PakManager.desktop
-          [Desktop Entry]
-          Type=Application
-          Name=Pak Manager
-          Exec=PakManager
-          Icon=PakManager
-          Categories=Utility;
-          Comment=Manage Quake PAK and PK3/PK4 archive files.
-          Terminal=false
-          EOF
-
-          python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
-          cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
-
-          # 8. Bulletproof AppRun Launcher with Absolute Dynamic Config Injection
+          # 7. Bulletproof AppRun Launcher (Dynamic Conf Generation)
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
           
-          # 1. FORCE write an absolute, dynamically accurate GNUstep.conf based on the current execution path
+          # Force a fully-resolved path GNUstep.conf to bypass CWD resolution crashes
           mkdir -p "$HERE/usr/etc"
-          cat << EOF > "$HERE/usr/etc/GNUstep.conf"
+          cat << IN_EOF > "$HERE/usr/etc/GNUstep.conf"
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
           GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
           GNUSTEP_SYSTEM_USERS_DIR=/home
@@ -318,9 +269,8 @@ jobs:
           GNUSTEP_LOCAL_LIBRARY=$HERE/usr/Local/Library
           GNUSTEP_LOCAL_TOOLS=$HERE/usr/Local/Tools
           GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
-          EOF
+          IN_EOF
 
-          # 2. Export environment boundaries
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
           
@@ -337,13 +287,12 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # 3. Clean environment isolation tags
+          # Kill off localized encoding mismatches
           unset GCONV_PATH
           export LC_ALL=C
           export LANG=C
 
-          # 4. Execute target
-          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
+          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi

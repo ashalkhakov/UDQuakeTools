@@ -70,7 +70,7 @@ jobs:
           make install
           cd ..
 
-          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           export C_INCLUDE_PATH="${LOCAL_PREFIX}/include:${C_INCLUDE_PATH}"
@@ -116,7 +116,7 @@ jobs:
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
           cd Sources/PakManager
@@ -127,7 +127,7 @@ jobs:
           WORKSPACE_DIR=$(pwd)
           LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
           
           cd Tests
@@ -149,7 +149,7 @@ jobs:
 
           # 2. Install PakManager using native layout variables
           cd Sources/PakManager
-          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           make install DESTDIR="${WORKSPACE_DIR}/AppDir" \
                        GNUSTEP_INSTALLATION_DOMAIN=SYSTEM \
                        GNUSTEP_SYSTEM_ROOT="/"
@@ -174,7 +174,7 @@ jobs:
           chmod 644 AppDir/usr/etc/GNUstep.conf
 
           # 4. Copy GNUstep system tools from the native Tools path
-          . "${LOCAL_PREFIX}/Library/Makefiles/GNUstep.sh"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           SYSTEM_TOOLS_DIR=$(gnustep-config --variable=GNUSTEP_SYSTEM_TOOLS)
           
           cp -p "$SYSTEM_TOOLS_DIR/gdnc" AppDir/usr/lib/ || true

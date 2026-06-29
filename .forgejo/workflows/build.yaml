@@ -181,7 +181,7 @@ jobs:
             fi
           done
 
-# 5. Pull BOTH System and Local hierarchies into AppDir/usr/
+          # 5. Pull BOTH System and Local hierarchies into AppDir/usr/
           if [ -d "${LOCAL_PREFIX}/System" ]; then
             mkdir -p AppDir/usr/System
             cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/

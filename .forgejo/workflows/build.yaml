@@ -311,6 +311,9 @@ jobs:
           export VERSION="${{ env.APP_VERSION }}"
           export APPIMAGE_EXTRACT_AND_RUN=1
 
+          # FIX: Force linuxdeploy to skip its broken internal strip process
+          export STRIP=true
+
           ELF_ARGS=""
           
           # 1. Find the core application binary
@@ -330,19 +333,14 @@ jobs:
             fi
           done
 
-          # 3. FIX: Force linuxdeploy to inspect and trace the hidden GNUstep backend bundle binary!
-          BACKEND_SO=$(find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
-          if [ -n "$BACKEND_SO" ]; then
-            echo "Found hidden backend bundle binary to trace: $BACKEND_SO"
-            ELF_ARGS="$ELF_ARGS --executable $BACKEND_SO"
-          else
-            echo "⚠️ Warning: Could not locate internal bundle binary for dependency injection!"
-          fi
+          # 3. Include backend bundle binaries explicitly to preserve tracing paths
+          find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | while read -r bundle_bin; do
+            echo "Found bundle binary: $bundle_bin"
+            ELF_ARGS="$ELF_ARGS --executable $bundle_bin"
+          done
 
-          # Retain manually collected custom libs during cleanups
           export EXTRA_LD_LIBRARY_PATH="${WORKSPACE_DIR}/AppDir/usr/lib"
           
-          # Inject exact native paths for resolution
           LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
           

@@ -213,40 +213,7 @@ jobs:
           fi
 
           # 6. Shared Libraries collection (Pipefail-Immune!)
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
-          
-          find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) 2>/dev/null | grep -v "usr/lib/gconv" > /tmp/scan_bins.txt || true
-
-          for i in {1..3}; do
-            touch /tmp/discovered_libs.tmp
-            while read -r bin; do
-              [ -f "$bin" ] || continue
-              
-              ldd_out=$(ldd "$bin" 2>/dev/null || true)
-              [ -z "$ldd_out" ] && continue
-              
-              echo "$ldd_out" | awk '/=>/ && $3 ~ /^\// {print $3}' | while read -r lib; do
-                libname=$(basename "$lib")
-                case "$libname" in
-                  libc.so*|libpthread.so*|libdl.so*|libm.so*|librt.so*|libX11.so*|libXext.so*|libxcb.so*|libGL.so*|libGLdispatch.so*|libGLX.so*|libstdc++.so*|libgcc_s.so*)
-                    ;;
-                  *)
-                    if [ ! -f "AppDir/usr/lib/$libname" ]; then
-                      cp -L "$lib" "AppDir/usr/lib/" || true
-                      echo "AppDir/usr/lib/$libname" >> /tmp/discovered_libs.tmp
-                    fi
-                    ;;
-                esac
-              done
-            done < /tmp/scan_bins.txt
-
-            if [ -s /tmp/discovered_libs.tmp ]; then
-              cat /tmp/discovered_libs.tmp >> /tmp/scan_bins.txt
-              sort -u /tmp/scan_bins.txt > /tmp/scan_bins.tmp && mv /tmp/scan_bins.tmp /tmp/scan_bins.txt
-            fi
-            rm -f /tmp/discovered_libs.tmp
-          done
-          rm -f /tmp/scan_bins.txt
+          #export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
 
           # 7. Bulletproof AppRun Launcher (Dynamic Conf Generation)
           cat << 'EOF' > AppDir/AppRun
@@ -315,11 +282,12 @@ jobs:
           echo "✅ AppDir is ready and configured natively!"
           ls -la AppDir/
 
-      - name: Package AppImage Natively
+      - name: Package AppImage via linuxdeploy
         run: |
           WORKSPACE_DIR=$(pwd)
+          LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
           
-          # 1. Restore minimal metadata 
+          # 1. Restore Metadata (Strictly required by linuxdeploy)
           cat << 'EOF' > AppDir/PakManager.desktop
           [Desktop Entry]
           Type=Application
@@ -356,11 +324,13 @@ jobs:
 
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
           
+          # THE SECRET SAUCE: Self-healing runtime paths
           . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
           
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
+          # Kill off localized encoding mismatches
           unset GCONV_PATH
           export LC_ALL=C
           export LANG=C
@@ -374,19 +344,46 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
 
-          # ====================================================================
-          # 3. MANUAL APPIMAGE ASSEMBLY (Bypassing appimagetool validation entirely)
-          # ====================================================================
+          # 3. Setup linuxdeploy and lobotomize the broken strip tool
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+
+          echo "Extracting linuxdeploy to patch internal tools..."
+          ./linuxdeploy-x86_64.AppImage --appimage-extract >/dev/null 2>&1
           
-          echo "Downloading modern AppImageKit components..."
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
+          # FIX: Replace the failing internal strip utility with a clean exit wrapper
+          echo -e '#!/bin/sh\nexit 0' > squashfs-root/usr/bin/strip
+          chmod +x squashfs-root/usr/bin/strip
+
+          # 4. Gather Executables for linuxdeploy tracing
+          ELF_ARGS=""
+          REAL_APP_BIN=$(find AppDir -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
+          if [ -n "$REAL_APP_BIN" ]; then
+            ELF_ARGS="--executable $REAL_APP_BIN"
+          fi
+
+          for tool in gdnc gpbs make_services; do
+            if [ -f "AppDir/usr/lib/$tool" ]; then
+              ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
+            fi
+          done
+
+          # Feed the hidden GNUstep bundles directly to the parser
+          find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | while read -r bundle_bin; do
+            ELF_ARGS="$ELF_ARGS --executable $bundle_bin"
+          done
+
+          # 5. Run the patched linuxdeploy process
+          export PATH="${WORKSPACE_DIR}/squashfs-root/usr/bin:$PATH"
+          export OUTPUT="PakManager-Linux-${{ env.APP_VERSION }}.AppImage"
           
-          echo "Extracting raw compression tools..."
-          ./appimagetool-x86_64.AppImage --appimage-extract >/dev/null 2>&1
+          # Map paths so linuxdeploy finds libobjc and gnustep-base natively
+          LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
+          squashfs-root/AppRun --appdir AppDir $ELF_ARGS --plugin appimage
           
-          echo "Compressing AppDir into raw SquashFS filesystem..."
-          ./squashfs-root/usr/lib/appimagekit/
+          # Cleanup
+          rm -rf squashfs-root linuxdeploy*.AppImage
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4

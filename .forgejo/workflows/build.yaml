@@ -238,17 +238,19 @@ jobs:
             cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
           fi
 
-          # 6. Shared Libraries collection (Robust parsing via flat file inspection)
+          # 6. Shared Libraries collection (Linear, deterministic file scanning)
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
           
-          # Gather all target binaries, completely ignoring the gconv directory
+          # 1. Establish the clean seed manifest
           find AppDir -type f \( -executable -o -name "*.so*" -o -name "*.bundle" \) 2>/dev/null | grep -v "usr/lib/gconv" > /tmp/scan_bins.txt
 
           for i in {1..3}; do
+            echo "=== Library Dependency Scan Pass $i ==="
+            touch /tmp/discovered_libs.tmp
+
             while read -r bin; do
               [ -f "$bin" ] || continue
               
-              # Extract clean absolute dependency paths safely
               ldd "$bin" 2>/dev/null | grep "=>" | awk '{print $3}' | grep "^/" | while read -r lib; do
                 libname=$(basename "$lib")
                 case "$libname" in
@@ -258,16 +260,20 @@ jobs:
                     if [ ! -f "AppDir/usr/lib/$libname" ]; then
                       echo "Bundling library: $libname from $lib"
                       cp -L "$lib" "AppDir/usr/lib/"
-                      # Append newly copied libraries back to our manifest so their dependencies get resolved in the next iteration
-                      echo "AppDir/usr/lib/$libname" >> /tmp/scan_bins.txt
+                      # Log to a clean secondary file to completely protect our primary file descriptor loop
+                      echo "AppDir/usr/lib/$libname" >> /tmp/discovered_libs.tmp
                     fi
                     ;;
                 esac
               done
             done < /tmp/scan_bins.txt
-            
-            # Sort and deduplicate the scan list for the next iteration pass
-            sort -u /tmp/scan_bins.txt > /tmp/scan_bins.tmp && mv /tmp/scan_bins.tmp /tmp/scan_bins.txt
+
+            # 2. Linear synchronization break: Merging new additions cleanly
+            if [ -s /tmp/discovered_libs.tmp ]; then
+              cat /tmp/discovered_libs.tmp >> /tmp/scan_bins.txt
+              sort -u /tmp/scan_bins.txt > /tmp/scan_bins.tmp && mv /tmp/scan_bins.tmp /tmp/scan_bins.txt
+            fi
+            rm -f /tmp/discovered_libs.tmp
           done
           rm -f /tmp/scan_bins.txt
 

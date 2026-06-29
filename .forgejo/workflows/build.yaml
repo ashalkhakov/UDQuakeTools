@@ -393,7 +393,7 @@ jobs:
           rm -rf squashfs-root linuxdeploy*.AppImage
 
       - name: Upload Linux AppImage Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: PakManager-Linux-${{ env.APP_VERSION }}
           path: ./*.AppImage

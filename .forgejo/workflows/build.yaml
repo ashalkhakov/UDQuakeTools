@@ -295,30 +295,38 @@ jobs:
           export VERSION="${{ env.APP_VERSION }}"
           export APPIMAGE_EXTRACT_AND_RUN=1
 
-          # Dynamically find the application binary inside the new layout
           ELF_ARGS=""
-          REAL_APP_BIN=$(find AppDir -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           
+          # 1. Find the core application binary
+          REAL_APP_BIN=$(find AppDir -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           if [ -n "$REAL_APP_BIN" ]; then
             echo "Found application binary for deployment: $REAL_APP_BIN"
             ELF_ARGS="--executable $REAL_APP_BIN"
           else
-            echo "❌ CRITICAL ERROR: Could not find PakManager binary in AppDir!"
+            echo "❌ CRITICAL ERROR: Could not find PakManager binary!"
             exit 1
           fi
 
-          # Include background services
+          # 2. Include background services
           for tool in gdnc gpbs make_services; do
             if [ -f "AppDir/usr/lib/$tool" ]; then
               ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
             fi
           done
 
-          # Tell linuxdeploy to look into our internal bundle folder during final trimming
+          # 3. FIX: Force linuxdeploy to inspect and trace the hidden GNUstep backend bundle binary!
+          BACKEND_SO=$(find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
+          if [ -n "$BACKEND_SO" ]; then
+            echo "Found hidden backend bundle binary to trace: $BACKEND_SO"
+            ELF_ARGS="$ELF_ARGS --executable $BACKEND_SO"
+          else
+            echo "⚠️ Warning: Could not locate internal bundle binary for dependency injection!"
+          fi
+
+          # Retain manually collected custom libs during cleanups
           export EXTRA_LD_LIBRARY_PATH="${WORKSPACE_DIR}/AppDir/usr/lib"
           
-          # FIX: Map LD_LIBRARY_PATH to the exact native GNUstep directory structure 
-          # so linuxdeploy can trace libgnustep-base.so and libgnustep-gui.so perfectly
+          # Inject exact native paths for resolution
           LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
           

@@ -315,17 +315,87 @@ jobs:
           echo "✅ AppDir is ready and configured natively!"
           ls -la AppDir/
 
-      - name: Save Linux AppDir Locally
+      - name: Package AppImage Natively
         run: |
-          mkdir -p /home/runner/build-artifacts
-          rm -rf /home/runner/build-artifacts/AppDir
+          WORKSPACE_DIR=$(pwd)
           
-          # Copy the raw AppDir layout directly to the host filesystem
-          cp -Rp AppDir /home/runner/build-artifacts/
-          echo "✅ Standalone AppDir saved to /home/runner/build-artifacts/AppDir"
+          # 1. Restore required metadata (Exec must match the AppRun wrapper target)
+          cat << 'EOF' > AppDir/PakManager.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=Pak Manager
+          Exec=AppRun
+          Icon=PakManager
+          Categories=Utility;
+          Terminal=false
+          EOF
+          
+          # Generate a tiny valid PNG icon
+          python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))" || true
+
+          # 2. Inject your Secret Sauce AppRun Script
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          
+          # Generate the dynamic config targeting the current mount point
+          mkdir -p "$HERE/usr/etc"
+          cat << IN_EOF > "$HERE/usr/etc/GNUstep.conf"
+          GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
+          GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
+          GNUSTEP_SYSTEM_USERS_DIR=/home
+          GNUSTEP_NETWORK_USERS_DIR=/home
+          GNUSTEP_LOCAL_USERS_DIR=/home
+          GNUSTEP_SYSTEM_ROOT=$HERE/usr/System
+          GNUSTEP_SYSTEM_LIBRARY=$HERE/usr/System/Library
+          GNUSTEP_SYSTEM_TOOLS=$HERE/usr/System/Tools
+          GNUSTEP_SYSTEM_APPS=$HERE/usr/System/Applications
+          GNUSTEP_LOCAL_ROOT=$HERE/usr/Local
+          GNUSTEP_LOCAL_LIBRARY=$HERE/usr/Local/Library
+          GNUSTEP_LOCAL_TOOLS=$HERE/usr/Local/Tools
+          GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
+          IN_EOF
+
+          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
+          
+          # THE SECRET SAUCE: Let GNUstep map its own environment dynamically
+          . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
+          
+          # Append our custom bundled libraries
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
+
+          # Kill off localized encoding mismatches
+          unset GCONV_PATH
+          export LC_ALL=C
+          export LANG=C
+
+          # Find and boot the target
+          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
+          if [ -z "$REAL_BIN" ]; then
+            REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
+          fi
+          
+          exec "$REAL_BIN" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+
+          # 3. Download and Run appimagetool safely
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          
+          export ARCH=x86_64
+          export VERSION="${{ env.APP_VERSION }}"
+          export NO_VALIDATE=1
+          
+          # Pack it up!
+          ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
+          
+          # Clean up the builder tool so it isn't uploaded
+          rm -f appimagetool-x86_64.AppImage
 
       - name: Upload Linux AppImage Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: PakManager-Linux-${{ env.APP_VERSION }}
           path: ./*.AppImage

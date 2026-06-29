@@ -324,6 +324,9 @@ jobs:
           GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
           IN_EOF
 
+          # FIX: Lock down the config file so GNUstep's security checks accept it
+          chmod 600 "$GNUSTEP_CONFIG_FILE"
+
           # 2. Manually inject the boundary variables (Bypassing the poisoned GNUstep.sh)
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
           export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"

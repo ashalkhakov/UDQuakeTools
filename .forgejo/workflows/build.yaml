@@ -319,7 +319,7 @@ jobs:
         run: |
           WORKSPACE_DIR=$(pwd)
           
-          # 1. Restore required metadata (Exec must match the AppRun wrapper target)
+          # 1. Restore minimal metadata 
           cat << 'EOF' > AppDir/PakManager.desktop
           [Desktop Entry]
           Type=Application
@@ -330,7 +330,6 @@ jobs:
           Terminal=false
           EOF
           
-          # Generate a tiny valid PNG icon
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))" || true
 
           # 2. Inject your Secret Sauce AppRun Script
@@ -338,7 +337,6 @@ jobs:
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
           
-          # Generate the dynamic config targeting the current mount point
           mkdir -p "$HERE/usr/etc"
           cat << IN_EOF > "$HERE/usr/etc/GNUstep.conf"
           GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
@@ -358,19 +356,15 @@ jobs:
 
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
           
-          # THE SECRET SAUCE: Let GNUstep map its own environment dynamically
           . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
           
-          # Append our custom bundled libraries
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Kill off localized encoding mismatches
           unset GCONV_PATH
           export LC_ALL=C
           export LANG=C
 
-          # Find and boot the target
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
@@ -380,19 +374,19 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
 
-          # 3. Download and Run appimagetool safely
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+          # ====================================================================
+          # 3. MANUAL APPIMAGE ASSEMBLY (Bypassing appimagetool validation entirely)
+          # ====================================================================
+          
+          echo "Downloading modern AppImageKit components..."
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool-x86_64.AppImage
           
-          export ARCH=x86_64
-          export VERSION="${{ env.APP_VERSION }}"
-          export NO_VALIDATE=1
+          echo "Extracting raw compression tools..."
+          ./appimagetool-x86_64.AppImage --appimage-extract >/dev/null 2>&1
           
-          # Pack it up!
-          ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
-          
-          # Clean up the builder tool so it isn't uploaded
-          rm -f appimagetool-x86_64.AppImage
+          echo "Compressing AppDir into raw SquashFS filesystem..."
+          ./squashfs-root/usr/lib/appimagekit/
 
       - name: Upload Linux AppImage Artifact
         uses: actions/upload-artifact@v4

@@ -118,10 +118,6 @@ jobs:
           cmake --install Build
           cd ..
 
-          echo "=== Manually staging libdispatch ==="
-          cp "${LOCAL_PREFIX}/lib/libdispatch.so.1" "${WORKSPACE_DIR}/AppDir/usr/lib/" || true
-          cp -P "${LOCAL_PREFIX}/lib/libdispatch.so" "${WORKSPACE_DIR}/AppDir/usr/lib/" || true
-
           echo "=== Building Eau Theme ==="
           # Clone the theme from Gershwin / GNUstep ports
           git clone --depth 1 https://github.com/gershwin-desktop/gershwin-eau-theme.git Eau
@@ -203,6 +199,14 @@ jobs:
             cp -p "${LOCAL_PREFIX}/lib/libobjc.so.4.6" AppDir/usr/lib/
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so.4
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so
+          fi
+
+          # Bundle libdispatch safely (Checks both lib/ and lib64/ depending on CMake's mood)
+          echo "=== Manually staging libdispatch ==="
+          if ls "${LOCAL_PREFIX}/lib"/libdispatch.so* 1> /dev/null 2>&1; then
+            cp -p "${LOCAL_PREFIX}/lib"/libdispatch.so* AppDir/usr/lib/
+          elif ls "${LOCAL_PREFIX}/lib64"/libdispatch.so* 1> /dev/null 2>&1; then
+            cp -p "${LOCAL_PREFIX}/lib64"/libdispatch.so* AppDir/usr/lib/
           fi
 
           # 5. Maintain versioned and unversioned fallback bundle linking
@@ -312,16 +316,6 @@ jobs:
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
-          fi
-
-          # Generate font cache inside the AppDir so Fontconfig finds the files
-          # Assuming you put your fonts in AppDir/usr/share/fonts
-          if [ -d "AppDir/usr/share/fonts" ]; then
-             # Install a dummy fontconfig cache tool or just let the app index it
-             # Ensure the directory structure is what Fontconfig expects
-             mkdir -p AppDir/etc/fonts/conf.d
-             # Copy your fonts.conf here so Fontconfig finds it at runtime
-             cp AppDir/usr/etc/fonts.conf AppDir/etc/fonts/fonts.conf
           fi
 
           exec "$REAL_BIN" "$@"

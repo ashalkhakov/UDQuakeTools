@@ -296,6 +296,9 @@ jobs:
           export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
           
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          # FIX: Force-load the symbols into memory before GNUstep even asks for them
+          # (needed to fix Eau theme)
+          export LD_PRELOAD="$HERE/usr/lib/libdispatch.so:$HERE/usr/lib/libBlocksRuntime.so"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
           # 3. Kill off localized encoding mismatches

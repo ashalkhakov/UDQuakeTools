@@ -109,6 +109,16 @@ jobs:
           make install
           cd ..
           
+          echo "=== Building Eau Theme ==="
+          # Clone the theme from Gershwin / GNUstep ports
+          git clone --depth 1 https://github.com/gnustep/ports-themes-Eau.git Eau
+          cd Eau
+          # source the environment to let gnustep-make install it inside the local prefix
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
+          make -j$(nproc)
+          make install
+          cd ..
+
           echo "=== GNUstep Local Stack Compilation Complete ==="
 
       - name: Build PakManager App
@@ -267,8 +277,9 @@ jobs:
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi
           
-          # Force GNUstep to use universally mapped Linux font aliases instead of Helvetica
+          # Force Eau theme activation and pass universally mapped fallback fonts
           exec "$REAL_BIN" \
+            -GSTheme "Eau" \
             -NSFont "Sans" \
             -NSUserFont "Sans" \
             -NSUserFixedPitchFont "Monospace" \
@@ -392,6 +403,11 @@ jobs:
           # Feed the hidden GNUstep bundles directly to the parser
           find AppDir/usr -path "*/Bundles/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | while read -r bundle_bin; do
             ELF_ARGS="$ELF_ARGS --executable $bundle_bin"
+          done
+
+          # NEW: Trace any theme bundle binaries inside the local tree
+          find AppDir/usr -path "*/Themes/*" -type f -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | while read -r theme_bin; do
+            ELF_ARGS="$ELF_ARGS --executable $theme_bin"
           done
 
           # 5. Run the patched linuxdeploy process

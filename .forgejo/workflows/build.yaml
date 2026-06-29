@@ -227,107 +227,6 @@ jobs:
             ln -sfv $(basename "$BACKEND_BUNDLE_TWO") "$BUNDLE_DIR/libgnustep-back.bundle" || true
           fi
 
-          # Bring in localized string formats safely
-          #if [ -d "/usr/lib/x86_64-linux-gnu/gconv" ]; then
-          #  mkdir -p AppDir/usr/lib/gconv
-          #  cp -Rp /usr/lib/x86_64-linux-gnu/gconv/* AppDir/usr/lib/gconv/
-          #elif [ -d "/usr/lib64/gconv" ]; then
-          #  mkdir -p AppDir/usr/lib/gconv
-          #  cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
-          #fi
-
-          # 6. Shared Libraries collection (Pipefail-Immune!)
-          #export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
-
-          # 7. Bulletproof AppRun Launcher (Dynamic Conf Generation)
-          cat << 'EOF' > AppDir/AppRun
-          #!/bin/sh
-          HERE="$(dirname "$(readlink -f "${0}")")"
-          
-          # Force a fully-resolved path GNUstep.conf to bypass CWD resolution crashes
-          mkdir -p "$HERE/usr/etc"
-          cat << IN_EOF > "$HERE/usr/etc/GNUstep.conf"
-          GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
-          GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
-          GNUSTEP_SYSTEM_USERS_DIR=/home
-          GNUSTEP_NETWORK_USERS_DIR=/home
-          GNUSTEP_LOCAL_USERS_DIR=/home
-          GNUSTEP_SYSTEM_ROOT=$HERE/usr/System
-          GNUSTEP_SYSTEM_LIBRARY=$HERE/usr/System/Library
-          GNUSTEP_SYSTEM_TOOLS=$HERE/usr/System/Tools
-          GNUSTEP_SYSTEM_APPS=$HERE/usr/System/Applications
-          GNUSTEP_LOCAL_ROOT=$HERE/usr/Local
-          GNUSTEP_LOCAL_LIBRARY=$HERE/usr/Local/Library
-          GNUSTEP_LOCAL_TOOLS=$HERE/usr/Local/Tools
-          GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
-          IN_EOF
-
-          export GNUSTEP_PREFIX="$HERE/usr"
-          export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
-
-          # Pointing to the host's real home directory
-          export GNUSTEP_USER_ROOT="$HOME"
-          export GNUSTEP_USER_DEFAULTS_DIR="$HOME/GNUstep/Defaults"
-
-          export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
-          export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
-          export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
-          export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
-          
-          export GNUSTEP_LOCAL_ROOT="$HERE/usr/Local"
-          export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
-          export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
-          export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
-
-          export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
-          export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
-
-          . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
-
-          # Kill off localized encoding mismatches
-          #unset GCONV_PATH
-          #export LC_ALL=C
-          #export LANG=C
-          
-          # Find and boot the target
-          REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
-          if [ -z "$REAL_BIN" ]; then
-            REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
-          fi
-
-          # SET DEFAULTS NATIVELY BEFORE LAUNCH
-          # Point the GNUSTEP_USER_ROOT to a writable folder inside /tmp/
-          # so 'defaults' has a place to write the .GNUstepDefaults file.
-          #export GNUSTEP_USER_ROOT="/tmp/gnustep-home"
-          #mkdir -p "$GNUSTEP_USER_ROOT/GNUstep/Defaults"
-          # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
-          if [ -x "$HERE/usr/System/Tools/defaults" ]; then
-            echo "Running defaults command..."
-            "$HERE/usr/System/Tools/defaults" write PakManager GSTheme "Eau" || true
-            "$HERE/usr/System/Tools/defaults" write PakManager NSFont "Sans" || true
-            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFont "Sans" || true
-            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
-          else
-            echo "ERROR: defaults tool not found at $HERE/usr/System/Tools/defaults"
-          fi
-          
-          # Force Eau theme activation and pass universally mapped fallback fonts
-          exec "$REAL_BIN" "$@"
-          EOF
-          chmod +x AppDir/AppRun
-
-      - name: Verify AppDir Layout
-        run: |
-          echo "=== Verifying Built Artifact Directory Structure ==="
-          if [ ! -f "AppDir/AppRun" ]; then
-            echo "❌ Error: AppRun script is missing from AppDir!"
-            exit 1
-          fi
-          
-          chmod +x AppDir/AppRun
-          echo "✅ AppDir is ready and configured natively!"
-          ls -la AppDir/
-
       - name: Package AppImage via linuxdeploy
         run: |
           WORKSPACE_DIR=$(pwd)
@@ -390,9 +289,6 @@ jobs:
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
           # 3. Kill off localized encoding mismatches
-          #unset GCONV_PATH
-          #export LC_ALL=C
-          #export LANG=C
 
           # 4. Clean up the temp file when the application closes
           trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT

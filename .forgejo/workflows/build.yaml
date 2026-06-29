@@ -170,6 +170,11 @@ jobs:
           make install DESTDIR="${WORKSPACE_DIR}/AppDir"
           cd "${WORKSPACE_DIR}"
 
+          if [ -d "${LOCAL_PREFIX}/System/Library/Themes" ]; then
+            mkdir -p AppDir/usr/System/Library/Themes
+            cp -Rp "${LOCAL_PREFIX}/System/Library/Themes/"* AppDir/usr/System/Library/Themes/
+          fi
+
           # 3. Dynamically locate the background tools
           for tool in gdnc gpbs make_services; do
             FOUND_TOOL=$(find "${LOCAL_PREFIX}" -type f -name "$tool" 2>/dev/null | head -n 1 || true)
@@ -287,6 +292,10 @@ jobs:
           fi
 
           # SET DEFAULTS NATIVELY BEFORE LAUNCH
+          # Point the GNUSTEP_USER_ROOT to a writable folder inside /tmp/
+          # so 'defaults' has a place to write the .GNUstepDefaults file.
+          export GNUSTEP_USER_ROOT="/tmp/gnustep-home"
+          mkdir -p "$GNUSTEP_USER_ROOT/GNUstep/Defaults"
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
           if [ -x "$HERE/usr/System/Tools/defaults" ]; then
             "$HERE/usr/System/Tools/defaults" write PakManager GSTheme "Eau" || true
@@ -345,6 +354,8 @@ jobs:
           GNUSTEP_NETWORK_USERS_DIR=/home
           GNUSTEP_LOCAL_USERS_DIR=/home
           GNUSTEP_SYSTEM_ROOT=$HERE/usr/System
+          # Ensure themes are searchable
+          GNUSTEP_SYSTEM_LIBRARIES=$HERE/usr/System/Library
           GNUSTEP_SYSTEM_LIBRARY=$HERE/usr/System/Library
           GNUSTEP_SYSTEM_TOOLS=$HERE/usr/System/Tools
           GNUSTEP_SYSTEM_APPS=$HERE/usr/System/Applications

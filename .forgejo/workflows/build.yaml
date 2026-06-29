@@ -296,10 +296,10 @@ jobs:
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
           if [ -x "$HERE/usr/Local/Tools/defaults" ]; then
             echo "Running defaults command..."
-            "$HERE/usr/Local/Tools/defaults" write PakManager GSTheme "Eau" || true
-            "$HERE/usr/Local/Tools/defaults" write PakManager NSFont "Noto Sans" || true
-            "$HERE/usr/Local/Tools/defaults" write PakManager NSUserFont "Noto Sans" || true
-            "$HERE/usr/local/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
+            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager GSTheme "Eau" || true
+            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager NSFont "Noto Sans" || true
+            "$HERE/usr/Local/Tools/defaults" write com.udquake.pakmanager NSUserFont "Noto Sans" || true
+            "$HERE/usr/local/Tools/defaults" write com.udquake.pakmanager NSUserFixedPitchFont "Monospace" || true
           else
             echo "ERROR: defaults tool not found at $HERE/usr/Local/Tools/defaults"
           fi

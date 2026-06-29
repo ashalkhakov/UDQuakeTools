@@ -287,6 +287,8 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
+          . "$HERE/usr/System/Library/Makefiles/GNUstep.sh"
+
           # Kill off localized encoding mismatches
           unset GCONV_PATH
           export LC_ALL=C

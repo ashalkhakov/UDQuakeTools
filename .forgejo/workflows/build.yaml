@@ -247,7 +247,7 @@ jobs:
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Clean AppRun with Dynamic Linker Debugging Enabled
+          # 8. Clean AppRun with Gconv Isolate Fix
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
@@ -268,8 +268,10 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # FORCE THE LINKER TO PRINT TRACE LOGS FOR DLOPEN FAILURES
-          export LD_DEBUG=files,libs
+          # FIX: Prevent glibc version mismatch crashes by disabling host gconv module loading
+          export GCONV_PATH=/dev/null
+          export LC_ALL=C
+          export LANG=C
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           if [ -z "$REAL_BIN" ]; then

@@ -264,7 +264,11 @@ jobs:
 
           export GNUSTEP_PREFIX="$HERE/usr"
           export GNUSTEP_CONFIG_FILE="$HERE/usr/etc/GNUstep.conf"
-          
+
+          # Pointing to the host's real home directory
+          export GNUSTEP_USER_ROOT="$HOME"
+          export GNUSTEP_USER_DEFAULTS_DIR="$HOME/GNUstep/Defaults"
+
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
           export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
           export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
@@ -274,7 +278,7 @@ jobs:
           export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
           export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
           export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
-          
+
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
@@ -294,14 +298,17 @@ jobs:
           # SET DEFAULTS NATIVELY BEFORE LAUNCH
           # Point the GNUSTEP_USER_ROOT to a writable folder inside /tmp/
           # so 'defaults' has a place to write the .GNUstepDefaults file.
-          export GNUSTEP_USER_ROOT="/tmp/gnustep-home"
-          mkdir -p "$GNUSTEP_USER_ROOT/GNUstep/Defaults"
+          #export GNUSTEP_USER_ROOT="/tmp/gnustep-home"
+          #mkdir -p "$GNUSTEP_USER_ROOT/GNUstep/Defaults"
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
           if [ -x "$HERE/usr/System/Tools/defaults" ]; then
+            echo "Running defaults command..."
             "$HERE/usr/System/Tools/defaults" write PakManager GSTheme "Eau" || true
             "$HERE/usr/System/Tools/defaults" write PakManager NSFont "Sans" || true
             "$HERE/usr/System/Tools/defaults" write PakManager NSUserFont "Sans" || true
             "$HERE/usr/System/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
+          else
+            echo "ERROR: defaults tool not found at $HERE/usr/System/Tools/defaults"
           fi
           
           # Force Eau theme activation and pass universally mapped fallback fonts

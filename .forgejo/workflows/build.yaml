@@ -295,7 +295,7 @@ jobs:
           export VERSION="${{ env.APP_VERSION }}"
           export APPIMAGE_EXTRACT_AND_RUN=1
 
-          # FIX 1: Dynamically find the real PakManager application binary anywhere in AppDir
+          # Dynamically find the application binary inside the new layout
           ELF_ARGS=""
           REAL_APP_BIN=$(find AppDir -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           
@@ -303,21 +303,23 @@ jobs:
             echo "Found application binary for deployment: $REAL_APP_BIN"
             ELF_ARGS="--executable $REAL_APP_BIN"
           else
-            echo "❌ CRITICAL ERROR: Could not find PakManager binary in AppDir to pass to linuxdeploy!"
+            echo "❌ CRITICAL ERROR: Could not find PakManager binary in AppDir!"
             exit 1
           fi
 
-          # Include the background system tools
+          # Include background services
           for tool in gdnc gpbs make_services; do
             if [ -f "AppDir/usr/lib/$tool" ]; then
               ELF_ARGS="$ELF_ARGS --executable AppDir/usr/lib/$tool"
             fi
           done
 
-          # FIX 2: Ensure linuxdeploy retains libzip by explicitly prioritizing your AppDir path
+          # Tell linuxdeploy to look into our internal bundle folder during final trimming
           export EXTRA_LD_LIBRARY_PATH="${WORKSPACE_DIR}/AppDir/usr/lib"
           
-          LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
+          # FIX: Map LD_LIBRARY_PATH to the exact native GNUstep directory structure 
+          # so linuxdeploy can trace libgnustep-base.so and libgnustep-gui.so perfectly
+          LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
           squashfs-root/usr/bin/linuxdeploy --appdir AppDir $ELF_ARGS --output appimage
           
           rm -f linuxdeploy-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage

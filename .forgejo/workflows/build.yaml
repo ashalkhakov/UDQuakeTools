@@ -201,12 +201,14 @@ jobs:
             ln -sf libobjc.so.4.6 AppDir/usr/lib/libobjc.so
           fi
 
-          # Bundle libdispatch safely (Checks both lib/ and lib64/ depending on CMake's mood)
-          echo "=== Manually staging libdispatch ==="
+          # Bundle libdispatch and its BlocksRuntime dependency safely
+          echo "=== Manually staging libdispatch and BlocksRuntime ==="
           if ls "${LOCAL_PREFIX}/lib"/libdispatch.so* 1> /dev/null 2>&1; then
             cp -p "${LOCAL_PREFIX}/lib"/libdispatch.so* AppDir/usr/lib/
+            cp -p "${LOCAL_PREFIX}/lib"/libBlocksRuntime.so* AppDir/usr/lib/ 2>/dev/null || true
           elif ls "${LOCAL_PREFIX}/lib64"/libdispatch.so* 1> /dev/null 2>&1; then
             cp -p "${LOCAL_PREFIX}/lib64"/libdispatch.so* AppDir/usr/lib/
+            cp -p "${LOCAL_PREFIX}/lib64"/libBlocksRuntime.so* AppDir/usr/lib/ 2>/dev/null || true
           fi
 
           # 5. Maintain versioned and unversioned fallback bundle linking

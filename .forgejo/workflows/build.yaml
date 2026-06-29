@@ -311,8 +311,13 @@ jobs:
           export VERSION="${{ env.APP_VERSION }}"
           export APPIMAGE_EXTRACT_AND_RUN=1
 
-          # FIX: Force linuxdeploy to skip its broken internal strip process
-          export STRIP=true
+          # FIX: Directly smash the faulty internal strip utility with a dummy mock
+          if [ -f "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip" ]; then
+            echo "#!/bin/sh" > "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
+            echo "exit 0" >> "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
+            chmod +x "${WORKSPACE_DIR}/squashfs-root/usr/bin/strip"
+            echo "✅ Successfully neutralized internal linuxdeploy strip tool!"
+          fi
 
           ELF_ARGS=""
           

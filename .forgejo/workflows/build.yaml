@@ -111,7 +111,7 @@ jobs:
           
           echo "=== Building Eau Theme ==="
           # Clone the theme from Gershwin / GNUstep ports
-          git clone --depth 1 https://github.com/gnustep/ports-themes-Eau.git Eau
+          git clone --depth 1 https://github.com/gershwin-desktop/gershwin-eau-theme.git Eau
           cd Eau
           # source the environment to let gnustep-make install it inside the local prefix
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"

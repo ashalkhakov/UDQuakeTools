@@ -245,6 +245,19 @@ jobs:
           
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))" || true
 
+          cat << 'EOF' > AppDir/usr/etc/fonts.conf
+          <?xml version="1.0"?>
+          <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+          <fontconfig>
+              <dir>../share/fonts</dir>
+              <cachedir>/tmp/fontconfig-cache</cachedir>
+              <alias>
+                <family>Helvetica</family>
+                <prefer><family>Noto Sans</family></prefer>
+              </alias>
+          </fontconfig>
+          EOF
+
           # 2. Inject your Secret Sauce AppRun Script (Read-Only & Path Leak Safe)
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
@@ -274,6 +287,9 @@ jobs:
           # FIX: Lock down the config file so GNUstep's security checks accept it
           chmod 600 "$GNUSTEP_CONFIG_FILE"
 
+          # Force Fontconfig to use our local font configuration
+          export FONTCONFIG_FILE="$HERE/usr/etc/fonts.conf"
+
           # 2. Manually inject the boundary variables (Bypassing the poisoned GNUstep.sh)
           export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
           export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
@@ -297,9 +313,9 @@ jobs:
           if [ -x "$HERE/usr/Local/Tools/defaults" ]; then
             echo "Running defaults command..."
             "$HERE/usr/Local/Tools/defaults" write PakManager GSTheme "Eau" || true
-            "$HERE/usr/Local/Tools/defaults" write PakManager NSFont "Sans" || true
-            "$HERE/usr/Local/Tools/defaults" write PakManager NSUserFont "Sans" || true
-            "$HERE/usr/local/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
+            #"$HERE/usr/Local/Tools/defaults" write PakManager NSFont "Sans" || true
+            #"$HERE/usr/Local/Tools/defaults" write PakManager NSUserFont "Sans" || true
+            #"$HERE/usr/local/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
           else
             echo "ERROR: defaults tool not found at $HERE/usr/Local/Tools/defaults"
           fi

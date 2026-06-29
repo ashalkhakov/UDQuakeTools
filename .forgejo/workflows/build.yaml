@@ -397,6 +397,17 @@ jobs:
           # 4. Clean up the temp file when the application closes
           trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT
 
+          # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
+          if [ -x "$HERE/usr/System/Tools/defaults" ]; then
+            echo "Running defaults command..."
+            "$HERE/usr/System/Tools/defaults" write PakManager GSTheme "Eau" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSFont "Sans" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFont "Sans" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
+          else
+            echo "ERROR: defaults tool not found at $HERE/usr/System/Tools/defaults"
+          fi
+
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"

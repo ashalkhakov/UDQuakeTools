@@ -276,14 +276,18 @@ jobs:
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi
+
+          # SET DEFAULTS NATIVELY BEFORE LAUNCH
+          # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
+          if [ -x "$HERE/usr/System/Tools/defaults" ]; then
+            "$HERE/usr/System/Tools/defaults" write PakManager GSTheme "Eau" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSFont "Sans" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFont "Sans" || true
+            "$HERE/usr/System/Tools/defaults" write PakManager NSUserFixedPitchFont "Monospace" || true
+          fi
           
           # Force Eau theme activation and pass universally mapped fallback fonts
-          exec "$REAL_BIN" \
-            -GSTheme "Eau" \
-            -NSFont "Sans" \
-            -NSUserFont "Sans" \
-            -NSUserFixedPitchFont "Monospace" \
-            "$@"
+          exec "$REAL_BIN" "$@"
           EOF
           chmod +x AppDir/AppRun
 

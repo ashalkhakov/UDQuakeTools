@@ -209,6 +209,15 @@ jobs:
             ln -sfv $(basename "$BACKEND_BUNDLE") "$BUNDLE_DIR/libgnustep-back.bundle"
           fi
 
+          # Copy matching gconv modules from the runner host into the AppImage
+          if [ -d "/usr/lib/x86_64-linux-gnu/gconv" ]; then
+            mkdir -p AppDir/usr/lib/gconv
+            cp -Rp /usr/lib/x86_64-linux-gnu/gconv/* AppDir/usr/lib/gconv/
+          elif [ -d "/usr/lib64/gconv" ]; then
+            mkdir -p AppDir/usr/lib/gconv
+            cp -Rp /usr/lib64/gconv/* AppDir/usr/lib/gconv/
+          fi
+
           # 6. Shared Libraries loop script
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:$LD_LIBRARY_PATH"
           for i in {1..3}; do
@@ -247,7 +256,7 @@ jobs:
           python3 -c "open('AppDir/PakManager.png', 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789cc3070000020001737501170000000049454e44ae426082'))"
           cp AppDir/PakManager.png AppDir/usr/share/icons/hicolor/256x256/apps/PakManager.png
 
-          # 8. Clean AppRun with Gconv Isolate Fix
+          # 8. Clean AppRun with Hermetic Gconv Mapping
           cat << 'EOF' > AppDir/AppRun
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "${0}")")"
@@ -268,10 +277,13 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$HERE/usr/System/Library/Libraries:$HERE/usr/Local/Library/Libraries:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # FIX: Prevent glibc version mismatch crashes by disabling host gconv module loading
-          export GCONV_PATH=/dev/null
-          export LC_ALL=C
-          export LANG=C
+          # FORCE THE LINKER TO PRINT TRACE LOGS FOR DLOPEN FAILURES
+          export LD_DEBUG=files,libs
+
+          # FORCE glibc to use the bundled, matching character set modules
+          export GCONV_PATH="$HERE/usr/lib/gconv"
+          unset LC_ALL
+          export LANG=C.UTF-8
 
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1)
           if [ -z "$REAL_BIN" ]; then

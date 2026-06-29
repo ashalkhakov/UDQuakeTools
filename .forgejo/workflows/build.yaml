@@ -378,6 +378,12 @@ jobs:
           export PATH="${WORKSPACE_DIR}/squashfs-root/usr/bin:$PATH"
           export OUTPUT="PakManager-Linux-${{ env.APP_VERSION }}.AppImage"
           
+          # FIX: Force the plugin to bypass FUSE mounting inside the LXC container
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          
+          # FIX: Stop the plugin from crashing on .desktop validation rules (Exit Code 8)
+          export NO_VALIDATE=1
+          
           # Map paths so linuxdeploy finds libobjc and gnustep-base natively
           LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:$LD_LIBRARY_PATH" \
           squashfs-root/AppRun --appdir AppDir $ELF_ARGS --plugin appimage

@@ -260,13 +260,19 @@ jobs:
           #unset GCONV_PATH
           #export LC_ALL=C
           #export LANG=C
-
+          
+          # Find and boot the target
           REAL_BIN=$(find "$HERE" -type f -name "PakManager" -exec file {} \; 2>/dev/null | grep "ELF" | cut -d: -f1 | head -n 1 || true)
           if [ -z "$REAL_BIN" ]; then
             REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
           fi
           
-          exec "$REAL_BIN" "$@"
+          # Force GNUstep to use universally mapped Linux font aliases instead of Helvetica
+          exec "$REAL_BIN" \
+            -NSFont "Sans" \
+            -NSUserFont "Sans" \
+            -NSUserFixedPitchFont "Monospace" \
+            "$@"
           EOF
           chmod +x AppDir/AppRun
 

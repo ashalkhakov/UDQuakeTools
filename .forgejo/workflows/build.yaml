@@ -343,9 +343,9 @@ jobs:
           if [ -x "$DEFAULTS_TOOL" ]; then
             echo "Running defaults command with $DEFAULTS_TOOL..."
             "$DEFAULTS_TOOL" write com.udquake.pakmanager GSTheme "Eau"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "Noto Sans"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "Noto Sans"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "Monospace"
+            #"$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "Noto Sans"
+            #"$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "Noto Sans"
+            #"$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "Monospace"
           else
             echo "ERROR: defaults tool not found!"
           fi

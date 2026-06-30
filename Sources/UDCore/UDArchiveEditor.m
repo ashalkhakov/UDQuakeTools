@@ -195,7 +195,16 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         return NO;
     }
 
-    entry.stagedSource = source;
+    NSUInteger idx = [_currentEntries indexOfObject:entry];
+    UDArchiveEntry *updated = [[UDArchiveEntry alloc]
+        initWithPath:entry.path
+                size:source.length
+         contentType:entry.contentType
+          modifiedAt:[NSDate date]
+              source:entry.source];
+    updated.stagedSource = source;
+
+    [_currentEntries replaceObjectAtIndex:idx withObject:updated];
 
     UDArchiveMutation *mutation = [[UDArchiveMutation alloc]
         initWithKind:@"replace"

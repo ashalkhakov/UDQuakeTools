@@ -196,6 +196,9 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
         return NO;
     }
 
+    /* Keep payload buffers alive until zip_close() has consumed all sources. */
+    NSMutableArray<NSData *> *payloadRetention = [NSMutableArray arrayWithCapacity:entries.count];
+
     for (UDArchiveEntry *entry in entries) {
         id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
         if (!source) {
@@ -218,6 +221,8 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
             zip_discard(za);
             return NO;
         }
+
+        [payloadRetention addObject:payload];
 
         zip_source_t *src = zip_source_buffer(za, payload.bytes, payload.length, 0);
         if (!src) {

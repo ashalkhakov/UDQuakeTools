@@ -83,6 +83,17 @@
     XCTAssertTrue(replaced, @"replace should succeed");
     XCTAssertNil(replaceError, @"replace should not set error");
 
+    UDArchiveEntry *replacedEntry = nil;
+    for (UDArchiveEntry *entry in editor.currentEntries) {
+        if ([entry.path isEqualToString:@"a.txt"]) {
+            replacedEntry = entry;
+            break;
+        }
+    }
+    XCTAssertNotNil(replacedEntry, @"replaced entry should still be present");
+    XCTAssertEqual(replacedEntry.size, (uint64_t)replacementData.length,
+                   @"replaced entry size should reflect staged content");
+
     NSData *addedData = [@"added" dataUsingEncoding:NSASCIIStringEncoding];
     NSError *addError = nil;
     BOOL added = [editor addSource:[[UDInMemoryContentSource alloc] initWithData:addedData]

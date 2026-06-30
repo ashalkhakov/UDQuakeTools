@@ -30,7 +30,17 @@ jobs:
             echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
           fi
 
+      - name: Cache GNUstep Toolchain
+        id: cache-gnustep
+        uses: actions/cache@v4
+        with:
+          path: gnustep-prefix
+          # Change "20260630" when you want to force a clean toolchain rebuild
+          key: ${{ runner.os }}-gnustep-prefix-20260630
+
       - name: Build and install custom GNUstep with modern Clang runtime and ARC
+        # THE MAGIC SWITCH: Skip this entire block if the cache was found
+        if: steps.cache-gnustep.outputs.cache-hit != 'true'
         run: |
           export CC=clang
           export CXX=clang++

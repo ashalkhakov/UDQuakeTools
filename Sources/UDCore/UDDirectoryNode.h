@@ -1,13 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-2.0-or-later
- * UDDirectoryNode — virtual directory tree built from a flat entry list.
- *
- * Each node represents one directory level.  Leaf entries (files) are
- * represented by UDArchiveEntry objects stored directly in `children`.
- * Sub-directory entries are represented by nested UDDirectoryNode objects.
- *
- * Children are sorted: directories first (alphabetical), then files
- * (alphabetical).  This ordering is stable across reload calls.
+ * UDDirectoryNode — runtime archive tree node.
  */
 
 #import <Foundation/Foundation.h>
@@ -17,16 +10,26 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UDDirectoryNode : NSObject {
-    NSString *_path;
     NSString *_name;
-    NSArray  *_children;
+    __unsafe_unretained UDDirectoryNode *_parent;
+    NSMutableArray<UDDirectoryNode *> *_directoryChildren;
+    NSMutableArray<UDArchiveEntry *> *_fileChildren;
 }
 
 /** Full path from the archive root (e.g. @"maps/dm").  Empty for the root node. */
 @property (nonatomic, readonly, copy) NSString *path;
 
-/** The single path component represented by this node (e.g. @"dm").  Empty for root. */
+/** The single path component represented by this node (e.g. @"dm"). Empty for root. */
 @property (nonatomic, readonly, copy) NSString *name;
+
+/** Weak backlink to the owning parent directory. Nil for the root node. */
+@property (nonatomic, readonly, assign, nullable) UDDirectoryNode *parent;
+
+/** Sorted child directories. */
+@property (nonatomic, readonly, copy) NSArray<UDDirectoryNode *> *directoryChildren;
+
+/** Sorted child file entries. */
+@property (nonatomic, readonly, copy) NSArray<UDArchiveEntry *> *fileChildren;
 
 /**
  * Ordered children of this directory.
@@ -36,11 +39,26 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly, copy) NSArray *children;
 
-/**
- * Build a root UDDirectoryNode from a flat array of UDArchiveEntry objects.
- * The returned node has path="" and name="" and contains the full tree.
- */
+/** Create an empty root node. */
++ (instancetype)rootNode;
+
+/** Build a root UDDirectoryNode from a flat array of UDArchiveEntry objects. */
 + (instancetype)rootNodeFromEntries:(NSArray<UDArchiveEntry *> *)entries;
+
+- (instancetype)initRootNode;
+- (instancetype)initWithName:(NSString *)name parent:(nullable UDDirectoryNode *)parent;
+
+- (nullable UDDirectoryNode *)directoryAtRelativePath:(NSString *)path;
+- (UDDirectoryNode *)ensureDirectoryAtRelativePath:(NSString *)path;
+- (nullable UDArchiveEntry *)entryAtRelativePath:(NSString *)path;
+
+- (void)addDirectoryChild:(UDDirectoryNode *)directoryNode;
+- (void)addFileChild:(UDArchiveEntry *)entry;
+- (void)removeDirectoryChild:(UDDirectoryNode *)directoryNode;
+- (void)removeFileChild:(UDArchiveEntry *)entry;
+
+- (NSArray<UDArchiveEntry *> *)allEntries;
+- (UDDirectoryNode *)deepCopy;
 
 @end
 

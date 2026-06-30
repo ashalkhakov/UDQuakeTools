@@ -101,6 +101,11 @@ static NSData *UDReadAllContent(id<UDContentSource> source, NSError **error) {
 }
 
 - (BOOL)writeEditedArchive:(UDArchiveEditor *)editor toURL:(NSURL *)url error:(NSError **)error {
+    NSArray *diff = editor.currentDiff;
+    NSLog(@"PAK write plan: %lu net mutation(s)", (unsigned long)diff.count);
+    if (diff.count == 0) {
+        return [self writeArchive:editor.archive toURL:url error:error];
+    }
     return [self _writeEntries:editor.currentEntries toURL:url error:error];
 }
 
@@ -127,7 +132,7 @@ static NSData *UDReadAllContent(id<UDContentSource> source, NSError **error) {
             return NO;
         }
 
-        id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
+        id<UDContentSource> source = entry.contentSource;
         if (!source) {
             if (error) {
                 *error = [NSError errorWithDomain:UDPAKCodecErrorDomain

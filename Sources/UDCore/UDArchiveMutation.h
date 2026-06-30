@@ -1,8 +1,8 @@
 /*
  * SPDX-License-Identifier: GPL-2.0-or-later
- * UDArchiveMutation — an immutable record of a single pending archive edit.
+ * UDArchiveMutation — an immutable record of a net archive delta.
  *
- * Supported kinds:
+ * Supported kinds used by UDArchiveEditor.currentDiff / pendingMutations:
  *   @"add"     — payload: @{ @"path": NSString, @"source": id<UDContentSource> }
  *   @"remove"  — payload: @{ @"path": NSString }
  *   @"replace" — payload: @{ @"path": NSString, @"source": id<UDContentSource> }

@@ -2,8 +2,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  * UDArchiveBrowserController — NSWindowController + NSBrowserDelegate.
  *
- * Manages the archive browser window.  Builds a UDDirectoryNode tree from
- * the document's editor and feeds it to an NSBrowser for navigation.
+ * Manages the archive browser window. Uses the editor's live UDDirectoryNode
+ * tree and feeds it to an NSBrowser for navigation.
  * Handles Add / Delete / Extract / Open file operations.
  */
 

@@ -6,101 +6,230 @@
 #import "UDArchiveEntry.h"
 
 @interface UDDirectoryNode ()
-- (instancetype)initWithPath:(NSString *)path
-                        name:(NSString *)name
-                    children:(NSArray *)children NS_DESIGNATED_INITIALIZER;
+- (instancetype)_initWithName:(NSString *)name parent:(nullable UDDirectoryNode *)parent;
 @end
 
 @implementation UDDirectoryNode
 
-@synthesize path     = _path;
-@synthesize name     = _name;
-@synthesize children = _children;
+@synthesize name = _name;
+@synthesize parent = _parent;
+@synthesize directoryChildren = _directoryChildren;
+@synthesize fileChildren = _fileChildren;
 
-- (instancetype)initWithPath:(NSString *)path
-                        name:(NSString *)name
-                    children:(NSArray *)children {
+static NSComparisonResult UDSortDirectoriesByName(UDDirectoryNode *a, UDDirectoryNode *b, void *context) {
+    (void)context;
+    return [a.name caseInsensitiveCompare:b.name];
+}
+
+static NSComparisonResult UDSortEntriesByName(UDArchiveEntry *a, UDArchiveEntry *b, void *context) {
+    (void)context;
+    return [a.name caseInsensitiveCompare:b.name];
+}
+
+static NSString *UDNormalizeRelativeArchivePath(NSString *path) {
+    return [[path ?: @"" stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]] copy];
+}
+
+- (instancetype)initRootNode {
+    return [self _initWithName:@"" parent:nil];
+}
+
+- (instancetype)initWithName:(NSString *)name parent:(UDDirectoryNode *)parent {
+    return [self _initWithName:name parent:parent];
+}
+
+- (instancetype)_initWithName:(NSString *)name parent:(UDDirectoryNode *)parent {
     self = [super init];
     if (!self) {
         return nil;
     }
-    _path     = [path copy];
-    _name     = [name copy];
-    _children = [children copy];
+
+    _name = [name copy] ?: @"";
+    _parent = parent;
+    _directoryChildren = [NSMutableArray array];
+    _fileChildren = [NSMutableArray array];
     return self;
 }
 
-/* ------------------------------------------------------------------ */
-#pragma mark - Public factory
-
-+ (instancetype)rootNodeFromEntries:(NSArray<UDArchiveEntry *> *)entries {
-    return [self _buildNodeAtPath:@"" name:@"" fromEntries:entries];
++ (instancetype)rootNode {
+    return [[self alloc] initRootNode];
 }
 
-/* ------------------------------------------------------------------ */
-#pragma mark - Private recursive builder
-
-+ (instancetype)_buildNodeAtPath:(NSString *)nodePath
-                            name:(NSString *)nodeName
-                     fromEntries:(NSArray<UDArchiveEntry *> *)allEntries {
-    NSMutableArray *fileChildren = [NSMutableArray array];
-    /* Map of first-level sub-directory name → entries that live beneath it. */
-    NSMutableDictionary<NSString *, NSMutableArray<UDArchiveEntry *> *> *dirMap =
-        [NSMutableDictionary dictionary];
-
-    NSString *prefix = (nodePath.length > 0) ? [nodePath stringByAppendingString:@"/"] : @"";
-
-    for (UDArchiveEntry *entry in allEntries) {
-        NSString *relative = entry.path;
-
-        /* Strip the node's own path prefix. */
-        if (prefix.length > 0) {
-            if (![relative hasPrefix:prefix]) {
-                continue;
-            }
-            relative = [relative substringFromIndex:prefix.length];
-        }
-
-        /* Locate the next '/' separator. */
-        NSRange slashRange = [relative rangeOfString:@"/"];
-        if (slashRange.location == NSNotFound) {
-            /* Direct file child of this node. */
-            [fileChildren addObject:entry];
-        } else {
-            /* Entry lives in a sub-directory of this node. */
-            NSString *dirName = [relative substringToIndex:slashRange.location];
-            NSMutableArray *dirArray = [dirMap objectForKey:dirName];
-            if (!dirArray) {
-                dirArray = [NSMutableArray array];
-                [dirMap setObject:dirArray forKey:dirName];
-            }
-            [dirArray addObject:entry];
-        }
+- (NSString *)path {
+    if (!self.parent) {
+        return @"";
     }
 
-    /* Recursively build sub-directory nodes, sorted alphabetically. */
-    NSArray<NSString *> *sortedDirNames =
-        [[dirMap allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *parentPath = self.parent.path;
+    if (parentPath.length == 0) {
+        return self.name;
+    }
+    return [parentPath stringByAppendingFormat:@"/%@", self.name];
+}
 
-    NSMutableArray *children = [NSMutableArray array];
-    for (NSString *dirName in sortedDirNames) {
-        NSString *childPath = (nodePath.length > 0)
-            ? [nodePath stringByAppendingFormat:@"/%@", dirName]
-            : dirName;
-        UDDirectoryNode *child = [self _buildNodeAtPath:childPath
-                                                   name:dirName
-                                            fromEntries:allEntries];
-        [children addObject:child];
+- (NSArray<UDDirectoryNode *> *)directoryChildren {
+    return [_directoryChildren sortedArrayUsingFunction:UDSortDirectoriesByName context:NULL];
+}
+
+- (NSArray<UDArchiveEntry *> *)fileChildren {
+    return [_fileChildren sortedArrayUsingFunction:UDSortEntriesByName context:NULL];
+}
+
+- (NSArray *)children {
+    NSMutableArray *combined = [NSMutableArray arrayWithArray:self.directoryChildren];
+    [combined addObjectsFromArray:self.fileChildren];
+    return combined;
+}
+
++ (instancetype)rootNodeFromEntries:(NSArray<UDArchiveEntry *> *)entries {
+    UDDirectoryNode *root = [self rootNode];
+    for (UDArchiveEntry *entry in entries) {
+        NSString *normalizedPath = UDNormalizeRelativeArchivePath(entry.path);
+        if (normalizedPath.length == 0) {
+            continue;
+        }
+
+        NSString *parentPath = [normalizedPath stringByDeletingLastPathComponent];
+        if ([parentPath isEqualToString:@"."]) {
+            parentPath = @"";
+        }
+
+        UDDirectoryNode *parent = [root ensureDirectoryAtRelativePath:parentPath];
+        [parent addFileChild:entry];
+    }
+    return root;
+}
+
+- (nullable UDDirectoryNode *)_directoryNamed:(NSString *)name {
+    for (UDDirectoryNode *child in _directoryChildren) {
+        if ([child.name isEqualToString:name]) {
+            return child;
+        }
+    }
+    return nil;
+}
+
+- (nullable UDArchiveEntry *)_fileNamed:(NSString *)name {
+    for (UDArchiveEntry *entry in _fileChildren) {
+        if ([entry.name isEqualToString:name]) {
+            return entry;
+        }
+    }
+    return nil;
+}
+
+- (nullable UDDirectoryNode *)directoryAtRelativePath:(NSString *)path {
+    NSString *normalized = UDNormalizeRelativeArchivePath(path);
+    if (normalized.length == 0) {
+        return self;
     }
 
-    /* Append file leaves, sorted by name. */
-    NSArray *sortedFiles = [fileChildren sortedArrayUsingComparator:
-        ^NSComparisonResult(UDArchiveEntry *a, UDArchiveEntry *b) {
-            return [a.name caseInsensitiveCompare:b.name];
-        }];
-    [children addObjectsFromArray:sortedFiles];
+    UDDirectoryNode *node = self;
+    for (NSString *component in [normalized pathComponents]) {
+        node = [node _directoryNamed:component];
+        if (!node) {
+            return nil;
+        }
+    }
+    return node;
+}
 
-    return [[UDDirectoryNode alloc] initWithPath:nodePath name:nodeName children:children];
+- (UDDirectoryNode *)ensureDirectoryAtRelativePath:(NSString *)path {
+    NSString *normalized = UDNormalizeRelativeArchivePath(path);
+    if (normalized.length == 0) {
+        return self;
+    }
+
+    UDDirectoryNode *node = self;
+    for (NSString *component in [normalized pathComponents]) {
+        UDDirectoryNode *child = [node _directoryNamed:component];
+        if (!child) {
+            child = [[UDDirectoryNode alloc] initWithName:component parent:node];
+            [node addDirectoryChild:child];
+        }
+        node = child;
+    }
+    return node;
+}
+
+- (nullable UDArchiveEntry *)entryAtRelativePath:(NSString *)path {
+    NSString *normalized = UDNormalizeRelativeArchivePath(path);
+    if (normalized.length == 0) {
+        return nil;
+    }
+
+    NSString *parentPath = [normalized stringByDeletingLastPathComponent];
+    if ([parentPath isEqualToString:@"."]) {
+        parentPath = @"";
+    }
+
+    UDDirectoryNode *parent = [self directoryAtRelativePath:parentPath];
+    if (!parent) {
+        return nil;
+    }
+    return [parent _fileNamed:normalized.lastPathComponent];
+}
+
+- (void)addDirectoryChild:(UDDirectoryNode *)directoryNode {
+    if (!directoryNode || [_directoryChildren containsObject:directoryNode]) {
+        return;
+    }
+
+    directoryNode->_parent = self;
+    [_directoryChildren addObject:directoryNode];
+}
+
+- (void)addFileChild:(UDArchiveEntry *)entry {
+    if (!entry || [_fileChildren containsObject:entry]) {
+        return;
+    }
+
+    entry.parent = self;
+    [_fileChildren addObject:entry];
+}
+
+- (void)removeDirectoryChild:(UDDirectoryNode *)directoryNode {
+    if (!directoryNode) {
+        return;
+    }
+
+    [_directoryChildren removeObject:directoryNode];
+    directoryNode->_parent = nil;
+}
+
+- (void)removeFileChild:(UDArchiveEntry *)entry {
+    if (!entry) {
+        return;
+    }
+
+    [_fileChildren removeObject:entry];
+    entry.parent = nil;
+}
+
+- (NSArray<UDArchiveEntry *> *)allEntries {
+    NSMutableArray<UDArchiveEntry *> *entries = [NSMutableArray array];
+    for (UDDirectoryNode *directory in self.directoryChildren) {
+        [entries addObjectsFromArray:[directory allEntries]];
+    }
+    [entries addObjectsFromArray:self.fileChildren];
+    return entries;
+}
+
+- (UDDirectoryNode *)deepCopy {
+    UDDirectoryNode *copy = [UDDirectoryNode rootNode];
+    for (UDArchiveEntry *entry in [self allEntries]) {
+        UDArchiveEntry *entryCopy = [entry entryByCopyingWithPath:entry.path
+                                                    contentSource:entry.contentSource
+                                                       modifiedAt:entry.modifiedAt];
+        NSString *parentPath = [entry.path stringByDeletingLastPathComponent];
+        if ([parentPath isEqualToString:@"."]) {
+            parentPath = @"";
+        }
+
+        UDDirectoryNode *parent = [copy ensureDirectoryAtRelativePath:parentPath];
+        [parent addFileChild:entryCopy];
+    }
+    return copy;
 }
 
 @end

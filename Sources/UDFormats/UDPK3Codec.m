@@ -176,6 +176,11 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
 }
 
 - (BOOL)writeEditedArchive:(UDArchiveEditor *)editor toURL:(NSURL *)url error:(NSError **)error {
+    NSArray *diff = editor.currentDiff;
+    NSLog(@"ZIP write plan for %@: %lu net mutation(s)", self.formatIdentifier, (unsigned long)diff.count);
+    if (diff.count == 0) {
+        return [self writeArchive:editor.archive toURL:url error:error];
+    }
     return [self _writeEntries:editor.currentEntries toURL:url error:error];
 }
 
@@ -200,7 +205,7 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
     NSMutableArray<NSData *> *payloadRetention = [NSMutableArray arrayWithCapacity:entries.count];
 
     for (UDArchiveEntry *entry in entries) {
-        id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
+        id<UDContentSource> source = entry.contentSource;
         if (!source) {
             if (error) {
                 *error = [NSError errorWithDomain:UDPK3CodecErrorDomain

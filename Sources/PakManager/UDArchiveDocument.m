@@ -128,6 +128,13 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
     [self addWindowController:wc];
 }
 
+- (NSUndoManager *)undoManager {
+    if (self.editor) {
+        return self.editor.undoManager;
+    }
+    return [super undoManager];
+}
+
 - (NSArray<NSString *> *)readableTypes {
     UDCodecRegistry *reg = [UDCodecRegistry sharedRegistry];
     NSMutableArray<NSString *> *types = [NSMutableArray array];

@@ -6,6 +6,7 @@
 #import "UDArchive.h"
 #import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
+#import "UDArchiveMutation.h"
 #import "UDContentSource.h"
 #import "UDDaikatanaPAKCodec.h"
 #import "UDPAK2Codec.h"
@@ -59,6 +60,15 @@
 @end
 
 @implementation UDArchiveWorkflowTests
+
+- (nullable UDArchiveMutation *)mutationOfKind:(NSString *)kind inMutations:(NSArray<UDArchiveMutation *> *)mutations {
+    for (UDArchiveMutation *mutation in mutations) {
+        if ([mutation.kind isEqualToString:kind]) {
+            return mutation;
+        }
+    }
+    return nil;
+}
 
 - (NSURL *)writeTempFileWithData:(NSData *)data suffix:(NSString *)suffix {
     NSString *name = [NSString stringWithFormat:@"udquake-workflow-%@-%@",
@@ -341,6 +351,24 @@
     XCTAssertEqualObjects([[NSString alloc] initWithData:[projected objectForKey:@"newdir/sub/inside.txt"] encoding:NSASCIIStringEncoding], @"dir-file");
     XCTAssertNil([projected objectForKey:@"toremove/sub/a.txt"]);
     XCTAssertNil([projected objectForKey:@"toremove/sub/b.txt"]);
+
+    NSArray<UDArchiveMutation *> *diff = editor.currentDiff;
+    XCTAssertEqual(diff.count, 3U, @"net diff should collapse transient add/remove operations");
+
+    UDArchiveMutation *replaceMutation = [self mutationOfKind:@"replace" inMutations:diff];
+    XCTAssertNotNil(replaceMutation, @"net diff should include replace mutation");
+    XCTAssertEqualObjects(replaceMutation.payload[@"path"], oldPath);
+
+    UDArchiveMutation *addMutation = [self mutationOfKind:@"add" inMutations:diff];
+    XCTAssertNotNil(addMutation, @"net diff should include an add mutation");
+
+    NSUInteger addCount = 0;
+    for (UDArchiveMutation *mutation in diff) {
+        if ([mutation.kind isEqualToString:@"add"]) {
+            addCount++;
+        }
+    }
+    XCTAssertEqual(addCount, 2U, @"two net additions should remain after transient subtree removal");
 
     NSURL *outURL = [self writeTempFileWithData:[NSData data] suffix:[NSString stringWithFormat:@"edited.%@", suffix]];
     XCTAssertNotNil(outURL);

@@ -67,7 +67,15 @@
     _archiveDocument = document;
     _gameDetectionService = [[UDGameDetectionService alloc] init];
     _fileActionService = [[UDFileActionService alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_archiveEditorDidChange:)
+                                                 name:UDArchiveEditorDidChangeNotification
+                                               object:nil];
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 /* ------------------------------------------------------------------ */
@@ -104,11 +112,19 @@
     [self _reloadBrowser];
 }
 
+- (void)_archiveEditorDidChange:(NSNotification *)notification {
+    if (notification.object != _archiveDocument.editor) {
+        return;
+    }
+    [self _reloadBrowser];
+}
+
 /* ------------------------------------------------------------------ */
 #pragma mark - Tree management
 
 - (void)_reloadBrowser {
-    NSArray *entries = _archiveDocument.editor ? _archiveDocument.editor.currentEntries : @[];
+    UDDirectoryNode *liveRoot = _archiveDocument.editor ? _archiveDocument.editor.currentRoot : nil;
+    NSArray *entries = liveRoot ? [liveRoot allEntries] : @[];
     if (_searchString && _searchString.length > 0) {
         NSMutableArray *filtered = [NSMutableArray array];
         for (UDArchiveEntry *entry in entries) {
@@ -117,9 +133,10 @@
                 [filtered addObject:entry];
             }
         }
-        entries = filtered;
+        _rootNode = [UDDirectoryNode rootNodeFromEntries:filtered];
+    } else {
+        _rootNode = liveRoot ?: [UDDirectoryNode rootNode];
     }
-    _rootNode = [UDDirectoryNode rootNodeFromEntries:entries];
     [_browser loadColumnZero];
     [self _updateStatusAndButtons];
 }
@@ -214,7 +231,8 @@
         return @"";
     }
     if ([child isKindOfClass:[UDArchiveEntry class]]) {
-        return [[(UDArchiveEntry *)child path] stringByDeletingLastPathComponent];
+        UDDirectoryNode *parent = [(UDArchiveEntry *)child parent];
+        return parent ? parent.path : @"";
     }
     if ([child isKindOfClass:[UDDirectoryNode class]]) {
         return [(UDDirectoryNode *)child path];
@@ -227,42 +245,38 @@
 }
 
 - (void)_updateStatusAndButtons {
-    NSArray *entries   = _archiveDocument.editor.currentEntries;
+    NSUInteger totalCount = _archiveDocument.editor.currentRoot.allEntries.count;
     NSString *selPath  = [self _selectedPath];
     BOOL      hasSel   = (selPath.length > 0);
     BOOL      isLeaf   = [self _selectedIsLeaf];
+    id        selected = [self _selectedChild];
 
     NSString *status;
     if (hasSel) {
         if (isLeaf) {
-            UDArchiveEntry *entry = nil;
-            for (UDArchiveEntry *e in entries) {
-                if ([e.path isEqualToString:selPath]) {
-                    entry = e;
-                    break;
-                }
-            }
+            UDArchiveEntry *entry = [selected isKindOfClass:[UDArchiveEntry class]]
+                ? (UDArchiveEntry *)selected : nil;
             if (entry) {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@ (%llu bytes)",
-                          (unsigned long)entries.count,
-                          [self _entryPluralSuffix:entries.count],
+                          (unsigned long)totalCount,
+                          [self _entryPluralSuffix:totalCount],
                           selPath, (unsigned long long)entry.size];
             } else {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@",
-                          (unsigned long)entries.count,
-                          [self _entryPluralSuffix:entries.count],
+                          (unsigned long)totalCount,
+                          [self _entryPluralSuffix:totalCount],
                           selPath];
             }
         } else {
             status = [NSString stringWithFormat:@"%lu entr%@ — %@/",
-                      (unsigned long)entries.count,
-                      [self _entryPluralSuffix:entries.count],
+                      (unsigned long)totalCount,
+                      [self _entryPluralSuffix:totalCount],
                       selPath];
         }
     } else {
         status = [NSString stringWithFormat:@"%lu entr%@",
-                  (unsigned long)entries.count,
-                  [self _entryPluralSuffix:entries.count]];
+                  (unsigned long)totalCount,
+                  [self _entryPluralSuffix:totalCount]];
     }
 
     [_statusLabel   setStringValue:status];
@@ -532,19 +546,15 @@ willDisplayCell:(id)cell
 }
 
 - (void)_extractEntryAtPath:(NSString *)archivePath toURL:(NSURL *)destURL {
-    /* Locate the entry to obtain its size. */
-    NSUInteger entrySize = 0;
-    for (UDArchiveEntry *entry in _archiveDocument.editor.currentEntries) {
-        if ([entry.path isEqualToString:archivePath]) {
-            entrySize = (NSUInteger)entry.size;
-            break;
-        }
+    UDArchiveEntry *entry = [_archiveDocument.editor.currentRoot entryAtRelativePath:archivePath];
+    if (!entry) {
+        return;
     }
 
     NSError *err  = nil;
     NSData  *data = [_archiveDocument.editor
         contentForEntryAtPath:archivePath
-                        range:NSMakeRange(0, entrySize)
+                        range:NSMakeRange(0, (NSUInteger)entry.size)
                         error:&err];
     if (!data) {
         [[NSAlert alertWithError:err] runModal];
@@ -557,18 +567,14 @@ willDisplayCell:(id)cell
 
 - (void)_extractDirectoryAtPath:(NSString *)dirPath
                toDirectoryURL:(NSURL *)destDir {
-    NSString      *dirPrefix = [dirPath stringByAppendingString:@"/"];
-    NSFileManager *fm        = [NSFileManager defaultManager];
+    UDDirectoryNode *dirNode = [_archiveDocument.editor.currentRoot directoryAtRelativePath:dirPath];
+    NSArray<UDArchiveEntry *> *entriesToExtract = dirNode ? [dirNode allEntries] : @[];
+    NSUInteger prefixLength = dirPath.length > 0 ? dirPath.length + 1 : 0; /* skip "dirPath/" */
+    NSFileManager *fm = [NSFileManager defaultManager];
 
-    for (UDArchiveEntry *entry in _archiveDocument.editor.currentEntries) {
-        BOOL isDirectChild = [entry.path isEqualToString:dirPath];
-        BOOL isDescendant  = [entry.path hasPrefix:dirPrefix];
-        if (!isDirectChild && !isDescendant) {
-            continue;
-        }
-
-        NSString *relative = isDescendant
-            ? [entry.path substringFromIndex:dirPrefix.length]
+    for (UDArchiveEntry *entry in entriesToExtract) {
+        NSString *relative = prefixLength > 0 && entry.path.length > prefixLength
+            ? [entry.path substringFromIndex:prefixLength]
             : entry.path.lastPathComponent;
 
         NSURL   *destURL = [destDir URLByAppendingPathComponent:relative];
@@ -597,22 +603,12 @@ willDisplayCell:(id)cell
 }
 
 - (IBAction)openSelected:(id)sender {
-    NSString *selPath = [self _selectedPath];
-    if (!selPath || ![self _selectedIsLeaf]) {
+    id selected = [self _selectedChild];
+    if (![selected isKindOfClass:[UDArchiveEntry class]]) {
         return;
     }
-
-    /* Find the entry to get its size. */
-    UDArchiveEntry *entry = nil;
-    for (UDArchiveEntry *e in _archiveDocument.editor.currentEntries) {
-        if ([e.path isEqualToString:selPath]) {
-            entry = e;
-            break;
-        }
-    }
-    if (!entry) {
-        return;
-    }
+    UDArchiveEntry *entry = (UDArchiveEntry *)selected;
+    NSString *selPath = entry.path;
 
     /* Extract to a per-archive temporary path, then open with the action service. */
     NSString *tempBase = [NSTemporaryDirectory()

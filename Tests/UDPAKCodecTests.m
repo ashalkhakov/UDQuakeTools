@@ -7,6 +7,7 @@
 #import "UDDaikatanaPAKCodec.h"
 #import "UDPAKCodec.h"
 #import "UDPAKEntrySource.h"
+#import "UDStagedFileSource.h"
 
 @interface UDPAKCodecTests : XCTestCase
 @end
@@ -252,6 +253,148 @@
     XCTAssertEqualObjects([[NSString alloc] initWithData:addedPayload encoding:NSASCIIStringEncoding],
                           @"README",
                           @"added payload should match");
+}
+
+- (void)testWriteNewArchiveWithStagedFileSource {
+    /* Regression: new document, add file from filesystem via UDStagedFileSource, save as PAK. */
+    NSData *fileContents = [@"staged-content" dataUsingEncoding:NSASCIIStringEncoding];
+    NSURL *stagedURL = [self writeTemporaryFileWithData:fileContents suffix:@"staged.bin"];
+    XCTAssertNotNil(stagedURL, @"staged source file must exist");
+    if (!stagedURL) {
+        return;
+    }
+
+    UDStagedFileSource *stagedSource = [[UDStagedFileSource alloc] initWithFileURL:stagedURL];
+
+    UDArchive *emptyArchive = [[UDArchive alloc] initWithDisplayName:@"new.pak"
+                                                              entries:@[]
+                                                            metadata:@{}];
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:emptyArchive];
+
+    NSError *addError = nil;
+    BOOL added = [editor addSource:stagedSource atPath:@"images/test.bin" error:&addError];
+    XCTAssertTrue(added, @"add staged source should succeed");
+    XCTAssertNil(addError, @"add staged source should not set error");
+
+    NSURL *outputURL = [self writeTemporaryFileWithData:[NSData data] suffix:@"new-staged.pak"];
+    XCTAssertNotNil(outputURL);
+    if (!outputURL) {
+        return;
+    }
+
+    UDPAKCodec *codec = [[UDPAKCodec alloc] init];
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertTrue(wrote, @"writing new archive with staged source should succeed");
+    XCTAssertNil(writeError, @"write should not set error");
+    if (!wrote) {
+        return;
+    }
+
+    NSError *readError = nil;
+    UDArchive *saved = [codec readArchiveFromURL:outputURL error:&readError];
+    XCTAssertNotNil(saved, @"saved PAK should be readable");
+    XCTAssertNil(readError);
+    XCTAssertEqual(saved.entries.count, 1U, @"saved PAK should have one entry");
+
+    UDArchiveEntry *savedEntry = saved.entries.firstObject;
+    XCTAssertEqualObjects(savedEntry.path, @"images/test.bin");
+
+    NSError *payloadErr = nil;
+    NSData *payload = [savedEntry.source readAll:&payloadErr];
+    XCTAssertNil(payloadErr);
+    XCTAssertEqualObjects([[NSString alloc] initWithData:payload encoding:NSASCIIStringEncoding],
+                          @"staged-content",
+                          @"saved payload should match original staged file contents");
+}
+
+- (void)testWritePAKRejectsOverlongPath {
+    /* PAK directory records hold at most 55 ASCII bytes for the path. */
+    NSString *longPath = @"maps/this_filename_is_deliberately_too_long_to_store.bsp";
+    XCTAssertGreaterThan([longPath lengthOfBytesUsingEncoding:NSASCIIStringEncoding], 55U,
+                         @"test path must exceed 55 bytes");
+
+    UDArchive *archive = [[UDArchive alloc] initWithDisplayName:@"test.pak" entries:@[] metadata:@{}];
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:archive];
+    NSError *addError = nil;
+    [editor addSource:[[UDPAKEntrySource alloc] initWithFileURL:[NSURL fileURLWithPath:@"/dev/null"]
+                                                         offset:0
+                                                         length:0]
+               atPath:longPath
+                error:&addError];
+
+    NSURL *outputURL = [self writeTemporaryFileWithData:[NSData data] suffix:@"longpath.pak"];
+    XCTAssertNotNil(outputURL);
+    if (!outputURL) {
+        return;
+    }
+
+    UDPAKCodec *codec = [[UDPAKCodec alloc] init];
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertFalse(wrote, @"write should fail for overlong path");
+    XCTAssertNotNil(writeError, @"write should set error for overlong path");
+    XCTAssertTrue([[writeError localizedDescription] containsString:@"55"],
+                  @"error should mention the 55-byte limit, got: %@", writeError.localizedDescription);
+}
+
+- (void)testWritePAKRejectsNonASCIIPath {
+    /* Paths with non-ASCII characters cannot be stored in PAK directories. */
+    NSString *nonASCIIPath = @"textures/caf\u00e9.png";
+    XCTAssertNil([nonASCIIPath dataUsingEncoding:NSASCIIStringEncoding],
+                 @"test path must not be pure ASCII");
+
+    UDArchive *archive = [[UDArchive alloc] initWithDisplayName:@"test.pak" entries:@[] metadata:@{}];
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:archive];
+    NSError *addError = nil;
+    [editor addSource:[[UDPAKEntrySource alloc] initWithFileURL:[NSURL fileURLWithPath:@"/dev/null"]
+                                                         offset:0
+                                                         length:0]
+               atPath:nonASCIIPath
+                error:&addError];
+
+    NSURL *outputURL = [self writeTemporaryFileWithData:[NSData data] suffix:@"nonascii.pak"];
+    XCTAssertNotNil(outputURL);
+    if (!outputURL) {
+        return;
+    }
+
+    UDPAKCodec *codec = [[UDPAKCodec alloc] init];
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertFalse(wrote, @"write should fail for non-ASCII path");
+    XCTAssertNotNil(writeError, @"write should set error for non-ASCII path");
+    XCTAssertTrue([[writeError localizedDescription] containsString:@"non-ASCII"],
+                  @"error should mention non-ASCII characters, got: %@", writeError.localizedDescription);
+}
+
+- (void)testWriteDaikatanaPAKRejectsOverlongPath {
+    NSString *longPath = @"maps/this_filename_is_deliberately_too_long_to_store.bsp";
+    XCTAssertGreaterThan([longPath lengthOfBytesUsingEncoding:NSASCIIStringEncoding], 55U,
+                         @"test path must exceed 55 bytes");
+
+    UDArchive *archive = [[UDArchive alloc] initWithDisplayName:@"test.pak" entries:@[] metadata:@{}];
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:archive];
+    NSError *addError = nil;
+    [editor addSource:[[UDPAKEntrySource alloc] initWithFileURL:[NSURL fileURLWithPath:@"/dev/null"]
+                                                         offset:0
+                                                         length:0]
+               atPath:longPath
+                error:&addError];
+
+    NSURL *outputURL = [self writeTemporaryFileWithData:[NSData data] suffix:@"dk-longpath.pak"];
+    XCTAssertNotNil(outputURL);
+    if (!outputURL) {
+        return;
+    }
+
+    UDDaikatanaPAKCodec *codec = [[UDDaikatanaPAKCodec alloc] init];
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertFalse(wrote, @"Daikatana write should fail for overlong path");
+    XCTAssertNotNil(writeError, @"Daikatana write should set error for overlong path");
+    XCTAssertTrue([[writeError localizedDescription] containsString:@"55"],
+                  @"error should mention the 55-byte limit, got: %@", writeError.localizedDescription);
 }
 
 @end

@@ -302,29 +302,8 @@ jobs:
           export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
           export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
           
-          # 2. Generate Fontconfig File with ABSOLUTE Paths
-          export FONTCONFIG_FILE="/tmp/fonts-PakManager-$$.conf"
-          
-          cat << FONT_EOF > "$FONTCONFIG_FILE"
-          <?xml version="1.0"?>
-          <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-          <fontconfig>
-              <include ignore_missing="yes">/etc/fonts/fonts.conf</include>
-              
-              <dir>$HERE/usr/share/fonts</dir>
-              
-              <cachedir>/tmp/fontconfig-cache-pakmanager</cachedir>
-              
-              <alias>
-                  <family>Helvetica</family>
-                  <prefer><family>Liberation Sans</family></prefer>
-              </alias>
-              <alias>
-                  <family>sans-serif</family>
-                  <prefer><family>Liberation Sans</family></prefer>
-              </alias>
-          </fontconfig>
-          FONT_EOF
+          # Trick the host's Fontconfig into natively indexing our bundled fonts
+          export XDG_DATA_DIRS="$HERE/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
@@ -340,6 +319,9 @@ jobs:
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "Liberation Sans"
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "Liberation Sans"
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "Liberation Mono"
+            
+            # THE KILL SHOT: Force GNUstep to swap the word "Helvetica" for "Liberation Sans" internally
+            "$DEFAULTS_TOOL" write NSGlobalDomain GSFontSubstitutes '{"Helvetica" = "Liberation Sans"; "Helvetica-Bold" = "Liberation Sans"; "sans-serif" = "Liberation Sans";}' || true
           else
             echo "ERROR: defaults tool not found!"
           fi

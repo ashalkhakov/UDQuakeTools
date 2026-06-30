@@ -1,8 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-WORKSPACE_DIR=$(pwd)
-LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+LOCAL_PREFIX="/opt/gnustep-prefix"
 
 # 1. Copy tracked AppImage metadata/runtime assets into AppDir.
 "${WORKSPACE_DIR}/Scripts/appimage/install-assets.sh" "${WORKSPACE_DIR}" "AppDir"

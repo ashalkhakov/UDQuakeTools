@@ -2,8 +2,7 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-WORKSPACE_DIR=$(pwd)
-LOCAL_PREFIX="${WORKSPACE_DIR}/gnustep-prefix"
+LOCAL_PREFIX="/opt/gnustep-prefix"
 
 # 1. Recreate clean AppDir structural root
 rm -rf AppDir

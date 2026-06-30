@@ -59,6 +59,33 @@ cp -p "${LOCAL_PREFIX}/lib64"/libdispatch.so* AppDir/usr/lib/
 cp -p "${LOCAL_PREFIX}/lib64"/libBlocksRuntime.so* AppDir/usr/lib/ 2>/dev/null || true
 fi
 
+# Bundle OpenSSL 3 runtime libs for distro portability (e.g. AppImage on Bazzite)
+echo "=== Manually staging OpenSSL 3 runtime libs ==="
+for ssl_lib in libssl.so.3 libcrypto.so.3; do
+    FOUND_SSL_LIB=""
+    for search_dir in \
+        "${LOCAL_PREFIX}/lib" \
+        "${LOCAL_PREFIX}/lib64" \
+        "/usr/lib" \
+        "/usr/lib64" \
+        "/usr/lib/x86_64-linux-gnu" \
+        "/lib" \
+        "/lib64" \
+        "/lib/x86_64-linux-gnu"
+    do
+        if [ -f "${search_dir}/${ssl_lib}" ]; then
+            FOUND_SSL_LIB="${search_dir}/${ssl_lib}"
+            break
+        fi
+    done
+
+    if [ -n "${FOUND_SSL_LIB}" ]; then
+        cp -p "${FOUND_SSL_LIB}" AppDir/usr/lib/
+    else
+        echo "Warning: ${ssl_lib} was not found on build host; target systems must provide it."
+    fi
+done
+
 # 5. Maintain versioned and unversioned fallback bundle linking
 BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1 || true)
 if [ -n "$BACKEND_BUNDLE" ]; then

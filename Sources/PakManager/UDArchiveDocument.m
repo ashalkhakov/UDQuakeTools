@@ -78,6 +78,34 @@ static NSString *UDArchiveCanonicalTypeName(NSString *typeName) {
     return nil;
 }
 
+static NSURL *UDWritableFileURLFromURL(NSURL *url) {
+    if (!url) {
+        return nil;
+    }
+
+    if ([url isFileURL] && url.path.length > 0) {
+        return url;
+    }
+
+    NSString *path = url.path;
+    if (path.length == 0) {
+        NSString *absolute = url.absoluteString;
+        if ([absolute hasPrefix:@"file://"]) {
+            path = [absolute substringFromIndex:7];
+            NSString *decoded = [path stringByRemovingPercentEncoding];
+            if (decoded.length > 0) {
+                path = decoded;
+            }
+        }
+    }
+
+    if (path.length == 0) {
+        return nil;
+    }
+
+    return [NSURL fileURLWithPath:path];
+}
+
 - (instancetype)init {
     self = [super init];
     if (!self) {
@@ -188,17 +216,17 @@ static NSString *UDArchiveCanonicalTypeName(NSString *typeName) {
 }
 
 - (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
-    if (!url) {
+    NSURL *inputURL = url;
+    url = UDWritableFileURLFromURL(url);
+
+    if (!url || ![url isFileURL] || url.path.length == 0) {
         if (error) {
             *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSFileWriteUnknownError
-                                     userInfo:@{NSLocalizedDescriptionKey: @"No destination URL was provided for save."}];
+                                     userInfo:@{NSLocalizedDescriptionKey: @"No writable file path was selected for save."}];
         }
+        NSLog(@"Save failed before write: rawURL='%@' normalizedURL='%@'", inputURL, url);
         return NO;
-    }
-
-    if (![url isFileURL]) {
-        url = [NSURL fileURLWithPath:url.path];
     }
 
     UDCodecRegistry *reg = [UDCodecRegistry sharedRegistry];

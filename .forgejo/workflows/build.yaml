@@ -328,11 +328,9 @@ jobs:
             echo "Running defaults command with $DEFAULTS_TOOL..."
             "$DEFAULTS_TOOL" write com.udquake.pakmanager GSTheme "Eau"
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "LiberationSans"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSBoldFont "LiberationSans-Bold"
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "LiberationSans"
             "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "LiberationMono"
-            
-            # THE KILL SHOT: Force GNUstep to swap the word "Helvetica" for "Liberation Sans" internally
-            #"$DEFAULTS_TOOL" write NSGlobalDomain GSFontSubstitutes '{"Helvetica" = "Liberation Sans"; "Helvetica-Bold" = "Liberation Sans"; "sans-serif" = "Liberation Sans";}' || true
           else
             echo "ERROR: defaults tool not found!"
           fi

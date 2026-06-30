@@ -49,3 +49,4 @@ fastlane/test_output
 obj/
 *.o
 *.d
+*.app/

@@ -87,6 +87,19 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="PM-SEP-FILE-OPS"/>
+                            <menuItem title="Add Files…" keyEquivalent="i" id="PM-FILE-ADD-FILES">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="addFile:" target="-1" id="PM-ACT-ADD-FILES"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Folder…" keyEquivalent="I" id="PM-FILE-ADD-FOLDER">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="addFolder:" target="-1" id="PM-ACT-ADD-FOLDER"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
                             <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
                                 <connections>
@@ -159,10 +172,16 @@
                                     <action selector="pasteAsPlainText:" target="-1" id="cEh-KX-wJQ"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Rename" keyEquivalent="\r" id="PM-EDIT-RENAME">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="renameSelected:" target="-1" id="PM-ACT-RENAME"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Delete" id="pa3-QI-u2k">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="delete:" target="-1" id="0Mk-Ml-PaM"/>
+                                    <action selector="deleteSelected:" target="-1" id="0Mk-Ml-PaM"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Select All" keyEquivalent="a" id="Ruw-6m-B2m">

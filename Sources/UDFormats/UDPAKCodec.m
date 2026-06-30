@@ -116,10 +116,13 @@ static NSData *UDReadAllContent(id<UDContentSource> source, NSError **error) {
         NSData *pathData = [path dataUsingEncoding:NSASCIIStringEncoding];
         if (!pathData || pathData.length > 55) {
             if (error) {
+                NSString *reason = pathData
+                    ? [NSString stringWithFormat:@"entry path exceeds 55 ASCII bytes (%lu)", (unsigned long)pathData.length]
+                    : @"entry path contains non-ASCII characters";
                 *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
                                              code:UDPAKCodecErrorCodeCorruptDirectory
                                          userInfo:@{NSLocalizedDescriptionKey:
-                                                        [NSString stringWithFormat:@"Path cannot be stored in PAK directory: %@", path]}];
+                                                        [NSString stringWithFormat:@"Cannot save as classic PAK: %@: %@", reason, path]}];
             }
             return NO;
         }

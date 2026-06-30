@@ -37,6 +37,10 @@
 - (void)_extractEntryAtPath:(NSString *)archivePath toURL:(NSURL *)destURL;
 - (void)_extractDirectoryAtPath:(NSString *)dirPath toDirectoryURL:(NSURL *)destDir;
 - (void)_detectGame;
+- (void)_addDirectoryAtURL:(NSURL *)directoryURL;
+- (nullable NSString *)_promptForNameWithTitle:(NSString *)title
+                                  informative:(NSString *)informative
+                                  defaultName:(NSString *)defaultName;
 @end
 
 /* ------------------------------------------------------------------ */
@@ -104,7 +108,7 @@
 #pragma mark - Tree management
 
 - (void)_reloadBrowser {
-    NSArray *entries = _archiveDocument.editor.currentEntries;
+    NSArray *entries = _archiveDocument.editor ? _archiveDocument.editor.currentEntries : @[];
     if (_searchString && _searchString.length > 0) {
         NSMutableArray *filtered = [NSMutableArray array];
         for (UDArchiveEntry *entry in entries) {
@@ -315,8 +319,9 @@ willDisplayCell:(id)cell
         return @"";
     }
     NSString *p = [(UDDirectoryNode *)node path];
+    NSString *displayName = _archiveDocument.archive ? _archiveDocument.archive.displayName : @"Untitled";
     return (p.length > 0) ? p.lastPathComponent
-                           : _archiveDocument.archive.displayName;
+                           : displayName;
 }
 
 /* Called when the user clicks a row in the browser. */
@@ -328,16 +333,62 @@ willDisplayCell:(id)cell
 #pragma mark - IBActions
 
 - (IBAction)addFile:(id)sender {
+    (void)sender;
     NSOpenPanel *panel = [NSOpenPanel openPanel];
     [panel setTitle:@"Choose File to Add"];
     [panel setCanChooseFiles:YES];
     [panel setCanChooseDirectories:NO];
-    [panel setAllowsMultipleSelection:NO];
+    [panel setAllowsMultipleSelection:YES];
 
     NSInteger result = [panel runModal];
     if (result == NSModalResponseOK) {
-        [self _addFileAtURL:[panel URL]];
+        for (NSURL *url in panel.URLs) {
+            [self _addFileAtURL:url];
+        }
     }
+}
+
+- (IBAction)addFolder:(id)sender {
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    [panel setTitle:@"Choose Folder to Add"];
+    [panel setCanChooseFiles:NO];
+    [panel setCanChooseDirectories:YES];
+    [panel setCanCreateDirectories:NO];
+    [panel setAllowsMultipleSelection:NO];
+
+    if ([panel runModal] == NSModalResponseOK) {
+        [self _addDirectoryAtURL:[panel URL]];
+    }
+}
+
+- (IBAction)renameSelected:(id)sender {
+    (void)sender;
+    NSString *path = [self _selectedPath];
+    if (path.length == 0) {
+        return;
+    }
+
+    NSString *currentName = path.lastPathComponent;
+    NSString *newName = [self _promptForNameWithTitle:@"Rename"
+                                          informative:@"Enter a new name."
+                                          defaultName:currentName];
+    if (newName.length == 0 || [newName isEqualToString:currentName]) {
+        return;
+    }
+
+    NSString *parentPath = [path stringByDeletingLastPathComponent];
+    NSString *targetPath = (parentPath.length > 0)
+        ? [parentPath stringByAppendingFormat:@"/%@", newName]
+        : newName;
+
+    NSError *err = nil;
+    if (![_archiveDocument.editor moveNodeFromPath:path toPath:targetPath error:&err]) {
+        [[NSAlert alertWithError:err] runModal];
+        return;
+    }
+
+    [_archiveDocument updateChangeCount:NSChangeDone];
+    [self _reloadBrowser];
 }
 
 - (void)_addFileAtURL:(NSURL *)fileURL {
@@ -356,6 +407,77 @@ willDisplayCell:(id)cell
 
     [_archiveDocument updateChangeCount:NSChangeDone];
     [self _reloadBrowser];
+}
+
+- (void)_addDirectoryAtURL:(NSURL *)directoryURL {
+    NSString *basePath = [self _currentDirectoryPath];
+    NSString *rootName = directoryURL.lastPathComponent;
+    NSString *rootArchivePath = (basePath.length > 0)
+        ? [basePath stringByAppendingFormat:@"/%@", rootName]
+        : rootName;
+
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSDirectoryEnumerator<NSURL *> *enumerator =
+        [fm enumeratorAtURL:directoryURL
+  includingPropertiesForKeys:@[NSURLIsDirectoryKey]
+                     options:NSDirectoryEnumerationSkipsHiddenFiles
+                errorHandler:^BOOL(NSURL *url, NSError *error) {
+                    NSLog(@"Warning: failed to enumerate '%@': %@", url.path, error);
+                    return YES;
+                }];
+
+    BOOL addedAny = NO;
+    for (NSURL *childURL in enumerator) {
+        NSNumber *isDirValue = nil;
+        [childURL getResourceValue:&isDirValue forKey:NSURLIsDirectoryKey error:NULL];
+        if (isDirValue.boolValue) {
+            continue;
+        }
+
+        NSString *relative = [childURL.path substringFromIndex:directoryURL.path.length];
+        if ([relative hasPrefix:@"/"]) {
+            relative = [relative substringFromIndex:1];
+        }
+        if (relative.length == 0) {
+            continue;
+        }
+
+        NSString *archivePath = [rootArchivePath stringByAppendingFormat:@"/%@", relative];
+        archivePath = [archivePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+
+        UDStagedFileSource *src = [[UDStagedFileSource alloc] initWithFileURL:childURL];
+        NSError *err = nil;
+        if (![_archiveDocument.editor addSource:src atPath:archivePath error:&err]) {
+            [[NSAlert alertWithError:err] runModal];
+            return;
+        }
+        addedAny = YES;
+    }
+
+    if (addedAny) {
+        [_archiveDocument updateChangeCount:NSChangeDone];
+        [self _reloadBrowser];
+    }
+}
+
+- (nullable NSString *)_promptForNameWithTitle:(NSString *)title
+                                  informative:(NSString *)informative
+                                  defaultName:(NSString *)defaultName {
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setMessageText:title];
+    [alert setInformativeText:informative];
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+
+    NSTextField *nameField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 280, 24)];
+    [nameField setStringValue:defaultName ?: @""];
+    [alert setAccessoryView:nameField];
+
+    if ([alert runModal] != NSAlertFirstButtonReturn) {
+        return nil;
+    }
+
+    return [[nameField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (IBAction)deleteSelected:(id)sender {
@@ -540,6 +662,24 @@ willDisplayCell:(id)cell
         _activeGame = [UDGame gameWithDisplayName:[_gamePopUpButton titleOfSelectedItem]];
     }
     NSLog(@"Active game profile set to: %@", _activeGame.displayName);
+}
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+    SEL action = [item action];
+    NSString *selPath = [self _selectedPath];
+    BOOL hasSel = (selPath.length > 0);
+
+    if (action == @selector(deleteSelected:) ||
+        action == @selector(renameSelected:) ||
+        action == @selector(extractSelected:)) {
+        return hasSel;
+    }
+
+    if (action == @selector(openSelected:)) {
+        return hasSel && [self _selectedIsLeaf];
+    }
+
+    return YES;
 }
 
 - (void)_detectGame {

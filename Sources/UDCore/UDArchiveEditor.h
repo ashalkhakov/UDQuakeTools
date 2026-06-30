@@ -57,8 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
                    error:(NSError **)error;
 
 /**
- * Move a single entry from `fromPath` to `toPath`.
- * Fails if `fromPath` does not exist or `toPath` already exists.
+ * Move a file entry or directory subtree from `fromPath` to `toPath`.
+ * Fails if `fromPath` does not exist or any destination path already exists.
  */
 - (BOOL)moveNodeFromPath:(NSString *)fromPath
                   toPath:(NSString *)toPath

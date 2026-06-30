@@ -21,6 +21,36 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <menu title="Archive Context" id="MNU-CTX-01">
+            <items>
+                <menuItem title="Rename" id="MNU-CTX-RNM">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="renameSelected:" target="-2" id="MNU-CTX-RNM-ACT"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Delete" id="MNU-CTX-DEL">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="deleteSelected:" target="-2" id="MNU-CTX-DEL-ACT"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="MNU-CTX-SEP"/>
+                <menuItem title="Add Files…" id="MNU-CTX-ADF">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addFile:" target="-2" id="MNU-CTX-ADF-ACT"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Folder…" id="MNU-CTX-ADFD">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addFolder:" target="-2" id="MNU-CTX-ADFD-ACT"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-503" y="80"/>
+        </menu>
         <window title="Archive" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="WND-01">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="750" height="500"/>
@@ -44,6 +74,7 @@
                         <connections>
                             <action selector="browserSingleClick:" target="-2" id="BRW-01-act"/>
                             <outlet property="delegate" destination="-2" id="BRW-01-del"/>
+                            <outlet property="menu" destination="MNU-CTX-01" id="BRW-01-menu"/>
                         </connections>
                     </browser>
                     <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BBR-01" userLabel="buttonBar">
@@ -51,7 +82,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-ADD">
-                                <rect key="frame" x="8" y="4" width="64" height="22"/>
+                                <rect key="frame" x="8" y="4" width="56" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADD-cell">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -61,8 +92,30 @@
                                     <action selector="addFile:" target="-2" id="BTN-ADD-act"/>
                                 </connections>
                             </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-ADF">
+                                <rect key="frame" x="70" y="4" width="92" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Add Folder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADF-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="addFolder:" target="-2" id="BTN-ADF-act"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-RNM">
+                                <rect key="frame" x="170" y="4" width="76" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Rename" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-RNM-cell">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="renameSelected:" target="-2" id="BTN-RNM-act"/>
+                                </connections>
+                            </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-DEL">
-                                <rect key="frame" x="80" y="4" width="72" height="22"/>
+                                <rect key="frame" x="254" y="4" width="72" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-DEL-cell">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -73,7 +126,7 @@
                                 </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-EXT">
-                                <rect key="frame" x="160" y="4" width="80" height="22"/>
+                                <rect key="frame" x="334" y="4" width="80" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Extract" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-EXT-cell">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -84,7 +137,7 @@
                                 </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-OPN">
-                                <rect key="frame" x="248" y="4" width="64" height="22"/>
+                                <rect key="frame" x="422" y="4" width="64" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Open" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-OPN-cell">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -95,7 +148,7 @@
                                 </connections>
                             </button>
                             <searchField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
-                                <rect key="frame" x="320" y="3" width="210" height="22"/>
+                                <rect key="frame" x="494" y="3" width="120" height="22"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search..." bezelStyle="round" id="SRH-01-cell">
                                     <font key="font" metaFont="system"/>
@@ -107,7 +160,7 @@
                                 </connections>
                             </searchField>
                             <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-GME">
-                                <rect key="frame" x="540" y="4" width="200" height="22"/>
+                                <rect key="frame" x="622" y="4" width="122" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-GME-cell">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>

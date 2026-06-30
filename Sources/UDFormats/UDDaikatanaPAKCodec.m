@@ -267,10 +267,13 @@ static NSData *UDDKReadAllContent(id<UDContentSource> source, NSError **error) {
         NSData *pathData = [path dataUsingEncoding:NSASCIIStringEncoding];
         if (!pathData || pathData.length > 55) {
             if (error) {
+                NSString *reason = pathData
+                    ? [NSString stringWithFormat:@"entry path exceeds 55 ASCII bytes (%lu)", (unsigned long)pathData.length]
+                    : @"entry path contains non-ASCII characters";
                 *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
                                              code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
                                          userInfo:@{NSLocalizedDescriptionKey:
-                                                        [NSString stringWithFormat:@"Path cannot be stored in Daikatana PAK directory: %@", path]}];
+                                                        [NSString stringWithFormat:@"Cannot save as Daikatana PAK: %@: %@", reason, path]}];
             }
             return NO;
         }

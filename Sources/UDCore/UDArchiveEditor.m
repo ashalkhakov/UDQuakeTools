@@ -139,8 +139,20 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
     NSParameterAssert(fromPath.length > 0);
     NSParameterAssert(toPath.length > 0);
 
-    UDArchiveEntry *entry = [self _entryAtPath:fromPath];
-    if (!entry) {
+    if ([fromPath isEqualToString:toPath]) {
+        return YES;
+    }
+
+    NSString *fromPrefix = [fromPath stringByAppendingString:@"/"];
+    NSMutableArray<UDArchiveEntry *> *movingEntries = [NSMutableArray array];
+
+    for (UDArchiveEntry *entry in _currentEntries) {
+        if ([entry.path isEqualToString:fromPath] || [entry.path hasPrefix:fromPrefix]) {
+            [movingEntries addObject:entry];
+        }
+    }
+
+    if (movingEntries.count == 0) {
         if (error) {
             *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
                                          code:UDArchiveEditorErrorCodePathNotFound
@@ -150,25 +162,72 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         return NO;
     }
 
-    if ([self _entryAtPath:toPath]) {
-        if (error) {
-            *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
-                                         code:UDArchiveEditorErrorCodeTargetPathExists
-                                     userInfo:@{NSLocalizedDescriptionKey:
-                                                [NSString stringWithFormat:@"Target path already exists: %@", toPath]}];
+    NSMutableSet<NSString *> *movingPaths = [NSMutableSet setWithCapacity:movingEntries.count];
+    NSMutableDictionary<NSString *, NSString *> *destinationBySourcePath =
+        [NSMutableDictionary dictionaryWithCapacity:movingEntries.count];
+
+    for (UDArchiveEntry *entry in movingEntries) {
+        [movingPaths addObject:entry.path];
+
+        NSString *newPath = nil;
+        if ([entry.path isEqualToString:fromPath]) {
+            newPath = toPath;
+        } else {
+            NSString *suffix = [entry.path substringFromIndex:fromPath.length];
+            newPath = [toPath stringByAppendingString:suffix];
         }
-        return NO;
+
+        [destinationBySourcePath setObject:newPath forKey:entry.path];
     }
 
-    NSUInteger idx = [_currentEntries indexOfObject:entry];
-    UDArchiveEntry *moved = [[UDArchiveEntry alloc]
-        initWithPath:toPath
-                size:entry.size
-         contentType:entry.contentType
-          modifiedAt:entry.modifiedAt
-              source:[self _effectiveSourceForEntry:entry]];
+    for (UDArchiveEntry *entry in _currentEntries) {
+        if ([movingPaths containsObject:entry.path]) {
+            continue;
+        }
 
-    [_currentEntries replaceObjectAtIndex:idx withObject:moved];
+        NSString *newPath = [destinationBySourcePath objectForKey:entry.path];
+        if (!newPath) {
+            continue;
+        }
+
+        if ([entry.path isEqualToString:newPath]) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
+                                             code:UDArchiveEditorErrorCodeTargetPathExists
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Target path already exists: %@", newPath]}];
+            }
+            return NO;
+        }
+
+        if ([self _entryAtPath:newPath]) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
+                                             code:UDArchiveEditorErrorCodeTargetPathExists
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Target path already exists: %@", newPath]}];
+            }
+            return NO;
+        }
+    }
+
+    for (NSUInteger idx = 0; idx < _currentEntries.count; idx++) {
+        UDArchiveEntry *entry = [_currentEntries objectAtIndex:idx];
+        NSString *newPath = [destinationBySourcePath objectForKey:entry.path];
+        if (!newPath) {
+            continue;
+        }
+
+        UDArchiveEntry *moved = [[UDArchiveEntry alloc]
+            initWithPath:newPath
+                    size:entry.size
+             contentType:entry.contentType
+              modifiedAt:[NSDate date]
+                  source:entry.source];
+        moved.stagedSource = entry.stagedSource;
+
+        [_currentEntries replaceObjectAtIndex:idx withObject:moved];
+    }
 
     UDArchiveMutation *mutation = [[UDArchiveMutation alloc]
         initWithKind:@"move"

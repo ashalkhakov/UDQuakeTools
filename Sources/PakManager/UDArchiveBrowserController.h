@@ -55,7 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - IBActions
 
 - (IBAction)addFile:(id)sender;
+- (IBAction)addFolder:(id)sender;
 - (IBAction)deleteSelected:(id)sender;
+- (IBAction)renameSelected:(id)sender;
 - (IBAction)extractSelected:(id)sender;
 - (IBAction)openSelected:(id)sender;
 - (IBAction)gameChanged:(id)sender;

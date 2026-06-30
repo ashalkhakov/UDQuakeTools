@@ -27,13 +27,12 @@
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
     UDCodecRegistry *reg = [UDCodecRegistry sharedRegistry];
 
-    /* First try to match by the document type name the system resolved. */
-    id<UDArchiveCodec> codec = [reg codecForURL:url typeName:typeName];
-    /* Fall back to signature / extension detection. */
-    if (!codec) {
-        codec = [reg codecForURL:url typeName:nil];
+    NSArray<id<UDArchiveCodec>> *candidates = [reg codecCandidatesForURL:url typeName:typeName];
+    if (candidates.count == 0) {
+        candidates = [reg codecCandidatesForURL:url typeName:nil];
     }
-    if (!codec) {
+
+    if (candidates.count == 0) {
         if (error) {
             *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSFileReadUnknownError
@@ -43,12 +42,37 @@
         return NO;
     }
 
-    UDArchive *archive = [codec readArchiveFromURL:url error:error];
-    if (!archive) {
+    NSError *lastReadError = nil;
+    UDArchive *archive = nil;
+    id<UDArchiveCodec> selectedCodec = nil;
+
+    for (id<UDArchiveCodec> candidate in candidates) {
+        NSError *candidateError = nil;
+        archive = [candidate readArchiveFromURL:url error:&candidateError];
+        if (archive) {
+            selectedCodec = candidate;
+            break;
+        }
+        if (candidateError) {
+            lastReadError = candidateError;
+        }
+    }
+
+    if (!archive || !selectedCodec) {
+        if (error) {
+            if (lastReadError) {
+                *error = lastReadError;
+            } else {
+                *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                             code:NSFileReadUnknownError
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        @"No compatible codec could read this archive."}];
+            }
+        }
         return NO;
     }
 
-    _codec   = codec;
+    _codec   = selectedCodec;
     _archive = archive;
     _editor  = [[UDArchiveEditor alloc] initWithArchive:archive];
     return YES;

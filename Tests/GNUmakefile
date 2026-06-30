@@ -7,6 +7,7 @@ GS_WITH_ARC = 1
 include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
+    UDAssetIndexTests.m \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \
@@ -17,6 +18,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDGame.m \
     ../Sources/UDCore/UDGameDetectionService.m \
     ../Sources/UDCore/UDArchive.m \
+    ../Sources/UDCore/UDAssetIndex.m \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDCore/UDArchiveEditor.m \
     ../Sources/UDCore/UDArchiveMutation.m \

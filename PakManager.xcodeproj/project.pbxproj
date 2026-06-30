@@ -69,12 +69,16 @@
 		CE1151622FEE7744005C6DA3 /* UDFileActionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151612FEE7744005C6DA3 /* UDFileActionService.m */; };
 		CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
 		CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
+		CEA101012FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
+		CEA101022FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
+		CEA101032FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
 		CE734C3B2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C3C2FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
 		CE734C3D2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C3E2FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
 		CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
+		CEA101052FF5000000A10001 /* UDAssetIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101062FF5000000A10001 /* UDAssetIndexTests.m */; };
 		CEFA65B12FF4309B004B373A /* UDVirtualFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */; };
 /* End PBXBuildFile section */
 
@@ -141,6 +145,9 @@
 		CE1151642FEE7777005C6DA3 /* UDGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGame.m; sourceTree = "<group>"; };
 		CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameDetectionService.h; sourceTree = "<group>"; };
 		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
+		CEA101042FF5000000A10001 /* UDAssetIndex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAssetIndex.m; sourceTree = "<group>"; };
+		CEA101072FF5000000A10001 /* UDAssetIndex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAssetIndex.h; sourceTree = "<group>"; };
+		CEA101062FF5000000A10001 /* UDAssetIndexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAssetIndexTests.m; sourceTree = "<group>"; };
 		CE734C372FF4335000AE8333 /* UDVFSMount.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVFSMount.h; sourceTree = "<group>"; };
 		CE734C382FF4335000AE8333 /* UDVFSMount.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVFSMount.m; sourceTree = "<group>"; };
 		CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVirtualFileSystem.h; sourceTree = "<group>"; };
@@ -226,6 +233,8 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
+				CEA101072FF5000000A10001 /* UDAssetIndex.h */,
+				CEA101042FF5000000A10001 /* UDAssetIndex.m */,
 				CE734C372FF4335000AE8333 /* UDVFSMount.h */,
 				CE734C382FF4335000AE8333 /* UDVFSMount.m */,
 				CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */,
@@ -297,6 +306,7 @@
 		BB00000500000000000000AA /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				CEA101062FF5000000A10001 /* UDAssetIndexTests.m */,
 				CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */,
 				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
 				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
@@ -432,6 +442,7 @@
 				AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */,
 				AA01002000000000000000AA /* UDTextPreviewController.m in Sources */,
 				AA01000400000000000000AA /* UDArchive.m in Sources */,
+				CEA101012FF5000000A10001 /* UDAssetIndex.m in Sources */,
 				CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */,
 				CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */,
 				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
@@ -458,6 +469,7 @@
 			files = (
 				AA02000000000000000000AA /* main.m in Sources */,
 				AA02000100000000000000AA /* UDArchive.m in Sources */,
+				CEA101022FF5000000A10001 /* UDAssetIndex.m in Sources */,
 				AA02000200000000000000AA /* UDArchiveEntry.m in Sources */,
 				AA02000300000000000000AA /* UDCodecRegistry.m in Sources */,
 				AA02000400000000000000AA /* UDPAKCodec.m in Sources */,
@@ -476,6 +488,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA101052FF5000000A10001 /* UDAssetIndexTests.m in Sources */,
 				CE07D6CB2FF3FE5E00B149C9 /* UDDirectoryNode.m in Sources */,
 				CE07D6CA2FF3E92000B149C9 /* UDStagedFileSource.m in Sources */,
 				CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */,
@@ -490,6 +503,7 @@
 				BB01010100000000000000AA /* UDGame.m in Sources */,
 				BB01010200000000000000AA /* UDGameDetectionService.m in Sources */,
 				BB01010300000000000000AA /* UDArchive.m in Sources */,
+				CEA101032FF5000000A10001 /* UDAssetIndex.m in Sources */,
 				BB01010400000000000000AA /* UDArchiveEntry.m in Sources */,
 				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
 				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,

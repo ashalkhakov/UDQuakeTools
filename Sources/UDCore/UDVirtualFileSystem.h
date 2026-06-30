@@ -17,17 +17,23 @@ extern NSString *const UDVFSNotificationMountIdentifierKey;
     UDVFSMount *_mount;
     id<UDContentSource> _contentSource;
     uint64_t _length;
+    NSString *_sourcePath;
+    NSURL *_fileURL;
 }
 
 @property (nonatomic, readonly, copy) NSString *virtualPath;
 @property (nonatomic, readonly, strong) UDVFSMount *mount;
 @property (nonatomic, readonly, strong) id<UDContentSource> contentSource;
 @property (nonatomic, readonly) uint64_t length;
+@property (nonatomic, readonly, copy) NSString *sourcePath;
+@property (nonatomic, readonly, nullable, strong) NSURL *fileURL;
 
 - (instancetype)initWithVirtualPath:(NSString *)virtualPath
                               mount:(UDVFSMount *)mount
                         contentSource:(id<UDContentSource>)contentSource
-                             length:(uint64_t)length NS_DESIGNATED_INITIALIZER;
+                             length:(uint64_t)length
+                         sourcePath:(NSString *)sourcePath
+                            fileURL:(nullable NSURL *)fileURL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -71,6 +77,7 @@ extern NSString *const UDVFSNotificationMountIdentifierKey;
 
 - (BOOL)fileExistsAtPath:(NSString *)virtualPath;
 - (nullable UDVFSResolvedFile *)resolvedFileAtPath:(NSString *)virtualPath error:(NSError **)error;
+- (NSArray<UDVFSResolvedFile *> *)visibleFilesWithExtensions:(nullable NSSet<NSString *> *)extensions error:(NSError **)error;
 - (nullable NSData *)readFileAtPath:(NSString *)virtualPath error:(NSError **)error;
 - (BOOL)writeFileAtPath:(NSString *)virtualPath data:(NSData *)data error:(NSError **)error;
 

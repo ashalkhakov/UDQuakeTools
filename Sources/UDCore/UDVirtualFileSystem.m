@@ -12,6 +12,33 @@ NSString *const UDVFSNotificationMountIdentifierKey = @"mountIdentifier";
 
 static NSString *const UDVFSErrorDomain = @"com.udquake.error.vfs";
 
+@class UDVirtualFileSystem;
+@class UDVFSResolvedFile;
+
+@interface UDVirtualFileSystem ()
+- (BOOL)mount:(UDVFSMount *)a shouldSortBefore:(UDVFSMount *)b;
+- (NSComparisonResult)compareArchiveMountPrecedence:(UDVFSMount *)a other:(UDVFSMount *)b;
+- (BOOL)shouldUseNumberedPakOrdering;
+- (BOOL)shouldUseLexicalArchiveOrdering;
+- (NSInteger)numberedPakPriorityDeltaForURL:(NSURL *)url;
+- (BOOL)isKnownArchiveFileNameForCurrentGame:(NSString *)fileName;
+- (NSString *)mountIdentifierForDiscoveredArchiveURL:(NSURL *)archiveURL;
+@end
+
+static NSComparisonResult UDVFSCompareArchiveURLs(id leftObject, id rightObject, void *context) {
+    (void)context;
+    NSString *leftName = [(NSURL *)leftObject lastPathComponent];
+    NSString *rightName = [(NSURL *)rightObject lastPathComponent];
+    return [leftName compare:rightName options:NSCaseInsensitiveSearch];
+}
+
+static NSComparisonResult UDVFSCompareResolvedFiles(id leftObject, id rightObject, void *context) {
+    (void)context;
+    NSString *leftPath = [(UDVFSResolvedFile *)leftObject virtualPath];
+    NSString *rightPath = [(UDVFSResolvedFile *)rightObject virtualPath];
+    return [leftPath compare:rightPath options:NSCaseInsensitiveSearch];
+}
+
 typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     UDVFSErrorCodeInvalidPath = 1,
     UDVFSErrorCodeMountFailed = 2,
@@ -24,6 +51,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 - (nullable UDVFSResolvedFile *)resolvedFileForVirtualPath:(NSString *)virtualPath
                                                      mount:(UDVFSMount *)mount
                                                      error:(NSError **)error;
+- (NSArray<NSString *> *)allRelativePaths:(NSError **)error;
 @end
 
 @interface UDVFSLooseFileSource : NSObject <UDContentSource> {
@@ -58,6 +86,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 @property (nonatomic, readwrite, strong) UDVFSMount *mount;
 @property (nonatomic, readwrite, strong) id<UDContentSource> contentSource;
 @property (nonatomic, readwrite) uint64_t length;
+@property (nonatomic, readwrite, copy) NSString *sourcePath;
+@property (nonatomic, readwrite, nullable, strong) NSURL *fileURL;
 @end
 
 @implementation UDVFSResolvedFile
@@ -66,14 +96,19 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 @synthesize mount = _mount;
 @synthesize contentSource = _contentSource;
 @synthesize length = _length;
+@synthesize sourcePath = _sourcePath;
+@synthesize fileURL = _fileURL;
 
 - (instancetype)initWithVirtualPath:(NSString *)virtualPath
                               mount:(UDVFSMount *)mount
                       contentSource:(id<UDContentSource>)contentSource
-                             length:(uint64_t)length {
+                             length:(uint64_t)length
+                         sourcePath:(NSString *)sourcePath
+                            fileURL:(NSURL *)fileURL {
     NSParameterAssert(virtualPath.length > 0);
     NSParameterAssert(mount != nil);
     NSParameterAssert(contentSource != nil);
+    NSParameterAssert(sourcePath.length > 0);
 
     self = [super init];
     if (!self) {
@@ -84,6 +119,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     _mount = mount;
     _contentSource = contentSource;
     _length = length;
+    _sourcePath = [sourcePath copy];
+    _fileURL = fileURL;
     return self;
 }
 
@@ -188,6 +225,58 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     return [_directoryURL URLByAppendingPathComponent:relativePath];
 }
 
+- (NSArray<NSString *> *)allRelativePaths:(NSError **)error {
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtURL:_directoryURL
+                                                             includingPropertiesForKeys:@[NSURLIsRegularFileKey]
+                                                                                options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                                           errorHandler:nil];
+    if (!enumerator) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDVFSErrorDomain
+                                         code:UDVFSErrorCodeMountFailed
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Failed to enumerate mounted directory."}];
+        }
+        return @[];
+    }
+
+    NSString *basePath = [[_directoryURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
+    NSString *basePrefix = [basePath stringByAppendingString:@"/"];
+
+    NSMutableArray<NSString *> *paths = [NSMutableArray array];
+    for (NSURL *fileURL in enumerator) {
+        NSNumber *isRegularFile = nil;
+        [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        if (![isRegularFile boolValue]) {
+            continue;
+        }
+
+        NSString *filePath = [[fileURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
+        if (![filePath hasPrefix:basePrefix]) {
+            continue;
+        }
+
+        NSString *relativePath = [filePath substringFromIndex:basePrefix.length];
+        relativePath = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        if (relativePath.length > 0) {
+            [paths addObject:relativePath];
+        }
+    }
+
+    NSUInteger count = paths.count;
+    for (NSUInteger i = 0; i < count; i++) {
+        for (NSUInteger j = i + 1; j < count; j++) {
+            NSString *left = [paths objectAtIndex:i];
+            NSString *right = [paths objectAtIndex:j];
+            if ([left compare:right options:NSCaseInsensitiveSearch] != NSOrderedDescending) {
+                continue;
+            }
+            [paths exchangeObjectAtIndex:i withObjectAtIndex:j];
+        }
+    }
+
+    return paths;
+}
+
 - (nullable UDVFSResolvedFile *)resolvedFileForVirtualPath:(NSString *)virtualPath
                                                      mount:(UDVFSMount *)mount
                                                      error:(NSError **)error {
@@ -215,7 +304,9 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     return [[UDVFSResolvedFile alloc] initWithVirtualPath:virtualPath
                                                     mount:mount
                                             contentSource:source
-                                                   length:length];
+                                                   length:length
+                                               sourcePath:[virtualPath isEqualToString:mount.virtualRoot] ? @"" : [virtualPath hasPrefix:[mount.virtualRoot stringByAppendingString:@"/"]] ? [virtualPath substringFromIndex:(mount.virtualRoot.length + 1)] : virtualPath
+                                                  fileURL:fileURL];
 }
 
 @end
@@ -242,6 +333,23 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     }
     _entryByPath = [index copy];
     return self;
+}
+
+- (NSArray<NSString *> *)allRelativePaths:(NSError **)error {
+    (void)error;
+    NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithArray:[_entryByPath allKeys]];
+    NSUInteger count = paths.count;
+    for (NSUInteger i = 0; i < count; i++) {
+        for (NSUInteger j = i + 1; j < count; j++) {
+            NSString *left = [paths objectAtIndex:i];
+            NSString *right = [paths objectAtIndex:j];
+            if ([left compare:right options:NSCaseInsensitiveSearch] != NSOrderedDescending) {
+                continue;
+            }
+            [paths exchangeObjectAtIndex:i withObjectAtIndex:j];
+        }
+    }
+    return paths;
 }
 
 - (nullable UDVFSResolvedFile *)resolvedFileForVirtualPath:(NSString *)virtualPath
@@ -275,7 +383,9 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     return [[UDVFSResolvedFile alloc] initWithVirtualPath:virtualPath
                                                     mount:mount
                                             contentSource:entry.contentSource
-                                                   length:entry.size];
+                                                   length:entry.size
+                                               sourcePath:relativePath
+                                                  fileURL:nil];
 }
 
 @end
@@ -487,17 +597,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         [candidates addObject:entryURL];
     }
 
-    NSUInteger candidateCount = candidates.count;
-    for (NSUInteger i = 0; i < candidateCount; i++) {
-        for (NSUInteger j = i + 1; j < candidateCount; j++) {
-            NSURL *left = [candidates objectAtIndex:i];
-            NSURL *right = [candidates objectAtIndex:j];
-            if ([left.lastPathComponent compare:right.lastPathComponent options:NSCaseInsensitiveSearch] != NSOrderedDescending) {
-                continue;
-            }
-            [candidates exchangeObjectAtIndex:i withObjectAtIndex:j];
-        }
-    }
+    [candidates sortUsingFunction:UDVFSCompareArchiveURLs context:NULL];
 
     NSMutableArray<UDVFSMount *> *mounted = [NSMutableArray arrayWithCapacity:candidates.count];
     NSError *lastMountError = nil;
@@ -560,17 +660,25 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return nil;
     }
 
-    NSArray<UDVFSMount *> *orderedMounts = [self sortedMountsForResolution];
-    for (UDVFSMount *mount in orderedMounts) {
+    UDVFSResolvedFile *bestResolved = nil;
+    for (UDVFSMount *mount in _mounts) {
         id<UDVFSMountAdapter> adapter = [_mountAdapters objectForKey:mount.identifier];
         if (!adapter) {
             continue;
         }
 
         UDVFSResolvedFile *resolved = [adapter resolvedFileForVirtualPath:normalizedPath mount:mount error:error];
-        if (resolved) {
-            return resolved;
+        if (!resolved) {
+            continue;
         }
+
+        if (!bestResolved || [self mount:mount shouldSortBefore:bestResolved.mount]) {
+            bestResolved = resolved;
+        }
+    }
+
+    if (bestResolved) {
+        return bestResolved;
     }
 
     if (error) {
@@ -580,6 +688,75 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
                                                 [NSString stringWithFormat:@"No mounted file found for path: %@", normalizedPath]}];
     }
     return nil;
+}
+
+- (NSArray<UDVFSResolvedFile *> *)visibleFilesWithExtensions:(NSSet<NSString *> *)extensions error:(NSError **)error {
+    NSSet<NSString *> *normalizedExtensions = nil;
+    if (extensions.count > 0) {
+        NSMutableSet<NSString *> *lowercased = [NSMutableSet setWithCapacity:extensions.count];
+        for (NSString *extension in extensions) {
+            if (extension.length > 0) {
+                [lowercased addObject:extension.lowercaseString];
+            }
+        }
+        normalizedExtensions = [lowercased copy];
+    }
+
+    NSMutableSet<NSString *> *seenPaths = [NSMutableSet set];
+    NSMutableArray<UDVFSResolvedFile *> *visibleFiles = [NSMutableArray array];
+    NSError *lastError = nil;
+    NSArray<UDVFSMount *> *orderedMounts = [self sortedMountsForResolution];
+
+    for (UDVFSMount *mount in orderedMounts) {
+        id<UDVFSMountAdapter> adapter = [_mountAdapters objectForKey:mount.identifier];
+        if (!adapter) {
+            continue;
+        }
+
+        NSError *enumerationError = nil;
+        NSArray<NSString *> *relativePaths = [adapter allRelativePaths:&enumerationError];
+        if (!relativePaths) {
+            if (enumerationError) {
+                lastError = enumerationError;
+            }
+            continue;
+        }
+
+        for (NSString *relativePath in relativePaths) {
+            NSString *virtualPath = relativePath;
+            if (mount.virtualRoot.length > 0) {
+                virtualPath = [mount.virtualRoot stringByAppendingPathComponent:relativePath];
+                virtualPath = [virtualPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+            }
+
+            NSString *normalizedVirtualPath = [[self class] normalizeVirtualPath:virtualPath];
+            if (normalizedVirtualPath.length == 0 || [seenPaths containsObject:normalizedVirtualPath]) {
+                continue;
+            }
+
+            if (normalizedExtensions) {
+                NSString *extension = normalizedVirtualPath.pathExtension.lowercaseString;
+                if (![normalizedExtensions containsObject:extension]) {
+                    continue;
+                }
+            }
+
+            UDVFSResolvedFile *resolved = [adapter resolvedFileForVirtualPath:normalizedVirtualPath mount:mount error:nil];
+            if (!resolved) {
+                continue;
+            }
+
+            [seenPaths addObject:normalizedVirtualPath];
+            [visibleFiles addObject:resolved];
+        }
+    }
+
+    [visibleFiles sortUsingFunction:UDVFSCompareResolvedFiles context:NULL];
+
+    if (error && lastError) {
+        *error = lastError;
+    }
+    return [visibleFiles copy];
 }
 
 - (nullable NSData *)readFileAtPath:(NSString *)virtualPath error:(NSError **)error {
@@ -621,7 +798,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     UDVFSMount *targetMount = nil;
     UDVFSDirectoryMountAdapter *targetAdapter = nil;
     NSURL *targetURL = nil;
-    for (UDVFSMount *mount in [self sortedMountsForResolution]) {
+    for (UDVFSMount *mount in _mounts) {
         if (mount.kind != UDVFSMountKindDirectory) {
             continue;
         }
@@ -636,10 +813,11 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             continue;
         }
 
-        targetMount = mount;
-        targetAdapter = (UDVFSDirectoryMountAdapter *)adapter;
-        targetURL = candidateURL;
-        break;
+        if (!targetMount || [self mount:mount shouldSortBefore:targetMount]) {
+            targetMount = mount;
+            targetAdapter = (UDVFSDirectoryMountAdapter *)adapter;
+            targetURL = candidateURL;
+        }
     }
 
     if (!targetMount || !targetAdapter || !targetURL) {
@@ -714,19 +892,15 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 }
 
 - (NSArray<UDVFSMount *> *)sortedMountsForResolution {
-    NSMutableArray<UDVFSMount *> *sorted = [NSMutableArray arrayWithArray:_mounts];
-    NSUInteger count = sorted.count;
-    for (NSUInteger i = 0; i < count; i++) {
-        for (NSUInteger j = i + 1; j < count; j++) {
-            UDVFSMount *left = [sorted objectAtIndex:i];
-            UDVFSMount *right = [sorted objectAtIndex:j];
-            if ([self mount:left shouldSortBefore:right]) {
-                continue;
-            }
-            [sorted exchangeObjectAtIndex:i withObjectAtIndex:j];
+    return [_mounts sortedArrayUsingComparator:^NSComparisonResult(UDVFSMount *left, UDVFSMount *right) {
+        if ([self mount:left shouldSortBefore:right]) {
+            return NSOrderedAscending;
         }
-    }
-    return sorted;
+        if ([self mount:right shouldSortBefore:left]) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedSame;
+    }];
 }
 
 - (BOOL)mount:(UDVFSMount *)a shouldSortBefore:(UDVFSMount *)b {

@@ -165,6 +165,7 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
     NSMutableSet<NSString *> *movingPaths = [NSMutableSet setWithCapacity:movingEntries.count];
     NSMutableDictionary<NSString *, NSString *> *destinationBySourcePath =
         [NSMutableDictionary dictionaryWithCapacity:movingEntries.count];
+    NSMutableSet<NSString *> *destinationPaths = [NSMutableSet setWithCapacity:movingEntries.count];
 
     for (UDArchiveEntry *entry in movingEntries) {
         [movingPaths addObject:entry.path];
@@ -178,6 +179,7 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         }
 
         [destinationBySourcePath setObject:newPath forKey:entry.path];
+        [destinationPaths addObject:newPath];
     }
 
     for (UDArchiveEntry *entry in _currentEntries) {
@@ -185,27 +187,12 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
             continue;
         }
 
-        NSString *newPath = [destinationBySourcePath objectForKey:entry.path];
-        if (!newPath) {
-            continue;
-        }
-
-        if ([entry.path isEqualToString:newPath]) {
+        if ([destinationPaths containsObject:entry.path]) {
             if (error) {
                 *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
                                              code:UDArchiveEditorErrorCodeTargetPathExists
                                          userInfo:@{NSLocalizedDescriptionKey:
-                                                        [NSString stringWithFormat:@"Target path already exists: %@", newPath]}];
-            }
-            return NO;
-        }
-
-        if ([self _entryAtPath:newPath]) {
-            if (error) {
-                *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
-                                             code:UDArchiveEditorErrorCodeTargetPathExists
-                                         userInfo:@{NSLocalizedDescriptionKey:
-                                                        [NSString stringWithFormat:@"Target path already exists: %@", newPath]}];
+                                                        [NSString stringWithFormat:@"Target path already exists: %@", entry.path]}];
             }
             return NO;
         }

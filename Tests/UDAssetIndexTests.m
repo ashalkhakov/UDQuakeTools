@@ -259,6 +259,36 @@
     XCTAssertTrue([second.body containsString:@"blend add"]);
 }
 
+- (void)testDeclParserRoundTripsBodyFormatting {
+    NSString *declText =
+        @"entityDef monster_zombie {\n"
+         "    // preserve indentation and comments\n"
+         "    \"editor_usage\"\t\"Unit test\"\n"
+         "}\n\n"
+         "material textures/stone {\n"
+         "\t{ blend add }\n"
+         "}";
+
+    UDDeclParser *parser = [[UDDeclParser alloc] init];
+    NSError *parseError = nil;
+    NSArray<UDDeclDefinition *> *definitions = [parser parseDefinitionsFromText:declText
+                                                               sourceVirtualPath:@"def/monster.def"
+                                                                           error:&parseError];
+    XCTAssertNil(parseError);
+    XCTAssertEqual(definitions.count, 2U);
+
+    NSString *serialized = [parser serializeDefinitions:definitions];
+    NSString *expected =
+        @"entityDef monster_zombie {\n"
+         "    // preserve indentation and comments\n"
+         "    \"editor_usage\"\t\"Unit test\"\n"
+         "}\n\n"
+         "material textures/stone {\n"
+         "\t{ blend add }\n"
+         "}";
+    XCTAssertEqualObjects(serialized, expected);
+}
+
 - (void)testDeclModelUsesAssetIndexDiscoveryLayer {
     NSString *gameDirPath = [self tempDirectoryPath];
     NSError *mkdirError = nil;
@@ -302,6 +332,61 @@
     XCTAssertNotNil([declModel definitionWithType:@"entityDef" name:@"loose_decl"]);
     XCTAssertNil([declModel definitionWithType:@"entityDef" name:@"archive_decl"]);
     XCTAssertNotNil([declModel definitionWithType:@"entityDef" name:@"weapon_shotgun"]);
+
+    NSArray<UDDeclDefinition *> *entityDefs = [declModel definitionsOfType:@"entityDef"];
+    XCTAssertEqual(entityDefs.count, 2U);
+
+    NSArray<UDDeclDefinition *> *nameMatches = [declModel definitionsWithNameContaining:@"weapon"];
+    XCTAssertEqual(nameMatches.count, 1U);
+    XCTAssertEqualObjects([[nameMatches objectAtIndex:0] declName], @"weapon_shotgun");
+
+    NSArray<UDDeclDefinition *> *sourceMatches = [declModel definitionsFromSourceVirtualPath:@"def/weapons.def"];
+    XCTAssertEqual(sourceMatches.count, 1U);
+    XCTAssertEqualObjects([[sourceMatches objectAtIndex:0] declName], @"weapon_shotgun");
+}
+
+- (void)testDeclQueryServiceFiltersSortsAndLimits {
+    UDDeclDefinition *a = [[UDDeclDefinition alloc] initWithDeclType:@"entityDef"
+                                                            declName:@"monster_imp"
+                                                                body:@"\"editor_usage\" \"imp\""
+                                                   sourceVirtualPath:@"def/monster.def"];
+    UDDeclDefinition *b = [[UDDeclDefinition alloc] initWithDeclType:@"entityDef"
+                                                            declName:@"monster_boss"
+                                                                body:@"\"editor_usage\" \"boss\""
+                                                   sourceVirtualPath:@"def/monster.def"];
+    UDDeclDefinition *c = [[UDDeclDefinition alloc] initWithDeclType:@"material"
+                                                            declName:@"textures/stone"
+                                                                body:@"{ blend add }"
+                                                   sourceVirtualPath:@"materials/stone.def"];
+    UDDeclDefinition *d = [[UDDeclDefinition alloc] initWithDeclType:@"entityDef"
+                                                            declName:@"weapon_shotgun"
+                                                                body:@"\"editor_usage\" \"weapon\""
+                                                   sourceVirtualPath:@"def/weapons.def"];
+
+    UDDeclModel *model = [[UDDeclModel alloc] initWithDefinitions:@[a, b, c, d]];
+    UDDeclQueryService *service = [[UDDeclQueryService alloc] init];
+
+    UDDeclQueryRequest *request = [[UDDeclQueryRequest alloc] init];
+    request.declType = @"entityDef";
+    request.searchText = @"monster";
+    request.sortField = UDDeclQuerySortFieldName;
+    request.ascending = NO;
+
+    NSArray<UDDeclDefinition *> *results = [service queryDefinitionsInModel:model request:request];
+    XCTAssertEqual(results.count, 2U);
+    XCTAssertEqualObjects([[results objectAtIndex:0] declName], @"monster_imp");
+    XCTAssertEqualObjects([[results objectAtIndex:1] declName], @"monster_boss");
+
+    request.searchText = nil;
+    request.declType = nil;
+    request.sourceVirtualPath = @"def/monster.def";
+    request.sortField = UDDeclQuerySortFieldType;
+    request.ascending = YES;
+    request.maxResults = 1;
+
+    NSArray<UDDeclDefinition *> *limited = [service queryDefinitionsInModel:model request:request];
+    XCTAssertEqual(limited.count, 1U);
+    XCTAssertEqualObjects([[limited objectAtIndex:0] sourceVirtualPath], @"def/monster.def");
 }
 
 - (void)testNotificationHookPerformsPartialAssetIndexRefresh {

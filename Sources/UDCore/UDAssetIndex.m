@@ -129,6 +129,39 @@ static NSComparisonResult UDCompareDeclDefinitions(id leftObject, id rightObject
     return [left.sourceVirtualPath compare:right.sourceVirtualPath options:NSCaseInsensitiveSearch];
 }
 
+static NSComparisonResult UDCompareDeclDefinitionsForSortField(UDDeclDefinition *left,
+                                                               UDDeclDefinition *right,
+                                                               UDDeclQuerySortField sortField,
+                                                               BOOL ascending) {
+    NSComparisonResult primary = NSOrderedSame;
+    switch (sortField) {
+        case UDDeclQuerySortFieldType:
+            primary = [left.declType compare:right.declType options:NSCaseInsensitiveSearch];
+            break;
+        case UDDeclQuerySortFieldSourcePath:
+            primary = [left.sourceVirtualPath compare:right.sourceVirtualPath options:NSCaseInsensitiveSearch];
+            break;
+        case UDDeclQuerySortFieldName:
+        default:
+            primary = [left.declName compare:right.declName options:NSCaseInsensitiveSearch];
+            break;
+    }
+
+    if (primary == NSOrderedSame) {
+        primary = UDCompareDeclDefinitions(left, right, NULL);
+    }
+
+    if (!ascending) {
+        if (primary == NSOrderedAscending) {
+            return NSOrderedDescending;
+        }
+        if (primary == NSOrderedDescending) {
+            return NSOrderedAscending;
+        }
+    }
+    return primary;
+}
+
 static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolved) {
     NSString *fileExtension = resolved.virtualPath.pathExtension.lowercaseString;
     UDAssetKind kind = UDAssetKindForExtension(fileExtension);
@@ -295,6 +328,30 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
     return nil;
 }
 
+- (NSArray<UDDeclDefinition *> *)definitionsWithNameContaining:(NSString *)nameFragment {
+    if (nameFragment.length == 0) {
+        return [self.definitions copy];
+    }
+
+    NSMutableArray<UDDeclDefinition *> *results = [NSMutableArray array];
+    for (UDDeclDefinition *definition in self.definitions) {
+        if ([definition.declName rangeOfString:nameFragment options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [results addObject:definition];
+        }
+    }
+    return results;
+}
+
+- (NSArray<UDDeclDefinition *> *)definitionsFromSourceVirtualPath:(NSString *)sourceVirtualPath {
+    NSMutableArray<UDDeclDefinition *> *results = [NSMutableArray array];
+    for (UDDeclDefinition *definition in self.definitions) {
+        if ([definition.sourceVirtualPath isEqualToString:sourceVirtualPath]) {
+            [results addObject:definition];
+        }
+    }
+    return results;
+}
+
 @end
 
 @implementation UDDeclParser
@@ -417,10 +474,9 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
             body = [text substringWithRange:NSMakeRange(bodyStart, bodyEnd - bodyStart)];
         }
 
-        NSString *trimmedBody = [body stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         UDDeclDefinition *definition = [[UDDeclDefinition alloc] initWithDeclType:declType
                                                                           declName:declName
-                                                                              body:trimmedBody
+                                                                              body:body
                                                                  sourceVirtualPath:sourceVirtualPath];
         [definitions addObject:definition];
 
@@ -428,6 +484,139 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
     }
 
     return definitions;
+}
+
+- (NSString *)serializeDefinitions:(NSArray<UDDeclDefinition *> *)definitions {
+    NSMutableString *text = [NSMutableString string];
+    NSUInteger count = definitions.count;
+    for (NSUInteger i = 0; i < count; i++) {
+        UDDeclDefinition *definition = [definitions objectAtIndex:i];
+        [text appendFormat:@"%@ %@ {%@}", definition.declType, definition.declName, definition.body ?: @""];
+        if (i + 1 < count) {
+            [text appendString:@"\n\n"];
+        }
+    }
+    return text;
+}
+
+@end
+
+@implementation UDVFSDeclPersistenceAdapter
+
+@synthesize virtualFileSystem = _virtualFileSystem;
+
+- (instancetype)initWithVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem {
+    NSParameterAssert(virtualFileSystem != nil);
+
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _virtualFileSystem = virtualFileSystem;
+    return self;
+}
+
+- (nullable NSString *)readDeclTextAtVirtualPath:(NSString *)virtualPath
+                                           error:(NSError **)error {
+    NSData *data = [self.virtualFileSystem readFileAtPath:virtualPath error:error];
+    if (!data) {
+        return nil;
+    }
+
+    NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (!text) {
+        text = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
+    }
+
+    if (!text && error) {
+        *error = [NSError errorWithDomain:UDDeclParserErrorDomain
+                                     code:4
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Unable to decode decl file."}];
+    }
+    return text;
+}
+
+- (BOOL)writeDeclText:(NSString *)text
+         toVirtualPath:(NSString *)virtualPath
+                 error:(NSError **)error {
+    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    return [self.virtualFileSystem writeFileAtPath:virtualPath data:data error:error];
+}
+
+@end
+
+@implementation UDDeclQueryRequest
+
+@synthesize searchText = _searchText;
+@synthesize declType = _declType;
+@synthesize sourceVirtualPath = _sourceVirtualPath;
+@synthesize sortField = _sortField;
+@synthesize ascending = _ascending;
+@synthesize maxResults = _maxResults;
+
+- (instancetype)init {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _searchText = nil;
+    _declType = nil;
+    _sourceVirtualPath = nil;
+    _sortField = UDDeclQuerySortFieldName;
+    _ascending = YES;
+    _maxResults = 0;
+    return self;
+}
+
+@end
+
+@implementation UDDeclQueryService
+
+- (NSArray<UDDeclDefinition *> *)queryDefinitionsInModel:(UDDeclModel *)model
+                                                  request:(UDDeclQueryRequest *)request {
+    NSParameterAssert(model != nil);
+
+    UDDeclQueryRequest *effectiveRequest = request ?: [[UDDeclQueryRequest alloc] init];
+    NSMutableArray<UDDeclDefinition *> *filtered = [NSMutableArray array];
+
+    for (UDDeclDefinition *definition in model.definitions) {
+        if (effectiveRequest.declType.length > 0 &&
+            [definition.declType caseInsensitiveCompare:effectiveRequest.declType] != NSOrderedSame) {
+            continue;
+        }
+
+        if (effectiveRequest.sourceVirtualPath.length > 0 &&
+            [definition.sourceVirtualPath caseInsensitiveCompare:effectiveRequest.sourceVirtualPath] != NSOrderedSame) {
+            continue;
+        }
+
+        if (effectiveRequest.searchText.length > 0) {
+            NSStringCompareOptions options = NSCaseInsensitiveSearch;
+            BOOL matched = ([definition.declName rangeOfString:effectiveRequest.searchText options:options].location != NSNotFound ||
+                            [definition.declType rangeOfString:effectiveRequest.searchText options:options].location != NSNotFound ||
+                            [definition.sourceVirtualPath rangeOfString:effectiveRequest.searchText options:options].location != NSNotFound);
+            if (!matched) {
+                continue;
+            }
+        }
+
+        [filtered addObject:definition];
+    }
+
+    [filtered sortUsingComparator:^NSComparisonResult(UDDeclDefinition *left, UDDeclDefinition *right) {
+        return UDCompareDeclDefinitionsForSortField(left,
+                                                    right,
+                                                    effectiveRequest.sortField,
+                                                    effectiveRequest.isAscending);
+    }];
+
+    if (effectiveRequest.maxResults > 0 && filtered.count > effectiveRequest.maxResults) {
+        return [filtered subarrayWithRange:NSMakeRange(0, effectiveRequest.maxResults)];
+    }
+
+    return [filtered copy];
 }
 
 @end
@@ -499,31 +688,25 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
 - (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
                              virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
                                          error:(NSError **)error {
+    UDVFSDeclPersistenceAdapter *adapter = [[UDVFSDeclPersistenceAdapter alloc] initWithVirtualFileSystem:virtualFileSystem];
+    return [self buildDeclModelFromAssetIndex:assetIndex persistenceAdapter:adapter error:error];
+}
+
+- (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
+                           persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                         error:(NSError **)error {
     NSParameterAssert(assetIndex != nil);
-    NSParameterAssert(virtualFileSystem != nil);
+    NSParameterAssert(persistenceAdapter != nil);
 
     UDDeclParser *parser = [[UDDeclParser alloc] init];
     NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray array];
 
     for (UDAssetIndexEntry *entry in [assetIndex entriesOfKind:UDAssetKindDecl]) {
         NSError *readError = nil;
-        NSData *data = [virtualFileSystem readFileAtPath:entry.virtualPath error:&readError];
-        if (!data) {
+        NSString *text = [persistenceAdapter readDeclTextAtVirtualPath:entry.virtualPath error:&readError];
+        if (!text) {
             if (error) {
                 *error = readError;
-            }
-            return nil;
-        }
-
-        NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        if (!text) {
-            text = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
-        }
-        if (!text) {
-            if (error) {
-                *error = [NSError errorWithDomain:UDDeclParserErrorDomain
-                                             code:4
-                                         userInfo:@{NSLocalizedDescriptionKey: @"Unable to decode decl file."}];
             }
             return nil;
         }
@@ -555,10 +738,23 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
                                                    assetIndex:(UDAssetIndex *)assetIndex
                                             virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
                                                         error:(NSError **)error {
+    UDVFSDeclPersistenceAdapter *adapter = [[UDVFSDeclPersistenceAdapter alloc] initWithVirtualFileSystem:virtualFileSystem];
+    return [self rebuildDeclModelByApplyingWriteNotification:notification
+                                    toExistingModel:existingModel
+                                        assetIndex:assetIndex
+                                 persistenceAdapter:adapter
+                                            error:error];
+}
+
+- (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
+                                     toExistingModel:(UDDeclModel *)existingModel
+                                         assetIndex:(UDAssetIndex *)assetIndex
+                                  persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                             error:(NSError **)error {
     NSParameterAssert(notification != nil);
     NSParameterAssert(existingModel != nil);
     NSParameterAssert(assetIndex != nil);
-    NSParameterAssert(virtualFileSystem != nil);
+    NSParameterAssert(persistenceAdapter != nil);
 
     NSString *virtualPath = [notification.userInfo objectForKey:UDVFSNotificationVirtualPathKey];
     if (virtualPath.length == 0 || [virtualPath.pathExtension.lowercaseString isEqualToString:@"def"] == NO) {
@@ -581,7 +777,7 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
     if (entry && entry.kind == UDAssetKindDecl) {
         UDAssetIndex *singleFileIndex = [[UDAssetIndex alloc] initWithEntries:@[entry]];
         UDDeclModel *singleFileModel = [self buildDeclModelFromAssetIndex:singleFileIndex
-                                                         virtualFileSystem:virtualFileSystem
+                                                       persistenceAdapter:persistenceAdapter
                                                                      error:error];
         if (!singleFileModel) {
             return nil;

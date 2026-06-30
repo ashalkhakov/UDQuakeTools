@@ -91,6 +91,8 @@ typedef NS_ENUM(NSInteger, UDAssetKind) {
 
 - (NSArray<UDDeclDefinition *> *)definitionsOfType:(NSString *)declType;
 - (nullable UDDeclDefinition *)definitionWithType:(NSString *)declType name:(NSString *)declName;
+- (NSArray<UDDeclDefinition *> *)definitionsWithNameContaining:(NSString *)nameFragment;
+- (NSArray<UDDeclDefinition *> *)definitionsFromSourceVirtualPath:(NSString *)sourceVirtualPath;
 
 @end
 
@@ -99,6 +101,60 @@ typedef NS_ENUM(NSInteger, UDAssetKind) {
 - (NSArray<UDDeclDefinition *> *)parseDefinitionsFromText:(NSString *)text
                                          sourceVirtualPath:(NSString *)sourceVirtualPath
                                                      error:(NSError **)error;
+
+- (NSString *)serializeDefinitions:(NSArray<UDDeclDefinition *> *)definitions;
+
+@end
+
+@protocol UDDeclPersistenceAdapter <NSObject>
+
+- (nullable NSString *)readDeclTextAtVirtualPath:(NSString *)virtualPath
+                                           error:(NSError **)error;
+- (BOOL)writeDeclText:(NSString *)text
+         toVirtualPath:(NSString *)virtualPath
+                 error:(NSError **)error;
+
+@end
+
+@interface UDVFSDeclPersistenceAdapter : NSObject <UDDeclPersistenceAdapter> {
+    UDVirtualFileSystem *_virtualFileSystem;
+}
+
+@property (nonatomic, readonly, strong) UDVirtualFileSystem *virtualFileSystem;
+
+- (instancetype)initWithVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+typedef NS_ENUM(NSInteger, UDDeclQuerySortField) {
+    UDDeclQuerySortFieldType = 0,
+    UDDeclQuerySortFieldName,
+    UDDeclQuerySortFieldSourcePath,
+};
+
+@interface UDDeclQueryRequest : NSObject {
+    NSString *_searchText;
+    NSString *_declType;
+    NSString *_sourceVirtualPath;
+    UDDeclQuerySortField _sortField;
+    BOOL _ascending;
+    NSUInteger _maxResults;
+}
+
+@property (nonatomic, copy, nullable) NSString *searchText;
+@property (nonatomic, copy, nullable) NSString *declType;
+@property (nonatomic, copy, nullable) NSString *sourceVirtualPath;
+@property (nonatomic) UDDeclQuerySortField sortField;
+@property (nonatomic, getter=isAscending) BOOL ascending;
+@property (nonatomic) NSUInteger maxResults;
+
+@end
+
+@interface UDDeclQueryService : NSObject
+
+- (NSArray<UDDeclDefinition *> *)queryDefinitionsInModel:(UDDeclModel *)model
+                                                  request:(nullable UDDeclQueryRequest *)request;
 
 @end
 
@@ -116,11 +172,21 @@ typedef NS_ENUM(NSInteger, UDAssetKind) {
                              virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
                                          error:(NSError **)error;
 
+- (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
+                      persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                 error:(NSError **)error;
+
 - (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
                                               toExistingModel:(UDDeclModel *)existingModel
                                                    assetIndex:(UDAssetIndex *)assetIndex
                                             virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
                                                         error:(NSError **)error;
+
+- (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
+                                     toExistingModel:(UDDeclModel *)existingModel
+                                         assetIndex:(UDAssetIndex *)assetIndex
+                                  persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                             error:(NSError **)error;
 
 @end
 

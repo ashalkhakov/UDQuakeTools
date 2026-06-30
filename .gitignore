@@ -44,3 +44,10 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .DS_Store
+
+# GNUstep / clang build artifacts
+obj/
+*.o
+*.d
+*.app/
+*.bundle/

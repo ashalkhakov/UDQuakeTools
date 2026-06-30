@@ -1,0 +1,831 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010000000000000000AA /* main.m */; };
+		AA01000100000000000000AA /* UDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010100000000000000AA /* UDAppDelegate.m */; };
+		AA01000200000000000000AA /* UDArchiveDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010200000000000000AA /* UDArchiveDocument.m */; };
+		AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010300000000000000AA /* UDArchiveBrowserController.m */; };
+		AA01000400000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
+		AA01000500000000000000AA /* UDArchiveEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010500000000000000AA /* UDArchiveEditor.m */; };
+		AA01000600000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
+		AA01000700000000000000AA /* UDArchiveMutation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010700000000000000AA /* UDArchiveMutation.m */; };
+		AA01000800000000000000AA /* UDDirectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010800000000000000AA /* UDDirectoryNode.m */; };
+		AA01000900000000000000AA /* UDCodecRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010900000000000000AA /* UDCodecRegistry.m */; };
+		AA01000A00000000000000AA /* UDPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A00000000000000AA /* UDPAKCodec.m */; };
+		AA01000B00000000000000AA /* UDPAKEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010B00000000000000AA /* UDPAKEntrySource.m */; };
+		AA01000C00000000000000AA /* UDStagedFileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010C00000000000000AA /* UDStagedFileSource.m */; };
+		AA01000D00000000000000AA /* UDPAK2Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010D00000000000000AA /* UDPAK2Codec.m */; };
+		AA01000E00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */; };
+		AA01000F00000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
+		AA01001000000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
+		AA01001100000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
+		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
+		AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA00030100000000000000AA /* UDArchiveDocument.xib */; };
+		AA01002200000000000000AA /* PakManager.png in Resources */ = {isa = PBXBuildFile; fileRef = AA00030300000000000000AA /* PakManager.png */; };
+		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
+		AA02000100000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
+		AA02000200000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
+		AA02000300000000000000AA /* UDCodecRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010900000000000000AA /* UDCodecRegistry.m */; };
+		AA02000400000000000000AA /* UDPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A00000000000000AA /* UDPAKCodec.m */; };
+		AA02000500000000000000AA /* UDPAKEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010B00000000000000AA /* UDPAKEntrySource.m */; };
+		AA02000600000000000000AA /* UDPAK2Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010D00000000000000AA /* UDPAK2Codec.m */; };
+		AA02000700000000000000AA /* UDDaikatanaPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */; };
+		AA02000800000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
+		AA02000900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
+		AA02000A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
+		AA02001000000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		BB01003100000000000000AA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		BB01003200000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		BB01010100000000000000AA /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
+		BB01010200000000000000AA /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
+		BB01010300000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
+		BB01010400000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
+		BB01010500000000000000AA /* UDCodecRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010900000000000000AA /* UDCodecRegistry.m */; };
+		BB01010600000000000000AA /* UDPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A00000000000000AA /* UDPAKCodec.m */; };
+		BB01010700000000000000AA /* UDPAKEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010B00000000000000AA /* UDPAKEntrySource.m */; };
+		BB01010800000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
+		BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
+		BB01010A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
+		BB01010B00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */; };
+		CE07D6C32FF3D25400B149C9 /* UDArchiveEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010500000000000000AA /* UDArchiveEditor.m */; };
+		CE07D6C42FF3D26800B149C9 /* UDArchiveMutation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010700000000000000AA /* UDArchiveMutation.m */; };
+		CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */; };
+		CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */; };
+		CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010D00000000000000AA /* UDPAK2Codec.m */; };
+		CE07D6CA2FF3E92000B149C9 /* UDStagedFileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010C00000000000000AA /* UDStagedFileSource.m */; };
+		CE07D6CB2FF3FE5E00B149C9 /* UDDirectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010800000000000000AA /* UDDirectoryNode.m */; };
+		CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */; };
+		CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */; };
+		CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */; };
+		CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */; };
+		CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */; };
+		CE1151622FEE7744005C6DA3 /* UDFileActionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151612FEE7744005C6DA3 /* UDFileActionService.m */; };
+		CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
+		CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AA00010100000000000000AA /* UDAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDelegate.m; sourceTree = "<group>"; };
+		AA00010200000000000000AA /* UDArchiveDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveDocument.m; sourceTree = "<group>"; };
+		AA00010300000000000000AA /* UDArchiveBrowserController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveBrowserController.m; sourceTree = "<group>"; };
+		AA00010400000000000000AA /* UDArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchive.m; sourceTree = "<group>"; };
+		AA00010500000000000000AA /* UDArchiveEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditor.m; sourceTree = "<group>"; };
+		AA00010600000000000000AA /* UDArchiveEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntry.m; sourceTree = "<group>"; };
+		AA00010700000000000000AA /* UDArchiveMutation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveMutation.m; sourceTree = "<group>"; };
+		AA00010800000000000000AA /* UDDirectoryNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDirectoryNode.m; sourceTree = "<group>"; };
+		AA00010900000000000000AA /* UDCodecRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDCodecRegistry.m; sourceTree = "<group>"; };
+		AA00010A00000000000000AA /* UDPAKCodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPAKCodec.m; sourceTree = "<group>"; };
+		AA00010B00000000000000AA /* UDPAKEntrySource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPAKEntrySource.m; sourceTree = "<group>"; };
+		AA00010C00000000000000AA /* UDStagedFileSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDStagedFileSource.m; sourceTree = "<group>"; };
+		AA00010D00000000000000AA /* UDPAK2Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPAK2Codec.m; sourceTree = "<group>"; };
+		AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDaikatanaPAKCodec.m; sourceTree = "<group>"; };
+		AA00010F00000000000000AA /* UDPK3Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3Codec.m; sourceTree = "<group>"; };
+		AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3ZIPEntrySource.m; sourceTree = "<group>"; };
+		AA00011100000000000000AA /* UDPK4Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK4Codec.m; sourceTree = "<group>"; };
+		AA00012000000000000000AA /* UDTextPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPreviewController.m; sourceTree = "<group>"; };
+		AA00020000000000000000AA /* UDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAppDelegate.h; sourceTree = "<group>"; };
+		AA00020100000000000000AA /* UDArchiveDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveDocument.h; sourceTree = "<group>"; };
+		AA00020200000000000000AA /* UDArchiveBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveBrowserController.h; sourceTree = "<group>"; };
+		AA00020300000000000000AA /* UDArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchive.h; sourceTree = "<group>"; };
+		AA00020400000000000000AA /* UDArchiveEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveEditor.h; sourceTree = "<group>"; };
+		AA00020500000000000000AA /* UDArchiveEntry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveEntry.h; sourceTree = "<group>"; };
+		AA00020600000000000000AA /* UDArchiveMutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveMutation.h; sourceTree = "<group>"; };
+		AA00020700000000000000AA /* UDDirectoryNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDirectoryNode.h; sourceTree = "<group>"; };
+		AA00020800000000000000AA /* UDContentSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDContentSource.h; sourceTree = "<group>"; };
+		AA00020900000000000000AA /* UDArchiveCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveCodec.h; sourceTree = "<group>"; };
+		AA00020A00000000000000AA /* UDCodecRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDCodecRegistry.h; sourceTree = "<group>"; };
+		AA00020B00000000000000AA /* UDPAKCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPAKCodec.h; sourceTree = "<group>"; };
+		AA00020C00000000000000AA /* UDPAKEntrySource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPAKEntrySource.h; sourceTree = "<group>"; };
+		AA00020D00000000000000AA /* UDStagedFileSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDStagedFileSource.h; sourceTree = "<group>"; };
+		AA00020E00000000000000AA /* UDPAK2Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPAK2Codec.h; sourceTree = "<group>"; };
+		AA00020F00000000000000AA /* UDDaikatanaPAKCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDaikatanaPAKCodec.h; sourceTree = "<group>"; };
+		AA00021000000000000000AA /* UDPK3Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK3Codec.h; sourceTree = "<group>"; };
+		AA00021100000000000000AA /* UDPK3ZIPEntrySource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK3ZIPEntrySource.h; sourceTree = "<group>"; };
+		AA00021200000000000000AA /* UDPK4Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPK4Codec.h; sourceTree = "<group>"; };
+		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
+		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
+		AA00030200000000000000AA /* PakManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PakManager-Info.plist"; sourceTree = "<group>"; };
+		AA00030300000000000000AA /* PakManager.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PakManager.png; sourceTree = "<group>"; };
+		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditorTests.m; sourceTree = "<group>"; };
+		CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveWorkflowTests.m; sourceTree = "<group>"; };
+		CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntryTests.m; sourceTree = "<group>"; };
+		CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionTests.m; sourceTree = "<group>"; };
+		CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPAKCodecTests.m; sourceTree = "<group>"; };
+		CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3CodecTests.m; sourceTree = "<group>"; };
+		CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		CE1151602FEE7744005C6DA3 /* UDFileActionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFileActionService.h; sourceTree = "<group>"; };
+		CE1151612FEE7744005C6DA3 /* UDFileActionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFileActionService.m; sourceTree = "<group>"; };
+		CE1151632FEE7777005C6DA3 /* UDGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGame.h; sourceTree = "<group>"; };
+		CE1151642FEE7777005C6DA3 /* UDGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGame.m; sourceTree = "<group>"; };
+		CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameDetectionService.h; sourceTree = "<group>"; };
+		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA03000200000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA01003000000000000000AA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA03000400000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA02001000000000000000AA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB03000500000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
+				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA00000200000000000000AA = {
+			isa = PBXGroup;
+			children = (
+				BB00000500000000000000AA /* Tests */,
+				AA00000400000000000000AA /* PakManager */,
+				AA00000500000000000000AA /* UDCore */,
+				AA00000600000000000000AA /* UDFormats */,
+				AA00000700000000000000AA /* Tools */,
+				AA00000300000000000000AA /* Products */,
+				CE11515D2FEE4D5C005C6DA3 /* Recovered References */,
+			);
+			sourceTree = "<group>";
+		};
+		AA00000300000000000000AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
+				AA00050000000000000000AA /* PakManager.app */,
+				AA00050100000000000000AA /* udpaktool */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA00000400000000000000AA /* PakManager */ = {
+			isa = PBXGroup;
+			children = (
+				CE1151602FEE7744005C6DA3 /* UDFileActionService.h */,
+				CE1151612FEE7744005C6DA3 /* UDFileActionService.m */,
+				AA00020000000000000000AA /* UDAppDelegate.h */,
+				AA00010100000000000000AA /* UDAppDelegate.m */,
+				AA00020100000000000000AA /* UDArchiveDocument.h */,
+				AA00010200000000000000AA /* UDArchiveDocument.m */,
+				AA00020200000000000000AA /* UDArchiveBrowserController.h */,
+				AA00010300000000000000AA /* UDArchiveBrowserController.m */,
+				AA00022000000000000000AA /* UDTextPreviewController.h */,
+				AA00012000000000000000AA /* UDTextPreviewController.m */,
+				AA00010000000000000000AA /* main.m */,
+				AA00030100000000000000AA /* UDArchiveDocument.xib */,
+				AA00030200000000000000AA /* PakManager-Info.plist */,
+				AA00030300000000000000AA /* PakManager.png */,
+				CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */,
+			);
+			name = PakManager;
+			path = Sources/PakManager;
+			sourceTree = "<group>";
+		};
+		AA00000500000000000000AA /* UDCore */ = {
+			isa = PBXGroup;
+			children = (
+				CE1151632FEE7777005C6DA3 /* UDGame.h */,
+				CE1151642FEE7777005C6DA3 /* UDGame.m */,
+				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
+				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
+				AA00020300000000000000AA /* UDArchive.h */,
+				AA00010400000000000000AA /* UDArchive.m */,
+				AA00020400000000000000AA /* UDArchiveEditor.h */,
+				AA00010500000000000000AA /* UDArchiveEditor.m */,
+				AA00020500000000000000AA /* UDArchiveEntry.h */,
+				AA00010600000000000000AA /* UDArchiveEntry.m */,
+				AA00020600000000000000AA /* UDArchiveMutation.h */,
+				AA00010700000000000000AA /* UDArchiveMutation.m */,
+				AA00020800000000000000AA /* UDContentSource.h */,
+				AA00020700000000000000AA /* UDDirectoryNode.h */,
+				AA00010800000000000000AA /* UDDirectoryNode.m */,
+			);
+			name = UDCore;
+			path = Sources/UDCore;
+			sourceTree = "<group>";
+		};
+		AA00000600000000000000AA /* UDFormats */ = {
+			isa = PBXGroup;
+			children = (
+				AA00020900000000000000AA /* UDArchiveCodec.h */,
+				AA00020A00000000000000AA /* UDCodecRegistry.h */,
+				AA00010900000000000000AA /* UDCodecRegistry.m */,
+				AA00020F00000000000000AA /* UDDaikatanaPAKCodec.h */,
+				AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */,
+				AA00020E00000000000000AA /* UDPAK2Codec.h */,
+				AA00010D00000000000000AA /* UDPAK2Codec.m */,
+				AA00020B00000000000000AA /* UDPAKCodec.h */,
+				AA00010A00000000000000AA /* UDPAKCodec.m */,
+				AA00020C00000000000000AA /* UDPAKEntrySource.h */,
+				AA00010B00000000000000AA /* UDPAKEntrySource.m */,
+				AA00021000000000000000AA /* UDPK3Codec.h */,
+				AA00010F00000000000000AA /* UDPK3Codec.m */,
+				AA00021100000000000000AA /* UDPK3ZIPEntrySource.h */,
+				AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */,
+				AA00021200000000000000AA /* UDPK4Codec.h */,
+				AA00011100000000000000AA /* UDPK4Codec.m */,
+				AA00020D00000000000000AA /* UDStagedFileSource.h */,
+				AA00010C00000000000000AA /* UDStagedFileSource.m */,
+			);
+			name = UDFormats;
+			path = Sources/UDFormats;
+			sourceTree = "<group>";
+		};
+		AA00000700000000000000AA /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				AA00000800000000000000AA /* udpaktool */,
+			);
+			name = Tools;
+			path = Sources/Tools;
+			sourceTree = "<group>";
+		};
+		AA00000800000000000000AA /* udpaktool */ = {
+			isa = PBXGroup;
+			children = (
+				AA00040000000000000000AA /* main.m */,
+			);
+			path = udpaktool;
+			sourceTree = "<group>";
+		};
+		BB00000500000000000000AA /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
+				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
+				CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */,
+				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
+				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
+				CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		CE11515D2FEE4D5C005C6DA3 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				AA00060000000000000000AA /* Cocoa.framework */,
+				AA00060100000000000000AA /* Foundation.framework */,
+				BB00060200000000000000AA /* XCTest.framework */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA04000000000000000000AA /* Pak Manager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "Pak Manager" */;
+			buildPhases = (
+				AA03000000000000000000AA /* Sources */,
+				AA03000200000000000000AA /* Frameworks */,
+				AA03000100000000000000AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pak Manager";
+			productName = "Pak Manager";
+			productReference = AA00050000000000000000AA /* PakManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA04000100000000000000AA /* udpaktool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA06000200000000000000AA /* Build configuration list for PBXNativeTarget "udpaktool" */;
+			buildPhases = (
+				AA03000300000000000000AA /* Sources */,
+				AA03000400000000000000AA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = udpaktool;
+			productName = udpaktool;
+			productReference = AA00050100000000000000AA /* udpaktool */;
+			productType = "com.apple.product-type.tool";
+		};
+		BB04000200000000000000AA /* UDQuakeToolsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */;
+			buildPhases = (
+				BB03000000000000000000AA /* Sources */,
+				BB03000500000000000000AA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UDQuakeToolsTests;
+			productName = UDQuakeToolsTests;
+			productReference = BB00000000000000000000AA /* UDQuakeToolsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA00000100000000000000AA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					AA04000000000000000000AA = {
+						CreatedOnToolsVersion = 15.3;
+					};
+					AA04000100000000000000AA = {
+						CreatedOnToolsVersion = 15.3;
+					};
+				};
+			};
+			buildConfigurationList = AA06000000000000000000AA /* Build configuration list for PBXProject "PakManager" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA00000200000000000000AA;
+			productRefGroup = AA00000300000000000000AA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BB04000200000000000000AA /* UDQuakeToolsTests */,
+				AA04000000000000000000AA /* Pak Manager */,
+				AA04000100000000000000AA /* udpaktool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA03000100000000000000AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */,
+				AA01002200000000000000AA /* PakManager.png in Resources */,
+				CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA03000000000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE1151622FEE7744005C6DA3 /* UDFileActionService.m in Sources */,
+				AA01000000000000000000AA /* main.m in Sources */,
+				AA01000100000000000000AA /* UDAppDelegate.m in Sources */,
+				AA01000200000000000000AA /* UDArchiveDocument.m in Sources */,
+				AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */,
+				AA01002000000000000000AA /* UDTextPreviewController.m in Sources */,
+				AA01000400000000000000AA /* UDArchive.m in Sources */,
+				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
+				AA01000600000000000000AA /* UDArchiveEntry.m in Sources */,
+				AA01000700000000000000AA /* UDArchiveMutation.m in Sources */,
+				AA01000800000000000000AA /* UDDirectoryNode.m in Sources */,
+				AA01000900000000000000AA /* UDCodecRegistry.m in Sources */,
+				AA01000A00000000000000AA /* UDPAKCodec.m in Sources */,
+				AA01000B00000000000000AA /* UDPAKEntrySource.m in Sources */,
+				AA01000C00000000000000AA /* UDStagedFileSource.m in Sources */,
+				AA01000D00000000000000AA /* UDPAK2Codec.m in Sources */,
+				AA01000E00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */,
+				CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */,
+				AA01000F00000000000000AA /* UDPK3Codec.m in Sources */,
+				AA01001000000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				AA01001100000000000000AA /* UDPK4Codec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA03000300000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA02000000000000000000AA /* main.m in Sources */,
+				AA02000100000000000000AA /* UDArchive.m in Sources */,
+				AA02000200000000000000AA /* UDArchiveEntry.m in Sources */,
+				AA02000300000000000000AA /* UDCodecRegistry.m in Sources */,
+				AA02000400000000000000AA /* UDPAKCodec.m in Sources */,
+				AA02000500000000000000AA /* UDPAKEntrySource.m in Sources */,
+				AA02000600000000000000AA /* UDPAK2Codec.m in Sources */,
+				AA02000700000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				AA02000800000000000000AA /* UDPK3Codec.m in Sources */,
+				AA02000900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				AA02000A00000000000000AA /* UDPK4Codec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB03000000000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE07D6CB2FF3FE5E00B149C9 /* UDDirectoryNode.m in Sources */,
+				CE07D6CA2FF3E92000B149C9 /* UDStagedFileSource.m in Sources */,
+				CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */,
+				CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */,
+				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
+				CE07D6C42FF3D26800B149C9 /* UDArchiveMutation.m in Sources */,
+				CE07D6C32FF3D25400B149C9 /* UDArchiveEditor.m in Sources */,
+				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
+				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
+				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
+				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
+				BB01010100000000000000AA /* UDGame.m in Sources */,
+				BB01010200000000000000AA /* UDGameDetectionService.m in Sources */,
+				BB01010300000000000000AA /* UDArchive.m in Sources */,
+				BB01010400000000000000AA /* UDArchiveEntry.m in Sources */,
+				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
+				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,
+				BB01010700000000000000AA /* UDPAKEntrySource.m in Sources */,
+				BB01010B00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				BB01010800000000000000AA /* UDPK3Codec.m in Sources */,
+				BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				BB01010A00000000000000AA /* UDPK4Codec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA05000000000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_MERGE = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AA05000100000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_MERGE = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AA05000200000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
+				PRODUCT_NAME = PakManager;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		AA05000300000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
+				PRODUCT_NAME = PakManager;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		AA05000400000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_NAME = udpaktool;
+			};
+			name = Debug;
+		};
+		AA05000500000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_NAME = udpaktool;
+			};
+			name = Release;
+		};
+		BB05000600000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = (
+					"-lzip",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
+				PRODUCT_NAME = UDQuakeToolsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		BB05000700000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = (
+					"-lzip",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
+				PRODUCT_NAME = UDQuakeToolsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA06000000000000000000AA /* Build configuration list for PBXProject "PakManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA05000000000000000000AA /* Debug */,
+				AA05000100000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA06000100000000000000AA /* Build configuration list for PBXNativeTarget "Pak Manager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA05000200000000000000AA /* Debug */,
+				AA05000300000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA06000200000000000000AA /* Build configuration list for PBXNativeTarget "udpaktool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA05000400000000000000AA /* Debug */,
+				AA05000500000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB05000600000000000000AA /* Debug */,
+				BB05000700000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AA00000100000000000000AA /* Project object */;
+}

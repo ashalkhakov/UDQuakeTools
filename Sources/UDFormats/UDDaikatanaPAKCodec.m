@@ -1,5 +1,6 @@
 #import "UDDaikatanaPAKCodec.h"
 #import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
 #import "UDContentSource.h"
 #import "UDPAKEntrySource.h"
@@ -16,6 +17,37 @@ typedef NS_ENUM(NSInteger, UDDaikatanaPAKCodecErrorCode) {
 /* Reads a 32-bit unsigned integer in little-endian byte order. */
 static uint32_t UDDKReadLEUInt32(const uint8_t *bytes) {
     return ((uint32_t)bytes[0]) | ((uint32_t)bytes[1] << 8) | ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
+}
+
+/* Writes a 32-bit unsigned integer in little-endian byte order. */
+static void UDDKAppendLEUInt32(NSMutableData *data, uint32_t value) {
+    uint8_t bytes[4];
+    bytes[0] = (uint8_t)(value & 0xFFu);
+    bytes[1] = (uint8_t)((value >> 8) & 0xFFu);
+    bytes[2] = (uint8_t)((value >> 16) & 0xFFu);
+    bytes[3] = (uint8_t)((value >> 24) & 0xFFu);
+    [data appendBytes:bytes length:4];
+}
+
+static NSData *UDDKReadAllContent(id<UDContentSource> source, NSError **error) {
+    if ([source respondsToSelector:@selector(readAll:)]) {
+        NSData *data = [source readAll:error];
+        if (data) {
+            return data;
+        }
+    }
+
+    uint64_t len = [source length];
+    if (len > NSUIntegerMax) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
+                                         code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Entry is too large to process on this platform."}];
+        }
+        return nil;
+    }
+
+    return [source readRange:NSMakeRange(0, (NSUInteger)len) error:error];
 }
 
 @interface UDDaikatanaCompressedSource : NSObject <UDContentSource>
@@ -210,6 +242,115 @@ static uint32_t UDDKReadLEUInt32(const uint8_t *bytes) {
 
 - (NSString *)formatIdentifier {
     return @"com.udquake.daikatana-pak";
+}
+
+- (BOOL)writeArchive:(UDArchive *)archive toURL:(NSURL *)url error:(NSError **)error {
+    return [self _writeEntries:archive.entries toURL:url error:error];
+}
+
+- (BOOL)writeEditedArchive:(UDArchiveEditor *)editor toURL:(NSURL *)url error:(NSError **)error {
+    return [self _writeEntries:editor.currentEntries toURL:url error:error];
+}
+
+- (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error {
+    const uint32_t headerSize = 12;
+    const uint32_t directoryEntrySize = 72;
+
+    NSMutableArray<NSData *> *payloads = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSNumber *> *offsets = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSNumber *> *lengths = [NSMutableArray arrayWithCapacity:entries.count];
+
+    uint64_t dataOffset = headerSize;
+    for (UDArchiveEntry *entry in entries) {
+        NSString *path = [entry.path stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        NSData *pathData = [path dataUsingEncoding:NSASCIIStringEncoding];
+        if (!pathData || pathData.length > 55) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
+                                             code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Path cannot be stored in Daikatana PAK directory: %@", path]}];
+            }
+            return NO;
+        }
+
+        id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
+        if (!source) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
+                                             code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Entry has no content source: %@", path]}];
+            }
+            return NO;
+        }
+
+        NSError *readError = nil;
+        NSData *payload = UDDKReadAllContent(source, &readError);
+        if (!payload) {
+            if (error) {
+                *error = readError;
+            }
+            return NO;
+        }
+
+        if (dataOffset > UINT32_MAX || payload.length > UINT32_MAX || dataOffset + payload.length > UINT32_MAX) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
+                                             code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Archive exceeds Daikatana PAK 4GB limits."}];
+            }
+            return NO;
+        }
+
+        [payloads addObject:payload];
+        [paths addObject:path];
+        [offsets addObject:@((uint32_t)dataOffset)];
+        [lengths addObject:@((uint32_t)payload.length)];
+        dataOffset += payload.length;
+    }
+
+    uint64_t directoryOffset = dataOffset;
+    uint64_t directorySize = (uint64_t)entries.count * directoryEntrySize;
+    if (directoryOffset > UINT32_MAX || directorySize > UINT32_MAX) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDDaikatanaPAKCodecErrorDomain
+                                         code:UDDaikatanaPAKCodecErrorCodeCorruptDirectory
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Archive exceeds Daikatana PAK directory limits."}];
+        }
+        return NO;
+    }
+
+    NSMutableData *pakData = [NSMutableData data];
+    [pakData appendBytes:"PACK" length:4];
+    UDDKAppendLEUInt32(pakData, (uint32_t)directoryOffset);
+    UDDKAppendLEUInt32(pakData, (uint32_t)directorySize);
+
+    for (NSData *payload in payloads) {
+        [pakData appendData:payload];
+    }
+
+    for (NSUInteger i = 0; i < paths.count; i++) {
+        uint8_t record[72];
+        memset(record, 0, sizeof(record));
+
+        NSData *pathData = [paths[i] dataUsingEncoding:NSASCIIStringEncoding];
+        memcpy(record, pathData.bytes, pathData.length);
+
+        uint32_t fileOffset = (uint32_t)offsets[i].unsignedIntValue;
+        uint32_t fileLength = (uint32_t)lengths[i].unsignedIntValue;
+        uint32_t compressedLength = fileLength;
+        uint32_t isCompressed = 0;
+
+        memcpy(record + 56, &fileOffset, 4);
+        memcpy(record + 60, &fileLength, 4);
+        memcpy(record + 64, &compressedLength, 4);
+        memcpy(record + 68, &isCompressed, 4);
+        [pakData appendBytes:record length:sizeof(record)];
+    }
+
+    return [pakData writeToURL:url options:NSDataWritingAtomic error:error];
 }
 
 - (UDArchive *)readArchiveFromURL:(NSURL *)url error:(NSError **)error {

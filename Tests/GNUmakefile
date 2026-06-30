@@ -9,6 +9,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 UDQuakeToolsTests_OBJC_FILES = \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
+    UDArchiveWorkflowTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
     UDGameDetectionTests.m \

@@ -54,6 +54,11 @@
 		BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
 		BB01010A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
 		BB01010B00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */; };
+		CE07D6C32FF3D25400B149C9 /* UDArchiveEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010500000000000000AA /* UDArchiveEditor.m */; };
+		CE07D6C42FF3D26800B149C9 /* UDArchiveMutation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010700000000000000AA /* UDArchiveMutation.m */; };
+		CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */; };
+		CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */; };
+		CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010D00000000000000AA /* UDPAK2Codec.m */; };
 		CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */; };
 		CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */; };
 		CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */; };
@@ -114,6 +119,8 @@
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditorTests.m; sourceTree = "<group>"; };
+		CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveWorkflowTests.m; sourceTree = "<group>"; };
 		CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntryTests.m; sourceTree = "<group>"; };
 		CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionTests.m; sourceTree = "<group>"; };
 		CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPAKCodecTests.m; sourceTree = "<group>"; };
@@ -272,6 +279,8 @@
 		BB00000500000000000000AA /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
+				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
 				CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */,
 				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
 				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
@@ -444,6 +453,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */,
+				CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */,
+				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
+				CE07D6C42FF3D26800B149C9 /* UDArchiveMutation.m in Sources */,
+				CE07D6C32FF3D25400B149C9 /* UDArchiveEditor.m in Sources */,
 				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
 				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
 				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,

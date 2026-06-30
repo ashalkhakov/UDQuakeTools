@@ -8,7 +8,7 @@ The main GUI app is Pak Manager, and the repository also includes a small comman
 This app helps you manage pak/pk3/pk4 files.
 
 ![Mac OS X](Screenshots/pakmanager-mac.png)
-![Linux / GNUstep](Screenshots/pakmanager-linux.png)
+![Linux / GNUstep](Screenshots/pakmanager-gs.png)
 
 ## Project Layout
 

@@ -14,10 +14,10 @@ for bin in "${ELF_BINS[@]}"; do
     ELF_ARGS+=(--executable "$bin")
 done
 
-# 4. Run the patched linuxdeploy process.
+# 4. Run the linuxdeploy process.
 export OUTPUT="PakManager-Linux-${APP_VERSION:-dev}.AppImage"
 export APPIMAGE_EXTRACT_AND_RUN=1
 export NO_VALIDATE=1
 
 LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:${LD_LIBRARY_PATH:-}" \
-    linuxdeploy-x86_64.AppImage --appdir AppDir "${ELF_ARGS[@]}" --output appimage
+    /usr/local/lib/linuxdeploy/AppRun --appdir AppDir "${ELF_ARGS[@]}" --output appimage

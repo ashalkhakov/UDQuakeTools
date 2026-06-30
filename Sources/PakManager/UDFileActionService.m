@@ -5,6 +5,60 @@
 
 #import "UDFileActionService.h"
 #import "UDTextPreviewController.h"
+#include <unistd.h>
+
+static NSString *UDResolveExecutableInPATH(NSString *name) {
+    if (name.length == 0) {
+        return nil;
+    }
+
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if ([name hasPrefix:@"/"]) {
+        return [fm isExecutableFileAtPath:name] ? name : nil;
+    }
+
+    NSString *pathEnv = [[[NSProcessInfo processInfo] environment] objectForKey:@"PATH"];
+    NSArray *components = pathEnv.length > 0 ? [pathEnv componentsSeparatedByString:@":"]
+                                             : @[@"/usr/local/bin", @"/usr/bin", @"/bin"];
+    for (NSString *dir in components) {
+        if (dir.length == 0) {
+            continue;
+        }
+        NSString *candidate = [dir stringByAppendingPathComponent:name];
+        if ([fm isExecutableFileAtPath:candidate]) {
+            return candidate;
+        }
+    }
+    return nil;
+}
+
+static BOOL UDLaunchExternalOpenCommand(NSString *launchPath,
+                                        NSArray<NSString *> *arguments,
+                                        NSString *targetPath,
+                                        NSError **error) {
+    if (launchPath.length == 0) {
+        return NO;
+    }
+
+    @try {
+        NSTask *task = [[NSTask alloc] init];
+        [task setLaunchPath:launchPath];
+        [task setArguments:arguments ?: @[]];
+        [task launch];
+        return YES;
+    } @catch (NSException *exception) {
+        if (error) {
+            *error = [NSError errorWithDomain:@"com.udquake.error.file-action"
+                                         code:1
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                                    [NSString stringWithFormat:@"Failed to launch '%@' for '%@': %@",
+                                                                                launchPath.lastPathComponent,
+                                                                                targetPath.lastPathComponent,
+                                                                                exception.reason ?: @"unknown error"]}];
+        }
+        return NO;
+    }
+}
 
 @implementation UDFileActionService
 
@@ -47,32 +101,39 @@
         }
     }
 
-    // 3. Fallback to NSWorkspace openFile
-    BOOL success = [[NSWorkspace sharedWorkspace] openFile:tempPath];
+    // 3. Fallback strategy differs between GNUstep/Linux and Cocoa/macOS.
+    BOOL success = NO;
+#ifdef GNUSTEP
+    NSError *openError = nil;
+    NSString *xdgOpen = UDResolveExecutableInPATH(@"xdg-open");
+    if (xdgOpen.length > 0) {
+        success = UDLaunchExternalOpenCommand(xdgOpen, @[tempPath], tempPath, &openError);
+    }
+
     if (!success) {
-        // 4. GNUstep/Linux fallback: xdg-open
-        NSFileManager *fm = [NSFileManager defaultManager];
-        if ([fm fileExistsAtPath:@"/usr/bin/xdg-open"] || [fm fileExistsAtPath:@"/usr/local/bin/xdg-open"]) {
-            @try {
-                NSTask *task = [[NSTask alloc] init];
-                [task setLaunchPath:@"/usr/bin/xdg-open"];
-                [task setArguments:@[tempPath]];
-                [task launch];
-            } @catch (NSException *exception) {
-                NSLog(@"Failed to launch xdg-open: %@", exception);
-                NSAlert *alert = [[NSAlert alloc] init];
-                [alert setMessageText:@"Failed to Open File"];
-                [alert setInformativeText:[NSString stringWithFormat:@"Neither the default application nor xdg-open could open '%@'.", tempPath.lastPathComponent]];
-                [alert addButtonWithTitle:@"OK"];
-                [alert runModal];
-            }
-        } else {
-            NSAlert *alert = [[NSAlert alloc] init];
-            [alert setMessageText:@"Failed to Open File"];
-            [alert setInformativeText:[NSString stringWithFormat:@"No application associated with '%@'. Configure a custom helper in preferences.", ext]];
-            [alert addButtonWithTitle:@"OK"];
-            [alert runModal];
+        NSString *gio = UDResolveExecutableInPATH(@"gio");
+        if (gio.length > 0) {
+            success = UDLaunchExternalOpenCommand(gio, @[@"open", tempPath], tempPath, &openError);
         }
+    }
+
+    if (!success) {
+        success = [[NSWorkspace sharedWorkspace] openFile:tempPath];
+    }
+#else
+    success = [[NSWorkspace sharedWorkspace] openFile:tempPath];
+#endif
+
+    if (!success) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Failed to Open File"];
+#ifdef GNUSTEP
+        [alert setInformativeText:[NSString stringWithFormat:@"Could not open '%@'. Tried xdg-open, gio open, and NSWorkspace.", tempPath.lastPathComponent]];
+#else
+        [alert setInformativeText:[NSString stringWithFormat:@"No application associated with '%@'. Configure a custom helper in preferences.", ext]];
+#endif
+        [alert addButtonWithTitle:@"OK"];
+        [alert runModal];
     }
 
     return nil;

@@ -12,7 +12,7 @@ wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/
 wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
 chmod +x linuxdeploy*.AppImage
 
-./linuxdeploy-x86_64.AppImage --appimage-extract >/dev/null 2>&1
+#./linuxdeploy-x86_64.AppImage --appimage-extract >/dev/null 2>&1
 
 # 3. Gather executable inputs for linuxdeploy.
 mapfile -t ELF_BINS < <("${WORKSPACE_DIR}/Scripts/appimage/collect-elf-binaries.sh" "AppDir")
@@ -31,4 +31,5 @@ LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/
     ./linuxdeploy-x86_64.AppImage --appdir AppDir "${ELF_ARGS[@]}" --output appimage
 
 # 5. Cleanup temporary linuxdeploy artifacts.
-rm -rf squashfs-root linuxdeploy*.AppImage
+#rm -rf squashfs-root linuxdeploy*.AppImage
+rm -rf linuxdeploy*.AppImage

@@ -17,6 +17,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDFormats/UDCodecRegistry.m \
     ../Sources/UDFormats/UDPAKCodec.m \
+    ../Sources/UDFormats/UDDaikatanaPAKCodec.m \
     ../Sources/UDFormats/UDPAKEntrySource.m \
     ../Sources/UDFormats/UDPK3Codec.m \
     ../Sources/UDFormats/UDPK3ZIPEntrySource.m \

@@ -3,6 +3,7 @@
 #import "UDArchive.h"
 #import "UDArchiveEntry.h"
 #import "UDCodecRegistry.h"
+#import "UDDaikatanaPAKCodec.h"
 #import "UDPAKCodec.h"
 #import "UDPAKEntrySource.h"
 
@@ -45,6 +46,40 @@
     memcpy(entry + 60, &fileSize, 4);
 
     [data appendBytes:entry length:64];
+    return data;
+}
+
+- (NSData *)daikatanaPAKDataWithCompressedEntry {
+    NSMutableData *data = [NSMutableData data];
+    [data appendBytes:"PACK" length:4];
+
+    const uint32_t headerSize = 12;
+    const uint32_t compressedDataLength = 7;
+    const uint32_t directoryOffset = headerSize + compressedDataLength;
+    const uint32_t directorySize = 72;
+
+    [data appendBytes:&directoryOffset length:4];
+    [data appendBytes:&directorySize length:4];
+
+    /* Daikatana compressed stream that expands to "HELLO".
+       0x04 => copy next 5 bytes literally, 0xFF => terminate. */
+    const uint8_t compressedPayload[] = { 0x04, 'H', 'E', 'L', 'L', 'O', 0xFF };
+    [data appendBytes:compressedPayload length:sizeof(compressedPayload)];
+
+    uint8_t entry[72] = {0};
+    const char *name = "textures/test.txt";
+    memcpy(entry, name, strlen(name));
+
+    uint32_t fileOffset = headerSize;
+    uint32_t fileLength = 5;
+    uint32_t compressedLength = (uint32_t)sizeof(compressedPayload);
+    uint32_t isCompressed = 1;
+    memcpy(entry + 56, &fileOffset, 4);
+    memcpy(entry + 60, &fileLength, 4);
+    memcpy(entry + 64, &compressedLength, 4);
+    memcpy(entry + 68, &isCompressed, 4);
+
+    [data appendBytes:entry length:sizeof(entry)];
     return data;
 }
 
@@ -104,6 +139,30 @@
     [registry registerCodec:codec];
     id resolvedCodec = [registry codecForFormatIdentifier:@"com.udquake.pak"];
     XCTAssertEqual(resolvedCodec, codec, @"Registry should resolve codec by identifier");
+}
+
+- (void)testDaikatanaCompressedEntryDecoding {
+    UDDaikatanaPAKCodec *codec = [[UDDaikatanaPAKCodec alloc] init];
+
+    NSData *pakData = [self daikatanaPAKDataWithCompressedEntry];
+    NSURL *pakURL = [self writeTemporaryFileWithData:pakData suffix:@"dk-test.pak"];
+    XCTAssertNotNil(pakURL, @"Test setup should create Daikatana PAK file");
+
+    NSError *readError = nil;
+    UDArchive *archive = [codec readArchiveFromURL:pakURL error:&readError];
+    XCTAssertNil(readError, @"Daikatana codec should parse DK archive");
+    XCTAssertNotNil(archive, @"Daikatana codec should return archive");
+    XCTAssertEqual(archive.entries.count, 1U, @"DK archive should contain one entry");
+
+    UDArchiveEntry *entry = archive.entries.firstObject;
+    XCTAssertEqualObjects(entry.path, @"textures/test.txt", @"Entry path should match DK directory record");
+    XCTAssertEqual(entry.size, 5ULL, @"Entry size should expose decompressed file length");
+
+    NSError *payloadError = nil;
+    NSData *payload = [entry.source readAll:&payloadError];
+    NSString *payloadText = [[NSString alloc] initWithData:payload encoding:NSASCIIStringEncoding];
+    XCTAssertNil(payloadError, @"Compressed DK entry should decode successfully");
+    XCTAssertEqualObjects(payloadText, @"HELLO", @"Decoded DK payload should match expected text");
 }
 
 @end

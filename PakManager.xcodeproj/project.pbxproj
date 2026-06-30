@@ -53,6 +53,7 @@
 		BB01010800000000000000AA /* UDPK3Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F00000000000000AA /* UDPK3Codec.m */; };
 		BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
 		BB01010A00000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
+		BB01010B00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E00000000000000AA /* UDDaikatanaPAKCodec.m */; };
 		CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */; };
 		CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */; };
 		CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */; };
@@ -454,6 +455,7 @@
 				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
 				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,
 				BB01010700000000000000AA /* UDPAKEntrySource.m in Sources */,
+				BB01010B00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
 				BB01010800000000000000AA /* UDPK3Codec.m in Sources */,
 				BB01010900000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
 				BB01010A00000000000000AA /* UDPK4Codec.m in Sources */,

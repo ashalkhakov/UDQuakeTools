@@ -246,7 +246,7 @@
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@ (%llu bytes)",
                           (unsigned long)entries.count,
                           [self _entryPluralSuffix:entries.count],
-                          selPath, entry.size];
+                          selPath, (unsigned long long)entry.size];
             } else {
                 status = [NSString stringWithFormat:@"%lu entr%@ — %@",
                           (unsigned long)entries.count,
@@ -417,7 +417,7 @@ willDisplayCell:(id)cell
         : rootName;
 
     NSFileManager *fm = [NSFileManager defaultManager];
-    NSDirectoryEnumerator<NSURL *> *enumerator =
+    NSDirectoryEnumerator *enumerator =
         [fm enumeratorAtURL:directoryURL
   includingPropertiesForKeys:@[NSURLIsDirectoryKey]
                      options:NSDirectoryEnumerationSkipsHiddenFiles
@@ -463,21 +463,18 @@ willDisplayCell:(id)cell
 - (nullable NSString *)_promptForNameWithTitle:(NSString *)title
                                   informative:(NSString *)informative
                                   defaultName:(NSString *)defaultName {
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:title];
-    [alert setInformativeText:informative];
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
+    NSSavePanel *panel = [NSSavePanel savePanel];
+    [panel setTitle:title ?: @"Rename"];
+    [panel setPrompt:@"OK"];
+    [panel setCanCreateDirectories:NO];
+    [panel setNameFieldStringValue:defaultName ?: @""];
 
-    NSTextField *nameField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 280, 24)];
-    [nameField setStringValue:defaultName ?: @""];
-    [alert setAccessoryView:nameField];
-
-    if ([alert runModal] != NSAlertFirstButtonReturn) {
+    if ([panel runModal] != NSModalResponseOK) {
         return nil;
     }
 
-    return [[nameField stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *chosenName = panel.URL.lastPathComponent ?: @"";
+    return [chosenName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (IBAction)deleteSelected:(id)sender {

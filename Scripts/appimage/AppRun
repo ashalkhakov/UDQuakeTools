@@ -1,0 +1,59 @@
+#!/bin/sh
+set -eu
+
+HERE="$(dirname "$(readlink -f "$0")")"
+
+# Write runtime GNUstep config to a private temp file.
+export GNUSTEP_CONFIG_FILE="/tmp/GNUstep-PakManager-$$.conf"
+cat << IN_EOF > "$GNUSTEP_CONFIG_FILE"
+GNUSTEP_USER_CONFIG_FILE=.GNUstep.conf
+GNUSTEP_USER_DEFAULTS_DIR=GNUstep/Defaults
+GNUSTEP_SYSTEM_USERS_DIR=/home
+GNUSTEP_NETWORK_USERS_DIR=/home
+GNUSTEP_LOCAL_USERS_DIR=/home
+GNUSTEP_SYSTEM_ROOT=$HERE/usr/System
+GNUSTEP_SYSTEM_LIBRARIES=$HERE/usr/System/Library
+GNUSTEP_SYSTEM_LIBRARY=$HERE/usr/System/Library
+GNUSTEP_SYSTEM_TOOLS=$HERE/usr/System/Tools
+GNUSTEP_SYSTEM_APPS=$HERE/usr/System/Applications
+GNUSTEP_LOCAL_ROOT=$HERE/usr/Local
+GNUSTEP_LOCAL_LIBRARY=$HERE/usr/Local/Library
+GNUSTEP_LOCAL_TOOLS=$HERE/usr/Local/Tools
+GNUSTEP_LOCAL_APPS=$HERE/usr/Local/Applications
+IN_EOF
+chmod 600 "$GNUSTEP_CONFIG_FILE"
+
+export GNUSTEP_SYSTEM_ROOT="$HERE/usr/System"
+export GNUSTEP_SYSTEM_LIBRARY="$HERE/usr/System/Library"
+export GNUSTEP_SYSTEM_TOOLS="$HERE/usr/System/Tools"
+export GNUSTEP_SYSTEM_APPS="$HERE/usr/System/Applications"
+
+export GNUSTEP_LOCAL_ROOT="$HERE/usr/Local"
+export GNUSTEP_LOCAL_LIBRARY="$HERE/usr/Local/Library"
+export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
+export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
+
+export LD_LIBRARY_PATH="$HERE/usr/lib:${LD_LIBRARY_PATH:-}"
+export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
+
+export FONTCONFIG_FILE="$HERE/usr/etc/fonts/fonts.conf"
+export XDG_CACHE_HOME="/tmp/fc-cache-pakmanager-$$"
+mkdir -p "$XDG_CACHE_HOME"
+
+trap 'rm -rf "$XDG_CACHE_HOME" "$GNUSTEP_CONFIG_FILE"' EXIT
+
+DEFAULTS_TOOL=$(find "$HERE" -name defaults -type f -perm -111 | head -n 1)
+if [ -n "$DEFAULTS_TOOL" ]; then
+    "$DEFAULTS_TOOL" write com.udquake.pakmanager GSTheme Eau
+    "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont LiberationSans
+    "$DEFAULTS_TOOL" write com.udquake.pakmanager NSBoldFont LiberationSans-Bold
+    "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont LiberationSans
+    "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont LiberationMono
+fi
+
+REAL_BIN=$(find "$HERE" -type f -name PakManager -exec file {} \; 2>/dev/null | awk -F: '/ELF/{print $1; exit}')
+if [ -z "$REAL_BIN" ]; then
+    REAL_BIN="$HERE/usr/Local/Applications/PakManager.app/PakManager"
+fi
+
+exec "$REAL_BIN" "$@"

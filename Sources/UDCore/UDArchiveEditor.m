@@ -162,13 +162,39 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         return NO;
     }
 
-    NSMutableSet<NSString *> *movingPaths = [NSMutableSet setWithCapacity:movingEntries.count];
-    NSMutableDictionary<NSString *, NSString *> *destinationBySourcePath =
-        [NSMutableDictionary dictionaryWithCapacity:movingEntries.count];
-    NSMutableSet<NSString *> *destinationPaths = [NSMutableSet setWithCapacity:movingEntries.count];
+    for (UDArchiveEntry *movingEntry in movingEntries) {
+        NSString *newPath = nil;
+        if ([movingEntry.path isEqualToString:fromPath]) {
+            newPath = toPath;
+        } else {
+            NSString *suffix = [movingEntry.path substringFromIndex:fromPath.length];
+            newPath = [toPath stringByAppendingString:suffix];
+        }
 
-    for (UDArchiveEntry *entry in movingEntries) {
-        [movingPaths addObject:entry.path];
+        for (UDArchiveEntry *entry in _currentEntries) {
+            BOOL isMoving = ([entry.path isEqualToString:fromPath] || [entry.path hasPrefix:fromPrefix]);
+            if (isMoving) {
+                continue;
+            }
+
+            if ([entry.path isEqualToString:newPath]) {
+                if (error) {
+                    *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
+                                                 code:UDArchiveEditorErrorCodeTargetPathExists
+                                             userInfo:@{NSLocalizedDescriptionKey:
+                                                            [NSString stringWithFormat:@"Target path already exists: %@", newPath]}];
+                }
+                return NO;
+            }
+        }
+    }
+
+    for (NSUInteger idx = 0; idx < _currentEntries.count; idx++) {
+        UDArchiveEntry *entry = [_currentEntries objectAtIndex:idx];
+        BOOL isMoving = ([entry.path isEqualToString:fromPath] || [entry.path hasPrefix:fromPrefix]);
+        if (!isMoving) {
+            continue;
+        }
 
         NSString *newPath = nil;
         if ([entry.path isEqualToString:fromPath]) {
@@ -176,33 +202,6 @@ typedef NS_ENUM(NSInteger, UDArchiveEditorErrorCode) {
         } else {
             NSString *suffix = [entry.path substringFromIndex:fromPath.length];
             newPath = [toPath stringByAppendingString:suffix];
-        }
-
-        [destinationBySourcePath setObject:newPath forKey:entry.path];
-        [destinationPaths addObject:newPath];
-    }
-
-    for (UDArchiveEntry *entry in _currentEntries) {
-        if ([movingPaths containsObject:entry.path]) {
-            continue;
-        }
-
-        if ([destinationPaths containsObject:entry.path]) {
-            if (error) {
-                *error = [NSError errorWithDomain:UDArchiveEditorErrorDomain
-                                             code:UDArchiveEditorErrorCodeTargetPathExists
-                                         userInfo:@{NSLocalizedDescriptionKey:
-                                                        [NSString stringWithFormat:@"Target path already exists: %@", entry.path]}];
-            }
-            return NO;
-        }
-    }
-
-    for (NSUInteger idx = 0; idx < _currentEntries.count; idx++) {
-        UDArchiveEntry *entry = [_currentEntries objectAtIndex:idx];
-        NSString *newPath = [destinationBySourcePath objectForKey:entry.path];
-        if (!newPath) {
-            continue;
         }
 
         UDArchiveEntry *moved = [[UDArchiveEntry alloc]

@@ -116,12 +116,16 @@
     if (notification.object != _archiveDocument.editor) {
         return;
     }
-    [self _reloadBrowser];
+    [self _reloadBrowserPreservingSelection];
 }
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Tree management
 
+/**
+ * Full reset: rebuilds _rootNode and reloads from column zero.
+ * Use for initial load and search-filter changes.
+ */
 - (void)_reloadBrowser {
     UDDirectoryNode *liveRoot = _archiveDocument.editor ? _archiveDocument.editor.currentRoot : nil;
     NSArray *entries = liveRoot ? [liveRoot allEntries] : @[];
@@ -138,6 +142,67 @@
         _rootNode = liveRoot ?: [UDDirectoryNode rootNode];
     }
     [_browser loadColumnZero];
+    [self _updateStatusAndButtons];
+}
+
+/**
+ * Soft reload: preserves the user's current column/selection path.
+ * Rebuilds _rootNode, fully reloads the browser, then navigates back
+ * to the same path. If the previously-selected item was deleted, stops
+ * at the deepest still-existing ancestor instead.
+ */
+- (void)_reloadBrowserPreservingSelection {
+    /* Capture selection state as a breadcrumb of child names. */
+    NSMutableArray<NSString *> *breadcrumb = [NSMutableArray array];
+    NSInteger lastColumn = [_browser lastColumn];
+    for (NSInteger c = 0; c <= lastColumn; c++) {
+        NSInteger row = [_browser selectedRowInColumn:c];
+        if (row < 0) {
+            break;
+        }
+        id node = [self _nodeForColumn:c];
+        if (![node isKindOfClass:[UDDirectoryNode class]]) {
+            break;
+        }
+        NSArray *children = [(UDDirectoryNode *)node children];
+        if (row >= (NSInteger)children.count) {
+            break;
+        }
+        id child = [children objectAtIndex:(NSUInteger)row];
+        NSString *name = [child isKindOfClass:[UDDirectoryNode class]]
+            ? [(UDDirectoryNode *)child name]
+            : [(UDArchiveEntry *)child name];
+        [breadcrumb addObject:name];
+    }
+
+    /* Full data + UI reset. */
+    [self _reloadBrowser];
+
+    /* Re-navigate column by column until a name is missing (item deleted). */
+    for (NSUInteger depth = 0; depth < breadcrumb.count; depth++) {
+        NSString *name = [breadcrumb objectAtIndex:depth];
+        id node = [self _nodeForColumn:(NSInteger)depth];
+        if (![node isKindOfClass:[UDDirectoryNode class]]) {
+            break;
+        }
+        NSArray *children = [(UDDirectoryNode *)node children];
+        NSInteger matchRow = -1;
+        for (NSInteger row = 0; row < (NSInteger)children.count; row++) {
+            id child = [children objectAtIndex:(NSUInteger)row];
+            NSString *childName = [child isKindOfClass:[UDDirectoryNode class]]
+                ? [(UDDirectoryNode *)child name]
+                : [(UDArchiveEntry *)child name];
+            if ([childName isEqualToString:name]) {
+                matchRow = row;
+                break;
+            }
+        }
+        if (matchRow < 0) {
+            break; /* item no longer exists — stay at deepest valid ancestor */
+        }
+        [_browser selectRow:matchRow inColumn:(NSInteger)depth];
+    }
+
     [self _updateStatusAndButtons];
 }
 
@@ -402,7 +467,7 @@ willDisplayCell:(id)cell
     }
 
     [_archiveDocument updateChangeCount:NSChangeDone];
-    [self _reloadBrowser];
+    /* Reload is handled by UDArchiveEditorDidChangeNotification. */
 }
 
 - (void)_addFileAtURL:(NSURL *)fileURL {
@@ -420,7 +485,7 @@ willDisplayCell:(id)cell
     }
 
     [_archiveDocument updateChangeCount:NSChangeDone];
-    [self _reloadBrowser];
+    /* Reload is handled by UDArchiveEditorDidChangeNotification. */
 }
 
 - (void)_addDirectoryAtURL:(NSURL *)directoryURL {
@@ -470,7 +535,7 @@ willDisplayCell:(id)cell
 
     if (addedAny) {
         [_archiveDocument updateChangeCount:NSChangeDone];
-        [self _reloadBrowser];
+        /* Reload is handled by UDArchiveEditorDidChangeNotification. */
     }
 }
 
@@ -516,7 +581,7 @@ willDisplayCell:(id)cell
     }
 
     [_archiveDocument updateChangeCount:NSChangeDone];
-    [self _reloadBrowser];
+    /* Reload is handled by UDArchiveEditorDidChangeNotification. */
 }
 
 - (IBAction)extractSelected:(id)sender {

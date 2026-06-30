@@ -93,17 +93,6 @@ typedef NS_ENUM(NSInteger, UDPAKEntrySourceErrorCode) {
 
     NSUInteger readStart = (NSUInteger)absoluteReadStart;
     NSUInteger readLength = (NSUInteger)rangeLength;
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:self.fileURL.path error:NULL];
-    uint64_t fileLength = [[attributes objectForKey:NSFileSize] unsignedLongLongValue];
-    if (readStart > fileLength || readLength > (fileLength - readStart)) {
-        [handle closeFile];
-        if (error) {
-            *error = [NSError errorWithDomain:UDPAKEntrySourceErrorDomain
-                                         code:UDPAKEntrySourceErrorCodeOutOfBounds
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Entry points outside archive file bounds."}];
-        }
-        return nil;
-    }
 
     [handle seekToFileOffset:readStart];
     NSData *slice = [handle readDataOfLength:readLength];

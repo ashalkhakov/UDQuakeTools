@@ -40,6 +40,10 @@
     }
 }
 
+- (NSArray<id<UDArchiveCodec>> *)allCodecs {
+    return [self.codecs copy];
+}
+
 - (void)appendCodecIfNeeded:(id<UDArchiveCodec>)candidate toArray:(NSMutableArray<id<UDArchiveCodec>> *)ordered {
     if (!candidate) {
         return;

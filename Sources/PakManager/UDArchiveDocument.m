@@ -25,19 +25,16 @@
 }
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
+    (void)typeName;
     UDCodecRegistry *reg = [UDCodecRegistry sharedRegistry];
 
-    NSArray<id<UDArchiveCodec>> *candidates = [reg codecCandidatesForURL:url typeName:typeName];
-    if (candidates.count == 0) {
-        candidates = [reg codecCandidatesForURL:url typeName:nil];
-    }
-
+    NSArray<id<UDArchiveCodec>> *candidates = [reg allCodecs];
     if (candidates.count == 0) {
         if (error) {
             *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSFileReadUnknownError
                                      userInfo:@{NSLocalizedDescriptionKey:
-                                                    @"No codec found for this file type."}];
+                                                    @"not supported"}];
         }
         return NO;
     }
@@ -60,14 +57,11 @@
 
     if (!archive || !selectedCodec) {
         if (error) {
-            if (lastReadError) {
-                *error = lastReadError;
-            } else {
-                *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                             code:NSFileReadUnknownError
-                                         userInfo:@{NSLocalizedDescriptionKey:
-                                                        @"No compatible codec could read this archive."}];
-            }
+            (void)lastReadError;
+            *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSFileReadUnknownError
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                                    @"This file format is not supported."}];
         }
         return NO;
     }

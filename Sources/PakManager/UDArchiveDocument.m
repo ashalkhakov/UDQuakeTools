@@ -86,4 +86,22 @@
     return [_codec writeEditedArchive:_editor toURL:url error:error];
 }
 
+- (BOOL)prepareSavePanel:(NSSavePanel *)savePanel {
+    BOOL ok = [super prepareSavePanel:savePanel];
+    if (!ok) {
+        return NO;
+    }
+
+    NSString *suggestedName = self.fileURL.lastPathComponent;
+    if (suggestedName.length == 0) {
+        suggestedName = _archive.displayName;
+    }
+
+    if (suggestedName.length > 0) {
+        [savePanel setNameFieldStringValue:suggestedName];
+    }
+
+    return YES;
+}
+
 @end

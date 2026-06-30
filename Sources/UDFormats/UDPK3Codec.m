@@ -1,6 +1,7 @@
 #import "UDPK3Codec.h"
 
 #import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
 #import "UDPK3ZIPEntrySource.h"
 
@@ -10,8 +11,32 @@ static NSString *const UDPK3CodecErrorDomain = @"com.udquake.error.pk3-codec";
 
 typedef NS_ENUM(NSInteger, UDPK3CodecErrorCode) {
     UDPK3CodecErrorCodeOpenFailed      = 1,
-    UDPK3CodecErrorCodeNotImplemented  = 2,
+    UDPK3CodecErrorCodeWriteFailed     = 2,
 };
+
+static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) {
+    if ([source respondsToSelector:@selector(readAll:)]) {
+        NSData *all = [source readAll:error];
+        if (all) {
+            return all;
+        }
+    }
+
+    uint64_t len = [source length];
+    if (len > NSUIntegerMax) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                         code:UDPK3CodecErrorCodeWriteFailed
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Entry is too large to process on this platform."}];
+        }
+        return nil;
+    }
+    return [source readRange:NSMakeRange(0, (NSUInteger)len) error:error];
+}
+
+@interface UDPK3Codec ()
+- (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error;
+@end
 
 @implementation UDPK3Codec
 
@@ -147,21 +172,97 @@ typedef NS_ENUM(NSInteger, UDPK3CodecErrorCode) {
 }
 
 - (BOOL)writeArchive:(UDArchive *)archive toURL:(NSURL *)url error:(NSError **)error {
-    if (error) {
-        *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                     code:UDPK3CodecErrorCodeNotImplemented
-                                 userInfo:@{NSLocalizedDescriptionKey: @"PK3/PK4 writing is not implemented yet."}];
-    }
-    return NO;
+    return [self _writeEntries:archive.entries toURL:url error:error];
 }
 
 - (BOOL)writeEditedArchive:(UDArchiveEditor *)editor toURL:(NSURL *)url error:(NSError **)error {
-    if (error) {
-        *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                     code:UDPK3CodecErrorCodeNotImplemented
-                                 userInfo:@{NSLocalizedDescriptionKey: @"PK3/PK4 edited-archive writing is not implemented yet."}];
+    return [self _writeEntries:editor.currentEntries toURL:url error:error];
+}
+
+- (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error {
+    int zerr = ZIP_ER_OK;
+    zip_t *za = zip_open(url.path.fileSystemRepresentation, ZIP_TRUNCATE | ZIP_CREATE, &zerr);
+    if (!za) {
+        if (error) {
+            zip_error_t ze;
+            zip_error_init_with_code(&ze, zerr);
+            NSString *desc = [NSString stringWithFormat:@"Could not create ZIP archive: %s",
+                              zip_error_strerror(&ze)];
+            zip_error_fini(&ze);
+            *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                         code:UDPK3CodecErrorCodeOpenFailed
+                                     userInfo:@{NSLocalizedDescriptionKey: desc}];
+        }
+        return NO;
     }
-    return NO;
+
+    for (UDArchiveEntry *entry in entries) {
+        id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
+        if (!source) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                             code:UDPK3CodecErrorCodeWriteFailed
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Entry has no content source: %@", entry.path]}];
+            }
+            zip_discard(za);
+            return NO;
+        }
+
+        NSError *readError = nil;
+        NSData *payload = UDReadAllZIPContent(source, &readError);
+        if (!payload) {
+            if (error) {
+                *error = readError;
+            }
+            zip_discard(za);
+            return NO;
+        }
+
+        zip_source_t *src = zip_source_buffer(za, payload.bytes, payload.length, 0);
+        if (!src) {
+            if (error) {
+                NSString *desc = [NSString stringWithFormat:@"Could not create ZIP source for %@: %s",
+                                  entry.path, zip_strerror(za)];
+                *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                             code:UDPK3CodecErrorCodeWriteFailed
+                                         userInfo:@{NSLocalizedDescriptionKey: desc}];
+            }
+            zip_discard(za);
+            return NO;
+        }
+
+        zip_int64_t idx = zip_file_add(za,
+                                       entry.path.fileSystemRepresentation,
+                                       src,
+                                       ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
+        if (idx < 0) {
+            zip_source_free(src);
+            if (error) {
+                NSString *desc = [NSString stringWithFormat:@"Could not add ZIP entry %@: %s",
+                                  entry.path, zip_strerror(za)];
+                *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                             code:UDPK3CodecErrorCodeWriteFailed
+                                         userInfo:@{NSLocalizedDescriptionKey: desc}];
+            }
+            zip_discard(za);
+            return NO;
+        }
+
+        zip_set_file_compression(za, (zip_uint64_t)idx, ZIP_CM_DEFLATE, 0);
+    }
+
+    if (zip_close(za) != 0) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
+                                         code:UDPK3CodecErrorCodeWriteFailed
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Failed to finalize ZIP archive."}];
+        }
+        zip_discard(za);
+        return NO;
+    }
+
+    return YES;
 }
 
 @end

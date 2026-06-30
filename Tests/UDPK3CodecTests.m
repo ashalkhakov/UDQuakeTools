@@ -2,7 +2,9 @@
 #include <zip.h>
 
 #import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
+#import "UDPAKEntrySource.h"
 #import "UDPK3Codec.h"
 #import "UDPK4Codec.h"
 #import "UDPK3ZIPEntrySource.h"
@@ -196,6 +198,81 @@
     UDArchive *badArchive = [pk3Codec readArchiveFromURL:badURL error:&badErr];
     XCTAssertNil(badArchive, @"UDPK3Codec should return nil for corrupt file");
     XCTAssertNotNil(badErr,     @"UDPK3Codec should set error for corrupt file");
+}
+
+- (void)testWriteEditedPK3Archive {
+    NSData *zipData = [self makeTestZIPData];
+    XCTAssertNotNil(zipData, @"Test setup: ZIP data should be created");
+    if (!zipData) {
+        return;
+    }
+
+    NSURL *inputURL = [self writeTempFileWithData:zipData suffix:@"editable.pk3"];
+    XCTAssertNotNil(inputURL, @"Test setup: input PK3 should be created");
+    if (!inputURL) {
+        return;
+    }
+
+    UDPK3Codec *codec = [[UDPK3Codec alloc] init];
+    NSError *readError = nil;
+    UDArchive *archive = [codec readArchiveFromURL:inputURL error:&readError];
+    XCTAssertNotNil(archive, @"Input PK3 should load");
+    XCTAssertNil(readError, @"Input PK3 should load without error");
+    if (!archive) {
+        return;
+    }
+
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:archive];
+
+    NSData *updatedData = [@"UPDATED" dataUsingEncoding:NSASCIIStringEncoding];
+    NSURL *updatedURL = [self writeTempFileWithData:updatedData suffix:@"updated.bin"];
+    XCTAssertNotNil(updatedURL, @"Test setup: updated payload source should be created");
+    if (!updatedURL) {
+        return;
+    }
+
+    NSError *editError = nil;
+    BOOL replaced = [editor replaceEntryAtPath:@"maps/q3dm1.bsp"
+                                    withSource:[[UDPAKEntrySource alloc] initWithFileURL:updatedURL offset:0 length:updatedData.length]
+                                         error:&editError];
+    XCTAssertTrue(replaced, @"replace should succeed");
+    XCTAssertNil(editError, @"replace should not set error");
+
+    editError = nil;
+    BOOL removed = [editor removeNodeAtPath:@"scripts/base.shader" error:&editError];
+    XCTAssertTrue(removed, @"remove should succeed");
+    XCTAssertNil(editError, @"remove should not set error");
+
+    NSURL *outputURL = [self writeTempFileWithData:[NSData data] suffix:@"edited.pk3"];
+    XCTAssertNotNil(outputURL, @"Test setup: output PK3 should be created");
+    if (!outputURL) {
+        return;
+    }
+
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertTrue(wrote, @"writing edited PK3 should succeed");
+    XCTAssertNil(writeError, @"writing edited PK3 should not set error");
+
+    NSError *verifyError = nil;
+    UDArchive *saved = [codec readArchiveFromURL:outputURL error:&verifyError];
+    XCTAssertNotNil(saved, @"saved PK3 should be readable");
+    XCTAssertNil(verifyError, @"saved PK3 should be readable without error");
+    if (!saved) {
+        return;
+    }
+
+    XCTAssertEqual(saved.entries.count, 1U, @"saved PK3 should contain only remaining entry");
+
+    UDArchiveEntry *entry = saved.entries.firstObject;
+    XCTAssertEqualObjects(entry.path, @"maps/q3dm1.bsp", @"remaining entry should be the replaced bsp");
+
+    NSError *payloadError = nil;
+    NSData *payload = [entry.source readAll:&payloadError];
+    XCTAssertNil(payloadError, @"reloaded payload should be readable");
+    XCTAssertEqualObjects([[NSString alloc] initWithData:payload encoding:NSASCIIStringEncoding],
+                          @"UPDATED",
+                          @"reloaded payload should match replacement content");
 }
 
 @end

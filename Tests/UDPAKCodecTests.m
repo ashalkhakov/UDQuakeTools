@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 
 #import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
 #import "UDCodecRegistry.h"
 #import "UDDaikatanaPAKCodec.h"
@@ -163,6 +164,94 @@
     NSString *payloadText = [[NSString alloc] initWithData:payload encoding:NSASCIIStringEncoding];
     XCTAssertNil(payloadError, @"Compressed DK entry should decode successfully");
     XCTAssertEqualObjects(payloadText, @"HELLO", @"Decoded DK payload should match expected text");
+}
+
+- (void)testWriteEditedPAKArchive {
+    UDPAKCodec *codec = [[UDPAKCodec alloc] init];
+
+    NSData *originalData = [self quakePAKDataWithEntries];
+    NSURL *inputURL = [self writeTemporaryFileWithData:originalData suffix:@"editable.pak"];
+    XCTAssertNotNil(inputURL, @"Test setup should create input PAK");
+
+    NSError *readError = nil;
+    UDArchive *archive = [codec readArchiveFromURL:inputURL error:&readError];
+    XCTAssertNotNil(archive, @"Input PAK should load");
+    XCTAssertNil(readError, @"Input PAK load should not error");
+    if (!archive) {
+        return;
+    }
+
+    UDArchiveEditor *editor = [[UDArchiveEditor alloc] initWithArchive:archive];
+
+    NSData *replacementData = [@"WXYZ" dataUsingEncoding:NSASCIIStringEncoding];
+    NSURL *replacementURL = [self writeTemporaryFileWithData:replacementData suffix:@"replacement.bin"];
+    XCTAssertNotNil(replacementURL, @"Test setup should create replacement data source");
+
+    NSData *addedData = [@"README" dataUsingEncoding:NSASCIIStringEncoding];
+    NSURL *addedURL = [self writeTemporaryFileWithData:addedData suffix:@"added.bin"];
+    XCTAssertNotNil(addedURL, @"Test setup should create added data source");
+    if (!replacementURL || !addedURL) {
+        return;
+    }
+
+    NSError *editError = nil;
+    BOOL replaced = [editor replaceEntryAtPath:@"maps/e1m1.bsp"
+                                    withSource:[[UDPAKEntrySource alloc] initWithFileURL:replacementURL offset:0 length:replacementData.length]
+                                         error:&editError];
+    XCTAssertTrue(replaced, @"replace should succeed");
+    XCTAssertNil(editError, @"replace should not set error");
+
+    editError = nil;
+    BOOL added = [editor addSource:[[UDPAKEntrySource alloc] initWithFileURL:addedURL offset:0 length:addedData.length]
+                            atPath:@"docs/readme.txt"
+                             error:&editError];
+    XCTAssertTrue(added, @"add should succeed");
+    XCTAssertNil(editError, @"add should not set error");
+
+    NSURL *outputURL = [self writeTemporaryFileWithData:[NSData data] suffix:@"out-edited.pak"];
+    XCTAssertNotNil(outputURL, @"Test setup should create output path");
+    if (!outputURL) {
+        return;
+    }
+
+    NSError *writeError = nil;
+    BOOL wrote = [codec writeEditedArchive:editor toURL:outputURL error:&writeError];
+    XCTAssertTrue(wrote, @"writing edited PAK should succeed");
+    XCTAssertNil(writeError, @"writing edited PAK should not set error");
+
+    NSError *verifyReadError = nil;
+    UDArchive *savedArchive = [codec readArchiveFromURL:outputURL error:&verifyReadError];
+    XCTAssertNotNil(savedArchive, @"saved PAK should load");
+    XCTAssertNil(verifyReadError, @"saved PAK should load without error");
+    if (!savedArchive) {
+        return;
+    }
+
+    XCTAssertEqual(savedArchive.entries.count, 2U, @"saved PAK should contain replaced and added entry");
+
+    NSMutableDictionary<NSString *, UDArchiveEntry *> *entryMap = [NSMutableDictionary dictionary];
+    for (UDArchiveEntry *entry in savedArchive.entries) {
+        [entryMap setObject:entry forKey:entry.path];
+    }
+
+    UDArchiveEntry *replacedEntry = [entryMap objectForKey:@"maps/e1m1.bsp"];
+    UDArchiveEntry *addedEntry = [entryMap objectForKey:@"docs/readme.txt"];
+    XCTAssertNotNil(replacedEntry, @"saved PAK should contain replaced entry");
+    XCTAssertNotNil(addedEntry, @"saved PAK should contain added entry");
+
+    NSError *payloadError = nil;
+    NSData *replacedPayload = [replacedEntry.source readAll:&payloadError];
+    XCTAssertNil(payloadError, @"replaced payload should be readable");
+    XCTAssertEqualObjects([[NSString alloc] initWithData:replacedPayload encoding:NSASCIIStringEncoding],
+                          @"WXYZ",
+                          @"replaced payload should match");
+
+    payloadError = nil;
+    NSData *addedPayload = [addedEntry.source readAll:&payloadError];
+    XCTAssertNil(payloadError, @"added payload should be readable");
+    XCTAssertEqualObjects([[NSString alloc] initWithData:addedPayload encoding:NSASCIIStringEncoding],
+                          @"README",
+                          @"added payload should match");
 }
 
 @end

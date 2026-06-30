@@ -1,6 +1,7 @@
 #import "UDPAKCodec.h"
 
 #import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
 #import "UDPAKEntrySource.h"
 
@@ -17,8 +18,39 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
     return ((uint32_t)bytes[0]) | ((uint32_t)bytes[1] << 8) | ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
 }
 
+/* Writes a 32-bit unsigned integer in little-endian byte order. */
+static void UDAppendLEUInt32(NSMutableData *data, uint32_t value) {
+    uint8_t bytes[4];
+    bytes[0] = (uint8_t)(value & 0xFFu);
+    bytes[1] = (uint8_t)((value >> 8) & 0xFFu);
+    bytes[2] = (uint8_t)((value >> 16) & 0xFFu);
+    bytes[3] = (uint8_t)((value >> 24) & 0xFFu);
+    [data appendBytes:bytes length:4];
+}
+
+static NSData *UDReadAllContent(id<UDContentSource> source, NSError **error) {
+    if ([source respondsToSelector:@selector(readAll:)]) {
+        NSData *data = [source readAll:error];
+        if (data) {
+            return data;
+        }
+    }
+
+    uint64_t len = [source length];
+    if (len > NSUIntegerMax) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
+                                         code:UDPAKCodecErrorCodeCorruptDirectory
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Entry is too large to process on this platform."}];
+        }
+        return nil;
+    }
+    return [source readRange:NSMakeRange(0, (NSUInteger)len) error:error];
+}
+
 @interface UDPAKCodec ()
 - (nullable UDArchive *)archiveFromData:(NSData *)data sourceURL:(NSURL *)sourceURL error:(NSError **)error;
+- (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error;
 @end
 
 @implementation UDPAKCodec
@@ -65,21 +97,102 @@ static uint32_t UDReadLEUInt32(const uint8_t *bytes) {
 }
 
 - (BOOL)writeArchive:(UDArchive *)archive toURL:(NSURL *)url error:(NSError **)error {
-    if (error) {
-        *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
-                                     code:NSFeatureUnsupportedError
-                                 userInfo:@{NSLocalizedDescriptionKey: @"PAK writing is not implemented yet."}];
-    }
-    return NO;
+    return [self _writeEntries:archive.entries toURL:url error:error];
 }
 
 - (BOOL)writeEditedArchive:(UDArchiveEditor *)editor toURL:(NSURL *)url error:(NSError **)error {
-    if (error) {
-        *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
-                                     code:NSFeatureUnsupportedError
-                                 userInfo:@{NSLocalizedDescriptionKey: @"PAK edited-archive writing is not implemented yet."}];
+    return [self _writeEntries:editor.currentEntries toURL:url error:error];
+}
+
+- (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error {
+    NSMutableArray<NSData *> *payloads = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSNumber *> *offsets = [NSMutableArray arrayWithCapacity:entries.count];
+    NSMutableArray<NSNumber *> *sizes = [NSMutableArray arrayWithCapacity:entries.count];
+
+    uint64_t dataOffset = 12;
+    for (UDArchiveEntry *entry in entries) {
+        NSString *path = [entry.path stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        NSData *pathData = [path dataUsingEncoding:NSASCIIStringEncoding];
+        if (!pathData || pathData.length > 55) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
+                                             code:UDPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Path cannot be stored in PAK directory: %@", path]}];
+            }
+            return NO;
+        }
+
+        id<UDContentSource> source = entry.stagedSource ? entry.stagedSource : entry.source;
+        if (!source) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
+                                             code:UDPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey:
+                                                        [NSString stringWithFormat:@"Entry has no content source: %@", path]}];
+            }
+            return NO;
+        }
+
+        NSError *readError = nil;
+        NSData *payload = UDReadAllContent(source, &readError);
+        if (!payload) {
+            if (error) {
+                *error = readError;
+            }
+            return NO;
+        }
+
+        if (dataOffset > UINT32_MAX || payload.length > UINT32_MAX || dataOffset + payload.length > UINT32_MAX) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
+                                             code:UDPAKCodecErrorCodeCorruptDirectory
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Archive exceeds classic PAK 4GB limits."}];
+            }
+            return NO;
+        }
+
+        [payloads addObject:payload];
+        [paths addObject:path];
+        [offsets addObject:@((uint32_t)dataOffset)];
+        [sizes addObject:@((uint32_t)payload.length)];
+        dataOffset += payload.length;
     }
-    return NO;
+
+    uint64_t directoryOffset = dataOffset;
+    uint64_t directorySize = (uint64_t)entries.count * 64;
+    if (directoryOffset > UINT32_MAX || directorySize > UINT32_MAX) {
+        if (error) {
+            *error = [NSError errorWithDomain:UDPAKCodecErrorDomain
+                                         code:UDPAKCodecErrorCodeCorruptDirectory
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Archive exceeds classic PAK directory limits."}];
+        }
+        return NO;
+    }
+
+    NSMutableData *pakData = [NSMutableData data];
+    [pakData appendBytes:"PACK" length:4];
+    UDAppendLEUInt32(pakData, (uint32_t)directoryOffset);
+    UDAppendLEUInt32(pakData, (uint32_t)directorySize);
+
+    for (NSData *payload in payloads) {
+        [pakData appendData:payload];
+    }
+
+    for (NSUInteger i = 0; i < paths.count; i++) {
+        uint8_t record[64] = {0};
+        NSData *pathData = [paths[i] dataUsingEncoding:NSASCIIStringEncoding];
+        memcpy(record, pathData.bytes, pathData.length);
+
+        uint32_t fileOffset = (uint32_t)offsets[i].unsignedIntValue;
+        uint32_t fileSize = (uint32_t)sizes[i].unsignedIntValue;
+        memcpy(record + 56, &fileOffset, 4);
+        memcpy(record + 60, &fileSize, 4);
+        [pakData appendBytes:record length:sizeof(record)];
+    }
+
+    return [pakData writeToURL:url options:NSDataWritingAtomic error:error];
 }
 
 - (UDArchive *)archiveFromData:(NSData *)data sourceURL:(NSURL *)sourceURL error:(NSError **)error {

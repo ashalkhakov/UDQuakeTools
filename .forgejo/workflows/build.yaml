@@ -305,17 +305,31 @@ jobs:
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
+          # Generate absolute Fontconfig map
+          export FONTCONFIG_FILE="/tmp/fonts-PakManager-$$.conf"
+          export XDG_CACHE_HOME="/tmp/fc-cache-pakmanager-$$"
+          mkdir -p "$XDG_CACHE_HOME"
+
+          cat << FONT_EOF > "$FONTCONFIG_FILE"
+          <?xml version="1.0"?>
+          <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+          <fontconfig>
+              <dir>$HERE/usr/share/fonts</dir>
+              <include ignore_missing="yes">/etc/fonts/fonts.conf</include>
+          </fontconfig>
+          FONT_EOF
+
           # Clean up temp files on exit
-          trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT
+          trap "rm -rf $FONTCONFIG_FILE $XDG_CACHE_HOME $GNUSTEP_CONFIG_FILE" EXIT
 
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
           DEFAULTS_TOOL=$(find "$HERE" -name "defaults" -executable | head -n 1)
           if [ -x "$DEFAULTS_TOOL" ]; then
             echo "Running defaults command with $DEFAULTS_TOOL..."
             "$DEFAULTS_TOOL" write com.udquake.pakmanager GSTheme "Eau"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "LiberationSans-Regular"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "LiberationSans-Regular"
-            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "LiberationMono-Regular"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSFont "LiberationSans"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFont "LiberationSans"
+            "$DEFAULTS_TOOL" write com.udquake.pakmanager NSUserFixedPitchFont "LiberationMono"
             
             # THE KILL SHOT: Force GNUstep to swap the word "Helvetica" for "Liberation Sans" internally
             #"$DEFAULTS_TOOL" write NSGlobalDomain GSFontSubstitutes '{"Helvetica" = "Liberation Sans"; "Helvetica-Bold" = "Liberation Sans"; "sans-serif" = "Liberation Sans";}' || true

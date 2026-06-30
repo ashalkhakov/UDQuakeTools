@@ -3,6 +3,13 @@
 UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archive formats.
 The main GUI app is Pak Manager, and the repository also includes a small command-line utility and tests.
 
+## Pak Manager
+
+This app helps you manage pak/pk3/pk4 files.
+
+![Mac OS X](Screenshots/pakmanager-mac.png)
+![Linux / GNUstep](Screenshots/pakmanager-linux.png)
+
 ## Project Layout
 
 - `Sources/PakManager`: GUI app (GNUstep + Cocoa/AppKit)

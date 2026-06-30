@@ -229,4 +229,199 @@
     XCTAssertEqualObjects(resolved.sourcePath, @"materials/test.mtr");
 }
 
+- (void)testDeclParserBuildsStructuredDefinitions {
+    NSString *declText =
+        @"// comment\n"
+         "entityDef monster_zombie {\n"
+         "  \"editor_usage\" \"Unit test\"\n"
+         "}\n"
+         "material textures/stone {\n"
+         "  { blend add }\n"
+         "}\n";
+
+    UDDeclParser *parser = [[UDDeclParser alloc] init];
+    NSError *parseError = nil;
+    NSArray<UDDeclDefinition *> *definitions = [parser parseDefinitionsFromText:declText
+                                                               sourceVirtualPath:@"def/monster.def"
+                                                                           error:&parseError];
+    XCTAssertNil(parseError);
+    XCTAssertEqual(definitions.count, 2U);
+
+    UDDeclDefinition *first = [definitions objectAtIndex:0];
+    XCTAssertEqualObjects(first.declType, @"entityDef");
+    XCTAssertEqualObjects(first.declName, @"monster_zombie");
+    XCTAssertEqualObjects(first.sourceVirtualPath, @"def/monster.def");
+    XCTAssertTrue([first.body containsString:@"editor_usage"]);
+
+    UDDeclDefinition *second = [definitions objectAtIndex:1];
+    XCTAssertEqualObjects(second.declType, @"material");
+    XCTAssertEqualObjects(second.declName, @"textures/stone");
+    XCTAssertTrue([second.body containsString:@"blend add"]);
+}
+
+- (void)testDeclModelUsesAssetIndexDiscoveryLayer {
+    NSString *gameDirPath = [self tempDirectoryPath];
+    NSError *mkdirError = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:[gameDirPath stringByAppendingPathComponent:@"def"]
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&mkdirError];
+    XCTAssertNil(mkdirError);
+
+    NSString *looseDeclPath = [gameDirPath stringByAppendingPathComponent:@"def/monster.def"];
+    NSString *looseDecl = @"entityDef loose_decl { \"editor_usage\" \"loose\" }\n";
+    XCTAssertTrue([looseDecl writeToFile:looseDeclPath atomically:YES encoding:NSUTF8StringEncoding error:&mkdirError]);
+    XCTAssertNil(mkdirError);
+
+    NSURL *archiveURL = [self writeArchiveUsingCodec:[[UDPK4Codec alloc] init]
+                                             entries:@{
+                                                 @"def/monster.def": @"entityDef archive_decl { \"editor_usage\" \"archive\" }",
+                                                 @"def/weapons.def": @"entityDef weapon_shotgun { \"editor_usage\" \"archive\" }"
+                                             }
+                                              suffix:@"pk4"];
+
+    UDVirtualFileSystem *vfs = [[UDVirtualFileSystem alloc] initWithCodecRegistry:[self makeRegistry]];
+    [vfs configureWithGameType:UDGameTypeDoom3 gameDirectoryURL:[NSURL fileURLWithPath:gameDirPath]];
+
+    NSError *mountError = nil;
+    XCTAssertNotNil([vfs mountArchiveURL:archiveURL identifier:@"archive" virtualRoot:nil priority:0 typeName:nil error:&mountError]);
+    XCTAssertNil(mountError);
+    XCTAssertNotNil([vfs mountDirectoryURL:[NSURL fileURLWithPath:gameDirPath] identifier:@"gamedir" virtualRoot:nil priority:0 error:&mountError]);
+    XCTAssertNil(mountError);
+
+    UDAssetIndexer *indexer = [[UDAssetIndexer alloc] init];
+    NSError *indexError = nil;
+    UDAssetIndex *assetIndex = [indexer buildIndexFromVirtualFileSystem:vfs error:&indexError];
+    XCTAssertNotNil(assetIndex);
+    XCTAssertNil(indexError);
+
+    NSError *modelError = nil;
+    UDDeclModel *declModel = [indexer buildDeclModelFromAssetIndex:assetIndex virtualFileSystem:vfs error:&modelError];
+    XCTAssertNotNil(declModel);
+    XCTAssertNil(modelError);
+    XCTAssertNotNil([declModel definitionWithType:@"entityDef" name:@"loose_decl"]);
+    XCTAssertNil([declModel definitionWithType:@"entityDef" name:@"archive_decl"]);
+    XCTAssertNotNil([declModel definitionWithType:@"entityDef" name:@"weapon_shotgun"]);
+}
+
+- (void)testNotificationHookPerformsPartialAssetIndexRefresh {
+    NSString *gameDirPath = [self tempDirectoryPath];
+    NSError *mkdirError = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:[gameDirPath stringByAppendingPathComponent:@"guis"]
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&mkdirError];
+    XCTAssertNil(mkdirError);
+
+    NSString *looseGUIPath = [gameDirPath stringByAppendingPathComponent:@"guis/main.gui"];
+    XCTAssertTrue([[@"windowDef Test {}" dataUsingEncoding:NSUTF8StringEncoding] writeToFile:looseGUIPath atomically:YES]);
+
+    NSURL *archiveURL = [self writeArchiveUsingCodec:[[UDPK4Codec alloc] init]
+                                             entries:@{
+                                                 @"materials/test.mtr": @"archive-material",
+                                                 @"script/game.script": @"script"
+                                             }
+                                              suffix:@"pk4"];
+
+    UDVirtualFileSystem *vfs = [[UDVirtualFileSystem alloc] initWithCodecRegistry:[self makeRegistry]];
+    [vfs configureWithGameType:UDGameTypeDoom3 gameDirectoryURL:[NSURL fileURLWithPath:gameDirPath]];
+
+    NSError *mountError = nil;
+    XCTAssertNotNil([vfs mountArchiveURL:archiveURL identifier:@"archive" virtualRoot:nil priority:0 typeName:nil error:&mountError]);
+    XCTAssertNil(mountError);
+    XCTAssertNotNil([vfs mountDirectoryURL:[NSURL fileURLWithPath:gameDirPath] identifier:@"gamedir" virtualRoot:nil priority:0 error:&mountError]);
+    XCTAssertNil(mountError);
+
+    UDAssetIndexer *indexer = [[UDAssetIndexer alloc] init];
+    NSError *indexError = nil;
+    UDAssetIndex *initialIndex = [indexer buildIndexFromVirtualFileSystem:vfs error:&indexError];
+    XCTAssertNotNil(initialIndex);
+    XCTAssertNil(indexError);
+    XCTAssertEqual(initialIndex.entries.count, 3U);
+
+    NSError *writeError = nil;
+    NSData *materialData = [@"loose-material" dataUsingEncoding:NSUTF8StringEncoding];
+    XCTAssertTrue([vfs writeFileAtPath:@"materials/test.mtr" data:materialData error:&writeError]);
+    XCTAssertNil(writeError);
+
+    NSNotification *notification = [NSNotification notificationWithName:UDVFSDidWriteFileNotification
+                                                                 object:vfs
+                                                               userInfo:@{UDVFSNotificationVirtualPathKey: @"materials/test.mtr"}];
+    UDAssetIndex *updatedIndex = [indexer rebuildIndexByApplyingWriteNotification:notification
+                                                                   toExistingIndex:initialIndex
+                                                                 virtualFileSystem:vfs
+                                                                             error:&indexError];
+    XCTAssertNotNil(updatedIndex);
+    XCTAssertNil(indexError);
+    XCTAssertEqual(updatedIndex.entries.count, 3U);
+
+    UDAssetIndexEntry *materialEntry = [updatedIndex entryForVirtualPath:@"materials/test.mtr"];
+    XCTAssertNotNil(materialEntry);
+    XCTAssertFalse(materialEntry.isArchiveBacked);
+    XCTAssertEqualObjects(materialEntry.mountIdentifier, @"gamedir");
+}
+
+- (void)testNotificationHookPerformsPartialDeclModelRefresh {
+    NSString *gameDirPath = [self tempDirectoryPath];
+    NSError *mkdirError = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:[gameDirPath stringByAppendingPathComponent:@"def"]
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&mkdirError];
+    XCTAssertNil(mkdirError);
+
+    UDVirtualFileSystem *vfs = [[UDVirtualFileSystem alloc] initWithCodecRegistry:[self makeRegistry]];
+    [vfs configureWithGameType:UDGameTypeDoom3 gameDirectoryURL:[NSURL fileURLWithPath:gameDirPath]];
+
+    NSError *mountError = nil;
+    XCTAssertNotNil([vfs mountDirectoryURL:[NSURL fileURLWithPath:gameDirPath]
+                                identifier:@"gamedir"
+                               virtualRoot:nil
+                                  priority:0
+                                     error:&mountError]);
+    XCTAssertNil(mountError);
+
+    NSData *initialDeclData = [@"entityDef monster_zombie { \"editor_usage\" \"z\" }" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *writeError = nil;
+    XCTAssertTrue([vfs writeFileAtPath:@"def/monster.def" data:initialDeclData error:&writeError]);
+    XCTAssertNil(writeError);
+
+    UDAssetIndexer *indexer = [[UDAssetIndexer alloc] init];
+    NSError *indexError = nil;
+    UDAssetIndex *assetIndex = [indexer buildIndexFromVirtualFileSystem:vfs error:&indexError];
+    XCTAssertNotNil(assetIndex);
+    XCTAssertNil(indexError);
+
+    NSError *modelError = nil;
+    UDDeclModel *declModel = [indexer buildDeclModelFromAssetIndex:assetIndex virtualFileSystem:vfs error:&modelError];
+    XCTAssertNotNil(declModel);
+    XCTAssertNil(modelError);
+    XCTAssertNotNil([declModel definitionWithType:@"entityDef" name:@"monster_zombie"]);
+
+    NSData *updatedDeclData = [@"entityDef monster_imp { \"editor_usage\" \"i\" }\nentityDef monster_boss { \"editor_usage\" \"b\" }" dataUsingEncoding:NSUTF8StringEncoding];
+    XCTAssertTrue([vfs writeFileAtPath:@"def/monster.def" data:updatedDeclData error:&writeError]);
+    XCTAssertNil(writeError);
+
+    NSNotification *notification = [NSNotification notificationWithName:UDVFSDidWriteFileNotification
+                                                                 object:vfs
+                                                               userInfo:@{UDVFSNotificationVirtualPathKey: @"def/monster.def"}];
+    UDAssetIndex *updatedIndex = [indexer rebuildIndexByApplyingWriteNotification:notification
+                                                                   toExistingIndex:assetIndex
+                                                                 virtualFileSystem:vfs
+                                                                             error:&indexError];
+    XCTAssertNotNil(updatedIndex);
+    XCTAssertNil(indexError);
+
+    UDDeclModel *updatedModel = [indexer rebuildDeclModelByApplyingWriteNotification:notification
+                                                                       toExistingModel:declModel
+                                                                            assetIndex:updatedIndex
+                                                                     virtualFileSystem:vfs
+                                                                                 error:&modelError];
+    XCTAssertNotNil(updatedModel);
+    XCTAssertNil(modelError);
+    XCTAssertNil([updatedModel definitionWithType:@"entityDef" name:@"monster_zombie"]);
+    XCTAssertNotNil([updatedModel definitionWithType:@"entityDef" name:@"monster_imp"]);
+    XCTAssertNotNil([updatedModel definitionWithType:@"entityDef" name:@"monster_boss"]);
+}
+
 @end

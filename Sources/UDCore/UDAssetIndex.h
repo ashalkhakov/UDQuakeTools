@@ -59,10 +59,68 @@ typedef NS_ENUM(NSInteger, UDAssetKind) {
 
 @end
 
+@interface UDDeclDefinition : NSObject {
+    NSString *_declType;
+    NSString *_declName;
+    NSString *_body;
+    NSString *_sourceVirtualPath;
+}
+
+@property (nonatomic, readonly, copy) NSString *declType;
+@property (nonatomic, readonly, copy) NSString *declName;
+@property (nonatomic, readonly, copy) NSString *body;
+@property (nonatomic, readonly, copy) NSString *sourceVirtualPath;
+
+- (instancetype)initWithDeclType:(NSString *)declType
+                        declName:(NSString *)declName
+                            body:(NSString *)body
+               sourceVirtualPath:(NSString *)sourceVirtualPath NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+@interface UDDeclModel : NSObject {
+    NSArray<UDDeclDefinition *> *_definitions;
+}
+
+@property (nonatomic, readonly, copy) NSArray<UDDeclDefinition *> *definitions;
+
+- (instancetype)initWithDefinitions:(NSArray<UDDeclDefinition *> *)definitions NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (NSArray<UDDeclDefinition *> *)definitionsOfType:(NSString *)declType;
+- (nullable UDDeclDefinition *)definitionWithType:(NSString *)declType name:(NSString *)declName;
+
+@end
+
+@interface UDDeclParser : NSObject
+
+- (NSArray<UDDeclDefinition *> *)parseDefinitionsFromText:(NSString *)text
+                                         sourceVirtualPath:(NSString *)sourceVirtualPath
+                                                     error:(NSError **)error;
+
+@end
+
 @interface UDAssetIndexer : NSObject
 
 - (UDAssetIndex *)buildIndexFromVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
                                             error:(NSError **)error;
+
+- (UDAssetIndex *)rebuildIndexByApplyingWriteNotification:(NSNotification *)notification
+                                           toExistingIndex:(UDAssetIndex *)existingIndex
+                                         virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                                     error:(NSError **)error;
+
+- (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
+                             virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                         error:(NSError **)error;
+
+- (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
+                                              toExistingModel:(UDDeclModel *)existingModel
+                                                   assetIndex:(UDAssetIndex *)assetIndex
+                                            virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                                        error:(NSError **)error;
 
 @end
 

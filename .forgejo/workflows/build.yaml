@@ -67,6 +67,13 @@ jobs:
       - name: Prepare AppDir
         run: ./Scripts/prepare-appdir.sh
 
+      - name: Cache Linuxdeploy
+        id: cache-linuxdeploy
+        uses: actions/cache@v4
+        with:
+          path: squashfs-root
+          key: linuxdeploy-patched-v1
+
       - name: Package AppImage via linuxdeploy
         run: ./Scripts/package-appimage.sh
 

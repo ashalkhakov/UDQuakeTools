@@ -3,6 +3,8 @@ APP_NAME = PakManager
 OBJC_RUNTIME_LIB = ng
 RUNTIME_VERSION = gnustep-2.0
 GS_WITH_ARC = 1
+PakManager_APPLICATION_ICON = PakManager.png
+PakManager_RESOURCE_FILES = PakManager.png
 
 include $(GNUSTEP_MAKEFILES)/common.make
 

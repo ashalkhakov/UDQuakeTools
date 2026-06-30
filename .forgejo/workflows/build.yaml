@@ -97,7 +97,8 @@ jobs:
           echo "=== Building gnustep-back ==="
           git clone --depth 1 https://github.com/gnustep/libs-back.git
           cd libs-back
-          ./configure --prefix="${LOCAL_PREFIX}"
+          # Force the modern Cairo graphics backend so Fontconfig is actually used
+          ./configure --prefix="${LOCAL_PREFIX}" --enable-graphics=cairo
           make -j$(nproc)
           make install
           cd ..

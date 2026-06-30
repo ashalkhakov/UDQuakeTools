@@ -302,14 +302,11 @@ jobs:
           export GNUSTEP_LOCAL_TOOLS="$HERE/usr/Local/Tools"
           export GNUSTEP_LOCAL_APPS="$HERE/usr/Local/Applications"
           
-          # Trick the host's Fontconfig into natively indexing our bundled fonts
-          export XDG_DATA_DIRS="$HERE/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
-
           export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
           export PATH="$HERE/usr/local/bin:$HERE/usr/bin:$PATH"
 
-          # Clean up both temp files on exit
-          trap "rm -f $GNUSTEP_CONFIG_FILE $FONTCONFIG_FILE" EXIT
+          # Clean up temp files on exit
+          trap "rm -f $GNUSTEP_CONFIG_FILE" EXIT
 
           # We use the isolated 'PakManager' domain to avoid messing up the host's global defaults
           DEFAULTS_TOOL=$(find "$HERE" -name "defaults" -executable | head -n 1)

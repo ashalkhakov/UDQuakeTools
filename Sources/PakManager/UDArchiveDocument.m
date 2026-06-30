@@ -4,16 +4,20 @@
 
 #import "UDArchiveDocument.h"
 #import "UDArchiveBrowserController.h"
-#import "UDArchive.h"
-#import "UDArchiveEditor.h"
-#import "UDArchiveCodec.h"
-#import "UDCodecRegistry.h"
+#import "../UDCore/UDArchive.h"
+#import "../UDCore/UDArchiveEditor.h"
+#import "../UDFormats/UDArchiveCodec.h"
+#import "../UDFormats/UDCodecRegistry.h"
+#import "../UDCore/UDVirtualFileSystem.h"
+#import "../UDCore/UDGameDetectionService.h"
 
 @implementation UDArchiveDocument
 
 @synthesize archive = _archive;
 @synthesize editor  = _editor;
 @synthesize codec   = _codec;
+@synthesize virtualFileSystem = _virtualFileSystem;
+@synthesize detectedGame = _detectedGame;
 
 static NSString *UDArchiveTypeDisplayName(NSString *typeName) {
     if ([typeName isEqualToString:@"com.udquake.pak"]) {
@@ -116,7 +120,55 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
                                                entries:@[]
                                               metadata:@{}];
     _editor = [[UDArchiveEditor alloc] initWithArchive:_archive];
+    _virtualFileSystem = [[UDVirtualFileSystem alloc] initWithCodecRegistry:[UDCodecRegistry sharedRegistry]];
+    _detectedGame = [UDGame gameWithType:UDGameTypeUnknown];
     return self;
+}
+
+- (void)configureVirtualFileSystemForArchiveURL:(NSURL *)url {
+    if (!self.archive || !url) {
+        return;
+    }
+
+    UDGameDetectionService *detector = [[UDGameDetectionService alloc] init];
+    NSString *formatIdentifier = self.codec ? self.codec.formatIdentifier : [self.archive.metadata objectForKey:@"formatIdentifier"];
+    UDGame *game = [detector detectGameForURL:url
+                                      entries:self.archive.entries
+                              codecIdentifier:formatIdentifier];
+    self.detectedGame = game;
+
+    NSURL *gameDirectoryURL = [url URLByDeletingLastPathComponent];
+    self.virtualFileSystem = [[UDVirtualFileSystem alloc] initWithCodecRegistry:[UDCodecRegistry sharedRegistry]];
+    [self.virtualFileSystem configureWithGameType:game.type gameDirectoryURL:gameDirectoryURL];
+
+    NSError *mountError = nil;
+    [self.virtualFileSystem mountDirectoryURL:gameDirectoryURL
+                                   identifier:@"gamedir"
+                                  virtualRoot:nil
+                                     priority:0
+                                        error:&mountError];
+    if (mountError) {
+        NSLog(@"VFS gamedir mount skipped for %@: %@", gameDirectoryURL.path, mountError.localizedDescription);
+    }
+
+    mountError = nil;
+    NSArray *discoveredMounts = [self.virtualFileSystem mountDiscoveredArchivesInGameDirectory:&mountError];
+    if (mountError) {
+        NSLog(@"VFS archive discovery encountered an error in %@: %@", gameDirectoryURL.path, mountError.localizedDescription);
+    } else if (discoveredMounts.count > 0) {
+        NSLog(@"VFS discovered %lu sibling archive(s) in %@", (unsigned long)discoveredMounts.count, gameDirectoryURL.path);
+    }
+
+    mountError = nil;
+    [self.virtualFileSystem mountArchiveURL:url
+                                 identifier:@"archive"
+                                virtualRoot:nil
+                                   priority:0
+                                   typeName:formatIdentifier
+                                      error:&mountError];
+    if (mountError) {
+        NSLog(@"VFS archive mount skipped for %@: %@", url.path, mountError.localizedDescription);
+    }
 }
 
 /* ------------------------------------------------------------------ */
@@ -237,6 +289,7 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
     _codec   = selectedCodec;
     _archive = archive;
     _editor  = [[UDArchiveEditor alloc] initWithArchive:archive];
+    [self configureVirtualFileSystemForArchiveURL:url];
     return YES;
 }
 
@@ -316,6 +369,8 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
               writeError);
         return NO;
     }
+
+    [self configureVirtualFileSystemForArchiveURL:url];
 
     return YES;
 }

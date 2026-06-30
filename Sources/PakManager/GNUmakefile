@@ -21,6 +21,8 @@ PakManager_OBJC_FILES = \
     ../UDCore/UDDirectoryNode.m \
     ../UDCore/UDArchiveMutation.m \
     ../UDCore/UDArchiveEditor.m \
+    ../UDCore/UDVFSMount.m \
+    ../UDCore/UDVirtualFileSystem.m \
     ../UDFormats/UDCodecRegistry.m \
     ../UDFormats/UDPAKCodec.m \
     ../UDFormats/UDPAKEntrySource.m \

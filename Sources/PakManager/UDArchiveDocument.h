@@ -10,8 +10,11 @@
 
 #import <AppKit/AppKit.h>
 
+#import "../UDCore/UDGame.h"
+
 @class UDArchive;
 @class UDArchiveEditor;
+@class UDVirtualFileSystem;
 @protocol UDArchiveCodec;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,11 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
     UDArchive          *_archive;
     UDArchiveEditor    *_editor;
     id<UDArchiveCodec>  _codec;
+    UDVirtualFileSystem *_virtualFileSystem;
+    UDGame *_detectedGame;
 }
 
 @property (nonatomic, strong, nullable) UDArchive          *archive;
 @property (nonatomic, strong, nullable) UDArchiveEditor    *editor;
 @property (nonatomic, strong, nullable) id<UDArchiveCodec>  codec;
+@property (nonatomic, strong, nullable) UDVirtualFileSystem *virtualFileSystem;
+@property (nonatomic, strong, nullable) UDGame *detectedGame;
 
 @end
 

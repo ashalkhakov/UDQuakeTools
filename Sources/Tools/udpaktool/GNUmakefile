@@ -10,6 +10,8 @@ udpaktool_OBJC_FILES = \
     main.m \
     ../../UDCore/UDArchive.m \
     ../../UDCore/UDArchiveEntry.m \
+    ../../UDCore/UDVFSMount.m \
+    ../../UDCore/UDVirtualFileSystem.m \
     ../../UDFormats/UDCodecRegistry.m \
     ../../UDFormats/UDPAKCodec.m \
     ../../UDFormats/UDPAKEntrySource.m \

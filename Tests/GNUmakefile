@@ -10,6 +10,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \
+    UDVirtualFileSystemTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
     UDGameDetectionTests.m \
@@ -20,6 +21,8 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDArchiveEditor.m \
     ../Sources/UDCore/UDArchiveMutation.m \
     ../Sources/UDCore/UDDirectoryNode.m \
+    ../Sources/UDCore/UDVFSMount.m \
+    ../Sources/UDCore/UDVirtualFileSystem.m \
     ../Sources/UDFormats/UDCodecRegistry.m \
     ../Sources/UDFormats/UDPAKCodec.m \
     ../Sources/UDFormats/UDPAK2Codec.m \

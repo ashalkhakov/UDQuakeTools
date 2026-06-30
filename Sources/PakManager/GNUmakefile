@@ -37,6 +37,7 @@ PakManager_INCLUDE_DIRS = \
 PakManager_RESOURCE_FILES = \
     MainMenu.xib \
     UDArchiveDocument.xib \
+    PakManager.png \
     PakManager-Info.plist
 
 ADDITIONAL_LDFLAGS += -lzip

@@ -27,6 +27,7 @@
 		AA01001100000000000000AA /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
 		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
 		AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA00030100000000000000AA /* UDArchiveDocument.xib */; };
+		AA01002200000000000000AA /* PakManager.png in Resources */ = {isa = PBXBuildFile; fileRef = AA00030300000000000000AA /* PakManager.png */; };
 		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
 		AA02000100000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
@@ -104,6 +105,7 @@
 		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
 		AA00030200000000000000AA /* PakManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PakManager-Info.plist"; sourceTree = "<group>"; };
+		AA00030300000000000000AA /* PakManager.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PakManager.png; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -192,6 +194,7 @@
 				AA00010000000000000000AA /* main.m */,
 				AA00030100000000000000AA /* UDArchiveDocument.xib */,
 				AA00030200000000000000AA /* PakManager-Info.plist */,
+				AA00030300000000000000AA /* PakManager.png */,
 				CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */,
 			);
 			name = PakManager;
@@ -381,6 +384,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */,
+				AA01002200000000000000AA /* PakManager.png in Resources */,
 				CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -581,6 +585,7 @@
 					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,
@@ -627,6 +632,7 @@
 					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,

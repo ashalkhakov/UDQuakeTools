@@ -50,3 +50,4 @@ obj/
 *.o
 *.d
 *.app/
+*.bundle/

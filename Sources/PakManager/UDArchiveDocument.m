@@ -154,7 +154,24 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
             [types addObject:codec.formatIdentifier];
         }
     }
-    return (types.count > 0) ? [types copy] : @[@"com.udquake.pak", @"com.udquake.pk3", @"com.udquake.pk4"];
+    if (types.count == 0) {
+        types = [@[@"com.udquake.pak", @"com.udquake.pk3", @"com.udquake.pk4"] mutableCopy];
+    }
+#ifdef GNUSTEP
+    /* GNUstep shows the writableTypes strings verbatim in the save panel
+     * format popup — it does not call displayNameForType: like macOS does.
+     * Return display names so the user sees "Quake PAK Archive" etc. instead
+     * of raw UTI identifiers. writeToURL:ofType: handles both forms via
+     * UDArchiveCanonicalTypeName. */
+    NSMutableArray<NSString *> *displayNames = [NSMutableArray arrayWithCapacity:types.count];
+    for (NSString *identifier in types) {
+        NSString *display = UDArchiveTypeDisplayName(identifier);
+        [displayNames addObject:display ? display : identifier];
+    }
+    return displayNames;
+#else
+    return [types copy];
+#endif
 }
 
 - (NSArray<NSString *> *)writableTypesForSaveOperation:(NSSaveOperationType)saveOperation {
@@ -170,7 +187,8 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
 - (NSString *)fileNameExtensionForType:(NSString *)typeName
                          saveOperation:(NSSaveOperationType)saveOperation {
     (void)saveOperation;
-    NSString *ext = UDArchiveTypeExtension(typeName);
+    NSString *canonical = UDArchiveCanonicalTypeName(typeName);
+    NSString *ext = UDArchiveTypeExtension(canonical ? canonical : typeName);
     return ext ? ext : @"pak";
 }
 

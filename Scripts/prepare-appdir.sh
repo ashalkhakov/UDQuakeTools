@@ -4,6 +4,14 @@ set -e
 
 WORKSPACE_DIR=$(pwd)
 LOCAL_PREFIX="/opt/gnustep-prefix"
+APP_ID="${APP_ID:-PakManager}"
+APP_SOURCE_DIR="${APP_SOURCE_DIR:-${APP_ID}}"
+APP_BUNDLE_NAME="${APP_BUNDLE_NAME:-${APP_ID}.app}"
+
+if [ ! -d "${WORKSPACE_DIR}/Sources/${APP_SOURCE_DIR}" ]; then
+    echo "Error: missing source directory Sources/${APP_SOURCE_DIR}"
+    exit 1
+fi
 
 # 1. Recreate clean AppDir structural root
 rm -rf AppDir
@@ -12,8 +20,8 @@ mkdir -p AppDir/usr/lib
 mkdir -p AppDir/usr/etc
 mkdir -p AppDir/usr/local/bin
 
-# 2. Install PakManager safely letting gnustep-make handle its defaults
-cd Sources/PakManager
+# 2. Install selected app safely letting gnustep-make handle its defaults
+cd "Sources/${APP_SOURCE_DIR}"
 . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
 make install DESTDIR="${WORKSPACE_DIR}/AppDir"
 cd "${WORKSPACE_DIR}"
@@ -96,7 +104,7 @@ ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle" || true
 fi
 
 # Migrate the nested app bundle safely (immune to grep-v empty return traps)
-DEEP_APP_DIR=$(find AppDir -type d -name "PakManager.app" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
+DEEP_APP_DIR=$(find AppDir -type d -name "${APP_BUNDLE_NAME}" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
 if [ -n "$DEEP_APP_DIR" ]; then
 mkdir -p AppDir/usr/Local/Applications
 cp -Rp "$DEEP_APP_DIR" AppDir/usr/Local/Applications/

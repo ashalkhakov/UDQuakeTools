@@ -106,6 +106,58 @@ typedef NS_ENUM(NSInteger, UDAssetKind) {
 
 @end
 
+@protocol UDDeclPersistenceAdapter;
+
+typedef NS_ENUM(NSInteger, UDIdTokenKind) {
+    UDIdTokenKindEOF = 0,
+    UDIdTokenKindIdentifier,
+    UDIdTokenKindString,
+    UDIdTokenKindPunctuation,
+};
+
+@interface UDIdToken : NSObject
+
+@property (nonatomic, assign) UDIdTokenKind kind;
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, assign) NSUInteger start;
+@property (nonatomic, assign) NSUInteger end;
+
+@end
+
+@interface UDIdLexer : NSObject
+
+- (instancetype)initWithText:(NSString *)text NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (UDIdToken *)nextToken;
+
+@end
+
+@interface UDIdParser : NSObject
+
+- (instancetype)initWithText:(NSString *)text NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (UDIdToken *)peekToken;
+- (UDIdToken *)readToken;
+- (void)unreadToken:(UDIdToken *)token;
+- (BOOL)expectPunctuation:(NSString *)punctuation;
+- (void)skipUntilPunctuation:(NSString *)punctuation;
+
+@end
+
+@interface UDDeclManager : NSObject
+
+- (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
+                           persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                         error:(NSError **)error;
+
+- (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
+                                              toExistingModel:(UDDeclModel *)existingModel
+                                                   assetIndex:(UDAssetIndex *)assetIndex
+                                           persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                                        error:(NSError **)error;
+
+@end
+
 @protocol UDDeclPersistenceAdapter <NSObject>
 
 - (nullable NSString *)readDeclTextAtVirtualPath:(NSString *)virtualPath

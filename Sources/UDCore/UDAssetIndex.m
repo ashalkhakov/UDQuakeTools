@@ -5,18 +5,23 @@ static NSString *const UDDeclParserErrorDomain = @"com.udquake.error.declparser"
 static NSSet<NSString *> *UDIndexedAssetExtensions(void) {
     static NSSet<NSString *> *extensions = nil;
     if (!extensions) {
-        extensions = [NSSet setWithObjects:@"def", @"mtr", @"gui", @"script", nil];
+        extensions = [NSSet setWithObjects:@"def", @"mtr", @"skin", @"sndshd", @"fx", @"prt", @"xdata", @"pda", @"af", @"gui", @"script", nil];
     }
     return extensions;
 }
 
 static UDAssetKind UDAssetKindForExtension(NSString *fileExtension) {
     NSString *lowerExtension = fileExtension.lowercaseString;
-    if ([lowerExtension isEqualToString:@"def"]) {
+    if ([lowerExtension isEqualToString:@"def"] ||
+        [lowerExtension isEqualToString:@"mtr"] ||
+        [lowerExtension isEqualToString:@"skin"] ||
+        [lowerExtension isEqualToString:@"sndshd"] ||
+        [lowerExtension isEqualToString:@"fx"] ||
+        [lowerExtension isEqualToString:@"prt"] ||
+        [lowerExtension isEqualToString:@"xdata"] ||
+        [lowerExtension isEqualToString:@"pda"] ||
+        [lowerExtension isEqualToString:@"af"]) {
         return UDAssetKindDecl;
-    }
-    if ([lowerExtension isEqualToString:@"mtr"]) {
-        return UDAssetKindMaterial;
     }
     if ([lowerExtension isEqualToString:@"gui"]) {
         return UDAssetKindGUI;
@@ -27,81 +32,68 @@ static UDAssetKind UDAssetKindForExtension(NSString *fileExtension) {
     return UDAssetKindUnknown;
 }
 
-static BOOL UDDeclIsTokenCharacter(unichar character) {
-    if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:character]) {
-        return YES;
+static NSString *UDDefaultDeclTypeForSourceVirtualPath(NSString *sourceVirtualPath) {
+    NSString *extension = sourceVirtualPath.pathExtension.lowercaseString;
+    if ([extension isEqualToString:@"mtr"]) {
+        return @"material";
     }
-
-    switch (character) {
-        case '_':
-        case '/':
-        case '.':
-        case ':':
-        case '-':
-            return YES;
-        default:
-            return NO;
+    if ([extension isEqualToString:@"skin"]) {
+        return @"skin";
     }
+    if ([extension isEqualToString:@"sndshd"]) {
+        return @"sound";
+    }
+    if ([extension isEqualToString:@"fx"]) {
+        return @"fx";
+    }
+    if ([extension isEqualToString:@"prt"]) {
+        return @"particle";
+    }
+    if ([extension isEqualToString:@"xdata"]) {
+        return @"xdata";
+    }
+    if ([extension isEqualToString:@"pda"]) {
+        return @"pda";
+    }
+    if ([extension isEqualToString:@"af"]) {
+        return @"articulatedFigure";
+    }
+    return @"decl";
 }
 
-static void UDSkipDeclWhitespaceAndComments(NSString *text, NSUInteger *indexRef) {
-    NSUInteger length = text.length;
-    NSUInteger index = *indexRef;
-
-    while (index < length) {
-        unichar ch = [text characterAtIndex:index];
-        if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:ch]) {
-            index++;
-            continue;
-        }
-
-        if (ch == '/' && (index + 1) < length) {
-            unichar next = [text characterAtIndex:(index + 1)];
-            if (next == '/') {
-                index += 2;
-                while (index < length && [text characterAtIndex:index] != '\n') {
-                    index++;
-                }
-                continue;
-            }
-
-            if (next == '*') {
-                index += 2;
-                while ((index + 1) < length) {
-                    if ([text characterAtIndex:index] == '*' && [text characterAtIndex:(index + 1)] == '/') {
-                        index += 2;
-                        break;
-                    }
-                    index++;
-                }
-                continue;
-            }
-        }
-
-        break;
+static NSString *UDCanonicalDeclType(NSString *declType) {
+    NSString *lower = declType.lowercaseString;
+    if ([lower isEqualToString:@"entitydef"]) {
+        return @"entityDef";
     }
-
-    *indexRef = index;
-}
-
-static NSString *UDReadDeclToken(NSString *text, NSUInteger *indexRef) {
-    NSUInteger length = text.length;
-    NSUInteger index = *indexRef;
-    if (index >= length) {
-        return nil;
+    if ([lower isEqualToString:@"articulatedfigure"]) {
+        return @"articulatedFigure";
     }
-
-    if (!UDDeclIsTokenCharacter([text characterAtIndex:index])) {
-        return nil;
+    if ([lower isEqualToString:@"modeldef"]) {
+        return @"modelDef";
     }
-
-    NSUInteger start = index;
-    while (index < length && UDDeclIsTokenCharacter([text characterAtIndex:index])) {
-        index++;
+    if ([lower isEqualToString:@"sound"]) {
+        return @"sound";
     }
-
-    *indexRef = index;
-    return [text substringWithRange:NSMakeRange(start, index - start)];
+    if ([lower isEqualToString:@"material"]) {
+        return @"material";
+    }
+    if ([lower isEqualToString:@"particle"]) {
+        return @"particle";
+    }
+    if ([lower isEqualToString:@"skin"]) {
+        return @"skin";
+    }
+    if ([lower isEqualToString:@"fx"]) {
+        return @"fx";
+    }
+    if ([lower isEqualToString:@"xdata"]) {
+        return @"xdata";
+    }
+    if ([lower isEqualToString:@"pda"]) {
+        return @"pda";
+    }
+    return declType;
 }
 
 static NSComparisonResult UDCompareAssetEntries(id leftObject, id rightObject, void *context) {
@@ -363,126 +355,90 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
     NSParameterAssert(sourceVirtualPath.length > 0);
 
     NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray array];
-    NSUInteger index = 0;
-    NSUInteger length = text.length;
+    UDIdParser *parser = [[UDIdParser alloc] initWithText:text];
 
-    while (index < length) {
-        UDSkipDeclWhitespaceAndComments(text, &index);
-        if (index >= length) {
+    while (YES) {
+        UDIdToken *first = [parser readToken];
+        if (first.kind == UDIdTokenKindEOF) {
             break;
         }
 
-        NSString *declType = UDReadDeclToken(text, &index);
-        if (!declType) {
-            index++;
+        if (first.kind != UDIdTokenKindIdentifier && first.kind != UDIdTokenKindString) {
             continue;
         }
 
-        UDSkipDeclWhitespaceAndComments(text, &index);
-        NSString *declName = UDReadDeclToken(text, &index);
-        if (!declName) {
-            if (error) {
-                *error = [NSError errorWithDomain:UDDeclParserErrorDomain
-                                             code:1
-                                         userInfo:@{NSLocalizedDescriptionKey: @"Malformed decl: missing name token."}];
+        NSString *declType = first.text;
+        NSString *declName = nil;
+        UDIdToken *openBrace = nil;
+
+        UDIdToken *second = [parser readToken];
+        if (second.kind == UDIdTokenKindPunctuation && [second.text isEqualToString:@"{"]) {
+            // Single-token headers (e.g., many .mtr entries): token is the name.
+            declName = declType;
+            declType = UDDefaultDeclTypeForSourceVirtualPath(sourceVirtualPath);
+            openBrace = second;
+        } else if (second.kind == UDIdTokenKindIdentifier || second.kind == UDIdTokenKindString) {
+            declName = second.text;
+            UDIdToken *third = [parser peekToken];
+            if (third.kind == UDIdTokenKindPunctuation && [third.text isEqualToString:@"{"]) {
+                [parser expectPunctuation:@"{"];
+                openBrace = third;
+            } else {
+                [parser skipUntilPunctuation:@"}"];
+                continue;
             }
-            return nil;
+        } else {
+            [parser skipUntilPunctuation:@"}"];
+            continue;
         }
 
-        UDSkipDeclWhitespaceAndComments(text, &index);
-        if (index >= length || [text characterAtIndex:index] != '{') {
-            if (error) {
-                *error = [NSError errorWithDomain:UDDeclParserErrorDomain
-                                             code:2
-                                         userInfo:@{NSLocalizedDescriptionKey: @"Malformed decl: missing opening brace."}];
-            }
-            return nil;
-        }
-
-        NSUInteger bodyStart = index + 1;
-        NSUInteger cursor = bodyStart;
         NSInteger braceDepth = 1;
-        BOOL inDoubleQuote = NO;
-        BOOL inSingleQuote = NO;
-
-        while (cursor < length && braceDepth > 0) {
-            unichar ch = [text characterAtIndex:cursor];
-
-            if (!inDoubleQuote && !inSingleQuote && ch == '/' && (cursor + 1) < length) {
-                unichar next = [text characterAtIndex:(cursor + 1)];
-                if (next == '/') {
-                    cursor += 2;
-                    while (cursor < length && [text characterAtIndex:cursor] != '\n') {
-                        cursor++;
-                    }
-                    continue;
-                }
-                if (next == '*') {
-                    cursor += 2;
-                    while ((cursor + 1) < length) {
-                        if ([text characterAtIndex:cursor] == '*' && [text characterAtIndex:(cursor + 1)] == '/') {
-                            cursor += 2;
-                            break;
-                        }
-                        cursor++;
-                    }
-                    continue;
-                }
+        UDIdToken *closingBrace = nil;
+        while (braceDepth > 0) {
+            UDIdToken *token = [parser readToken];
+            if (token.kind == UDIdTokenKindEOF) {
+                break;
             }
 
-            if (!inSingleQuote && ch == '"') {
-                BOOL escaped = (cursor > bodyStart && [text characterAtIndex:(cursor - 1)] == '\\');
-                if (!escaped) {
-                    inDoubleQuote = !inDoubleQuote;
-                }
-                cursor++;
-                continue;
-            }
-
-            if (!inDoubleQuote && ch == '\'') {
-                BOOL escaped = (cursor > bodyStart && [text characterAtIndex:(cursor - 1)] == '\\');
-                if (!escaped) {
-                    inSingleQuote = !inSingleQuote;
-                }
-                cursor++;
-                continue;
-            }
-
-            if (!inDoubleQuote && !inSingleQuote) {
-                if (ch == '{') {
+            if (token.kind == UDIdTokenKindPunctuation) {
+                if ([token.text isEqualToString:@"{"]) {
                     braceDepth++;
-                } else if (ch == '}') {
+                } else if ([token.text isEqualToString:@"}"]) {
                     braceDepth--;
+                    if (braceDepth == 0) {
+                        closingBrace = token;
+                    }
                 }
             }
-
-            cursor++;
         }
 
-        if (braceDepth != 0) {
-            if (error) {
-                *error = [NSError errorWithDomain:UDDeclParserErrorDomain
-                                             code:3
-                                         userInfo:@{NSLocalizedDescriptionKey: @"Malformed decl: unmatched braces."}];
-            }
-            return nil;
+        if (!closingBrace) {
+            // Preserve parser resilience: skip malformed trailing decl and keep already parsed entries.
+            break;
         }
 
-        NSUInteger bodyEnd = cursor - 1;
-        NSString *body = @"";
-        if (bodyEnd >= bodyStart) {
-            body = [text substringWithRange:NSMakeRange(bodyStart, bodyEnd - bodyStart)];
+        NSUInteger bodyStart = openBrace.end;
+        NSUInteger bodyEnd = closingBrace.start;
+        if (bodyEnd < bodyStart || bodyStart > text.length || bodyEnd > text.length) {
+            continue;
         }
 
-        UDDeclDefinition *definition = [[UDDeclDefinition alloc] initWithDeclType:declType
+        NSString *body = [text substringWithRange:NSMakeRange(bodyStart, bodyEnd - bodyStart)];
+        if (declType.length == 0 || declName.length == 0) {
+            continue;
+        }
+
+        NSString *canonicalType = UDCanonicalDeclType(declType);
+        UDDeclDefinition *definition = [[UDDeclDefinition alloc] initWithDeclType:canonicalType
                                                                           declName:declName
                                                                               body:body
                                                                  sourceVirtualPath:sourceVirtualPath];
         [definitions addObject:definition];
-
-        index = cursor;
     }
 
+    if (error) {
+        *error = nil;
+    }
     return definitions;
 }
 
@@ -695,42 +651,10 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
 - (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
                            persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
                                          error:(NSError **)error {
-    NSParameterAssert(assetIndex != nil);
-    NSParameterAssert(persistenceAdapter != nil);
-
-    UDDeclParser *parser = [[UDDeclParser alloc] init];
-    NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray array];
-
-    for (UDAssetIndexEntry *entry in [assetIndex entriesOfKind:UDAssetKindDecl]) {
-        NSError *readError = nil;
-        NSString *text = [persistenceAdapter readDeclTextAtVirtualPath:entry.virtualPath error:&readError];
-        if (!text) {
-            if (error) {
-                *error = readError;
-            }
-            return nil;
-        }
-
-        NSError *parseError = nil;
-        NSArray<UDDeclDefinition *> *parsed = [parser parseDefinitionsFromText:text
-                                                              sourceVirtualPath:entry.virtualPath
-                                                                          error:&parseError];
-        if (!parsed) {
-            if (error) {
-                *error = parseError;
-            }
-            return nil;
-        }
-
-        [definitions addObjectsFromArray:parsed];
-    }
-
-    [definitions sortUsingFunction:UDCompareDeclDefinitions context:NULL];
-
-    if (error) {
-        *error = nil;
-    }
-    return [[UDDeclModel alloc] initWithDefinitions:definitions];
+    UDDeclManager *declManager = [[UDDeclManager alloc] init];
+    return [declManager buildDeclModelFromAssetIndex:assetIndex
+                                  persistenceAdapter:persistenceAdapter
+                                                error:error];
 }
 
 - (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
@@ -751,46 +675,12 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
                                          assetIndex:(UDAssetIndex *)assetIndex
                                   persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
                                              error:(NSError **)error {
-    NSParameterAssert(notification != nil);
-    NSParameterAssert(existingModel != nil);
-    NSParameterAssert(assetIndex != nil);
-    NSParameterAssert(persistenceAdapter != nil);
-
-    NSString *virtualPath = [notification.userInfo objectForKey:UDVFSNotificationVirtualPathKey];
-    if (virtualPath.length == 0 || [virtualPath.pathExtension.lowercaseString isEqualToString:@"def"] == NO) {
-        return existingModel;
-    }
-
-    NSString *normalizedPath = [virtualPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-    while ([normalizedPath hasPrefix:@"/"]) {
-        normalizedPath = [normalizedPath substringFromIndex:1];
-    }
-
-    NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray arrayWithCapacity:existingModel.definitions.count + 8];
-    for (UDDeclDefinition *definition in existingModel.definitions) {
-        if (![definition.sourceVirtualPath isEqualToString:normalizedPath]) {
-            [definitions addObject:definition];
-        }
-    }
-
-    UDAssetIndexEntry *entry = [assetIndex entryForVirtualPath:normalizedPath];
-    if (entry && entry.kind == UDAssetKindDecl) {
-        UDAssetIndex *singleFileIndex = [[UDAssetIndex alloc] initWithEntries:@[entry]];
-        UDDeclModel *singleFileModel = [self buildDeclModelFromAssetIndex:singleFileIndex
-                                                       persistenceAdapter:persistenceAdapter
-                                                                     error:error];
-        if (!singleFileModel) {
-            return nil;
-        }
-        [definitions addObjectsFromArray:singleFileModel.definitions];
-    }
-
-    [definitions sortUsingFunction:UDCompareDeclDefinitions context:NULL];
-
-    if (error) {
-        *error = nil;
-    }
-    return [[UDDeclModel alloc] initWithDefinitions:definitions];
+    UDDeclManager *declManager = [[UDDeclManager alloc] init];
+    return [declManager rebuildDeclModelByApplyingWriteNotification:notification
+                                                    toExistingModel:existingModel
+                                                         assetIndex:assetIndex
+                                                 persistenceAdapter:persistenceAdapter
+                                                              error:error];
 }
 
 @end

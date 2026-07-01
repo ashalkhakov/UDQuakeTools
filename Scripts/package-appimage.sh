@@ -3,19 +3,20 @@ set -euo pipefail
 
 WORKSPACE_DIR=$(pwd)
 LOCAL_PREFIX="/opt/gnustep-prefix"
+APP_ID="${APP_ID:-PakManager}"
 
 # 1. Copy tracked AppImage metadata/runtime assets into AppDir.
-"${WORKSPACE_DIR}/Scripts/appimage/install-assets.sh" "${WORKSPACE_DIR}" "AppDir"
+"${WORKSPACE_DIR}/Scripts/appimage/install-assets.sh" "${WORKSPACE_DIR}" "AppDir" "${APP_ID}"
 
 # 3. Gather executable inputs for linuxdeploy.
-mapfile -t ELF_BINS < <("${WORKSPACE_DIR}/Scripts/appimage/collect-elf-binaries.sh" "AppDir")
+mapfile -t ELF_BINS < <("${WORKSPACE_DIR}/Scripts/appimage/collect-elf-binaries.sh" "AppDir" "${APP_ID}")
 ELF_ARGS=()
 for bin in "${ELF_BINS[@]}"; do
     ELF_ARGS+=(--executable "$bin")
 done
 
 # 4. Run the linuxdeploy process.
-export OUTPUT="PakManager-Linux-${APP_VERSION:-dev}.AppImage"
+export OUTPUT="${APP_ID}-Linux-${APP_VERSION:-dev}.AppImage"
 export APPIMAGE_EXTRACT_AND_RUN=1
 export NO_VALIDATE=1
 

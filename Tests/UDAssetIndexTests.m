@@ -151,7 +151,7 @@
 
     UDAssetIndexEntry *materialEntry = [index entryForVirtualPath:@"materials/test.mtr"];
     XCTAssertNotNil(materialEntry);
-    XCTAssertEqual(materialEntry.kind, UDAssetKindMaterial);
+    XCTAssertEqual(materialEntry.kind, UDAssetKindDecl);
     XCTAssertFalse(materialEntry.isArchiveBacked);
     XCTAssertEqualObjects(materialEntry.mountIdentifier, @"gamedir");
     XCTAssertEqualObjects(materialEntry.sourceURL.path, looseMaterialPath);
@@ -173,8 +173,8 @@
     XCTAssertNotNil(scriptEntry);
     XCTAssertEqual(scriptEntry.kind, UDAssetKindScript);
 
-    XCTAssertEqual([index entriesOfKind:UDAssetKindMaterial].count, 1U);
-    XCTAssertEqual([index entriesOfKind:UDAssetKindDecl].count, 1U);
+    XCTAssertEqual([index entriesOfKind:UDAssetKindMaterial].count, 0U);
+    XCTAssertEqual([index entriesOfKind:UDAssetKindDecl].count, 2U);
     XCTAssertEqual([index entriesOfKind:UDAssetKindGUI].count, 1U);
     XCTAssertEqual([index entriesOfKind:UDAssetKindScript].count, 1U);
 }

@@ -29,6 +29,14 @@
 		AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA00030100000000000000AA /* UDArchiveDocument.xib */; };
 		AA01002200000000000000AA /* PakManager.png in Resources */ = {isa = PBXBuildFile; fileRef = AA00030300000000000000AA /* PakManager.png */; };
 		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		DD01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010000000000000000AA /* main.m */; };
+		DD01000100000000000000AA /* UDDeclBrowserAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010100000000000000AA /* UDDeclBrowserAppDelegate.m */; };
+		DD01000200000000000000AA /* UDDeclBrowserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010200000000000000AA /* UDDeclBrowserWindowController.m */; };
+		DD01000300000000000000AA /* UDDeclBrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD00010600000000000000AA /* UDDeclBrowserWindow.xib */; };
+		DD01000400000000000000AA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD00010700000000000000AA /* MainMenu.xib */; };
+		DD01000500000000000000AA /* UDDeclBrowserTreeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010900000000000000AA /* UDDeclBrowserTreeModel.m */; };
+		DD01000600000000000000AA /* UDDeclBrowserViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010B00000000000000AA /* UDDeclBrowserViewModel.m */; };
+		DD01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
 		AA02000100000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
 		AA02000200000000000000AA /* UDArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010600000000000000AA /* UDArchiveEntry.m */; };
@@ -72,6 +80,16 @@
 		CEA101012FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
 		CEA101022FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
 		CEA101032FF5000000A10001 /* UDAssetIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101042FF5000000A10001 /* UDAssetIndex.m */; };
+		CEA102012FF5000000A10001 /* UDDeclLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102042FF5000000A10001 /* UDDeclLexer.m */; };
+		CEA102022FF5000000A10001 /* UDDeclLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102042FF5000000A10001 /* UDDeclLexer.m */; };
+		CEA102032FF5000000A10001 /* UDDeclLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102042FF5000000A10001 /* UDDeclLexer.m */; };
+		CEA102112FF5000000A10001 /* UDDeclParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102052FF5000000A10001 /* UDDeclParser.m */; };
+		CEA102122FF5000000A10001 /* UDDeclParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102052FF5000000A10001 /* UDDeclParser.m */; };
+		CEA102132FF5000000A10001 /* UDDeclParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102052FF5000000A10001 /* UDDeclParser.m */; };
+		CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
+		CEA102222FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
+		CEA102232FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
+		CEA102332FF5000000A10001 /* UDDirectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010800000000000000AA /* UDDirectoryNode.m */; };
 		CE734C3B2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C3C2FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
 		CE734C3D2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
@@ -102,6 +120,18 @@
 		AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK3ZIPEntrySource.m; sourceTree = "<group>"; };
 		AA00011100000000000000AA /* UDPK4Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPK4Codec.m; sourceTree = "<group>"; };
 		AA00012000000000000000AA /* UDTextPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPreviewController.m; sourceTree = "<group>"; };
+		DD00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DD00010100000000000000AA /* UDDeclBrowserAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserAppDelegate.m; sourceTree = "<group>"; };
+		DD00010200000000000000AA /* UDDeclBrowserWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserWindowController.m; sourceTree = "<group>"; };
+		DD00010300000000000000AA /* UDDeclBrowserAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserAppDelegate.h; sourceTree = "<group>"; };
+		DD00010400000000000000AA /* UDDeclBrowserWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserWindowController.h; sourceTree = "<group>"; };
+		DD00010500000000000000AA /* DeclBrowser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DeclBrowser-Info.plist"; sourceTree = "<group>"; };
+		DD00010600000000000000AA /* UDDeclBrowserWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDDeclBrowserWindow.xib; sourceTree = "<group>"; };
+		DD00010700000000000000AA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		DD00010800000000000000AA /* UDDeclBrowserTreeModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserTreeModel.h; sourceTree = "<group>"; };
+		DD00010900000000000000AA /* UDDeclBrowserTreeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserTreeModel.m; sourceTree = "<group>"; };
+		DD00010A00000000000000AA /* UDDeclBrowserViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserViewModel.h; sourceTree = "<group>"; };
+		DD00010B00000000000000AA /* UDDeclBrowserViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserViewModel.m; sourceTree = "<group>"; };
 		AA00020000000000000000AA /* UDAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAppDelegate.h; sourceTree = "<group>"; };
 		AA00020100000000000000AA /* UDArchiveDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveDocument.h; sourceTree = "<group>"; };
 		AA00020200000000000000AA /* UDArchiveBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDArchiveBrowserController.h; sourceTree = "<group>"; };
@@ -127,6 +157,7 @@
 		AA00030300000000000000AA /* PakManager.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PakManager.png; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD00050000000000000000AA /* DeclBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeclBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -146,6 +177,9 @@
 		CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameDetectionService.h; sourceTree = "<group>"; };
 		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
 		CEA101042FF5000000A10001 /* UDAssetIndex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAssetIndex.m; sourceTree = "<group>"; };
+		CEA102042FF5000000A10001 /* UDDeclLexer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclLexer.m; sourceTree = "<group>"; };
+		CEA102052FF5000000A10001 /* UDDeclParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclParser.m; sourceTree = "<group>"; };
+		CEA102062FF5000000A10001 /* UDDeclManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManager.m; sourceTree = "<group>"; };
 		CEA101072FF5000000A10001 /* UDAssetIndex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAssetIndex.h; sourceTree = "<group>"; };
 		CEA101062FF5000000A10001 /* UDAssetIndexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAssetIndexTests.m; sourceTree = "<group>"; };
 		CE734C372FF4335000AE8333 /* UDVFSMount.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVFSMount.h; sourceTree = "<group>"; };
@@ -189,6 +223,7 @@
 			children = (
 				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* PakManager */,
+				DD00000400000000000000AA /* DeclBrowser */,
 				AA00000500000000000000AA /* UDCore */,
 				AA00000600000000000000AA /* UDFormats */,
 				AA00000700000000000000AA /* Tools */,
@@ -202,6 +237,7 @@
 			children = (
 				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
 				AA00050000000000000000AA /* PakManager.app */,
+				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
 			);
 			name = Products;
@@ -230,11 +266,34 @@
 			path = Sources/PakManager;
 			sourceTree = "<group>";
 		};
+		DD00000400000000000000AA /* DeclBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				DD00010700000000000000AA /* MainMenu.xib */,
+				DD00010300000000000000AA /* UDDeclBrowserAppDelegate.h */,
+				DD00010100000000000000AA /* UDDeclBrowserAppDelegate.m */,
+				DD00010800000000000000AA /* UDDeclBrowserTreeModel.h */,
+				DD00010900000000000000AA /* UDDeclBrowserTreeModel.m */,
+				DD00010A00000000000000AA /* UDDeclBrowserViewModel.h */,
+				DD00010B00000000000000AA /* UDDeclBrowserViewModel.m */,
+				DD00010400000000000000AA /* UDDeclBrowserWindowController.h */,
+				DD00010200000000000000AA /* UDDeclBrowserWindowController.m */,
+				DD00010000000000000000AA /* main.m */,
+				DD00010600000000000000AA /* UDDeclBrowserWindow.xib */,
+				DD00010500000000000000AA /* DeclBrowser-Info.plist */,
+			);
+			name = DeclBrowser;
+			path = Sources/DeclBrowser;
+			sourceTree = "<group>";
+		};
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
 				CEA101072FF5000000A10001 /* UDAssetIndex.h */,
 				CEA101042FF5000000A10001 /* UDAssetIndex.m */,
+				CEA102042FF5000000A10001 /* UDDeclLexer.m */,
+				CEA102052FF5000000A10001 /* UDDeclParser.m */,
+				CEA102062FF5000000A10001 /* UDDeclManager.m */,
 				CE734C372FF4335000AE8333 /* UDVFSMount.h */,
 				CE734C382FF4335000AE8333 /* UDVFSMount.m */,
 				CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */,
@@ -348,6 +407,23 @@
 			productReference = AA00050000000000000000AA /* PakManager.app */;
 			productType = "com.apple.product-type.application";
 		};
+		DD04000000000000000000AA /* Decl Browser */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */;
+			buildPhases = (
+				DD03000000000000000000AA /* Sources */,
+				DD03000100000000000000AA /* Frameworks */,
+				DD03000200000000000000AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Decl Browser";
+			productName = DeclBrowser;
+			productReference = DD00050000000000000000AA /* DeclBrowser.app */;
+			productType = "com.apple.product-type.application";
+		};
 		AA04000100000000000000AA /* udpaktool */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA06000200000000000000AA /* Build configuration list for PBXNativeTarget "udpaktool" */;
@@ -392,6 +468,9 @@
 					AA04000000000000000000AA = {
 						CreatedOnToolsVersion = 15.3;
 					};
+					DD04000000000000000000AA = {
+						CreatedOnToolsVersion = 15.3;
+					};
 					AA04000100000000000000AA = {
 						CreatedOnToolsVersion = 15.3;
 					};
@@ -412,12 +491,22 @@
 			targets = (
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
+				DD04000000000000000000AA /* Decl Browser */,
 				AA04000100000000000000AA /* udpaktool */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		DD03000200000000000000AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD01000400000000000000AA /* MainMenu.xib in Resources */,
+				DD01000300000000000000AA /* UDDeclBrowserWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA03000100000000000000AA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -431,6 +520,48 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		DD03000000000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD01000000000000000000AA /* main.m in Sources */,
+				DD01000100000000000000AA /* UDDeclBrowserAppDelegate.m in Sources */,
+				DD01000500000000000000AA /* UDDeclBrowserTreeModel.m in Sources */,
+				DD01000600000000000000AA /* UDDeclBrowserViewModel.m in Sources */,
+				DD01000200000000000000AA /* UDDeclBrowserWindowController.m in Sources */,
+				CE1151682FEE7777005C6DA3 /* UDGame.m in Sources */,
+				CE1151672FEE7777005C6DA3 /* UDGameDetectionService.m in Sources */,
+				CEA101012FF5000000A10001 /* UDAssetIndex.m in Sources */,
+				CEA102012FF5000000A10001 /* UDDeclLexer.m in Sources */,
+				CEA102112FF5000000A10001 /* UDDeclParser.m in Sources */,
+				CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */,
+				AA01000400000000000000AA /* UDArchive.m in Sources */,
+				AA01000600000000000000AA /* UDArchiveEntry.m in Sources */,
+				AA01000800000000000000AA /* UDDirectoryNode.m in Sources */,
+				AA01000700000000000000AA /* UDArchiveMutation.m in Sources */,
+				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
+				CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */,
+				CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */,
+				AA01000900000000000000AA /* UDCodecRegistry.m in Sources */,
+				AA01000A00000000000000AA /* UDPAKCodec.m in Sources */,
+				AA01000B00000000000000AA /* UDPAKEntrySource.m in Sources */,
+				AA01000C00000000000000AA /* UDStagedFileSource.m in Sources */,
+				AA01000D00000000000000AA /* UDPAK2Codec.m in Sources */,
+				AA01000E00000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				AA01000F00000000000000AA /* UDPK3Codec.m in Sources */,
+				AA01001000000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				AA01001100000000000000AA /* UDPK4Codec.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD03000100000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA03000000000000000000AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -443,6 +574,9 @@
 				AA01002000000000000000AA /* UDTextPreviewController.m in Sources */,
 				AA01000400000000000000AA /* UDArchive.m in Sources */,
 				CEA101012FF5000000A10001 /* UDAssetIndex.m in Sources */,
+				CEA102012FF5000000A10001 /* UDDeclLexer.m in Sources */,
+				CEA102112FF5000000A10001 /* UDDeclParser.m in Sources */,
+				CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */,
 				CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */,
 				CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */,
 				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
@@ -470,7 +604,11 @@
 				AA02000000000000000000AA /* main.m in Sources */,
 				AA02000100000000000000AA /* UDArchive.m in Sources */,
 				CEA101022FF5000000A10001 /* UDAssetIndex.m in Sources */,
+				CEA102022FF5000000A10001 /* UDDeclLexer.m in Sources */,
+				CEA102122FF5000000A10001 /* UDDeclParser.m in Sources */,
+				CEA102222FF5000000A10001 /* UDDeclManager.m in Sources */,
 				AA02000200000000000000AA /* UDArchiveEntry.m in Sources */,
+				CEA102332FF5000000A10001 /* UDDirectoryNode.m in Sources */,
 				AA02000300000000000000AA /* UDCodecRegistry.m in Sources */,
 				AA02000400000000000000AA /* UDPAKCodec.m in Sources */,
 				AA02000500000000000000AA /* UDPAKEntrySource.m in Sources */,
@@ -504,6 +642,9 @@
 				BB01010200000000000000AA /* UDGameDetectionService.m in Sources */,
 				BB01010300000000000000AA /* UDArchive.m in Sources */,
 				CEA101032FF5000000A10001 /* UDAssetIndex.m in Sources */,
+				CEA102032FF5000000A10001 /* UDDeclLexer.m in Sources */,
+				CEA102132FF5000000A10001 /* UDDeclParser.m in Sources */,
+				CEA102232FF5000000A10001 /* UDDeclManager.m in Sources */,
 				BB01010400000000000000AA /* UDArchiveEntry.m in Sources */,
 				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
 				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,
@@ -704,6 +845,101 @@
 			};
 			name = Release;
 		};
+		DD05000000000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
+				PRODUCT_NAME = DeclBrowser;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		DD05000100000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
+				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				LIBRARY_SEARCH_PATHS = (
+					/opt/homebrew/lib,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_LDFLAGS = "-lzip";
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
+				PRODUCT_NAME = DeclBrowser;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
 		AA05000400000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -850,6 +1086,15 @@
 			buildConfigurations = (
 				AA05000400000000000000AA /* Debug */,
 				AA05000500000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD05000000000000000000AA /* Debug */,
+				DD05000100000000000000AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

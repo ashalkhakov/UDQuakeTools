@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDDeclBrowserWindowController">
+            <connections>
+                <outlet property="bodyView" destination="TXT-01" id="OWN-01"/>
+                <outlet property="browser" destination="BRW-01" id="OWN-00"/>
+                <outlet property="gamePopUpButton" destination="POP-01" id="OWN-02"/>
+                <outlet property="pathLabel" destination="LBL-PTH" id="OWN-03"/>
+                <outlet property="searchField" destination="SRH-01" id="OWN-04"/>
+                <outlet property="statusLabel" destination="LBL-STS" id="OWN-05"/>
+                <outlet property="window" destination="WND-01" id="OWN-07"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <window title="Decl Browser" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="WND-01">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <rect key="contentRect" x="196" y="240" width="980" height="660"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
+            <view key="contentView" id="CNT-01">
+                <rect key="frame" x="0.0" y="0.0" width="980" height="660"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SRH">
+                        <rect key="frame" x="20" y="628" width="52" height="20"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Search" id="LBL-SRH-cell">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <searchField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
+                        <rect key="frame" x="80" y="624" width="300" height="24"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                        <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search decls" bezelStyle="round" id="SRH-01-cell">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </searchFieldCell>
+                        <connections>
+                            <action selector="searchChanged:" target="-2" id="SRH-01-act"/>
+                        </connections>
+                    </searchField>
+                    <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-01">
+                        <rect key="frame" x="400" y="624" width="190" height="24"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="POP-01-cell">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="message"/>
+                            <menu key="menu" id="POP-01-menu">
+                                <items>
+                                    <menuItem title="Auto Detect" id="POP-01-item0"/>
+                                    <menuItem title="Quake 1" id="POP-01-item1"/>
+                                    <menuItem title="Quake 2" id="POP-01-item2"/>
+                                    <menuItem title="Daikatana" id="POP-01-item3"/>
+                                    <menuItem title="Quake 3" id="POP-01-item4"/>
+                                    <menuItem title="Doom 3" id="POP-01-item5"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="gameChanged:" target="-2" id="POP-01-act"/>
+                        </connections>
+                    </popUpButton>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-01">
+                        <rect key="frame" x="610" y="623" width="110" height="24"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Open Folder..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-01-cell">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="openFolder:" target="-2" id="BTN-01-act"/>
+                        </connections>
+                    </button>
+                    <browser fixedFrame="YES" allowsEmptySelection="YES" defaultColumnWidth="100" minColumnWidth="120" maxVisibleColumns="1" titled="YES" separatesColumns="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BRW-01">
+                        <rect key="frame" x="20" y="80" width="460" height="520"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <connections>
+                            <action selector="browserSingleClick:" target="-2" id="BRW-01-act"/>
+                            <outlet property="delegate" destination="-2" id="BRW-01-del"/>
+                        </connections>
+                    </browser>
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-PTH">
+                        <rect key="frame" x="500" y="560" width="460" height="20"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No selection" id="LBL-PTH-cell">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" translatesAutoresizingMaskIntoConstraints="NO" id="SCR-01">
+                        <rect key="frame" x="500" y="80" width="460" height="470"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <clipView key="contentView" id="CLP-01">
+                            <rect key="frame" x="1" y="1" width="458" height="468"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textView editable="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" allowsUndo="YES" id="TXT-01">
+                                    <rect key="frame" x="0.0" y="0.0" width="458" height="468"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <size key="minSize" width="458" height="468"/>
+                                    <size key="maxSize" width="460" height="470"/>
+                                </textView>
+                            </subviews>
+                        </clipView>
+                    </scrollView>
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-STS">
+                        <rect key="frame" x="20" y="20" width="920" height="24"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No decls loaded" id="LBL-STS-cell">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="0.0" y="144"/>
+        </window>
+    </objects>
+</document>

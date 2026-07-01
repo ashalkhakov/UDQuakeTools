@@ -46,7 +46,13 @@ From the repository root:
 
 ```bash
 ./Scripts/build-gnustep.sh
-./Scripts/prepare-appdir.sh
+APP_ID=PakManager APP_SOURCE_DIR=PakManager APP_BUNDLE_NAME=PakManager.app ./Scripts/prepare-appdir.sh
+```
+
+For Decl Browser:
+
+```bash
+APP_ID=DeclBrowser APP_SOURCE_DIR=DeclBrowser APP_BUNDLE_NAME=DeclBrowser.app ./Scripts/prepare-appdir.sh
 ```
 
 ## AppImage Packaging
@@ -54,11 +60,20 @@ From the repository root:
 From the repository root:
 
 ```bash
-./Scripts/package-appimage.sh
+APP_ID=PakManager ./Scripts/package-appimage.sh
+```
+
+For Decl Browser:
+
+```bash
+APP_ID=DeclBrowser ./Scripts/package-appimage.sh
 ```
 
 AppImage assets are tracked in `Scripts/appimage`.
-The app icon is tracked in `Sources/PakManager/PakManager.png` and copied into AppImage metadata during packaging.
+Each deliverable is packaged into its own AppImage file:
+
+- `PakManager-Linux-<version>.AppImage`
+- `DeclBrowser-Linux-<version>.AppImage`
 
 ## Tests
 

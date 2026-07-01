@@ -19,6 +19,9 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDGameDetectionService.m \
     ../Sources/UDCore/UDArchive.m \
     ../Sources/UDCore/UDAssetIndex.m \
+    ../Sources/UDCore/UDDeclLexer.m \
+    ../Sources/UDCore/UDDeclParser.m \
+    ../Sources/UDCore/UDDeclManager.m \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDCore/UDArchiveEditor.m \
     ../Sources/UDCore/UDArchiveMutation.m \

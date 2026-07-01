@@ -196,6 +196,12 @@ Exit criteria:
 - Depends on: DECL-001
 - Acceptance: hierarchy view is consistent with source data
 
+Status update (2026-07-01):
+- Implemented initial GUI editor object model in UDCore: `UDGuiDocument`, `UDGuiWindowNode`, `UDGuiProperty`.
+- Implemented parser/serializer and operation service with undo support: `UDGuiDocumentCodec`, `UDGuiEditorService`.
+- Implemented UI-facing view model scaffold: `UDGuiEditorViewModel`.
+- Added first regression tests in `UDGuiEditorTests.m` for parse + undo + basic window operations.
+
 20. UI-002: Property inspector and bindings
 - Depends on: UI-001
 - Acceptance: edits validate and persist safely

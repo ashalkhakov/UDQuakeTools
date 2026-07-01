@@ -89,6 +89,15 @@
 		CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
 		CEA102222FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
 		CEA102232FF5000000A10001 /* UDDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA102062FF5000000A10001 /* UDDeclManager.m */; };
+		CEA103012FF5000000A10001 /* UDDeclType.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA103042FF5000000A10001 /* UDDeclType.m */; };
+		CEA103022FF5000000A10001 /* UDDeclType.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA103042FF5000000A10001 /* UDDeclType.m */; };
+		CEA103032FF5000000A10001 /* UDDeclType.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA103042FF5000000A10001 /* UDDeclType.m */; };
+		CEA104012FF5000000A10001 /* UDDeclModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA104042FF5000000A10001 /* UDDeclModel.m */; };
+		CEA104022FF5000000A10001 /* UDDeclModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA104042FF5000000A10001 /* UDDeclModel.m */; };
+		CEA104032FF5000000A10001 /* UDDeclModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA104042FF5000000A10001 /* UDDeclModel.m */; };
+		CEA105012FF5000000A10001 /* UDDeclPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA105042FF5000000A10001 /* UDDeclPersistence.m */; };
+		CEA105022FF5000000A10001 /* UDDeclPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA105042FF5000000A10001 /* UDDeclPersistence.m */; };
+		CEA105032FF5000000A10001 /* UDDeclPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA105042FF5000000A10001 /* UDDeclPersistence.m */; };
 		CEA102332FF5000000A10001 /* UDDirectoryNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010800000000000000AA /* UDDirectoryNode.m */; };
 		CE734C3B2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C3C2FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
@@ -97,6 +106,7 @@
 		CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
 		CEA101052FF5000000A10001 /* UDAssetIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA101062FF5000000A10001 /* UDAssetIndexTests.m */; };
+			CEA106012FF5000000A10001 /* UDDeclManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA106042FF5000000A10001 /* UDDeclManagerTests.m */; };
 		CEFA65B12FF4309B004B373A /* UDVirtualFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */; };
 /* End PBXBuildFile section */
 
@@ -180,8 +190,17 @@
 		CEA102042FF5000000A10001 /* UDDeclLexer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclLexer.m; sourceTree = "<group>"; };
 		CEA102052FF5000000A10001 /* UDDeclParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclParser.m; sourceTree = "<group>"; };
 		CEA102062FF5000000A10001 /* UDDeclManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManager.m; sourceTree = "<group>"; };
+		CEA103042FF5000000A10001 /* UDDeclType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclType.m; sourceTree = "<group>"; };
+		CEA103072FF5000000A10001 /* UDDeclType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclType.h; sourceTree = "<group>"; };
+		CEA104042FF5000000A10001 /* UDDeclModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclModel.m; sourceTree = "<group>"; };
+		CEA104072FF5000000A10001 /* UDDeclModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclModel.h; sourceTree = "<group>"; };
+		CEA105042FF5000000A10001 /* UDDeclPersistence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclPersistence.m; sourceTree = "<group>"; };
+		CEA105072FF5000000A10001 /* UDDeclPersistence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclPersistence.h; sourceTree = "<group>"; };
+		CEA106072FF5000000A10001 /* UDDeclManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManager.h; sourceTree = "<group>"; };
+		CEA107072FF5000000A10001 /* UDDeclParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclParser.h; sourceTree = "<group>"; };
 		CEA101072FF5000000A10001 /* UDAssetIndex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAssetIndex.h; sourceTree = "<group>"; };
 		CEA101062FF5000000A10001 /* UDAssetIndexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAssetIndexTests.m; sourceTree = "<group>"; };
+			CEA106042FF5000000A10001 /* UDDeclManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManagerTests.m; sourceTree = "<group>"; };
 		CE734C372FF4335000AE8333 /* UDVFSMount.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVFSMount.h; sourceTree = "<group>"; };
 		CE734C382FF4335000AE8333 /* UDVFSMount.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVFSMount.m; sourceTree = "<group>"; };
 		CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVirtualFileSystem.h; sourceTree = "<group>"; };
@@ -294,6 +313,14 @@
 				CEA102042FF5000000A10001 /* UDDeclLexer.m */,
 				CEA102052FF5000000A10001 /* UDDeclParser.m */,
 				CEA102062FF5000000A10001 /* UDDeclManager.m */,
+				CEA103072FF5000000A10001 /* UDDeclType.h */,
+				CEA103042FF5000000A10001 /* UDDeclType.m */,
+					CEA104072FF5000000A10001 /* UDDeclModel.h */,
+					CEA104042FF5000000A10001 /* UDDeclModel.m */,
+					CEA105072FF5000000A10001 /* UDDeclPersistence.h */,
+					CEA105042FF5000000A10001 /* UDDeclPersistence.m */,
+					CEA106072FF5000000A10001 /* UDDeclManager.h */,
+					CEA107072FF5000000A10001 /* UDDeclParser.h */,
 				CE734C372FF4335000AE8333 /* UDVFSMount.h */,
 				CE734C382FF4335000AE8333 /* UDVFSMount.m */,
 				CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */,
@@ -366,6 +393,7 @@
 			isa = PBXGroup;
 			children = (
 				CEA101062FF5000000A10001 /* UDAssetIndexTests.m */,
+					CEA106042FF5000000A10001 /* UDDeclManagerTests.m */,
 				CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */,
 				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
 				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
@@ -535,6 +563,9 @@
 				CEA102012FF5000000A10001 /* UDDeclLexer.m in Sources */,
 				CEA102112FF5000000A10001 /* UDDeclParser.m in Sources */,
 				CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */,
+					CEA104012FF5000000A10001 /* UDDeclModel.m in Sources */,
+					CEA105012FF5000000A10001 /* UDDeclPersistence.m in Sources */,
+				CEA103012FF5000000A10001 /* UDDeclType.m in Sources */,
 				AA01000400000000000000AA /* UDArchive.m in Sources */,
 				AA01000600000000000000AA /* UDArchiveEntry.m in Sources */,
 				AA01000800000000000000AA /* UDDirectoryNode.m in Sources */,
@@ -577,6 +608,9 @@
 				CEA102012FF5000000A10001 /* UDDeclLexer.m in Sources */,
 				CEA102112FF5000000A10001 /* UDDeclParser.m in Sources */,
 				CEA102212FF5000000A10001 /* UDDeclManager.m in Sources */,
+					CEA104012FF5000000A10001 /* UDDeclModel.m in Sources */,
+					CEA105012FF5000000A10001 /* UDDeclPersistence.m in Sources */,
+				CEA103012FF5000000A10001 /* UDDeclType.m in Sources */,
 				CE734C3F2FF4335000AE8333 /* UDVFSMount.m in Sources */,
 				CE734C402FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */,
 				AA01000500000000000000AA /* UDArchiveEditor.m in Sources */,
@@ -607,6 +641,9 @@
 				CEA102022FF5000000A10001 /* UDDeclLexer.m in Sources */,
 				CEA102122FF5000000A10001 /* UDDeclParser.m in Sources */,
 				CEA102222FF5000000A10001 /* UDDeclManager.m in Sources */,
+					CEA104022FF5000000A10001 /* UDDeclModel.m in Sources */,
+					CEA105022FF5000000A10001 /* UDDeclPersistence.m in Sources */,
+				CEA103022FF5000000A10001 /* UDDeclType.m in Sources */,
 				AA02000200000000000000AA /* UDArchiveEntry.m in Sources */,
 				CEA102332FF5000000A10001 /* UDDirectoryNode.m in Sources */,
 				AA02000300000000000000AA /* UDCodecRegistry.m in Sources */,
@@ -627,6 +664,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEA101052FF5000000A10001 /* UDAssetIndexTests.m in Sources */,
+					CEA106012FF5000000A10001 /* UDDeclManagerTests.m in Sources */,
 				CE07D6CB2FF3FE5E00B149C9 /* UDDirectoryNode.m in Sources */,
 				CE07D6CA2FF3E92000B149C9 /* UDStagedFileSource.m in Sources */,
 				CE07D6C92FF3D2A400B149C9 /* UDPAK2Codec.m in Sources */,
@@ -645,6 +683,9 @@
 				CEA102032FF5000000A10001 /* UDDeclLexer.m in Sources */,
 				CEA102132FF5000000A10001 /* UDDeclParser.m in Sources */,
 				CEA102232FF5000000A10001 /* UDDeclManager.m in Sources */,
+					CEA104032FF5000000A10001 /* UDDeclModel.m in Sources */,
+					CEA105032FF5000000A10001 /* UDDeclPersistence.m in Sources */,
+				CEA103032FF5000000A10001 /* UDDeclType.m in Sources */,
 				BB01010400000000000000AA /* UDArchiveEntry.m in Sources */,
 				BB01010500000000000000AA /* UDCodecRegistry.m in Sources */,
 				BB01010600000000000000AA /* UDPAKCodec.m in Sources */,

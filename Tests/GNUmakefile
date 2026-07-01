@@ -8,6 +8,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
     UDAssetIndexTests.m \
+    UDDeclManagerTests.m \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \
@@ -21,6 +22,9 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDAssetIndex.m \
     ../Sources/UDCore/UDDeclLexer.m \
     ../Sources/UDCore/UDDeclParser.m \
+    ../Sources/UDCore/UDDeclModel.m \
+    ../Sources/UDCore/UDDeclPersistence.m \
+    ../Sources/UDCore/UDDeclType.m \
     ../Sources/UDCore/UDDeclManager.m \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDCore/UDArchiveEditor.m \

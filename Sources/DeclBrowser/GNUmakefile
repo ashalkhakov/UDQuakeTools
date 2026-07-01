@@ -15,6 +15,9 @@ DeclBrowser_OBJC_FILES = \
     ../UDCore/UDAssetIndex.m \
     ../UDCore/UDDeclLexer.m \
     ../UDCore/UDDeclParser.m \
+    ../UDCore/UDDeclModel.m \
+    ../UDCore/UDDeclPersistence.m \
+    ../UDCore/UDDeclType.m \
     ../UDCore/UDDeclManager.m \
     ../UDCore/UDGame.m \
     ../UDCore/UDGameDetectionService.m \

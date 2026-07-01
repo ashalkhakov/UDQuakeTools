@@ -6,7 +6,7 @@
 #import "UDDeclBrowserWindowController.h"
 #import "UDDeclBrowserTreeModel.h"
 #import "UDDeclBrowserViewModel.h"
-#import "../UDCore/UDAssetIndex.h"
+#import "../UDCore/UDDeclModel.h"
 
 @interface UDDeclBrowserWindowController ()
 - (void)_rebuildResults;
@@ -15,6 +15,7 @@
 - (NSArray<NSString *> *)_selectedNodeNameChain;
 - (nullable UDDeclBrowserTreeNode *)_selectedLeafNode;
 - (NSString *)_formattedSourceForDefinition:(UDDeclDefinition *)definition;
+- (NSString *)_displayTitleForNode:(UDDeclBrowserTreeNode *)node;
 - (void)_autoSelectFirstLeafIfAvailable;
 - (void)_applySelectionPath:(NSArray<NSNumber *> *)selectionPath;
 - (void)_selectNode:(nullable UDDeclBrowserTreeNode *)node;
@@ -162,7 +163,7 @@
         return;
     }
 
-    [self.pathLabel setStringValue:node.fullPath.length > 0 ? node.fullPath : node.name];
+    [self.pathLabel setStringValue:[self _displayTitleForNode:node]];
 
     if (node.isLeaf && node.definition) {
         [self.bodyView setString:[self _formattedSourceForDefinition:node.definition]];
@@ -172,19 +173,21 @@
 }
 
 - (NSString *)_formattedSourceForDefinition:(UDDeclDefinition *)definition {
-    NSString *declType = definition.declType ?: @"<unknown type>";
-    NSString *declName = definition.declName ?: @"<unnamed decl>";
-    NSString *body = definition.body ?: @"";
+    return definition.body ?: @"";
+}
 
-    NSMutableString *source = [NSMutableString stringWithFormat:@"%@ %@ {\n", declType, declName];
-    if (body.length > 0) {
-        [source appendString:body];
-        if (![body hasSuffix:@"\n"]) {
-            [source appendString:@"\n"];
-        }
+- (NSString *)_displayTitleForNode:(UDDeclBrowserTreeNode *)node {
+    if (!node) {
+        return @"No selection";
     }
-    [source appendString:@"}"];
-    return [source copy];
+
+    if (node.isLeaf && node.definition) {
+        NSString *declName = node.name.length > 0 ? node.name : (node.definition.declName ?: @"<unnamed decl>");
+        NSString *sourcePath = node.definition.sourceVirtualPath.length > 0 ? node.definition.sourceVirtualPath : @"<unknown source>";
+        return [NSString stringWithFormat:@"%@ [%@]", declName, sourcePath];
+    }
+
+    return node.fullPath.length > 0 ? node.fullPath : (node.name ?: @"");
 }
 
 - (NSInteger)browser:(NSBrowser *)sender numberOfRowsInColumn:(NSInteger)column {
@@ -203,7 +206,7 @@
     [cell setLeaf:node.isLeaf];
     [cell setLoaded:YES];
     [cell setEnabled:YES];
-    [cell setTitle:node.name ?: @""];
+    [cell setTitle:[self _displayTitleForNode:node]];
     [cell setRepresentedObject:node];
 }
 

@@ -6,7 +6,8 @@
 #import "UDDeclBrowserViewModel.h"
 
 #import "UDDeclBrowserTreeModel.h"
-#import "../UDCore/UDAssetIndex.h"
+#import "../UDCore/UDDeclManager.h"
+#import "../UDCore/UDDeclModel.h"
 #import "../UDCore/UDGame.h"
 #import "../UDCore/UDVirtualFileSystem.h"
 #import "../UDFormats/UDCodecRegistry.h"
@@ -79,18 +80,8 @@
         return NO;
     }
 
-    UDAssetIndexer *indexer = [[UDAssetIndexer alloc] init];
-    UDAssetIndex *assetIndex = [indexer buildIndexFromVirtualFileSystem:vfs error:&error];
-    if (error) {
-        NSString *message = [NSString stringWithFormat:@"Failed to index %@: %@", directoryURL.lastPathComponent, error.localizedDescription];
-        [self _resetModelAndTreeForFailureWithStatus:message];
-        if (statusText) {
-            *statusText = message;
-        }
-        return NO;
-    }
-
-    self.declModel = [indexer buildDeclModelFromAssetIndex:assetIndex virtualFileSystem:vfs error:&error];
+    UDDeclManager *declManager = [[UDDeclManager alloc] init];
+    self.declModel = [declManager buildDeclModelFromVirtualFileSystem:vfs error:&error];
     if (error) {
         NSString *message = [NSString stringWithFormat:@"Failed to build decl model for %@: %@", directoryURL.lastPathComponent, error.localizedDescription];
         [self _resetModelAndTreeForFailureWithStatus:message];

@@ -3,18 +3,42 @@
  * Decl model manager implementation.
  */
 
-#import "UDAssetIndex.h"
+#import "UDDeclManager.h"
 
-static NSSet<NSString *> *UDDeclManagerTextAssetExtensions(void) {
-    static NSSet<NSString *> *extensions = nil;
-    if (!extensions) {
-        extensions = [NSSet setWithObjects:@"def", @"mtr", @"skin", @"sndshd", @"fx", @"prt", @"xdata", @"pda", @"af", nil];
-    }
-    return extensions;
+#import "UDDeclParser.h"
+#import "UDDeclType.h"
+
+static NSSet<NSString *> *UDDeclManagerTextAssetExtensionsForGameType(UDGameType gameType) {
+    return [UDDeclTypeRegistry sourceFileExtensionsForGameType:gameType];
 }
 
-static BOOL UDDeclManagerAssetEntryCanContainDecls(UDAssetIndexEntry *entry) {
-    return [UDDeclManagerTextAssetExtensions() containsObject:entry.fileExtension.lowercaseString];
+static BOOL UDDeclManagerPathCanContainDecls(NSString *virtualPath, UDGameType gameType) {
+    return [UDDeclManagerTextAssetExtensionsForGameType(gameType) containsObject:virtualPath.pathExtension.lowercaseString];
+}
+
+static NSString *UDDeclManagerNormalizedVirtualPath(NSString *virtualPath) {
+    NSString *normalizedPath = [virtualPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+    while ([normalizedPath hasPrefix:@"/"]) {
+        normalizedPath = [normalizedPath substringFromIndex:1];
+    }
+    return normalizedPath;
+}
+
+static NSArray<NSString *> *UDDeclManagerSourcePathsFromVirtualFileSystem(UDVirtualFileSystem *virtualFileSystem,
+                                                                           NSError **error) {
+    NSArray<UDVFSResolvedFile *> *visibleFiles = [virtualFileSystem visibleFilesWithExtensions:UDDeclManagerTextAssetExtensionsForGameType(virtualFileSystem.gameType)
+                                                                                           error:error];
+    if (!visibleFiles) {
+        return nil;
+    }
+
+    NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:visibleFiles.count];
+    for (UDVFSResolvedFile *resolved in visibleFiles) {
+        [paths addObject:UDDeclManagerNormalizedVirtualPath(resolved.virtualPath)];
+    }
+
+    [paths sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    return paths;
 }
 
 static NSComparisonResult UDDeclManagerCompareDeclDefinitions(id leftObject, id rightObject, void *context) {
@@ -35,24 +59,78 @@ static NSComparisonResult UDDeclManagerCompareDeclDefinitions(id leftObject, id 
     return [left.sourceVirtualPath compare:right.sourceVirtualPath options:NSCaseInsensitiveSearch];
 }
 
+static UDDeclModel *UDDeclManagerRebuildDeclModelByApplyingWriteNotification(NSNotification *notification,
+                                                                            UDDeclModel *existingModel,
+                                                                            id<UDDeclPersistenceAdapter> persistenceAdapter,
+                                                                            UDGameType gameType,
+                                                                            NSError **error) {
+    NSString *virtualPath = [notification.userInfo objectForKey:UDVFSNotificationVirtualPathKey];
+    if (virtualPath.length == 0 || !UDDeclManagerPathCanContainDecls(virtualPath, gameType)) {
+        return existingModel;
+    }
+
+    NSString *normalizedPath = UDDeclManagerNormalizedVirtualPath(virtualPath);
+
+    NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray arrayWithCapacity:existingModel.definitions.count + 8];
+    for (UDDeclDefinition *definition in existingModel.definitions) {
+        if (![definition.sourceVirtualPath isEqualToString:normalizedPath]) {
+            [definitions addObject:definition];
+        }
+    }
+
+    NSString *updatedText = [persistenceAdapter readDeclTextAtVirtualPath:normalizedPath error:nil];
+    if (updatedText) {
+        UDDeclParser *parser = [[UDDeclParser alloc] init];
+        NSError *parseError = nil;
+        NSArray<UDDeclDefinition *> *parsed = [parser parseDefinitionsFromText:updatedText
+                                                              sourceVirtualPath:normalizedPath
+                                                                          error:&parseError];
+        if (!parsed) {
+            if (error) {
+                *error = parseError;
+            }
+            return nil;
+        }
+        [definitions addObjectsFromArray:parsed];
+    }
+
+    [definitions sortUsingFunction:UDDeclManagerCompareDeclDefinitions context:NULL];
+
+    if (error) {
+        *error = nil;
+    }
+    return [[UDDeclModel alloc] initWithDefinitions:definitions];
+}
+
 @implementation UDDeclManager
 
-- (UDDeclModel *)buildDeclModelFromAssetIndex:(UDAssetIndex *)assetIndex
-                           persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
-                                         error:(NSError **)error {
-    NSParameterAssert(assetIndex != nil);
+- (UDDeclModel *)buildDeclModelFromVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                                error:(NSError **)error {
+    NSParameterAssert(virtualFileSystem != nil);
+
+    UDVFSDeclPersistenceAdapter *adapter = [[UDVFSDeclPersistenceAdapter alloc] initWithVirtualFileSystem:virtualFileSystem];
+    return [self buildDeclModelFromVirtualFileSystem:virtualFileSystem
+                                  persistenceAdapter:adapter
+                                                error:error];
+}
+
+- (UDDeclModel *)buildDeclModelFromVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                      persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                                    error:(NSError **)error {
+    NSParameterAssert(virtualFileSystem != nil);
     NSParameterAssert(persistenceAdapter != nil);
+
+    NSArray<NSString *> *sourcePaths = UDDeclManagerSourcePathsFromVirtualFileSystem(virtualFileSystem, error);
+    if (!sourcePaths) {
+        return nil;
+    }
 
     UDDeclParser *parser = [[UDDeclParser alloc] init];
     NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray array];
 
-    for (UDAssetIndexEntry *entry in assetIndex.entries) {
-        if (!UDDeclManagerAssetEntryCanContainDecls(entry)) {
-            continue;
-        }
-
+    for (NSString *sourcePath in sourcePaths) {
         NSError *readError = nil;
-        NSString *text = [persistenceAdapter readDeclTextAtVirtualPath:entry.virtualPath error:&readError];
+        NSString *text = [persistenceAdapter readDeclTextAtVirtualPath:sourcePath error:&readError];
         if (!text) {
             if (error) {
                 *error = readError;
@@ -62,7 +140,7 @@ static NSComparisonResult UDDeclManagerCompareDeclDefinitions(id leftObject, id 
 
         NSError *parseError = nil;
         NSArray<UDDeclDefinition *> *parsed = [parser parseDefinitionsFromText:text
-                                                              sourceVirtualPath:entry.virtualPath
+                                                              sourceVirtualPath:sourcePath
                                                                           error:&parseError];
         if (!parsed) {
             if (error) {
@@ -84,49 +162,30 @@ static NSComparisonResult UDDeclManagerCompareDeclDefinitions(id leftObject, id 
 
 - (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
                                               toExistingModel:(UDDeclModel *)existingModel
-                                                   assetIndex:(UDAssetIndex *)assetIndex
-                                           persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
+                                            virtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem
+                                                        error:(NSError **)error {
+    NSParameterAssert(virtualFileSystem != nil);
+
+    UDVFSDeclPersistenceAdapter *adapter = [[UDVFSDeclPersistenceAdapter alloc] initWithVirtualFileSystem:virtualFileSystem];
+    return UDDeclManagerRebuildDeclModelByApplyingWriteNotification(notification,
+                                                                    existingModel,
+                                                                    adapter,
+                                                                    virtualFileSystem.gameType,
+                                                                    error);
+}
+
+- (UDDeclModel *)rebuildDeclModelByApplyingWriteNotification:(NSNotification *)notification
+                                              toExistingModel:(UDDeclModel *)existingModel
+                                             persistenceAdapter:(id<UDDeclPersistenceAdapter>)persistenceAdapter
                                                         error:(NSError **)error {
     NSParameterAssert(notification != nil);
     NSParameterAssert(existingModel != nil);
-    NSParameterAssert(assetIndex != nil);
     NSParameterAssert(persistenceAdapter != nil);
-
-    NSString *virtualPath = [notification.userInfo objectForKey:UDVFSNotificationVirtualPathKey];
-    if (virtualPath.length == 0 || ![UDDeclManagerTextAssetExtensions() containsObject:virtualPath.pathExtension.lowercaseString]) {
-        return existingModel;
-    }
-
-    NSString *normalizedPath = [virtualPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-    while ([normalizedPath hasPrefix:@"/"]) {
-        normalizedPath = [normalizedPath substringFromIndex:1];
-    }
-
-    NSMutableArray<UDDeclDefinition *> *definitions = [NSMutableArray arrayWithCapacity:existingModel.definitions.count + 8];
-    for (UDDeclDefinition *definition in existingModel.definitions) {
-        if (![definition.sourceVirtualPath isEqualToString:normalizedPath]) {
-            [definitions addObject:definition];
-        }
-    }
-
-    UDAssetIndexEntry *entry = [assetIndex entryForVirtualPath:normalizedPath];
-    if (entry && UDDeclManagerAssetEntryCanContainDecls(entry)) {
-        UDAssetIndex *singleFileIndex = [[UDAssetIndex alloc] initWithEntries:@[entry]];
-        UDDeclModel *singleFileModel = [self buildDeclModelFromAssetIndex:singleFileIndex
-                                                        persistenceAdapter:persistenceAdapter
-                                                                      error:error];
-        if (!singleFileModel) {
-            return nil;
-        }
-        [definitions addObjectsFromArray:singleFileModel.definitions];
-    }
-
-    [definitions sortUsingFunction:UDDeclManagerCompareDeclDefinitions context:NULL];
-
-    if (error) {
-        *error = nil;
-    }
-    return [[UDDeclModel alloc] initWithDefinitions:definitions];
+    return UDDeclManagerRebuildDeclModelByApplyingWriteNotification(notification,
+                                                                    existingModel,
+                                                                    persistenceAdapter,
+                                                                    UDGameTypeUnknown,
+                                                                    error);
 }
 
 @end

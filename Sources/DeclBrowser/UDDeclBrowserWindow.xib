@@ -28,7 +28,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="980" height="660"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SRH">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SRH">
                         <rect key="frame" x="20" y="628" width="52" height="20"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Search" id="LBL-SRH-cell">
@@ -37,7 +37,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <searchField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
+                    <searchField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRH-01">
                         <rect key="frame" x="80" y="624" width="300" height="24"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                         <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search decls" bezelStyle="round" id="SRH-01-cell">
@@ -89,7 +89,7 @@
                             <outlet property="delegate" destination="-2" id="BRW-01-del"/>
                         </connections>
                     </browser>
-                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-PTH">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-PTH">
                         <rect key="frame" x="500" y="560" width="460" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No selection" id="LBL-PTH-cell">
@@ -114,7 +114,7 @@
                             </subviews>
                         </clipView>
                     </scrollView>
-                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-STS">
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-STS">
                         <rect key="frame" x="20" y="20" width="920" height="24"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No decls loaded" id="LBL-STS-cell">

@@ -3,7 +3,7 @@
  * id-style lexer/parser primitives for decl parsing.
  */
 
-#import "UDAssetIndex.h"
+#import "UDDeclParser.h"
 
 static BOOL UDDeclLexerIsTokenCharacter(unichar character) {
     if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:character]) {

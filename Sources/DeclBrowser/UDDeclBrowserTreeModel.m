@@ -5,7 +5,7 @@
 
 #import "UDDeclBrowserTreeModel.h"
 
-#import "../UDCore/UDAssetIndex.h"
+#import "../UDCore/UDDeclModel.h"
 
 @interface UDDeclBrowserTreeNode ()
 @property (nonatomic, copy) NSString *name;

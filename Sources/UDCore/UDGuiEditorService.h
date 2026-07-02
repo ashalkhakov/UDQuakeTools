@@ -9,16 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDGuiDocumentCodec : NSObject
-
-- (nullable UDGuiDocument *)parseDocumentFromText:(NSString *)text
-                                sourceVirtualPath:(NSString *)sourceVirtualPath
-                                            error:(NSError **)error;
-
-- (nullable NSString *)serializeDocument:(UDGuiDocument *)document error:(NSError **)error;
-
-@end
-
 @interface UDGuiEditorService : NSObject
 
 @property (nonatomic, readonly, strong) UDGuiDocument *document;

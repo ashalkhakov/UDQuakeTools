@@ -18,6 +18,7 @@ GuiEd_OBJC_FILES = \
     ../UDCore/UDDeclModel.m \
     ../UDCore/UDDeclType.m \
     ../UDCore/UDGuiModel.m \
+    ../UDCore/UDGuiDocumentCodec.m \
     ../UDCore/UDGuiEditorService.m \
     ../UDCore/UDGuiEditorViewModel.m
 

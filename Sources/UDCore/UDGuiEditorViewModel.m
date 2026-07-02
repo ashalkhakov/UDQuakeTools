@@ -80,9 +80,16 @@
     }
 
     UDGuiWindowNode *newNode = [[UDGuiWindowNode alloc] initWithClassName:className name:name];
-    if (self.selectedWindow) {
-        [self.service addWindow:newNode toParent:self.selectedWindow atIndex:self.selectedWindow.children.count];
+    UDGuiWindowNode *parent = self.selectedWindow;
+    BOOL parentInDocument = NO;
+    if (parent) {
+        parentInDocument = parent.parent != nil || [self.service.document indexOfRootWindow:parent] != NSNotFound;
+    }
+
+    if (parentInDocument) {
+        [self.service addWindow:newNode toParent:parent atIndex:parent.children.count];
     } else {
+        self.selectedWindow = nil;
         [self.service addWindow:newNode toParent:nil atIndex:self.service.document.rootWindows.count];
     }
     self.selectedWindow = newNode;

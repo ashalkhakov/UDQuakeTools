@@ -28,6 +28,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDDeclType.m \
     ../Sources/UDCore/UDDeclManager.m \
     ../Sources/UDCore/UDGuiModel.m \
+    ../Sources/UDCore/UDGuiDocumentCodec.m \
     ../Sources/UDCore/UDGuiEditorService.m \
     ../Sources/UDCore/UDGuiEditorViewModel.m \
     ../Sources/UDCore/UDArchiveEntry.m \

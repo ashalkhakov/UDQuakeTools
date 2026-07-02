@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 
+#import "UDGuiDocumentCodec.h"
 #import "UDGuiEditorService.h"
 #import "UDGuiEditorViewModel.h"
 
@@ -225,6 +226,115 @@
     XCTAssertEqual(parsedHandler.commands.count, 7U);
     XCTAssertEqualObjects([[parsedHandler.commands objectAtIndex:0] keyword], @"transition");
     XCTAssertEqualObjects([[parsedHandler.commands objectAtIndex:6] keyword], @"endGame");
+}
+
+- (void)testGuiDocumentCodecPreservesIfElseScriptBodiesVerbatim {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    onAction {\n"
+         "        if ( \"gui::state\" == 1 ) {\n"
+         "            set \"cmd\" \"play click\" ;\n"
+         "        } else {\n"
+         "            resetTime \"Desktop\" \"0\" ;\n"
+         "        }\n"
+         "    }\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *parseError = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&parseError];
+
+    XCTAssertNil(parseError);
+    XCTAssertNotNil(document);
+    XCTAssertEqual(document.rootWindows.count, 1U);
+
+    NSError *serializeError = nil;
+    NSString *serialized = [codec serializeDocument:document error:&serializeError];
+
+    XCTAssertNil(serializeError);
+    XCTAssertNotNil(serialized);
+    XCTAssertTrue([serialized containsString:@"onAction {"]);
+    XCTAssertTrue([serialized containsString:@"if ( gui::state == 1 ) {"]);
+    XCTAssertTrue([serialized containsString:@"set cmd play click ;"]);
+    XCTAssertTrue([serialized containsString:@"} else {"]);
+    XCTAssertTrue([serialized containsString:@"resetTime Desktop 0 ;"]);
+}
+
+- (void)testGuiDocumentCodecParsesFloatAndDefineFloatDefinitions {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    float speed 100\n"
+         "    definefloat alpha 0.75\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *error = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertNotNil(document);
+    UDGuiWindowNode *window = [document.rootWindows objectAtIndex:0];
+    XCTAssertEqual(window.variableDefinitions.count, 2U);
+
+    UDGuiVariableDefinition *first = [window.variableDefinitions objectAtIndex:0];
+    XCTAssertEqual(first.type, UDGuiVariableDefinitionTypeFloat);
+    XCTAssertEqualObjects(first.name, @"speed");
+    XCTAssertEqualObjects(first.value, @"100");
+
+    UDGuiVariableDefinition *second = [window.variableDefinitions objectAtIndex:1];
+    XCTAssertEqual(second.type, UDGuiVariableDefinitionTypeFloat);
+    XCTAssertEqualObjects(second.name, @"alpha");
+    XCTAssertEqualObjects(second.value, @"0.75");
+}
+
+- (void)testGuiDocumentCodecParsesAnimationDefAsChildWindow {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    animationDef FadeIn {\n"
+         "        rect 1, 2, 3, 4\n"
+         "    }\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *error = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertNotNil(document);
+
+    UDGuiWindowNode *root = [document.rootWindows objectAtIndex:0];
+    XCTAssertEqual(root.children.count, 1U);
+    UDGuiWindowNode *animation = [root.children objectAtIndex:0];
+    XCTAssertEqualObjects(animation.className, @"animationDef");
+    XCTAssertEqualObjects(animation.name, @"FadeIn");
+    XCTAssertFalse(animation.visible);
+    XCTAssertEqualObjects([animation stringPropertyForKey:@"rect"], @"1, 2, 3, 4");
+}
+
+- (void)testGuiDocumentCodecParsesTopLevelWindowStreamWithoutDeclWrapper {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    text \"Main\"\n"
+         "}\n"
+         "\n"
+         "windowDef Secondary {\n"
+         "    visible 0\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *error = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/stream.gui" error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertNotNil(document);
+    XCTAssertEqual(document.rootWindows.count, 2U);
+
+    UDGuiWindowNode *first = [document.rootWindows objectAtIndex:0];
+    UDGuiWindowNode *second = [document.rootWindows objectAtIndex:1];
+    XCTAssertEqualObjects(first.name, @"Desktop");
+    XCTAssertEqualObjects(second.name, @"Secondary");
+    XCTAssertEqualObjects(first.text, @"Main");
+    XCTAssertFalse(second.visible);
 }
 
 - (void)testGuiEditorServiceUndoRedoPropertyEdits {

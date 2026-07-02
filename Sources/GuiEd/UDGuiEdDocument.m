@@ -5,6 +5,7 @@
 #import "UDGuiEdDocument.h"
 #import "UDGuiEdDocumentWindowController.h"
 
+#import "../UDCore/UDGuiDocumentCodec.h"
 #import "../UDCore/UDGuiEditorService.h"
 #import "../UDCore/UDGuiEditorViewModel.h"
 #import "../UDCore/UDGuiModel.h"

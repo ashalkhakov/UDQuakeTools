@@ -25,6 +25,44 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     UDGuiAttributeTypeTabRender,
 };
 
+static NSString *UDGuiEventKeywordForType(UDGuiEventHandlerType type) {
+    switch (type) {
+        case UDGuiEventHandlerTypeOnTime: return @"onTime";
+        case UDGuiEventHandlerTypeOnNamedEvent: return @"onNamedEvent";
+        case UDGuiEventHandlerTypeOnAction: return @"onAction";
+        case UDGuiEventHandlerTypeOnActionRelease: return @"onActionRelease";
+        case UDGuiEventHandlerTypeOnMouseEnter: return @"onMouseEnter";
+        case UDGuiEventHandlerTypeOnMouseExit: return @"onMouseExit";
+        case UDGuiEventHandlerTypeOnActivate: return @"onActivate";
+        case UDGuiEventHandlerTypeOnDeactivate: return @"onDeactivate";
+        case UDGuiEventHandlerTypeOnEsc: return @"onEsc";
+        case UDGuiEventHandlerTypeOnEvent: return @"onEvent";
+        case UDGuiEventHandlerTypeOnTrigger: return @"onTrigger";
+        case UDGuiEventHandlerTypeOnEnter: return @"onEnter";
+        case UDGuiEventHandlerTypeOnEnterRelease: return @"onEnterRelease";
+    }
+}
+
+static BOOL UDGuiEventTypeFromKeyword(NSString *keyword, UDGuiEventHandlerType *outType) {
+    NSString *lower = keyword.lowercaseString;
+    if ([lower isEqualToString:@"ontime"]) { *outType = UDGuiEventHandlerTypeOnTime; return YES; }
+    if ([lower isEqualToString:@"onnamedevent"]) { *outType = UDGuiEventHandlerTypeOnNamedEvent; return YES; }
+    if ([lower isEqualToString:@"onaction"]) { *outType = UDGuiEventHandlerTypeOnAction; return YES; }
+    if ([lower isEqualToString:@"onactionrelease"]) { *outType = UDGuiEventHandlerTypeOnActionRelease; return YES; }
+    if ([lower isEqualToString:@"onmouseenter"]) { *outType = UDGuiEventHandlerTypeOnMouseEnter; return YES; }
+    if ([lower isEqualToString:@"onmouseexit"]) { *outType = UDGuiEventHandlerTypeOnMouseExit; return YES; }
+    if ([lower isEqualToString:@"onactivate"]) { *outType = UDGuiEventHandlerTypeOnActivate; return YES; }
+    if ([lower isEqualToString:@"ondeactivate"]) { *outType = UDGuiEventHandlerTypeOnDeactivate; return YES; }
+    if ([lower isEqualToString:@"onesc"]) { *outType = UDGuiEventHandlerTypeOnEsc; return YES; }
+    if ([lower isEqualToString:@"onevent"]) { *outType = UDGuiEventHandlerTypeOnEvent; return YES; }
+    if ([lower isEqualToString:@"ontrigger"]) { *outType = UDGuiEventHandlerTypeOnTrigger; return YES; }
+    if ([lower isEqualToString:@"onenter"]) { *outType = UDGuiEventHandlerTypeOnEnter; return YES; }
+    if ([lower isEqualToString:@"onenterrelease"]) { *outType = UDGuiEventHandlerTypeOnEnterRelease; return YES; }
+    return NO;
+}
+
+static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
+
 @interface UDGuiEdDocumentWindowController ()
 @property (nonatomic, assign) UDGuiEdDocument *ownerDocument;
 @property (nonatomic, assign) UDGuiInspectorSection activeInspectorSection;
@@ -34,6 +72,29 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 @property (nonatomic, copy) NSString *eventsOnTimeHintDefaultText;
 @property (nonatomic, copy) NSString *listTabStopsHintDefaultText;
 @property (nonatomic, copy) NSString *listTabAlignsHintDefaultText;
+@property (nonatomic, strong) NSTableView *eventHandlersTableView;
+@property (nonatomic, strong) NSTableView *eventCommandsTableView;
+@property (nonatomic, strong) NSSegmentedControl *eventHandlersActionControl;
+@property (nonatomic, strong) NSSegmentedControl *eventCommandsActionControl;
+@property (nonatomic, strong) IBOutlet NSPopUpButton *eventCommandTypePopup;
+@property (nonatomic, strong) IBOutlet NSTabView *eventCommandEditorTabView;
+@property (nonatomic, strong) IBOutlet NSTextField *eventSetVariableField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventSetValueField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventSetFocusWindowField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventResetTimeWindowField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventResetTimeValueField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionVariableField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionFromField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionToField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionTimeField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionAccelField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionDecelField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventLocalSoundField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventRunScriptField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventShowCursorField;
+@property (nonatomic, strong) IBOutlet NSTextField *eventFallbackArgumentsField;
+@property (nonatomic, assign) NSInteger selectedEventHandlerIndex;
+@property (nonatomic, assign) BOOL suppressEventCommandEditorCommit;
 @end
 
 @implementation UDGuiEdDocumentWindowController
@@ -50,7 +111,7 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
         availableHeight = NSHeight(containerView.bounds);
     }
 
-    if (section == UDGuiInspectorSectionAttributes) {
+    if (section == UDGuiInspectorSectionAttributes || section == UDGuiInspectorSectionEvents) {
         return NSMakeRect(0.0, 0.0, availableWidth, availableHeight);
     }
 
@@ -78,7 +139,7 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     self.attributesPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, fullHeight);
     self.sizePanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
     self.variablesPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
-    self.eventsPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
+    self.eventsPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, fullHeight);
 }
 
 - (instancetype)initWithDocument:(UDGuiEdDocument *)document {
@@ -111,6 +172,20 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     self.eventsOnTimeHintDefaultText = self.eventsOnTimeHintLabel.stringValue ?: @"";
     self.listTabStopsHintDefaultText = self.attrListTabStopsHintLabel.stringValue ?: @"";
     self.listTabAlignsHintDefaultText = self.attrListTabAlignsHintLabel.stringValue ?: @"";
+    if (self.eventCommandTypePopup) {
+        [self.eventCommandTypePopup removeAllItems];
+        [self.eventCommandTypePopup addItemsWithTitles:@[@"set", @"setFocus", @"resetTime", @"transition", @"localSound", @"runScript", @"showCursor", @"evalRegs", @"resetCinematics", @"endGame"]];
+    }
+    self.selectedEventHandlerIndex = NSNotFound;
+
+    if (self.eventHandlersTableView) {
+        [self.eventHandlersTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
+        [self.eventHandlersTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
+    }
+    if (self.eventCommandsTableView) {
+        [self.eventCommandsTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
+        [self.eventCommandsTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
+    }
 
     [self refreshFromDocument];
 }
@@ -118,6 +193,364 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 - (void)windowDidResize:(NSNotification *)notification {
     (void)notification;
     [self updateInspectorSectionLayout];
+}
+
+- (void)setupEventsEditorUIIfNeeded {
+    // Events tab layout is fully defined in XIB.
+}
+
+- (NSArray<UDGuiEventHandler *> *)selectedWindowEventHandlers {
+    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
+    return window ? window.eventHandlers : @[];
+}
+
+- (nullable UDGuiEventHandler *)selectedEventHandler {
+    NSArray<UDGuiEventHandler *> *handlers = [self selectedWindowEventHandlers];
+    NSInteger row = self.eventHandlersTableView.selectedRow;
+    if (row < 0 || row >= (NSInteger)handlers.count) {
+        return nil;
+    }
+    return [handlers objectAtIndex:(NSUInteger)row];
+}
+
+- (nullable UDGuiScriptCommand *)selectedEventCommand {
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    NSInteger row = self.eventCommandsTableView.selectedRow;
+    if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) {
+        return nil;
+    }
+    return [handler.commands objectAtIndex:(NSUInteger)row];
+}
+
+- (void)selectEventCommandEditorTabIdentifier:(NSString *)identifier {
+    if (!self.eventCommandEditorTabView) {
+        return;
+    }
+
+    NSTabViewItem *item = nil;
+    for (NSTabViewItem *candidate in self.eventCommandEditorTabView.tabViewItems) {
+        if ([[candidate identifier] isKindOfClass:[NSString class]] && [[candidate identifier] isEqualToString:identifier]) {
+            item = candidate;
+            break;
+        }
+    }
+    if (!item) {
+        for (NSTabViewItem *candidate in self.eventCommandEditorTabView.tabViewItems) {
+            if ([[candidate identifier] isKindOfClass:[NSString class]] && [[candidate identifier] isEqualToString:@"none"]) {
+                item = candidate;
+                break;
+            }
+        }
+    }
+    if (item) {
+        [self.eventCommandEditorTabView selectTabViewItem:item];
+    }
+}
+
+- (void)syncEventCommandEditorFromSelection {
+    UDGuiScriptCommand *command = [self selectedEventCommand];
+    BOOL hasSelection = command != nil;
+    self.suppressEventCommandEditorCommit = YES;
+    self.eventCommandTypePopup.enabled = hasSelection;
+
+    if (!command) {
+        [self.eventCommandTypePopup selectItemAtIndex:-1];
+        [self selectEventCommandEditorTabIdentifier:@"none"];
+        self.suppressEventCommandEditorCommit = NO;
+        return;
+    }
+
+    NSString *keyword = command.keyword ?: @"";
+    NSString *lower = keyword.lowercaseString;
+    if (![self.eventCommandTypePopup itemWithTitle:keyword]) {
+        [self.eventCommandTypePopup addItemWithTitle:keyword];
+    }
+    [self.eventCommandTypePopup selectItemWithTitle:keyword];
+
+    if ([command isKindOfClass:[UDGuiSetCommand class]]) {
+        UDGuiSetCommand *setCommand = (UDGuiSetCommand *)command;
+        [self selectEventCommandEditorTabIdentifier:@"set"];
+        self.eventSetVariableField.stringValue = setCommand.variable ?: @"";
+        self.eventSetValueField.stringValue = setCommand.valueExpression ?: @"";
+    } else if ([command isKindOfClass:[UDGuiSetFocusCommand class]]) {
+        UDGuiSetFocusCommand *setFocusCommand = (UDGuiSetFocusCommand *)command;
+        [self selectEventCommandEditorTabIdentifier:@"setFocus"];
+        self.eventSetFocusWindowField.stringValue = setFocusCommand.windowName ?: @"";
+    } else if ([command isKindOfClass:[UDGuiResetTimeCommand class]]) {
+        UDGuiResetTimeCommand *reset = (UDGuiResetTimeCommand *)command;
+        [self selectEventCommandEditorTabIdentifier:@"resetTime"];
+        self.eventResetTimeWindowField.stringValue = reset.windowName ?: @"";
+        self.eventResetTimeValueField.stringValue = reset.timeExpression ?: @"";
+    } else if ([command isKindOfClass:[UDGuiTransitionCommand class]]) {
+        UDGuiTransitionCommand *transition = (UDGuiTransitionCommand *)command;
+        [self selectEventCommandEditorTabIdentifier:@"transition"];
+        self.eventTransitionVariableField.stringValue = transition.variable ?: @"";
+        self.eventTransitionFromField.stringValue = transition.fromValue ?: @"";
+        self.eventTransitionToField.stringValue = transition.toValue ?: @"";
+        self.eventTransitionTimeField.stringValue = transition.timeExpression ?: @"";
+        self.eventTransitionAccelField.stringValue = transition.accelExpression ?: @"";
+        self.eventTransitionDecelField.stringValue = transition.decelExpression ?: @"";
+    } else if ([command isKindOfClass:[UDGuiSingleArgumentCommand class]]) {
+        UDGuiSingleArgumentCommand *single = (UDGuiSingleArgumentCommand *)command;
+        if ([lower isEqualToString:@"localsound"]) {
+            [self selectEventCommandEditorTabIdentifier:@"localSound"];
+            self.eventLocalSoundField.stringValue = single.value ?: @"";
+        } else if ([lower isEqualToString:@"runscript"]) {
+            [self selectEventCommandEditorTabIdentifier:@"runScript"];
+            self.eventRunScriptField.stringValue = single.value ?: @"";
+        } else if ([lower isEqualToString:@"showcursor"]) {
+            [self selectEventCommandEditorTabIdentifier:@"showCursor"];
+            self.eventShowCursorField.stringValue = single.value ?: @"";
+        } else {
+            [self selectEventCommandEditorTabIdentifier:@"fallback"];
+            self.eventFallbackArgumentsField.stringValue = command.arguments ?: @"";
+        }
+    } else if ([lower isEqualToString:@"evalregs"] || [lower isEqualToString:@"resetcinematics"] || [lower isEqualToString:@"endgame"]) {
+        [self selectEventCommandEditorTabIdentifier:lower];
+    } else {
+        [self selectEventCommandEditorTabIdentifier:@"fallback"];
+        self.eventFallbackArgumentsField.stringValue = command.arguments ?: @"";
+    }
+
+    self.suppressEventCommandEditorCommit = NO;
+}
+
+- (UDGuiScriptCommand *)eventCommandFromEditorState {
+    NSString *keyword = self.eventCommandTypePopup.selectedItem.title ?: @"";
+    NSString *lower = keyword.lowercaseString;
+    NSString *(^trimmed)(NSString *) = ^NSString *(NSString *value) {
+        return [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    };
+
+    if ([lower isEqualToString:@"set"]) {
+        NSString *variable = trimmed(self.eventSetVariableField.stringValue ?: @"");
+        NSString *value = trimmed(self.eventSetValueField.stringValue ?: @"");
+        if (variable.length == 0) {
+            return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:[NSString stringWithFormat:@"%@ %@", variable, value]];
+        }
+        return [[UDGuiSetCommand alloc] initWithVariable:variable valueExpression:value ?: @""];
+    }
+    if ([lower isEqualToString:@"setfocus"]) {
+        NSString *windowName = trimmed(self.eventSetFocusWindowField.stringValue ?: @"");
+        if (windowName.length == 0) {
+            return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:@""];
+        }
+        return [[UDGuiSetFocusCommand alloc] initWithWindowName:windowName];
+    }
+    if ([lower isEqualToString:@"resettime"]) {
+        return [[UDGuiResetTimeCommand alloc] initWithWindowName:trimmed(self.eventResetTimeWindowField.stringValue ?: @"")
+                                                  timeExpression:trimmed(self.eventResetTimeValueField.stringValue ?: @"")];
+    }
+    if ([lower isEqualToString:@"transition"]) {
+        NSString *variable = trimmed(self.eventTransitionVariableField.stringValue ?: @"");
+        NSString *fromValue = trimmed(self.eventTransitionFromField.stringValue ?: @"");
+        NSString *toValue = trimmed(self.eventTransitionToField.stringValue ?: @"");
+        NSString *timeExpression = trimmed(self.eventTransitionTimeField.stringValue ?: @"");
+        NSString *accel = trimmed(self.eventTransitionAccelField.stringValue ?: @"");
+        NSString *decel = trimmed(self.eventTransitionDecelField.stringValue ?: @"");
+        if (variable.length > 0 && fromValue.length > 0 && toValue.length > 0 && timeExpression.length > 0) {
+            return [[UDGuiTransitionCommand alloc] initWithVariable:variable
+                                                           fromValue:fromValue
+                                                             toValue:toValue
+                                                      timeExpression:timeExpression
+                                                     accelExpression:(accel.length > 0 ? accel : nil)
+                                                     decelExpression:(decel.length > 0 ? decel : nil)];
+        }
+        NSString *arguments = [NSString stringWithFormat:@"%@ %@ %@ %@ %@ %@", variable, fromValue, toValue, timeExpression, accel, decel];
+        return [[UDGuiScriptCommand alloc] initWithKeyword:keyword
+                                                 arguments:[arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+    }
+    if ([lower isEqualToString:@"localsound"] || [lower isEqualToString:@"runscript"] || [lower isEqualToString:@"showcursor"]) {
+        NSString *value = @"";
+        if ([lower isEqualToString:@"localsound"]) {
+            value = trimmed(self.eventLocalSoundField.stringValue ?: @"");
+        } else if ([lower isEqualToString:@"runscript"]) {
+            value = trimmed(self.eventRunScriptField.stringValue ?: @"");
+        } else {
+            value = trimmed(self.eventShowCursorField.stringValue ?: @"");
+        }
+        return [[UDGuiSingleArgumentCommand alloc] initWithKeyword:keyword value:value ?: @""];
+    }
+    if ([lower isEqualToString:@"evalregs"] || [lower isEqualToString:@"resetcinematics"] || [lower isEqualToString:@"endgame"]) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:@""];
+    }
+
+    return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:trimmed(self.eventFallbackArgumentsField.stringValue ?: @"") ?: @""];
+}
+
+- (IBAction)eventCommandEditorChanged:(id)sender {
+    (void)sender;
+    if (self.suppressEventCommandEditorCommit) {
+        return;
+    }
+
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    NSInteger row = self.eventCommandsTableView.selectedRow;
+    if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) {
+        return;
+    }
+
+    [handler replaceCommandAtIndex:(NSUInteger)row withCommand:[self eventCommandFromEditorState]];
+    [self.ownerDocument notifyGUIModelDidChange];
+    [self.eventCommandsTableView reloadData];
+    [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [self syncEventCommandEditorFromSelection];
+}
+
+- (UDGuiScriptCommand *)scriptCommandForEditorStatement:(NSString *)statement {
+    NSString *trimmed = [statement stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length == 0) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:@"evalRegs" arguments:@""];
+    }
+
+    NSScanner *scanner = [NSScanner scannerWithString:trimmed];
+    NSString *keyword = nil;
+    if (![scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] intoString:&keyword] || keyword.length == 0) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:trimmed arguments:@""];
+    }
+
+    NSString *arguments = scanner.isAtEnd ? @"" : [[trimmed substringFromIndex:scanner.scanLocation] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:arguments ?: @""];
+}
+
+- (UDGuiEventHandler *)eventHandlerForType:(UDGuiEventHandlerType)type qualifier:(NSString *)qualifier {
+    if (type == UDGuiEventHandlerTypeOnTime) {
+        return [[UDGuiTimedEventHandler alloc] initWithTimeExpression:(qualifier.length > 0 ? qualifier : @"0")];
+    }
+    if (type == UDGuiEventHandlerTypeOnNamedEvent) {
+        return [[UDGuiNamedEventHandler alloc] initWithEventName:qualifier ?: @""];
+    }
+    return [[UDGuiSimpleEventHandler alloc] initWithType:type];
+}
+
+- (void)reloadEventsEditorForWindow:(UDGuiWindowNode *)window preserveSelection:(BOOL)preserveSelection {
+    (void)window;
+    NSInteger selectedHandler = preserveSelection ? self.eventHandlersTableView.selectedRow : NSNotFound;
+    [self.eventHandlersTableView reloadData];
+
+    NSInteger handlerCount = (NSInteger)[self selectedWindowEventHandlers].count;
+    if (handlerCount > 0) {
+        NSInteger row = selectedHandler;
+        if (row == NSNotFound || row < 0) {
+            row = 0;
+        }
+        if (row >= handlerCount) {
+            row = handlerCount - 1;
+        }
+        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+        self.selectedEventHandlerIndex = row;
+    } else {
+        [self.eventHandlersTableView deselectAll:nil];
+        self.selectedEventHandlerIndex = NSNotFound;
+    }
+
+    [self.eventCommandsTableView reloadData];
+    if ([self selectedEventHandler]) {
+        if ([self selectedEventHandler].commands.count > 0) {
+            [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        } else {
+            [self.eventCommandsTableView deselectAll:nil];
+        }
+    } else {
+        [self.eventCommandsTableView deselectAll:nil];
+    }
+    [self syncEventCommandEditorFromSelection];
+}
+
+- (IBAction)changeEventHandlersActionButtons:(id)sender {
+    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
+    if (!window) {
+        return;
+    }
+
+    NSSegmentedControl *control = (NSSegmentedControl *)sender;
+    NSInteger segment = control.selectedSegment;
+    control.selectedSegment = -1;
+
+    NSInteger row = self.eventHandlersTableView.selectedRow;
+    if (segment == 0) {
+        UDGuiEventHandler *handler = [[UDGuiSimpleEventHandler alloc] initWithType:UDGuiEventHandlerTypeOnAction];
+        [handler addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"]];
+        [window addEventHandler:handler];
+        [self.ownerDocument notifyGUIModelDidChange];
+        [self reloadEventsEditorForWindow:window preserveSelection:NO];
+        NSInteger newRow = (NSInteger)window.eventHandlers.count - 1;
+        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)newRow] byExtendingSelection:NO];
+        return;
+    }
+
+    if (row < 0 || row >= (NSInteger)window.eventHandlers.count) {
+        return;
+    }
+
+    if (segment == 1) {
+        [window removeEventHandlerAtIndex:(NSUInteger)row];
+    } else if (segment == 2 && row > 0) {
+        UDGuiEventHandler *handler = [window.eventHandlers objectAtIndex:(NSUInteger)row];
+        [window removeEventHandlerAtIndex:(NSUInteger)row];
+        [window insertEventHandler:handler atIndex:(NSUInteger)(row - 1)];
+    } else if (segment == 3 && row < (NSInteger)window.eventHandlers.count - 1) {
+        UDGuiEventHandler *handler = [window.eventHandlers objectAtIndex:(NSUInteger)row];
+        [window removeEventHandlerAtIndex:(NSUInteger)row];
+        [window insertEventHandler:handler atIndex:(NSUInteger)(row + 1)];
+    } else {
+        return;
+    }
+
+    [self.ownerDocument notifyGUIModelDidChange];
+    [self reloadEventsEditorForWindow:window preserveSelection:NO];
+}
+
+- (IBAction)changeEventCommandsActionButtons:(id)sender {
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    if (!handler) {
+        return;
+    }
+
+    NSSegmentedControl *control = (NSSegmentedControl *)sender;
+    NSInteger segment = control.selectedSegment;
+    control.selectedSegment = -1;
+
+    NSInteger row = self.eventCommandsTableView.selectedRow;
+    if (segment == 0) {
+        [handler addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"]];
+        row = (NSInteger)handler.commands.count - 1;
+    } else if (segment == 1) {
+        if (row < 0 || row >= (NSInteger)handler.commands.count) {
+            return;
+        }
+        [handler removeCommandAtIndex:(NSUInteger)row];
+        if (row >= (NSInteger)handler.commands.count) {
+            row = (NSInteger)handler.commands.count - 1;
+        }
+    } else if (segment == 2) {
+        if (row <= 0 || row >= (NSInteger)handler.commands.count) {
+            return;
+        }
+        UDGuiScriptCommand *command = [handler.commands objectAtIndex:(NSUInteger)row];
+        [handler removeCommandAtIndex:(NSUInteger)row];
+        [handler insertCommand:command atIndex:(NSUInteger)(row - 1)];
+        row -= 1;
+    } else if (segment == 3) {
+        if (row < 0 || row >= (NSInteger)handler.commands.count - 1) {
+            return;
+        }
+        UDGuiScriptCommand *command = [handler.commands objectAtIndex:(NSUInteger)row];
+        [handler removeCommandAtIndex:(NSUInteger)row];
+        [handler insertCommand:command atIndex:(NSUInteger)(row + 1)];
+        row += 1;
+    } else {
+        return;
+    }
+
+    [self.ownerDocument notifyGUIModelDidChange];
+    [self.eventCommandsTableView reloadData];
+    if (row >= 0 && row < (NSInteger)handler.commands.count) {
+        [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    } else {
+        [self.eventCommandsTableView deselectAll:nil];
+    }
+    [self syncEventCommandEditorFromSelection];
 }
 
 - (IBAction)changeInspectorSection:(id)sender {
@@ -315,8 +748,8 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     BOOL rectValid = self.sizeRectField.stringValue.length == 0 || [self isRectString:self.sizeRectField.stringValue];
     BOOL rotateValid = self.sizeRotateField.stringValue.length == 0 || [self isScalarString:self.sizeRotateField.stringValue];
 
-    BOOL onActionValid = self.eventsOnActionField.stringValue.length == 0 || [self.eventsOnActionField.stringValue containsString:@"{"];
-    BOOL onTimeValid = self.eventsOnTimeField.stringValue.length == 0 || ([self.eventsOnTimeField.stringValue containsString:@"{"] && [self.eventsOnTimeField.stringValue rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location != NSNotFound);
+    BOOL onActionValid = YES;
+    BOOL onTimeValid = YES;
 
     [self setHintLabel:self.sizeRectHintLabel defaultText:self.sizeRectHintDefaultText invalidText:@"Expected 4 numeric values: x, y, w, h" valid:rectValid];
     [self setHintLabel:self.sizeRotateHintLabel defaultText:self.sizeRotateHintDefaultText invalidText:@"Expected numeric rotate value" valid:rotateValid];
@@ -434,8 +867,7 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     self.sizeTextScaleField.stringValue = [NSString stringWithFormat:@"%g", [[window valueForKey:@"textScale"] doubleValue]];
     [self reloadVariablesTableForWindow:window preserveSelection:YES selectRow:NSNotFound beginEditing:NO];
 
-    self.eventsOnActionField.stringValue = [window stringPropertyForKey:@"onAction"] ?: @"";
-    self.eventsOnTimeField.stringValue = [window stringPropertyForKey:@"onTime"] ?: @"";
+    [self reloadEventsEditorForWindow:window preserveSelection:YES];
 }
 
 - (NSArray<UDGuiVariableDefinition *> *)variableDefinitionsForWindow:(UDGuiWindowNode *)window {
@@ -725,12 +1157,7 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 
 - (IBAction)commitTypedEventsPanel:(id)sender {
     (void)sender;
-    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
-    [window setValue:self.eventsOnActionField.stringValue forKey:@"onAction"];
-    [window setValue:self.eventsOnTimeField.stringValue forKey:@"onTime"];
-    [self.ownerDocument notifyGUIModelDidChange];
-    [self refreshTypedValidationHintsForWindow:self.ownerDocument.viewModel.selectedWindow];
-    [self refreshFromDocument];
+    // Legacy Events text fields are replaced by the table-based master-detail editor.
 }
 
 
@@ -872,11 +1299,164 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     if (tableView == self.variablesTableView) {
         return (NSInteger)[self selectedWindowVariableDefinitions].count;
     }
+    if (tableView == self.eventHandlersTableView) {
+        return (NSInteger)[self selectedWindowEventHandlers].count;
+    }
+    if (tableView == self.eventCommandsTableView) {
+        return (NSInteger)[self selectedEventHandler].commands.count;
+    }
     return 0;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pasteboard {
+    if ((tableView != self.eventHandlersTableView && tableView != self.eventCommandsTableView) || rowIndexes.count == 0) {
+        return NO;
+    }
+
+    NSInteger row = (NSInteger)rowIndexes.firstIndex;
+    NSString *kind = (tableView == self.eventHandlersTableView) ? @"handlers" : @"commands";
+    NSDictionary *payload = @{ @"kind": kind, @"row": @(row) };
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:payload];
+    if (!data) {
+        return NO;
+    }
+
+    [pasteboard declareTypes:@[UDGuiEventsReorderPasteboardType] owner:nil];
+    [pasteboard setData:data forType:UDGuiEventsReorderPasteboardType];
+    return YES;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView
+                validateDrop:(id<NSDraggingInfo>)info
+                 proposedRow:(NSInteger)row
+       proposedDropOperation:(NSTableViewDropOperation)dropOperation {
+    if (tableView != self.eventHandlersTableView && tableView != self.eventCommandsTableView) {
+        return NSDragOperationNone;
+    }
+
+    if (dropOperation != NSTableViewDropAbove) {
+        [tableView setDropRow:row dropOperation:NSTableViewDropAbove];
+    }
+
+    NSPasteboard *pasteboard = [info draggingPasteboard];
+    NSData *data = [pasteboard dataForType:UDGuiEventsReorderPasteboardType];
+    if (!data) {
+        return NSDragOperationNone;
+    }
+
+    NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    if (![payload isKindOfClass:[NSDictionary class]]) {
+        return NSDragOperationNone;
+    }
+    NSString *kind = payload[@"kind"];
+    if ((tableView == self.eventHandlersTableView && ![kind isEqualToString:@"handlers"]) ||
+        (tableView == self.eventCommandsTableView && ![kind isEqualToString:@"commands"])) {
+        return NSDragOperationNone;
+    }
+
+    return NSDragOperationMove;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView
+       acceptDrop:(id<NSDraggingInfo>)info
+              row:(NSInteger)row
+    dropOperation:(NSTableViewDropOperation)dropOperation {
+    (void)dropOperation;
+    NSPasteboard *pasteboard = [info draggingPasteboard];
+    NSData *data = [pasteboard dataForType:UDGuiEventsReorderPasteboardType];
+    if (!data) {
+        return NO;
+    }
+
+    NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    if (![payload isKindOfClass:[NSDictionary class]]) {
+        return NO;
+    }
+
+    NSInteger sourceRow = [payload[@"row"] integerValue];
+    if (tableView == self.eventHandlersTableView) {
+        UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
+        if (!window || sourceRow < 0 || sourceRow >= (NSInteger)window.eventHandlers.count) {
+            return NO;
+        }
+
+        NSInteger destinationRow = row;
+        if (destinationRow > (NSInteger)window.eventHandlers.count) {
+            destinationRow = (NSInteger)window.eventHandlers.count;
+        }
+        if (destinationRow == sourceRow || destinationRow == sourceRow + 1) {
+            return NO;
+        }
+
+        UDGuiEventHandler *item = [window.eventHandlers objectAtIndex:(NSUInteger)sourceRow];
+        [window removeEventHandlerAtIndex:(NSUInteger)sourceRow];
+        if (destinationRow > sourceRow) {
+            destinationRow -= 1;
+        }
+        [window insertEventHandler:item atIndex:(NSUInteger)destinationRow];
+        [self.ownerDocument notifyGUIModelDidChange];
+        [self reloadEventsEditorForWindow:window preserveSelection:NO];
+        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)destinationRow] byExtendingSelection:NO];
+        return YES;
+    }
+
+    if (tableView == self.eventCommandsTableView) {
+        UDGuiEventHandler *handler = [self selectedEventHandler];
+        if (!handler || sourceRow < 0 || sourceRow >= (NSInteger)handler.commands.count) {
+            return NO;
+        }
+
+        NSInteger destinationRow = row;
+        if (destinationRow > (NSInteger)handler.commands.count) {
+            destinationRow = (NSInteger)handler.commands.count;
+        }
+        if (destinationRow == sourceRow || destinationRow == sourceRow + 1) {
+            return NO;
+        }
+
+        UDGuiScriptCommand *item = [handler.commands objectAtIndex:(NSUInteger)sourceRow];
+        [handler removeCommandAtIndex:(NSUInteger)sourceRow];
+        if (destinationRow > sourceRow) {
+            destinationRow -= 1;
+        }
+        [handler insertCommand:item atIndex:(NSUInteger)destinationRow];
+        [self.ownerDocument notifyGUIModelDidChange];
+        [self.eventCommandsTableView reloadData];
+        [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)destinationRow] byExtendingSelection:NO];
+        [self syncEventCommandEditorFromSelection];
+        return YES;
+    }
+
+    return NO;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     if (tableView != self.variablesTableView) {
+        if (tableView == self.eventHandlersTableView) {
+            NSArray<UDGuiEventHandler *> *handlers = [self selectedWindowEventHandlers];
+            if (row < 0 || row >= (NSInteger)handlers.count) {
+                return @"";
+            }
+
+            UDGuiEventHandler *handler = [handlers objectAtIndex:(NSUInteger)row];
+            if ([tableColumn.identifier isEqualToString:@"event"]) {
+                return UDGuiEventKeywordForType(handler.type);
+            }
+            if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
+                return [handler eventQualifier] ?: @"";
+            }
+            return @"";
+        }
+
+        if (tableView == self.eventCommandsTableView) {
+            UDGuiEventHandler *handler = [self selectedEventHandler];
+            if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) {
+                return @"";
+            }
+            UDGuiScriptCommand *command = [handler.commands objectAtIndex:(NSUInteger)row];
+            return [command serializedStatement];
+        }
+
         return @"";
     }
 
@@ -900,6 +1480,47 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 
 - (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     if (tableView != self.variablesTableView) {
+        if (tableView == self.eventHandlersTableView) {
+            UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
+            NSArray<UDGuiEventHandler *> *handlers = [self selectedWindowEventHandlers];
+            if (!window || row < 0 || row >= (NSInteger)handlers.count) {
+                return;
+            }
+
+            UDGuiEventHandler *existing = [handlers objectAtIndex:(NSUInteger)row];
+            NSString *stringValue = [object isKindOfClass:[NSString class]] ? (NSString *)object : [[object description] copy];
+
+            if ([tableColumn.identifier isEqualToString:@"event"]) {
+                UDGuiEventHandlerType type = existing.type;
+                if (!UDGuiEventTypeFromKeyword(stringValue ?: @"", &type)) {
+                    return;
+                }
+                UDGuiEventHandler *replacement = [self eventHandlerForType:type qualifier:[existing eventQualifier] ?: @""];
+                for (UDGuiScriptCommand *command in existing.commands) {
+                    [replacement addCommand:[command deepCopy]];
+                }
+                [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
+            } else if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
+                UDGuiEventHandler *replacement = [self eventHandlerForType:existing.type qualifier:stringValue ?: @""];
+                for (UDGuiScriptCommand *command in existing.commands) {
+                    [replacement addCommand:[command deepCopy]];
+                }
+                [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
+            } else {
+                return;
+            }
+
+            [self.ownerDocument notifyGUIModelDidChange];
+            [self reloadEventsEditorForWindow:window preserveSelection:NO];
+            [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+            return;
+        }
+
+        if (tableView == self.eventCommandsTableView) {
+            // Commands are edited through the typed command editor controls.
+            return;
+        }
+
         return;
     }
 
@@ -924,6 +1545,24 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     if (notification.object == self.variablesTableView) {
         [self syncVariableControlsFromSelection];
+        return;
+    }
+
+    if (notification.object == self.eventHandlersTableView) {
+        self.selectedEventHandlerIndex = self.eventHandlersTableView.selectedRow;
+        [self.eventCommandsTableView reloadData];
+        UDGuiEventHandler *handler = [self selectedEventHandler];
+        if (handler && handler.commands.count > 0) {
+            [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        } else {
+            [self.eventCommandsTableView deselectAll:nil];
+        }
+        [self syncEventCommandEditorFromSelection];
+        return;
+    }
+
+    if (notification.object == self.eventCommandsTableView) {
+        [self syncEventCommandEditorFromSelection];
     }
 }
 

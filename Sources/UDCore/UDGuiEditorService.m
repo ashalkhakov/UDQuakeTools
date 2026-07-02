@@ -14,6 +14,47 @@ typedef NS_ENUM(NSInteger, UDGuiDocumentCodecErrorCode) {
     UDGuiDocumentCodecErrorCodeUnexpectedToken = 2,
 };
 
+static UDGuiEventHandlerType UDGuiEventHandlerTypeForIdentifier(NSString *identifier) {
+    NSString *lower = identifier.lowercaseString;
+    if ([lower isEqualToString:@"ontime"]) {
+        return UDGuiEventHandlerTypeOnTime;
+    }
+    if ([lower isEqualToString:@"onnamedevent"]) {
+        return UDGuiEventHandlerTypeOnNamedEvent;
+    }
+    if ([lower isEqualToString:@"onaction"]) {
+        return UDGuiEventHandlerTypeOnAction;
+    }
+    if ([lower isEqualToString:@"onactionrelease"]) {
+        return UDGuiEventHandlerTypeOnActionRelease;
+    }
+    if ([lower isEqualToString:@"onmouseenter"]) {
+        return UDGuiEventHandlerTypeOnMouseEnter;
+    }
+    if ([lower isEqualToString:@"onmouseexit"]) {
+        return UDGuiEventHandlerTypeOnMouseExit;
+    }
+    if ([lower isEqualToString:@"onactivate"]) {
+        return UDGuiEventHandlerTypeOnActivate;
+    }
+    if ([lower isEqualToString:@"ondeactivate"]) {
+        return UDGuiEventHandlerTypeOnDeactivate;
+    }
+    if ([lower isEqualToString:@"onesc"]) {
+        return UDGuiEventHandlerTypeOnEsc;
+    }
+    if ([lower isEqualToString:@"onevent"]) {
+        return UDGuiEventHandlerTypeOnEvent;
+    }
+    if ([lower isEqualToString:@"ontrigger"]) {
+        return UDGuiEventHandlerTypeOnTrigger;
+    }
+    if ([lower isEqualToString:@"onenter"]) {
+        return UDGuiEventHandlerTypeOnEnter;
+    }
+    return UDGuiEventHandlerTypeOnEnterRelease;
+}
+
 @interface UDGuiDeclCursor : NSObject
 
 - (instancetype)initWithText:(NSString *)text;
@@ -105,6 +146,15 @@ typedef NS_ENUM(NSInteger, UDGuiDocumentCodecErrorCode) {
                                                  cursor:(UDGuiDeclCursor *)cursor
                                                   error:(NSError **)error;
 - (BOOL)isWindowClassIdentifier:(NSString *)identifier;
+- (BOOL)isEventHandlerIdentifier:(NSString *)identifier;
+- (nullable UDGuiEventHandler *)parseEventHandlerForKeyToken:(UDIdToken *)keyToken
+                                        secondToken:(UDIdToken *)secondToken
+                                            cursor:(UDGuiDeclCursor *)cursor
+                                             error:(NSError **)error;
+- (NSArray<NSString *> *)scriptStatementsFromBlockValue:(NSString *)blockValue;
+- (UDGuiScriptCommand *)scriptCommandFromStatement:(NSString *)statement;
+- (UDGuiScriptCommand *)scriptCommandWithKeyword:(NSString *)keyword arguments:(NSString *)arguments;
+- (NSString *)serializedScriptBlockForEventHandler:(UDGuiEventHandler *)eventHandler indent:(NSString *)indent;
 - (BOOL)isIdentifierLikeLiteral:(NSString *)value;
 - (BOOL)shouldQuoteSerializedPropertyValue:(NSString *)value;
 - (NSString *)serializePropertyValue:(NSString *)value;
@@ -277,6 +327,18 @@ typedef NS_ENUM(NSInteger, UDGuiDocumentCodecErrorCode) {
         }
 
         UDIdToken *thirdToken = [cursor peekToken];
+        if ([self isEventHandlerIdentifier:keyOrClassToken.text]) {
+            UDGuiEventHandler *eventHandler = [self parseEventHandlerForKeyToken:keyOrClassToken
+                                                                      secondToken:secondToken
+                                                                           cursor:cursor
+                                                                            error:error];
+            if (!eventHandler) {
+                return nil;
+            }
+            [node addEventHandler:eventHandler];
+            continue;
+        }
+
         if (thirdToken.kind == UDIdTokenKindPunctuation && [thirdToken.text isEqualToString:@"{"] && [self isWindowClassIdentifier:keyOrClassToken.text]) {
             (void)[cursor readToken];
             UDGuiWindowNode *child = [self parseWindowBodyWithClassName:keyOrClassToken.text
@@ -371,6 +433,210 @@ typedef NS_ENUM(NSInteger, UDGuiDocumentCodecErrorCode) {
     return [identifier.lowercaseString hasSuffix:@"def"];
 }
 
+- (BOOL)isEventHandlerIdentifier:(NSString *)identifier {
+    NSString *lower = identifier.lowercaseString;
+    static NSSet<NSString *> *eventKeys = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        eventKeys = [NSSet setWithObjects:
+            @"ontime",
+            @"onnamedevent",
+            @"onaction",
+            @"onactionrelease",
+            @"onmouseenter",
+            @"onmouseexit",
+            @"onactivate",
+            @"ondeactivate",
+            @"onesc",
+            @"onevent",
+            @"ontrigger",
+            @"onenter",
+            @"onenterrelease",
+            nil];
+    });
+
+    return [eventKeys containsObject:lower];
+}
+
+- (nullable UDGuiEventHandler *)parseEventHandlerForKeyToken:(UDIdToken *)keyToken
+                                                  secondToken:(UDIdToken *)secondToken
+                                                       cursor:(UDGuiDeclCursor *)cursor
+                                                        error:(NSError **)error {
+    NSString *key = keyToken.text ?: @"";
+    NSString *lower = key.lowercaseString;
+    UDIdToken *openBraceToken = nil;
+    UDGuiEventHandler *handler = nil;
+
+    if ([lower isEqualToString:@"ontime"]) {
+        NSString *timeExpression = secondToken.text ?: @"0";
+        openBraceToken = [cursor readToken];
+        if (openBraceToken.kind != UDIdTokenKindPunctuation || ![openBraceToken.text isEqualToString:@"{"]) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDGuiDocumentCodecErrorDomain
+                                             code:UDGuiDocumentCodecErrorCodeUnexpectedToken
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Expected '{' after onTime <time>."}];
+            }
+            return nil;
+        }
+        handler = [[UDGuiTimedEventHandler alloc] initWithTimeExpression:timeExpression];
+    } else if ([lower isEqualToString:@"onnamedevent"]) {
+        NSString *eventName = secondToken.text ?: @"";
+        openBraceToken = [cursor readToken];
+        if (openBraceToken.kind != UDIdTokenKindPunctuation || ![openBraceToken.text isEqualToString:@"{"]) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDGuiDocumentCodecErrorDomain
+                                             code:UDGuiDocumentCodecErrorCodeUnexpectedToken
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Expected '{' after onNamedEvent <event>."}];
+            }
+            return nil;
+        }
+        handler = [[UDGuiNamedEventHandler alloc] initWithEventName:eventName];
+    } else {
+        if (secondToken.kind != UDIdTokenKindPunctuation || ![secondToken.text isEqualToString:@"{"]) {
+            if (error) {
+                *error = [NSError errorWithDomain:UDGuiDocumentCodecErrorDomain
+                                             code:UDGuiDocumentCodecErrorCodeUnexpectedToken
+                                         userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected '{' after %@.", key]}];
+            }
+            return nil;
+        }
+        openBraceToken = secondToken;
+        handler = [[UDGuiSimpleEventHandler alloc] initWithType:UDGuiEventHandlerTypeForIdentifier(key)];
+    }
+
+    NSString *blockValue = [self parseBlockValueStartingWithToken:openBraceToken cursor:cursor error:error];
+    if (!blockValue) {
+        return nil;
+    }
+
+    for (NSString *statement in [self scriptStatementsFromBlockValue:blockValue]) {
+        [handler addCommand:[self scriptCommandFromStatement:statement]];
+    }
+
+    return handler;
+}
+
+- (NSArray<NSString *> *)scriptStatementsFromBlockValue:(NSString *)blockValue {
+    if (blockValue.length == 0) {
+        return @[];
+    }
+
+    NSString *inner = [blockValue copy];
+    if ([inner hasPrefix:@"{"] && [inner hasSuffix:@"}"] && inner.length >= 2) {
+        inner = [inner substringWithRange:NSMakeRange(1, inner.length - 2)];
+    }
+
+    NSMutableArray<NSString *> *statements = [NSMutableArray array];
+    NSMutableString *current = [NSMutableString string];
+    BOOL inString = NO;
+    unichar previous = 0;
+    for (NSUInteger idx = 0; idx < inner.length; idx++) {
+        unichar ch = [inner characterAtIndex:idx];
+        if (ch == '"' && previous != '\\') {
+            inString = !inString;
+        }
+
+        if (ch == ';' && !inString) {
+            NSString *statement = [current stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (statement.length > 0) {
+                [statements addObject:statement];
+            }
+            [current setString:@""];
+            previous = ch;
+            continue;
+        }
+
+        [current appendFormat:@"%C", ch];
+        previous = ch;
+    }
+
+    NSString *tail = [current stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (tail.length > 0) {
+        [statements addObject:tail];
+    }
+
+    return [statements copy];
+}
+
+- (UDGuiScriptCommand *)scriptCommandFromStatement:(NSString *)statement {
+    NSString *trimmed = [statement stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length == 0) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:@"evalRegs" arguments:@""];
+    }
+
+    NSScanner *scanner = [NSScanner scannerWithString:trimmed];
+    NSString *keyword = nil;
+    if (![scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] intoString:&keyword] || keyword.length == 0) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:trimmed arguments:@""];
+    }
+
+    NSString *arguments = @"";
+    if (!scanner.isAtEnd) {
+        arguments = [[trimmed substringFromIndex:scanner.scanLocation]
+            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    }
+
+    return [self scriptCommandWithKeyword:keyword arguments:arguments];
+}
+
+- (UDGuiScriptCommand *)scriptCommandWithKeyword:(NSString *)keyword arguments:(NSString *)arguments {
+    NSString *lower = keyword.lowercaseString;
+    NSArray<NSString *> *parts = [[arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+        componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSMutableArray<NSString *> *tokens = [NSMutableArray array];
+    for (NSString *part in parts) {
+        if (part.length > 0) {
+            [tokens addObject:part];
+        }
+    }
+
+    if ([lower isEqualToString:@"set"] && tokens.count > 0) {
+        NSString *variable = [tokens objectAtIndex:0];
+        NSString *valueExpression = tokens.count > 1 ? [[tokens subarrayWithRange:NSMakeRange(1, tokens.count - 1)] componentsJoinedByString:@" "] : @"";
+        return [[UDGuiSetCommand alloc] initWithVariable:variable valueExpression:valueExpression];
+    }
+
+    if ([lower isEqualToString:@"setfocus"] && tokens.count > 0) {
+        return [[UDGuiSetFocusCommand alloc] initWithWindowName:[tokens objectAtIndex:0]];
+    }
+
+    if ([lower isEqualToString:@"resettime"]) {
+        NSString *windowName = tokens.count > 0 ? [tokens objectAtIndex:0] : nil;
+        NSString *timeExpression = tokens.count > 1 ? [tokens objectAtIndex:1] : nil;
+        return [[UDGuiResetTimeCommand alloc] initWithWindowName:windowName timeExpression:timeExpression];
+    }
+
+    if ([lower isEqualToString:@"transition"] && tokens.count >= 4) {
+        NSString *accel = tokens.count > 4 ? [tokens objectAtIndex:4] : nil;
+        NSString *decel = tokens.count > 5 ? [tokens objectAtIndex:5] : nil;
+        return [[UDGuiTransitionCommand alloc] initWithVariable:[tokens objectAtIndex:0]
+                                                      fromValue:[tokens objectAtIndex:1]
+                                                        toValue:[tokens objectAtIndex:2]
+                                                 timeExpression:[tokens objectAtIndex:3]
+                                                accelExpression:accel
+                                                decelExpression:decel];
+    }
+
+    if (([lower isEqualToString:@"showcursor"] ||
+         [lower isEqualToString:@"localsound"] ||
+         [lower isEqualToString:@"runscript"]) && tokens.count > 0) {
+        return [[UDGuiSingleArgumentCommand alloc] initWithKeyword:keyword value:[tokens objectAtIndex:0]];
+    }
+
+    return [[UDGuiScriptCommand alloc] initWithKeyword:keyword arguments:arguments ?: @""];
+}
+
+- (NSString *)serializedScriptBlockForEventHandler:(UDGuiEventHandler *)eventHandler indent:(NSString *)indent {
+    NSMutableString *block = [NSMutableString stringWithFormat:@"%@%@", [eventHandler eventKeyword], [eventHandler eventQualifier].length > 0 ? [NSString stringWithFormat:@" %@", [eventHandler eventQualifier]] : @""];
+    [block appendString:@" {\n"];
+    NSString *lineIndent = [indent stringByAppendingString:@"    "];
+    for (UDGuiScriptCommand *command in eventHandler.commands) {
+        [block appendFormat:@"%@%@ ;\n", lineIndent, [command serializedStatement]];
+    }
+    [block appendFormat:@"%@}", indent];
+    return block;
+}
+
 - (nullable NSString *)serializeDocument:(UDGuiDocument *)document error:(NSError **)error {
     NSParameterAssert(document != nil);
 
@@ -404,7 +670,14 @@ typedef NS_ENUM(NSInteger, UDGuiDocumentCodecErrorCode) {
     }
 
     for (UDGuiProperty *property in window.properties) {
+        if ([self isEventHandlerIdentifier:property.key]) {
+            continue;
+        }
         [text appendFormat:@"%@    %@ %@\n", indent, property.key, [self serializePropertyValue:property.value ?: @""]];
+    }
+
+    for (UDGuiEventHandler *eventHandler in window.eventHandlers) {
+        [text appendFormat:@"%@    %@\n", indent, [self serializedScriptBlockForEventHandler:eventHandler indent:[indent stringByAppendingString:@"    "]]];
     }
 
     for (UDGuiWindowNode *child in window.children) {

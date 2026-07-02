@@ -96,13 +96,135 @@
     XCTAssertEqual(document.rootWindows.count, 1U);
 
     UDGuiWindowNode *desktop = [document.rootWindows objectAtIndex:0];
-    XCTAssertTrue([[[desktop propertyForKey:@"onEvent"] value] containsString:@"resetTime \"pos1\" \"0\" ;"]);
+    XCTAssertEqual(desktop.eventHandlers.count, 1U);
+    UDGuiEventHandler *desktopHandler = [desktop.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(desktopHandler.type, UDGuiEventHandlerTypeOnEvent);
+    XCTAssertTrue(desktopHandler.commands.count >= 1U);
     XCTAssertEqual(desktop.children.count, 1U);
 
     UDGuiWindowNode *extend = [desktop.children objectAtIndex:0];
     XCTAssertEqualObjects(extend.name, @"Extend");
-    XCTAssertTrue([[[extend propertyForKey:@"onTime"] value] hasPrefix:@"0 {"]);
-    XCTAssertTrue([[[extend propertyForKey:@"onTime"] value] containsString:@"Status1::foreColor"]);
+    XCTAssertEqual(extend.eventHandlers.count, 1U);
+    UDGuiEventHandler *onTime = [extend.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(onTime.type, UDGuiEventHandlerTypeOnTime);
+    XCTAssertEqualObjects([onTime eventQualifier], @"0");
+    XCTAssertEqual(onTime.commands.count, 1U);
+    XCTAssertEqualObjects([[onTime.commands objectAtIndex:0] keyword], @"set");
+}
+
+- (void)testGuiDocumentCodecSerializesEventHandlersAndCommands {
+    UDGuiDocument *document = [[UDGuiDocument alloc] initWithSourceVirtualPath:@"guis/test.gui"];
+    UDGuiWindowNode *root = [UDGuiWindowNode windowNodeWithClassName:@"windowDef" name:@"Desktop"];
+
+    UDGuiEventHandler *onTime = [[UDGuiTimedEventHandler alloc] initWithTimeExpression:@"4000"];
+    [onTime addCommand:[[UDGuiSetCommand alloc] initWithVariable:@"notime" valueExpression:@"1"]];
+    [root addEventHandler:onTime];
+
+    UDGuiEventHandler *onAction = [[UDGuiSimpleEventHandler alloc] initWithType:UDGuiEventHandlerTypeOnAction];
+    [onAction addCommand:[[UDGuiSetCommand alloc] initWithVariable:@"notime" valueExpression:@"0"]];
+    [onAction addCommand:[[UDGuiResetTimeCommand alloc] initWithWindowName:nil timeExpression:nil]];
+    [root addEventHandler:onAction];
+
+    [document addRootWindow:root];
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *error = nil;
+    NSString *serialized = [codec serializeDocument:document error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertNotNil(serialized);
+    XCTAssertTrue([serialized containsString:@"onTime 4000 {"]);
+    XCTAssertTrue([serialized containsString:@"set notime 1 ;"]);
+    XCTAssertTrue([serialized containsString:@"onAction {"]);
+    XCTAssertTrue([serialized containsString:@"resetTime ;"]);
+}
+
+- (void)testGuiDocumentCodecParsesNamedEventsAndCommandHierarchy {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    onNamedEvent menuOpen {\n"
+         "        transition rect 0 1 200 ;\n"
+         "        localSound menu_move ;\n"
+         "        runScript onStart ;\n"
+         "        showCursor 1 ;\n"
+         "        evalRegs ;\n"
+         "        resetCinematics ;\n"
+         "        endGame ;\n"
+         "    }\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *error = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&error];
+
+    XCTAssertNil(error);
+    XCTAssertNotNil(document);
+    XCTAssertEqual(document.rootWindows.count, 1U);
+
+    UDGuiWindowNode *window = [document.rootWindows objectAtIndex:0];
+    XCTAssertEqual(window.eventHandlers.count, 1U);
+
+    UDGuiEventHandler *handler = [window.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(handler.type, UDGuiEventHandlerTypeOnNamedEvent);
+    XCTAssertEqualObjects([handler eventQualifier], @"menuOpen");
+    XCTAssertEqual(handler.commands.count, 7U);
+
+    XCTAssertTrue([[handler.commands objectAtIndex:0] isKindOfClass:[UDGuiTransitionCommand class]]);
+    XCTAssertTrue([[handler.commands objectAtIndex:1] isKindOfClass:[UDGuiSingleArgumentCommand class]]);
+    XCTAssertTrue([[handler.commands objectAtIndex:2] isKindOfClass:[UDGuiSingleArgumentCommand class]]);
+    XCTAssertTrue([[handler.commands objectAtIndex:3] isKindOfClass:[UDGuiSingleArgumentCommand class]]);
+    XCTAssertEqualObjects([[handler.commands objectAtIndex:4] keyword], @"evalRegs");
+    XCTAssertEqualObjects([[handler.commands objectAtIndex:5] keyword], @"resetCinematics");
+    XCTAssertEqualObjects([[handler.commands objectAtIndex:6] keyword], @"endGame");
+}
+
+- (void)testGuiDocumentCodecRoundTripsNamedEventCommands {
+    UDGuiDocument *document = [[UDGuiDocument alloc] initWithSourceVirtualPath:@"guis/test.gui"];
+    UDGuiWindowNode *root = [UDGuiWindowNode windowNodeWithClassName:@"windowDef" name:@"Desktop"];
+
+    UDGuiEventHandler *named = [[UDGuiNamedEventHandler alloc] initWithEventName:@"menuOpen"];
+    [named addCommand:[[UDGuiTransitionCommand alloc] initWithVariable:@"rect"
+                                                              fromValue:@"0"
+                                                                toValue:@"1"
+                                                         timeExpression:@"200"
+                                                        accelExpression:nil
+                                                        decelExpression:nil]];
+    [named addCommand:[[UDGuiSingleArgumentCommand alloc] initWithKeyword:@"localSound" value:@"menu_move"]];
+    [named addCommand:[[UDGuiSingleArgumentCommand alloc] initWithKeyword:@"runScript" value:@"onStart"]];
+    [named addCommand:[[UDGuiSingleArgumentCommand alloc] initWithKeyword:@"showCursor" value:@"1"]];
+    [named addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"evalRegs" arguments:@""]];
+    [named addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"resetCinematics" arguments:@""]];
+    [named addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"endGame" arguments:@""]];
+    [root addEventHandler:named];
+
+    [document addRootWindow:root];
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *serializeError = nil;
+    NSString *serialized = [codec serializeDocument:document error:&serializeError];
+
+    XCTAssertNil(serializeError);
+    XCTAssertNotNil(serialized);
+    XCTAssertTrue([serialized containsString:@"onNamedEvent menuOpen {"]);
+    XCTAssertTrue([serialized containsString:@"transition rect 0 1 200 ;"]);
+    XCTAssertTrue([serialized containsString:@"localSound menu_move ;"]);
+    XCTAssertTrue([serialized containsString:@"runScript onStart ;"]);
+    XCTAssertTrue([serialized containsString:@"showCursor 1 ;"]);
+    XCTAssertTrue([serialized containsString:@"evalRegs ;"]);
+    XCTAssertTrue([serialized containsString:@"resetCinematics ;"]);
+    XCTAssertTrue([serialized containsString:@"endGame ;"]);
+
+    NSError *parseError = nil;
+    UDGuiDocument *parsed = [codec parseDocumentFromText:serialized sourceVirtualPath:@"guis/test.gui" error:&parseError];
+
+    XCTAssertNil(parseError);
+    XCTAssertNotNil(parsed);
+    UDGuiWindowNode *parsedRoot = [parsed.rootWindows objectAtIndex:0];
+    UDGuiEventHandler *parsedHandler = [parsedRoot.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(parsedHandler.type, UDGuiEventHandlerTypeOnNamedEvent);
+    XCTAssertEqual(parsedHandler.commands.count, 7U);
+    XCTAssertEqualObjects([[parsedHandler.commands objectAtIndex:0] keyword], @"transition");
+    XCTAssertEqualObjects([[parsedHandler.commands objectAtIndex:6] keyword], @"endGame");
 }
 
 - (void)testGuiEditorServiceUndoRedoPropertyEdits {

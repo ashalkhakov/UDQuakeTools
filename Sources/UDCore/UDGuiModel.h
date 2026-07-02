@@ -22,6 +22,107 @@ typedef NS_ENUM(NSInteger, UDGuiVariableDefinitionType) {
     UDGuiVariableDefinitionTypeVec4,
 };
 
+typedef NS_ENUM(NSInteger, UDGuiEventHandlerType) {
+    UDGuiEventHandlerTypeOnTime = 0,
+    UDGuiEventHandlerTypeOnNamedEvent,
+    UDGuiEventHandlerTypeOnAction,
+    UDGuiEventHandlerTypeOnActionRelease,
+    UDGuiEventHandlerTypeOnMouseEnter,
+    UDGuiEventHandlerTypeOnMouseExit,
+    UDGuiEventHandlerTypeOnActivate,
+    UDGuiEventHandlerTypeOnDeactivate,
+    UDGuiEventHandlerTypeOnEsc,
+    UDGuiEventHandlerTypeOnEvent,
+    UDGuiEventHandlerTypeOnTrigger,
+    UDGuiEventHandlerTypeOnEnter,
+    UDGuiEventHandlerTypeOnEnterRelease,
+};
+
+@interface UDGuiScriptCommand : NSObject
+
+@property (nonatomic, readonly, copy) NSString *keyword;
+@property (nonatomic, readonly, copy) NSString *arguments;
+
+- (instancetype)initWithKeyword:(NSString *)keyword
+                      arguments:(NSString *)arguments NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (NSString *)serializedStatement;
+- (UDGuiScriptCommand *)deepCopy;
+
+@end
+
+@interface UDGuiSetCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSString *variable;
+@property (nonatomic, readonly, copy) NSString *valueExpression;
+- (instancetype)initWithVariable:(NSString *)variable valueExpression:(NSString *)valueExpression;
+@end
+
+@interface UDGuiSetFocusCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSString *windowName;
+- (instancetype)initWithWindowName:(NSString *)windowName;
+@end
+
+@interface UDGuiResetTimeCommand : UDGuiScriptCommand
+@property (nullable, nonatomic, readonly, copy) NSString *windowName;
+@property (nullable, nonatomic, readonly, copy) NSString *timeExpression;
+- (instancetype)initWithWindowName:(nullable NSString *)windowName timeExpression:(nullable NSString *)timeExpression;
+@end
+
+@interface UDGuiTransitionCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSString *variable;
+@property (nonatomic, readonly, copy) NSString *fromValue;
+@property (nonatomic, readonly, copy) NSString *toValue;
+@property (nonatomic, readonly, copy) NSString *timeExpression;
+@property (nullable, nonatomic, readonly, copy) NSString *accelExpression;
+@property (nullable, nonatomic, readonly, copy) NSString *decelExpression;
+- (instancetype)initWithVariable:(NSString *)variable
+                       fromValue:(NSString *)fromValue
+                         toValue:(NSString *)toValue
+                  timeExpression:(NSString *)timeExpression
+                 accelExpression:(nullable NSString *)accelExpression
+                 decelExpression:(nullable NSString *)decelExpression;
+@end
+
+@interface UDGuiSingleArgumentCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSString *value;
+- (instancetype)initWithKeyword:(NSString *)keyword value:(NSString *)value;
+@end
+
+@interface UDGuiEventHandler : NSObject
+
+@property (nonatomic, readonly, assign) UDGuiEventHandlerType type;
+@property (nonatomic, readonly, copy) NSArray<UDGuiScriptCommand *> *commands;
+
+- (instancetype)initWithType:(UDGuiEventHandlerType)type NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (NSString *)eventKeyword;
+- (nullable NSString *)eventQualifier;
+
+- (void)addCommand:(UDGuiScriptCommand *)command;
+- (void)insertCommand:(UDGuiScriptCommand *)command atIndex:(NSUInteger)index;
+- (void)replaceCommandAtIndex:(NSUInteger)index withCommand:(UDGuiScriptCommand *)command;
+- (void)removeCommandAtIndex:(NSUInteger)index;
+
+- (UDGuiEventHandler *)deepCopy;
+
+@end
+
+@interface UDGuiSimpleEventHandler : UDGuiEventHandler
+- (instancetype)initWithType:(UDGuiEventHandlerType)type;
+@end
+
+@interface UDGuiTimedEventHandler : UDGuiEventHandler
+@property (nonatomic, copy) NSString *timeExpression;
+- (instancetype)initWithTimeExpression:(NSString *)timeExpression;
+@end
+
+@interface UDGuiNamedEventHandler : UDGuiEventHandler
+@property (nonatomic, copy) NSString *eventName;
+- (instancetype)initWithEventName:(NSString *)eventName;
+@end
+
 @interface UDGuiVariableDefinition : NSObject
 
 @property (nonatomic, readonly, assign) UDGuiVariableDefinitionType type;
@@ -44,6 +145,7 @@ typedef NS_ENUM(NSInteger, UDGuiVariableDefinitionType) {
 @property (nullable, nonatomic, assign) UDGuiWindowNode *parent;
 @property (nonatomic, readonly, copy) NSArray<UDGuiProperty *> *properties;
 @property (nonatomic, readonly, copy) NSArray<UDGuiVariableDefinition *> *variableDefinitions;
+@property (nonatomic, readonly, copy) NSArray<UDGuiEventHandler *> *eventHandlers;
 @property (nonatomic, readonly, copy) NSArray<UDGuiWindowNode *> *children;
 @property (nonatomic, assign) BOOL showTime;
 @property (nonatomic, assign) BOOL showCoords;
@@ -105,6 +207,11 @@ typedef NS_ENUM(NSInteger, UDGuiVariableDefinitionType) {
 - (void)insertVariableDefinition:(UDGuiVariableDefinition *)definition atIndex:(NSUInteger)index;
 - (void)replaceVariableDefinitionAtIndex:(NSUInteger)index withDefinition:(UDGuiVariableDefinition *)definition;
 - (void)removeVariableDefinitionAtIndex:(NSUInteger)index;
+
+- (void)addEventHandler:(UDGuiEventHandler *)eventHandler;
+- (void)insertEventHandler:(UDGuiEventHandler *)eventHandler atIndex:(NSUInteger)index;
+- (void)replaceEventHandlerAtIndex:(NSUInteger)index withEventHandler:(UDGuiEventHandler *)eventHandler;
+- (void)removeEventHandlerAtIndex:(NSUInteger)index;
 
 - (void)addChild:(UDGuiWindowNode *)child;
 - (void)insertChild:(UDGuiWindowNode *)child atIndex:(NSUInteger)index;

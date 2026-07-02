@@ -8,6 +8,7 @@
 @interface UDGuiWindowNode ()
 @property (nonatomic, strong) NSMutableArray<UDGuiProperty *> *mutableProperties;
 @property (nonatomic, strong) NSMutableArray<UDGuiVariableDefinition *> *mutableVariableDefinitions;
+@property (nonatomic, strong) NSMutableArray<UDGuiEventHandler *> *mutableEventHandlers;
 @property (nonatomic, strong) NSMutableArray<UDGuiWindowNode *> *mutableChildren;
 @end
 
@@ -65,6 +66,310 @@
 
 @end
 
+@implementation UDGuiScriptCommand
+
+@synthesize keyword = _keyword;
+@synthesize arguments = _arguments;
+
+- (instancetype)initWithKeyword:(NSString *)keyword arguments:(NSString *)arguments {
+    NSParameterAssert(keyword.length > 0);
+    NSParameterAssert(arguments != nil);
+
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _keyword = [keyword copy];
+    _arguments = [arguments copy];
+    return self;
+}
+
+- (NSString *)serializedStatement {
+    NSString *trimmedArguments = [self.arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return trimmedArguments.length > 0 ? [NSString stringWithFormat:@"%@ %@", self.keyword, trimmedArguments] : self.keyword;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[[self class] alloc] initWithKeyword:self.keyword arguments:self.arguments];
+}
+
+@end
+
+@implementation UDGuiSetCommand
+
+- (instancetype)initWithVariable:(NSString *)variable valueExpression:(NSString *)valueExpression {
+    NSParameterAssert(variable.length > 0);
+    NSParameterAssert(valueExpression != nil);
+
+    NSString *arguments = valueExpression.length > 0 ? [NSString stringWithFormat:@"%@ %@", variable, valueExpression] : variable;
+    self = [super initWithKeyword:@"set" arguments:arguments];
+    if (!self) {
+        return nil;
+    }
+
+    _variable = [variable copy];
+    _valueExpression = [valueExpression copy];
+    return self;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[UDGuiSetCommand alloc] initWithVariable:self.variable valueExpression:self.valueExpression];
+}
+
+@end
+
+@implementation UDGuiSetFocusCommand
+
+- (instancetype)initWithWindowName:(NSString *)windowName {
+    NSParameterAssert(windowName.length > 0);
+
+    self = [super initWithKeyword:@"setFocus" arguments:windowName];
+    if (!self) {
+        return nil;
+    }
+    _windowName = [windowName copy];
+    return self;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[UDGuiSetFocusCommand alloc] initWithWindowName:self.windowName];
+}
+
+@end
+
+@implementation UDGuiResetTimeCommand
+
+- (instancetype)initWithWindowName:(nullable NSString *)windowName timeExpression:(nullable NSString *)timeExpression {
+    NSString *windowPart = [windowName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *timePart = [timeExpression stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSMutableArray<NSString *> *parts = [NSMutableArray array];
+    if (windowPart.length > 0) {
+        [parts addObject:windowPart];
+    }
+    if (timePart.length > 0) {
+        [parts addObject:timePart];
+    }
+
+    self = [super initWithKeyword:@"resetTime" arguments:[parts componentsJoinedByString:@" "]];
+    if (!self) {
+        return nil;
+    }
+
+    _windowName = windowPart.length > 0 ? [windowPart copy] : nil;
+    _timeExpression = timePart.length > 0 ? [timePart copy] : nil;
+    return self;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[UDGuiResetTimeCommand alloc] initWithWindowName:self.windowName timeExpression:self.timeExpression];
+}
+
+@end
+
+@implementation UDGuiTransitionCommand
+
+- (instancetype)initWithVariable:(NSString *)variable
+                       fromValue:(NSString *)fromValue
+                         toValue:(NSString *)toValue
+                  timeExpression:(NSString *)timeExpression
+                 accelExpression:(nullable NSString *)accelExpression
+                 decelExpression:(nullable NSString *)decelExpression {
+    NSParameterAssert(variable.length > 0);
+    NSParameterAssert(fromValue.length > 0);
+    NSParameterAssert(toValue.length > 0);
+    NSParameterAssert(timeExpression.length > 0);
+
+    NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithObjects:variable, fromValue, toValue, timeExpression, nil];
+    if (accelExpression.length > 0) {
+        [parts addObject:accelExpression];
+    }
+    if (decelExpression.length > 0) {
+        [parts addObject:decelExpression];
+    }
+
+    self = [super initWithKeyword:@"transition" arguments:[parts componentsJoinedByString:@" "]];
+    if (!self) {
+        return nil;
+    }
+
+    _variable = [variable copy];
+    _fromValue = [fromValue copy];
+    _toValue = [toValue copy];
+    _timeExpression = [timeExpression copy];
+    _accelExpression = accelExpression.length > 0 ? [accelExpression copy] : nil;
+    _decelExpression = decelExpression.length > 0 ? [decelExpression copy] : nil;
+    return self;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[UDGuiTransitionCommand alloc] initWithVariable:self.variable
+                                                 fromValue:self.fromValue
+                                                   toValue:self.toValue
+                                            timeExpression:self.timeExpression
+                                           accelExpression:self.accelExpression
+                                           decelExpression:self.decelExpression];
+}
+
+@end
+
+@implementation UDGuiSingleArgumentCommand
+
+- (instancetype)initWithKeyword:(NSString *)keyword value:(NSString *)value {
+    NSParameterAssert(value != nil);
+
+    self = [super initWithKeyword:keyword arguments:value];
+    if (!self) {
+        return nil;
+    }
+    _value = [value copy];
+    return self;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    return [[UDGuiSingleArgumentCommand alloc] initWithKeyword:self.keyword value:self.value];
+}
+
+@end
+
+@implementation UDGuiEventHandler {
+    NSMutableArray<UDGuiScriptCommand *> *_mutableCommands;
+}
+
+@synthesize type = _type;
+
+- (instancetype)initWithType:(UDGuiEventHandlerType)type {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _type = type;
+    _mutableCommands = [NSMutableArray array];
+    return self;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)commands {
+    return [_mutableCommands copy];
+}
+
+- (NSString *)eventKeyword {
+    switch (self.type) {
+        case UDGuiEventHandlerTypeOnTime: return @"onTime";
+        case UDGuiEventHandlerTypeOnNamedEvent: return @"onNamedEvent";
+        case UDGuiEventHandlerTypeOnAction: return @"onAction";
+        case UDGuiEventHandlerTypeOnActionRelease: return @"onActionRelease";
+        case UDGuiEventHandlerTypeOnMouseEnter: return @"onMouseEnter";
+        case UDGuiEventHandlerTypeOnMouseExit: return @"onMouseExit";
+        case UDGuiEventHandlerTypeOnActivate: return @"onActivate";
+        case UDGuiEventHandlerTypeOnDeactivate: return @"onDeactivate";
+        case UDGuiEventHandlerTypeOnEsc: return @"onEsc";
+        case UDGuiEventHandlerTypeOnEvent: return @"onEvent";
+        case UDGuiEventHandlerTypeOnTrigger: return @"onTrigger";
+        case UDGuiEventHandlerTypeOnEnter: return @"onEnter";
+        case UDGuiEventHandlerTypeOnEnterRelease: return @"onEnterRelease";
+    }
+}
+
+- (nullable NSString *)eventQualifier {
+    return nil;
+}
+
+- (void)addCommand:(UDGuiScriptCommand *)command {
+    [self insertCommand:command atIndex:_mutableCommands.count];
+}
+
+- (void)insertCommand:(UDGuiScriptCommand *)command atIndex:(NSUInteger)index {
+    NSParameterAssert(command != nil);
+    if (index > _mutableCommands.count) {
+        index = _mutableCommands.count;
+    }
+    [_mutableCommands insertObject:command atIndex:index];
+}
+
+- (void)replaceCommandAtIndex:(NSUInteger)index withCommand:(UDGuiScriptCommand *)command {
+    NSParameterAssert(command != nil);
+    if (index >= _mutableCommands.count) {
+        return;
+    }
+    [_mutableCommands replaceObjectAtIndex:index withObject:command];
+}
+
+- (void)removeCommandAtIndex:(NSUInteger)index {
+    if (index >= _mutableCommands.count) {
+        return;
+    }
+    [_mutableCommands removeObjectAtIndex:index];
+}
+
+- (UDGuiEventHandler *)deepCopy {
+    UDGuiEventHandler *copy = [[[self class] alloc] initWithType:self.type];
+    for (UDGuiScriptCommand *command in self.commands) {
+        [copy addCommand:[command deepCopy]];
+    }
+    return copy;
+}
+
+@end
+
+@implementation UDGuiSimpleEventHandler
+
+- (instancetype)initWithType:(UDGuiEventHandlerType)type {
+    return [super initWithType:type];
+}
+
+@end
+
+@implementation UDGuiTimedEventHandler
+
+- (instancetype)initWithTimeExpression:(NSString *)timeExpression {
+    self = [super initWithType:UDGuiEventHandlerTypeOnTime];
+    if (!self) {
+        return nil;
+    }
+    _timeExpression = [((timeExpression ?: @"0")) copy];
+    return self;
+}
+
+- (nullable NSString *)eventQualifier {
+    return self.timeExpression;
+}
+
+- (UDGuiEventHandler *)deepCopy {
+    UDGuiTimedEventHandler *copy = [[UDGuiTimedEventHandler alloc] initWithTimeExpression:self.timeExpression ?: @"0"];
+    for (UDGuiScriptCommand *command in self.commands) {
+        [copy addCommand:[command deepCopy]];
+    }
+    return copy;
+}
+
+@end
+
+@implementation UDGuiNamedEventHandler
+
+- (instancetype)initWithEventName:(NSString *)eventName {
+    self = [super initWithType:UDGuiEventHandlerTypeOnNamedEvent];
+    if (!self) {
+        return nil;
+    }
+    _eventName = [((eventName ?: @"")) copy];
+    return self;
+}
+
+- (nullable NSString *)eventQualifier {
+    return self.eventName;
+}
+
+- (UDGuiEventHandler *)deepCopy {
+    UDGuiNamedEventHandler *copy = [[UDGuiNamedEventHandler alloc] initWithEventName:self.eventName ?: @""];
+    for (UDGuiScriptCommand *command in self.commands) {
+        [copy addCommand:[command deepCopy]];
+    }
+    return copy;
+}
+
+@end
+
 @implementation UDGuiWindowNode
 
 @synthesize className = _className;
@@ -108,6 +413,7 @@
     _name = [name copy];
     _mutableProperties = [NSMutableArray array];
     _mutableVariableDefinitions = [NSMutableArray array];
+    _mutableEventHandlers = [NSMutableArray array];
     _mutableChildren = [NSMutableArray array];
     return self;
 }
@@ -118,6 +424,10 @@
 
 - (NSArray<UDGuiVariableDefinition *> *)variableDefinitions {
     return [self.mutableVariableDefinitions copy];
+}
+
+- (NSArray<UDGuiEventHandler *> *)eventHandlers {
+    return [self.mutableEventHandlers copy];
 }
 
 - (NSArray<UDGuiWindowNode *> *)children {
@@ -580,6 +890,33 @@
     [self.mutableVariableDefinitions removeObjectAtIndex:index];
 }
 
+- (void)addEventHandler:(UDGuiEventHandler *)eventHandler {
+    [self insertEventHandler:eventHandler atIndex:self.mutableEventHandlers.count];
+}
+
+- (void)insertEventHandler:(UDGuiEventHandler *)eventHandler atIndex:(NSUInteger)index {
+    NSParameterAssert(eventHandler != nil);
+    if (index > self.mutableEventHandlers.count) {
+        index = self.mutableEventHandlers.count;
+    }
+    [self.mutableEventHandlers insertObject:eventHandler atIndex:index];
+}
+
+- (void)replaceEventHandlerAtIndex:(NSUInteger)index withEventHandler:(UDGuiEventHandler *)eventHandler {
+    NSParameterAssert(eventHandler != nil);
+    if (index >= self.mutableEventHandlers.count) {
+        return;
+    }
+    [self.mutableEventHandlers replaceObjectAtIndex:index withObject:eventHandler];
+}
+
+- (void)removeEventHandlerAtIndex:(NSUInteger)index {
+    if (index >= self.mutableEventHandlers.count) {
+        return;
+    }
+    [self.mutableEventHandlers removeObjectAtIndex:index];
+}
+
 - (id)valueForUndefinedKey:(NSString *)key {
     return [self stringPropertyForKey:key];
 }
@@ -644,6 +981,10 @@
         [copy.mutableVariableDefinitions addObject:[[UDGuiVariableDefinition alloc] initWithType:definition.type
                                                                                              name:definition.name
                                                                                             value:definition.value]];
+    }
+
+    for (UDGuiEventHandler *eventHandler in self.mutableEventHandlers) {
+        [copy.mutableEventHandlers addObject:[eventHandler deepCopy]];
     }
 
     for (UDGuiWindowNode *child in self.mutableChildren) {

@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UDVariablesController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
     NSView *_view;
-    NSTableView *_variablesTableView;
-    NSSegmentedControl *_variablesTypeControl;
+    __weak NSTableView *_variablesTableView;
+    __weak NSSegmentedControl *_variablesTypeControl;
 }
 
 /// Weak back-reference to the window controller acting as context.

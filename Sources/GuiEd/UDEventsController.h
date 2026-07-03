@@ -14,25 +14,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UDEventsController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
     NSView *_view;
-    NSTableView *_eventHandlersTableView;
-    NSTableView *_eventCommandsTableView;
-    NSPopUpButton *_eventCommandTypePopup;
-    NSTabView *_eventCommandEditorTabView;
-    NSTextField *_eventSetVariableField;
-    NSTextField *_eventSetValueField;
-    NSTextField *_eventSetFocusWindowField;
-    NSTextField *_eventResetTimeWindowField;
-    NSTextField *_eventResetTimeValueField;
-    NSTextField *_eventTransitionVariableField;
-    NSTextField *_eventTransitionFromField;
-    NSTextField *_eventTransitionToField;
-    NSTextField *_eventTransitionTimeField;
-    NSTextField *_eventTransitionAccelField;
-    NSTextField *_eventTransitionDecelField;
-    NSTextField *_eventLocalSoundField;
-    NSTextField *_eventRunScriptField;
-    NSTextField *_eventShowCursorField;
-    NSTextField *_eventFallbackArgumentsField;
+    __weak NSTableView *_eventHandlersTableView;
+    __weak NSTableView *_eventCommandsTableView;
+    __weak NSPopUpButton *_eventCommandTypePopup;
+    __weak NSTabView *_eventCommandEditorTabView;
+    __weak NSTextField *_eventSetVariableField;
+    __weak NSTextField *_eventSetValueField;
+    __weak NSTextField *_eventSetFocusWindowField;
+    __weak NSTextField *_eventResetTimeWindowField;
+    __weak NSTextField *_eventResetTimeValueField;
+    __weak NSTextField *_eventTransitionVariableField;
+    __weak NSTextField *_eventTransitionFromField;
+    __weak NSTextField *_eventTransitionToField;
+    __weak NSTextField *_eventTransitionTimeField;
+    __weak NSTextField *_eventTransitionAccelField;
+    __weak NSTextField *_eventTransitionDecelField;
+    __weak NSTextField *_eventLocalSoundField;
+    __weak NSTextField *_eventRunScriptField;
+    __weak NSTextField *_eventShowCursorField;
+    __weak NSTextField *_eventFallbackArgumentsField;
 }
 
 /// Weak back-reference to the window controller acting as context.

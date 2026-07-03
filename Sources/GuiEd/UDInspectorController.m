@@ -6,6 +6,9 @@
 #import "UDInspectorController.h"
 
 #import "../UDCore/UDGuiModel.h"
+#import "UDGuiEdDocument.h"
+#import "UDGuiEditorService.h"
+#import "UDGuiEditorViewModel.h"
 
 @implementation UDInspectorController
 
@@ -373,7 +376,9 @@
         { self.infoInvertRectButton,      UDGuiWindowPropertyInvertRect },
     };
     for (size_t bindingIndex = 0; bindingIndex < sizeof(boolBindings)/sizeof(boolBindings[0]); bindingIndex++) {
-        if (boolBindings[bindingIndex].btn) { [self applyBoolButton:boolBindings[bindingIndex].btn key:boolBindings[bindingIndex].key window:window]; }
+        if (boolBindings[bindingIndex].btn) {
+            [self applyBoolButton:boolBindings[bindingIndex].btn key:boolBindings[bindingIndex].key window:window];
+        }
     }
 
     // Double fields

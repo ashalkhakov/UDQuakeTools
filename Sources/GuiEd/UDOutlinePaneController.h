@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UDOutlinePaneController : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate> {
     NSView *_view;
-    NSOutlineView *_outlineView;
+    __weak NSOutlineView *_outlineView;
 }
 
 /// Weak back-reference to the window controller acting as context.

@@ -33,8 +33,8 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     NSView *_view;
     NSView *_identityView;
     NSView *_sizeView;
-    NSTextField *_classNameField;
-    NSTextField *_windowNameField;
+    __weak NSTextField *_classNameField;
+    __weak NSTextField *_windowNameField;
 }
 
 /// Weak back-reference to the window controller acting as context.

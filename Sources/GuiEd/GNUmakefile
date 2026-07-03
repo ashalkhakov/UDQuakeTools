@@ -32,6 +32,10 @@ GuiEd_INCLUDE_DIRS = \
 GuiEd_RESOURCE_FILES = \
     MainMenu.xib \
     UDGuiEdDocument.xib \
+    UDOutlinePane.xib \
+    UDInspector.xib \
+    UDVariables.xib \
+    UDEvents.xib \
     GuiEd-Info.plist
 
 include $(GNUSTEP_MAKEFILES)/application.make

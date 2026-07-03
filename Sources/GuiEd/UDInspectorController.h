@@ -29,12 +29,24 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
     UDGuiAttributeTypeTabRender,
 };
 
-@interface UDInspectorController : NSObject
+@interface UDInspectorController : NSObject <NSTextFieldDelegate> {
+    NSView *_view;
+    NSView *_identityView;
+    NSView *_sizeView;
+    NSTextField *_classNameField;
+    NSTextField *_windowNameField;
+}
 
 /// Weak back-reference to the window controller acting as context.
 @property (nonatomic, weak, nullable) id<UDEditorControllerContext> context;
 
-// MARK: - Outlets — assigned by the window controller after XIB load
+// MARK: - Outlets — loaded programmatically from XIB
+
+@property (nonatomic, strong, nullable) IBOutlet NSView *view;
+@property (nonatomic, strong, nullable) IBOutlet NSView *identityView;
+@property (nonatomic, strong, nullable) IBOutlet NSView *sizeView;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *classNameField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *windowNameField;
 
 // Tab container for typed attribute panels
 @property (nonatomic, weak, nullable) NSTabView *attributeTypeTabView;
@@ -164,6 +176,13 @@ typedef NS_ENUM(NSInteger, UDGuiAttributeTypeTab) {
 
 - (BOOL)validateSizePanelForWindow:(UDGuiWindowNode *)window;
 - (BOOL)validateTypedPanelsForWindow:(UDGuiWindowNode *)window;
+
+// MARK: - Actions
+
+- (IBAction)commitWindowIdentityEdit:(id)sender;
+- (IBAction)commitTypedAttributesPanel:(id)sender;
+- (IBAction)commitWindowInfoPanel:(id)sender;
+- (IBAction)commitTypedSizePanel:(id)sender;
 
 // MARK: - Helpers
 

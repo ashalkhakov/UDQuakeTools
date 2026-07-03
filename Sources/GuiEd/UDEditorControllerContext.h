@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Present an error to the user via the responder chain.
 - (void)presentError:(NSError *)error;
 
+/// Begin editing the identity of the selected window.
+- (void)beginEditingSelectedWindowIdentity:(id)sender;
+
 @end
 
 NS_ASSUME_NONNULL_END

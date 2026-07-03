@@ -11,14 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDOutlinePaneController : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface UDOutlinePaneController : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate> {
+    NSView *_view;
+    NSOutlineView *_outlineView;
+}
 
 /// Weak back-reference to the window controller acting as context.
 @property (nonatomic, weak, nullable) id<UDEditorControllerContext> context;
 
-// MARK: - Outlets — assigned by window controller after XIB load
+// MARK: - Outlets — loaded programmatically from XIB
 
-@property (nonatomic, weak, nullable) NSOutlineView *outlineView;
+@property (nonatomic, strong, nullable) IBOutlet NSView *view;
+@property (nonatomic, weak, nullable) IBOutlet NSOutlineView *outlineView;
 
 // MARK: - Interface
 

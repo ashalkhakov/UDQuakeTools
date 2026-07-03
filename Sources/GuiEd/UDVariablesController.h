@@ -12,15 +12,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDVariablesController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+@interface UDVariablesController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+    NSView *_view;
+    NSTableView *_variablesTableView;
+    NSSegmentedControl *_variablesTypeControl;
+}
 
 /// Weak back-reference to the window controller acting as context.
 @property (nonatomic, weak, nullable) id<UDEditorControllerContext> context;
 
-// MARK: - Outlets — assigned by window controller after XIB load
+// MARK: - Outlets — loaded programmatically from XIB
 
-@property (nonatomic, weak, nullable) NSTableView *variablesTableView;
-@property (nonatomic, weak, nullable) NSSegmentedControl *variablesTypeControl;
+@property (nonatomic, strong, nullable) IBOutlet NSView *view;
+@property (nonatomic, weak, nullable) IBOutlet NSTableView *variablesTableView;
+@property (nonatomic, weak, nullable) IBOutlet NSSegmentedControl *variablesTypeControl;
 
 // MARK: - Interface
 

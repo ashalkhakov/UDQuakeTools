@@ -12,32 +12,54 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDEventsController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+@interface UDEventsController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+    NSView *_view;
+    NSTableView *_eventHandlersTableView;
+    NSTableView *_eventCommandsTableView;
+    NSPopUpButton *_eventCommandTypePopup;
+    NSTabView *_eventCommandEditorTabView;
+    NSTextField *_eventSetVariableField;
+    NSTextField *_eventSetValueField;
+    NSTextField *_eventSetFocusWindowField;
+    NSTextField *_eventResetTimeWindowField;
+    NSTextField *_eventResetTimeValueField;
+    NSTextField *_eventTransitionVariableField;
+    NSTextField *_eventTransitionFromField;
+    NSTextField *_eventTransitionToField;
+    NSTextField *_eventTransitionTimeField;
+    NSTextField *_eventTransitionAccelField;
+    NSTextField *_eventTransitionDecelField;
+    NSTextField *_eventLocalSoundField;
+    NSTextField *_eventRunScriptField;
+    NSTextField *_eventShowCursorField;
+    NSTextField *_eventFallbackArgumentsField;
+}
 
 /// Weak back-reference to the window controller acting as context.
 @property (nonatomic, weak, nullable) id<UDEditorControllerContext> context;
 
-// MARK: - Outlets — assigned by window controller after XIB load
+// MARK: - Outlets — loaded programmatically from XIB
 
-@property (nonatomic, weak, nullable) NSTableView *eventHandlersTableView;
-@property (nonatomic, weak, nullable) NSTableView *eventCommandsTableView;
-@property (nonatomic, weak, nullable) NSPopUpButton *eventCommandTypePopup;
-@property (nonatomic, weak, nullable) NSTabView *eventCommandEditorTabView;
-@property (nonatomic, weak, nullable) NSTextField *eventSetVariableField;
-@property (nonatomic, weak, nullable) NSTextField *eventSetValueField;
-@property (nonatomic, weak, nullable) NSTextField *eventSetFocusWindowField;
-@property (nonatomic, weak, nullable) NSTextField *eventResetTimeWindowField;
-@property (nonatomic, weak, nullable) NSTextField *eventResetTimeValueField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionVariableField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionFromField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionToField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionTimeField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionAccelField;
-@property (nonatomic, weak, nullable) NSTextField *eventTransitionDecelField;
-@property (nonatomic, weak, nullable) NSTextField *eventLocalSoundField;
-@property (nonatomic, weak, nullable) NSTextField *eventRunScriptField;
-@property (nonatomic, weak, nullable) NSTextField *eventShowCursorField;
-@property (nonatomic, weak, nullable) NSTextField *eventFallbackArgumentsField;
+@property (nonatomic, strong, nullable) IBOutlet NSView *view;
+@property (nonatomic, weak, nullable) IBOutlet NSTableView *eventHandlersTableView;
+@property (nonatomic, weak, nullable) IBOutlet NSTableView *eventCommandsTableView;
+@property (nonatomic, weak, nullable) IBOutlet NSPopUpButton *eventCommandTypePopup;
+@property (nonatomic, weak, nullable) IBOutlet NSTabView *eventCommandEditorTabView;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventSetVariableField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventSetValueField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventSetFocusWindowField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventResetTimeWindowField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventResetTimeValueField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionVariableField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionFromField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionToField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionTimeField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionAccelField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventTransitionDecelField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventLocalSoundField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventRunScriptField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventShowCursorField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventFallbackArgumentsField;
 
 // MARK: - Interface
 

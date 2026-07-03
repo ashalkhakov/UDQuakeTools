@@ -17,6 +17,39 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
 
 @implementation UDEventsController
 
+@synthesize view = _view;
+@synthesize eventHandlersTableView = _eventHandlersTableView;
+@synthesize eventCommandsTableView = _eventCommandsTableView;
+@synthesize eventCommandTypePopup = _eventCommandTypePopup;
+@synthesize eventCommandEditorTabView = _eventCommandEditorTabView;
+@synthesize eventSetVariableField = _eventSetVariableField;
+@synthesize eventSetValueField = _eventSetValueField;
+@synthesize eventSetFocusWindowField = _eventSetFocusWindowField;
+@synthesize eventResetTimeWindowField = _eventResetTimeWindowField;
+@synthesize eventResetTimeValueField = _eventResetTimeValueField;
+@synthesize eventTransitionVariableField = _eventTransitionVariableField;
+@synthesize eventTransitionFromField = _eventTransitionFromField;
+@synthesize eventTransitionToField = _eventTransitionToField;
+@synthesize eventTransitionTimeField = _eventTransitionTimeField;
+@synthesize eventTransitionAccelField = _eventTransitionAccelField;
+@synthesize eventTransitionDecelField = _eventTransitionDecelField;
+@synthesize eventLocalSoundField = _eventLocalSoundField;
+@synthesize eventRunScriptField = _eventRunScriptField;
+@synthesize eventShowCursorField = _eventShowCursorField;
+@synthesize eventFallbackArgumentsField = _eventFallbackArgumentsField;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+#ifdef GNUSTEP
+        [NSBundle loadNibNamed:@"UDEvents" owner:self];
+#else
+        [[NSBundle mainBundle] loadNibNamed:@"UDEvents" owner:self topLevelObjects:nil];
+#endif
+    }
+    return self;
+}
+
 // MARK: - Setup
 
 - (void)registerDragTypes {

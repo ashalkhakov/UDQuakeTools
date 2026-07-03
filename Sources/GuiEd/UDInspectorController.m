@@ -9,6 +9,24 @@
 
 @implementation UDInspectorController
 
+@synthesize view = _view;
+@synthesize identityView = _identityView;
+@synthesize sizeView = _sizeView;
+@synthesize classNameField = _classNameField;
+@synthesize windowNameField = _windowNameField;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+#ifdef GNUSTEP
+        [NSBundle loadNibNamed:@"UDInspector" owner:self];
+#else
+        [[NSBundle mainBundle] loadNibNamed:@"UDInspector" owner:self topLevelObjects:nil];
+#endif
+    }
+    return self;
+}
+
 // MARK: - Private helpers
 
 - (void)setHintLabel:(NSTextField *)label valid:(BOOL)valid {
@@ -424,6 +442,69 @@
         }
     }
     return (UDGuiAttributeTypeTab)-1;
+}
+
+// MARK: - Actions
+
+- (IBAction)commitTypedAttributesPanel:(id)sender {
+    (void)sender;
+    UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+    if (!window) { return; }
+    if (![self validateTypedPanelsForWindow:window]) {
+        [self refreshValidationHintsForWindow:window];
+        return;
+    }
+    [self applyTypedPanelsToWindow:window];
+    [self.context notifyModelChangedAndRefresh];
+}
+
+- (IBAction)commitWindowInfoPanel:(id)sender {
+    (void)sender;
+    UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+    if (!window) { return; }
+    [self applyInfoPanelToWindow:window];
+    [self.context notifyModelChangedAndRefresh];
+}
+
+- (IBAction)commitTypedSizePanel:(id)sender {
+    (void)sender;
+    UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+    if (!window) { return; }
+    if (![self validateSizePanelForWindow:window]) {
+        [self refreshValidationHintsForWindow:window];
+        return;
+    }
+    [self applySizePanelToWindow:window];
+    [self.context notifyModelChangedAndRefresh];
+}
+
+- (IBAction)commitWindowIdentityEdit:(id)sender {
+    (void)sender;
+    UDGuiWindowNode *selectedWindow = self.context.ownerDocument.viewModel.selectedWindow;
+    if (!selectedWindow) { return; }
+
+    if (self.classNameField.stringValue.length > 0) {
+        [self.context.ownerDocument.editorService updateWindow:selectedWindow
+                                                     className:self.classNameField.stringValue];
+    }
+    if (self.windowNameField.stringValue.length > 0) {
+        [self.context.ownerDocument.editorService updateWindow:selectedWindow
+                                                          name:self.windowNameField.stringValue];
+    }
+    [self.context notifyModelChangedAndRefresh];
+}
+
+// MARK: - NSTextFieldDelegate
+
+- (BOOL)isWindowIdentityField:(id)sender {
+    return sender == self.classNameField || sender == self.windowNameField;
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)notification {
+    id field = notification.object;
+    if ([self isWindowIdentityField:field]) {
+        [self commitWindowIdentityEdit:field];
+    }
 }
 
 @end

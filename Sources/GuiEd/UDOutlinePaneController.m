@@ -11,6 +11,21 @@
 
 @implementation UDOutlinePaneController
 
+@synthesize view = _view;
+@synthesize outlineView = _outlineView;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+#ifdef GNUSTEP
+        [NSBundle loadNibNamed:@"UDOutlinePane" owner:self];
+#else
+        [[NSBundle mainBundle] loadNibNamed:@"UDOutlinePane" owner:self topLevelObjects:nil];
+#endif
+    }
+    return self;
+}
+
 // MARK: - Private helpers
 
 - (nullable UDGuiWindowNode *)windowNodeForOutlineItem:(nullable id)item {
@@ -115,6 +130,10 @@
     UDGuiWindowNode *selectedWindow = row >= 0 ? [self.outlineView itemAtRow:row] : nil;
     self.context.ownerDocument.viewModel.selectedWindow = selectedWindow;
     [self.context refreshFromDocument];
+}
+
+- (void)beginEditingSelectedWindowIdentity:(id)sender {
+    [self.context beginEditingSelectedWindowIdentity:sender];
 }
 
 @end

@@ -12,6 +12,22 @@
 
 @implementation UDVariablesController
 
+@synthesize view = _view;
+@synthesize variablesTableView = _variablesTableView;
+@synthesize variablesTypeControl = _variablesTypeControl;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+#ifdef GNUSTEP
+        [NSBundle loadNibNamed:@"UDVariables" owner:self];
+#else
+        [[NSBundle mainBundle] loadNibNamed:@"UDVariables" owner:self topLevelObjects:nil];
+#endif
+    }
+    return self;
+}
+
 // MARK: - Private helpers
 
 - (NSArray<UDGuiVariableDefinition *> *)variableDefinitionsForWindow:(nullable UDGuiWindowNode *)window {

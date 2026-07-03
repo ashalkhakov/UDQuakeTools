@@ -133,6 +133,14 @@
 		CEF0C69A2FF66A0D00BC642C /* UDGuiEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */; };
 		CEF0C69D2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */; };
 		CEF0C69E2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */; };
+		CEF356012FF798B6004089A1 /* UDVariablesController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF356002FF798B6004089A1 /* UDVariablesController.m */; };
+		CEF356022FF798B6004089A1 /* UDInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF355FA2FF798B6004089A1 /* UDInspectorController.m */; };
+		CEF356032FF798B6004089A1 /* UDOutlinePaneController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF355FD2FF798B6004089A1 /* UDOutlinePaneController.m */; };
+		CEF356042FF798B6004089A1 /* UDEventsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF355F72FF798B6004089A1 /* UDEventsController.m */; };
+		CEF356052FF798B6004089A1 /* UDVariables.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355FE2FF798B6004089A1 /* UDVariables.xib */; };
+		CEF356062FF798B6004089A1 /* UDEvents.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355F52FF798B6004089A1 /* UDEvents.xib */; };
+		CEF356072FF798B6004089A1 /* UDOutlinePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355FB2FF798B6004089A1 /* UDOutlinePane.xib */; };
+		CEF356082FF798B6004089A1 /* UDInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355F82FF798B6004089A1 /* UDInspector.xib */; };
 		CEFA65B12FF4309B004B373A /* UDVirtualFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */; };
 		DD01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010000000000000000AA /* main.m */; };
 		DD01000100000000000000AA /* UDDeclBrowserAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD00010100000000000000AA /* UDDeclBrowserAppDelegate.m */; };
@@ -154,15 +162,6 @@
 		EE01000900000000000000AA /* UDInspectableTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00010B00000000000000AA /* UDInspectableTableView.m */; };
 		EE01000A00000000000000AA /* UDInspectableOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00010D00000000000000AA /* UDInspectableOutlineView.m */; };
 		EE01000B00000000000000AA /* UDDeclType.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA103042FF5000000A10001 /* UDDeclType.m */; };
-		EE01001100000000000000AA /* UDGuiEdDocumentWindowController+TypedPanels.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00010E00000000000000AA /* UDGuiEdDocumentWindowController+TypedPanels.m */; };
-		EE01001200000000000000AA /* UDGuiEdDocumentWindowController+Events.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00010F00000000000000AA /* UDGuiEdDocumentWindowController+Events.m */; };
-		EE01001300000000000000AA /* UDGuiEdDocumentWindowController+Variables.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011000000000000000AA /* UDGuiEdDocumentWindowController+Variables.m */; };
-		EE01001400000000000000AA /* UDGuiEdDocumentWindowController+EventsTable.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011100000000000000AA /* UDGuiEdDocumentWindowController+EventsTable.m */; };
-		EE01001500000000000000AA /* UDGuiEdDocumentWindowController+VariablesTable.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011200000000000000AA /* UDGuiEdDocumentWindowController+VariablesTable.m */; };
-		EE01001600000000000000AA /* UDGuiEdDocumentWindowController+TableSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011300000000000000AA /* UDGuiEdDocumentWindowController+TableSelection.m */; };
-		EE01001700000000000000AA /* UDGuiEdDocumentWindowController+OutlinePane.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011400000000000000AA /* UDGuiEdDocumentWindowController+OutlinePane.m */; };
-		EE01001800000000000000AA /* UDGuiEdDocumentWindowController+DetailPane.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011500000000000000AA /* UDGuiEdDocumentWindowController+DetailPane.m */; };
-		EE01001900000000000000AA /* UDGuiEdDocumentWindowController+Conventions.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00011600000000000000AA /* UDGuiEdDocumentWindowController+Conventions.m */; };
 		EE01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -257,6 +256,19 @@
 		CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiEditorTests.m; sourceTree = "<group>"; };
 		CEF0C69B2FF66A8F00BC642C /* UDGuiDocumentCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiDocumentCodec.h; sourceTree = "<group>"; };
 		CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiDocumentCodec.m; sourceTree = "<group>"; };
+		CEF355F42FF798B6004089A1 /* UDEditorControllerContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEditorControllerContext.h; sourceTree = "<group>"; };
+		CEF355F52FF798B6004089A1 /* UDEvents.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDEvents.xib; sourceTree = "<group>"; };
+		CEF355F62FF798B6004089A1 /* UDEventsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEventsController.h; sourceTree = "<group>"; };
+		CEF355F72FF798B6004089A1 /* UDEventsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDEventsController.m; sourceTree = "<group>"; };
+		CEF355F82FF798B6004089A1 /* UDInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDInspector.xib; sourceTree = "<group>"; };
+		CEF355F92FF798B6004089A1 /* UDInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDInspectorController.h; sourceTree = "<group>"; };
+		CEF355FA2FF798B6004089A1 /* UDInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDInspectorController.m; sourceTree = "<group>"; };
+		CEF355FB2FF798B6004089A1 /* UDOutlinePane.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDOutlinePane.xib; sourceTree = "<group>"; };
+		CEF355FC2FF798B6004089A1 /* UDOutlinePaneController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDOutlinePaneController.h; sourceTree = "<group>"; };
+		CEF355FD2FF798B6004089A1 /* UDOutlinePaneController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDOutlinePaneController.m; sourceTree = "<group>"; };
+		CEF355FE2FF798B6004089A1 /* UDVariables.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDVariables.xib; sourceTree = "<group>"; };
+		CEF355FF2FF798B6004089A1 /* UDVariablesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVariablesController.h; sourceTree = "<group>"; };
+		CEF356002FF798B6004089A1 /* UDVariablesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVariablesController.m; sourceTree = "<group>"; };
 		CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVirtualFileSystemTests.m; sourceTree = "<group>"; };
 		DD00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DD00010100000000000000AA /* UDDeclBrowserAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserAppDelegate.m; sourceTree = "<group>"; };
@@ -285,15 +297,6 @@
 		EE00010B00000000000000AA /* UDInspectableTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDInspectableTableView.m; sourceTree = "<group>"; };
 		EE00010C00000000000000AA /* UDInspectableOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDInspectableOutlineView.h; sourceTree = "<group>"; };
 		EE00010D00000000000000AA /* UDInspectableOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDInspectableOutlineView.m; sourceTree = "<group>"; };
-		EE00010E00000000000000AA /* UDGuiEdDocumentWindowController+TypedPanels.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+TypedPanels.m"; sourceTree = "<group>"; };
-		EE00010F00000000000000AA /* UDGuiEdDocumentWindowController+Events.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+Events.m"; sourceTree = "<group>"; };
-		EE00011000000000000000AA /* UDGuiEdDocumentWindowController+Variables.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+Variables.m"; sourceTree = "<group>"; };
-		EE00011100000000000000AA /* UDGuiEdDocumentWindowController+EventsTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+EventsTable.m"; sourceTree = "<group>"; };
-		EE00011200000000000000AA /* UDGuiEdDocumentWindowController+VariablesTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+VariablesTable.m"; sourceTree = "<group>"; };
-		EE00011300000000000000AA /* UDGuiEdDocumentWindowController+TableSelection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+TableSelection.m"; sourceTree = "<group>"; };
-		EE00011400000000000000AA /* UDGuiEdDocumentWindowController+OutlinePane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+OutlinePane.m"; sourceTree = "<group>"; };
-		EE00011500000000000000AA /* UDGuiEdDocumentWindowController+DetailPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+DetailPane.m"; sourceTree = "<group>"; };
-		EE00011600000000000000AA /* UDGuiEdDocumentWindowController+Conventions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UDGuiEdDocumentWindowController+Conventions.m"; sourceTree = "<group>"; };
 		EE00050000000000000000AA /* GuiEd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuiEd.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -534,6 +537,19 @@
 		EE00000400000000000000AA /* GuiEd */ = {
 			isa = PBXGroup;
 			children = (
+				CEF355F42FF798B6004089A1 /* UDEditorControllerContext.h */,
+				CEF355F52FF798B6004089A1 /* UDEvents.xib */,
+				CEF355F62FF798B6004089A1 /* UDEventsController.h */,
+				CEF355F72FF798B6004089A1 /* UDEventsController.m */,
+				CEF355F82FF798B6004089A1 /* UDInspector.xib */,
+				CEF355F92FF798B6004089A1 /* UDInspectorController.h */,
+				CEF355FA2FF798B6004089A1 /* UDInspectorController.m */,
+				CEF355FB2FF798B6004089A1 /* UDOutlinePane.xib */,
+				CEF355FC2FF798B6004089A1 /* UDOutlinePaneController.h */,
+				CEF355FD2FF798B6004089A1 /* UDOutlinePaneController.m */,
+				CEF355FE2FF798B6004089A1 /* UDVariables.xib */,
+				CEF355FF2FF798B6004089A1 /* UDVariablesController.h */,
+				CEF356002FF798B6004089A1 /* UDVariablesController.m */,
 				EE00010800000000000000AA /* MainMenu.xib */,
 				EE00010100000000000000AA /* UDGuiEdAppDelegate.h */,
 				EE00010200000000000000AA /* UDGuiEdAppDelegate.m */,
@@ -545,15 +561,6 @@
 				EE00010B00000000000000AA /* UDInspectableTableView.m */,
 				EE00010500000000000000AA /* UDGuiEdDocumentWindowController.h */,
 				EE00010600000000000000AA /* UDGuiEdDocumentWindowController.m */,
-				EE00010E00000000000000AA /* UDGuiEdDocumentWindowController+TypedPanels.m */,
-				EE00010F00000000000000AA /* UDGuiEdDocumentWindowController+Events.m */,
-				EE00011000000000000000AA /* UDGuiEdDocumentWindowController+Variables.m */,
-				EE00011100000000000000AA /* UDGuiEdDocumentWindowController+EventsTable.m */,
-				EE00011200000000000000AA /* UDGuiEdDocumentWindowController+VariablesTable.m */,
-				EE00011300000000000000AA /* UDGuiEdDocumentWindowController+TableSelection.m */,
-				EE00011400000000000000AA /* UDGuiEdDocumentWindowController+OutlinePane.m */,
-				EE00011500000000000000AA /* UDGuiEdDocumentWindowController+DetailPane.m */,
-				EE00011600000000000000AA /* UDGuiEdDocumentWindowController+Conventions.m */,
 				EE00010000000000000000AA /* main.m */,
 				EE00010900000000000000AA /* UDGuiEdDocument.xib */,
 				EE00010700000000000000AA /* GuiEd-Info.plist */,
@@ -719,6 +726,10 @@
 			files = (
 				EE01000700000000000000AA /* MainMenu.xib in Resources */,
 				EE01000800000000000000AA /* UDGuiEdDocument.xib in Resources */,
+				CEF356052FF798B6004089A1 /* UDVariables.xib in Resources */,
+				CEF356062FF798B6004089A1 /* UDEvents.xib in Resources */,
+				CEF356072FF798B6004089A1 /* UDOutlinePane.xib in Resources */,
+				CEF356082FF798B6004089A1 /* UDInspector.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -881,19 +892,14 @@
 				EE01000000000000000000AA /* main.m in Sources */,
 				EE01000100000000000000AA /* UDGuiEdAppDelegate.m in Sources */,
 				EE01000200000000000000AA /* UDGuiEdDocument.m in Sources */,
+				CEF356012FF798B6004089A1 /* UDVariablesController.m in Sources */,
+				CEF356022FF798B6004089A1 /* UDInspectorController.m in Sources */,
+				CEF356032FF798B6004089A1 /* UDOutlinePaneController.m in Sources */,
+				CEF356042FF798B6004089A1 /* UDEventsController.m in Sources */,
 				EE01000A00000000000000AA /* UDInspectableOutlineView.m in Sources */,
 				CEF0C69E2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */,
 				EE01000900000000000000AA /* UDInspectableTableView.m in Sources */,
 				EE01000300000000000000AA /* UDGuiEdDocumentWindowController.m in Sources */,
-				EE01001100000000000000AA /* UDGuiEdDocumentWindowController+TypedPanels.m in Sources */,
-				EE01001200000000000000AA /* UDGuiEdDocumentWindowController+Events.m in Sources */,
-				EE01001300000000000000AA /* UDGuiEdDocumentWindowController+Variables.m in Sources */,
-				EE01001400000000000000AA /* UDGuiEdDocumentWindowController+EventsTable.m in Sources */,
-				EE01001500000000000000AA /* UDGuiEdDocumentWindowController+VariablesTable.m in Sources */,
-				EE01001600000000000000AA /* UDGuiEdDocumentWindowController+TableSelection.m in Sources */,
-				EE01001700000000000000AA /* UDGuiEdDocumentWindowController+OutlinePane.m in Sources */,
-				EE01001800000000000000AA /* UDGuiEdDocumentWindowController+DetailPane.m in Sources */,
-				EE01001900000000000000AA /* UDGuiEdDocumentWindowController+Conventions.m in Sources */,
 				EE01000400000000000000AA /* UDDeclLexer.m in Sources */,
 				EE01000500000000000000AA /* UDDeclParser.m in Sources */,
 				EE01000600000000000000AA /* UDDeclModel.m in Sources */,

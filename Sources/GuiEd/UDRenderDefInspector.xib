@@ -8,7 +8,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDRenderDefInspectorController">
             <connections>
-                <outlet property="view" destination="V-ATTR-RENDER" id="OWN-VIEW"/>
                 <outlet property="attrRenderAnimClassField" destination="FLD-ATTR-RENDERANIMCLASS" id="OWN-80"/>
                 <outlet property="attrRenderAnimField" destination="FLD-ATTR-RENDERANIM" id="OWN-41"/>
                 <outlet property="attrRenderLightColorField" destination="FLD-ATTR-RENDERLIGHTCOLOR" id="OWN-81"/>
@@ -18,131 +17,133 @@
                 <outlet property="attrRenderModelRotateField" destination="FLD-ATTR-RENDERMODELROTATE" id="OWN-84"/>
                 <outlet property="attrRenderNeedsRenderButton" destination="CHK-ATTR-RENDER-NEEDSRENDER" id="OWN-85"/>
                 <outlet property="attrRenderViewOffsetField" destination="FLD-ATTR-RENDERVIEWOFFSET" id="OWN-86"/>
+                <outlet property="view" destination="V-ATTR-RENDER" id="OWN-VIEW"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <view key="view" id="V-ATTR-RENDER">
-                                                    <rect key="frame" x="0.0" y="0.0" width="668" height="168"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <subviews>
-                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-RENDERDEF">
-                                                            <rect key="frame" x="0.0" y="146" width="120" height="16"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="renderDef" id="LBL-ATTR-RENDERDEF-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                        </textField>
-                                                        <textField toolTip="Model file to render." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODEL">
-                                                            <rect key="frame" x="0.0" y="120" width="220" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="model" id="FLD-ATTR-RENDERMODEL-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODEL"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="Animation to play." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERANIM">
-                                                            <rect key="frame" x="226" y="120" width="220" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="anim" id="FLD-ATTR-RENDERANIM-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERANIM"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="entityDef to grab the animation from." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERANIMCLASS">
-                                                            <rect key="frame" x="452" y="120" width="166" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="animClass" id="FLD-ATTR-RENDERANIMCLASS-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERANIMCLASS"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="Position of the light." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERLIGHTORIGIN">
-                                                            <rect key="frame" x="0.0" y="92" width="150" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="lightOrigin" id="FLD-ATTR-RENDERLIGHTORIGIN-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERLIGHTORIGIN"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="Color of the light." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERLIGHTCOLOR">
-                                                            <rect key="frame" x="156" y="92" width="150" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="lightColor" id="FLD-ATTR-RENDERLIGHTCOLOR-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERLIGHTCOLOR"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="Position of the model." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODELORIGIN">
-                                                            <rect key="frame" x="312" y="92" width="150" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="modelOrigin" id="FLD-ATTR-RENDERMODELORIGIN-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODELORIGIN"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="x,y,z rotation." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODELROTATE">
-                                                            <rect key="frame" x="468" y="92" width="150" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="modelRotate" id="FLD-ATTR-RENDERMODELROTATE-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODELROTATE"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <textField toolTip="Position of the camera." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERVIEWOFFSET">
-                                                            <rect key="frame" x="0.0" y="64" width="220" height="22"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="viewOffset" id="FLD-ATTR-RENDERVIEWOFFSET-CELL">
-                                                                <font key="font" metaFont="system"/>
-                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            </textFieldCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERVIEWOFFSET"/>
-                                                            </connections>
-                                                        </textField>
-                                                        <button toolTip="Dirty flag. Set it to true if something changes so the scene is rendered again." id="CHK-ATTR-RENDER-NEEDSRENDER">
-                                                            <rect key="frame" x="226" y="66" width="118" height="18"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <buttonCell key="cell" type="check" title="Needs Render" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CHK-ATTR-RENDER-NEEDSRENDER-CELL">
-                                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDER-NEEDSRENDER"/>
-                                                            </connections>
-                                                        </button>
-                                                    </subviews>
-                                                </view>
+        <view id="V-ATTR-RENDER">
+            <rect key="frame" x="0.0" y="0.0" width="668" height="168"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-RENDERDEF">
+                    <rect key="frame" x="0.0" y="146" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="renderDef" id="LBL-ATTR-RENDERDEF-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="Model file to render." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODEL">
+                    <rect key="frame" x="0.0" y="120" width="220" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="model" id="FLD-ATTR-RENDERMODEL-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODEL"/>
+                    </connections>
+                </textField>
+                <textField toolTip="Animation to play." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERANIM">
+                    <rect key="frame" x="226" y="120" width="220" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="anim" id="FLD-ATTR-RENDERANIM-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERANIM"/>
+                    </connections>
+                </textField>
+                <textField toolTip="entityDef to grab the animation from." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERANIMCLASS">
+                    <rect key="frame" x="452" y="120" width="166" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="animClass" id="FLD-ATTR-RENDERANIMCLASS-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERANIMCLASS"/>
+                    </connections>
+                </textField>
+                <textField toolTip="Position of the light." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERLIGHTORIGIN">
+                    <rect key="frame" x="0.0" y="92" width="150" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="lightOrigin" id="FLD-ATTR-RENDERLIGHTORIGIN-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERLIGHTORIGIN"/>
+                    </connections>
+                </textField>
+                <textField toolTip="Color of the light." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERLIGHTCOLOR">
+                    <rect key="frame" x="156" y="92" width="150" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="lightColor" id="FLD-ATTR-RENDERLIGHTCOLOR-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERLIGHTCOLOR"/>
+                    </connections>
+                </textField>
+                <textField toolTip="Position of the model." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODELORIGIN">
+                    <rect key="frame" x="312" y="92" width="150" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="modelOrigin" id="FLD-ATTR-RENDERMODELORIGIN-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODELORIGIN"/>
+                    </connections>
+                </textField>
+                <textField toolTip="x,y,z rotation." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERMODELROTATE">
+                    <rect key="frame" x="468" y="92" width="150" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="modelRotate" id="FLD-ATTR-RENDERMODELROTATE-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERMODELROTATE"/>
+                    </connections>
+                </textField>
+                <textField toolTip="Position of the camera." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-RENDERVIEWOFFSET">
+                    <rect key="frame" x="0.0" y="64" width="220" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="viewOffset" id="FLD-ATTR-RENDERVIEWOFFSET-CELL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDERVIEWOFFSET"/>
+                    </connections>
+                </textField>
+                <button toolTip="Dirty flag. Set it to true if something changes so the scene is rendered again." id="CHK-ATTR-RENDER-NEEDSRENDER">
+                    <rect key="frame" x="226" y="66" width="118" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Needs Render" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CHK-ATTR-RENDER-NEEDSRENDER-CELL">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-RENDER-NEEDSRENDER"/>
+                    </connections>
+                </button>
+            </subviews>
+            <point key="canvasLocation" x="140" y="154"/>
+        </view>
     </objects>
 </document>

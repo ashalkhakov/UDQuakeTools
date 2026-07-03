@@ -8,8 +8,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDOutlinePaneController">
             <connections>
-                <outlet property="view" destination="VIE-SIDEBAR" id="OWN-VIEW"/>
                 <outlet property="outlineView" destination="OUT-01" id="OWN-OUTLINE"/>
+                <outlet property="view" destination="VIE-SIDEBAR" id="OWN-VIEW"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -84,6 +84,7 @@
                     </clipView>
                 </scrollView>
             </subviews>
+            <point key="canvasLocation" x="140" y="154"/>
         </customView>
     </objects>
 </document>

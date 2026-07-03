@@ -4,6 +4,8 @@
  */
 
 #import "UDGuiAttributeSubcontroller.h"
+#import "UDGuiEdDocument.h"
+#import "UDGuiEditorViewModel.h"
 
 @implementation UDGuiAttributeSubcontroller
 

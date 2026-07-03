@@ -130,6 +130,19 @@
 		CEA105022FF5000000A10001 /* UDDeclPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA105042FF5000000A10001 /* UDDeclPersistence.m */; };
 		CEA105032FF5000000A10001 /* UDDeclPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA105042FF5000000A10001 /* UDDeclPersistence.m */; };
 		CEA106012FF5000000A10001 /* UDDeclManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA106042FF5000000A10001 /* UDDeclManagerTests.m */; };
+		CEB5334F2FF7B358003C1587 /* UDChoiceDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB533492FF7B358003C1587 /* UDChoiceDefInspector.xib */; };
+		CEB533502FF7B358003C1587 /* UDEditDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB5334C2FF7B358003C1587 /* UDEditDefInspector.xib */; };
+		CEB533512FF7B358003C1587 /* UDBindDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB533462FF7B358003C1587 /* UDBindDefInspector.xib */; };
+		CEB533522FF7B358003C1587 /* UDBindDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB533482FF7B358003C1587 /* UDBindDefInspectorController.m */; };
+		CEB533532FF7B358003C1587 /* UDChoiceDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB5334B2FF7B358003C1587 /* UDChoiceDefInspectorController.m */; };
+		CEB533542FF7B358003C1587 /* UDEditDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB5334E2FF7B358003C1587 /* UDEditDefInspectorController.m */; };
+		CEB5335E2FF7B36C003C1587 /* UDListDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB533552FF7B36C003C1587 /* UDListDefInspector.xib */; };
+		CEB5335F2FF7B36C003C1587 /* UDSliderDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB5335B2FF7B36C003C1587 /* UDSliderDefInspector.xib */; };
+		CEB533602FF7B36C003C1587 /* UDRenderDefInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB533582FF7B36C003C1587 /* UDRenderDefInspector.xib */; };
+		CEB533612FF7B36C003C1587 /* UDSliderDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB5335D2FF7B36C003C1587 /* UDSliderDefInspectorController.m */; };
+		CEB533622FF7B36C003C1587 /* UDListDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB533572FF7B36C003C1587 /* UDListDefInspectorController.m */; };
+		CEB533632FF7B36C003C1587 /* UDRenderDefInspectorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB5335A2FF7B36C003C1587 /* UDRenderDefInspectorController.m */; };
+		CEB533662FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB533652FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m */; };
 		CEF0C69A2FF66A0D00BC642C /* UDGuiEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */; };
 		CEF0C69D2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */; };
 		CEF0C69E2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */; };
@@ -253,6 +266,26 @@
 		CEA106042FF5000000A10001 /* UDDeclManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManagerTests.m; sourceTree = "<group>"; };
 		CEA106072FF5000000A10001 /* UDDeclManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManager.h; sourceTree = "<group>"; };
 		CEA107072FF5000000A10001 /* UDDeclParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclParser.h; sourceTree = "<group>"; };
+		CEB533462FF7B358003C1587 /* UDBindDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDBindDefInspector.xib; sourceTree = "<group>"; };
+		CEB533472FF7B358003C1587 /* UDBindDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDBindDefInspectorController.h; sourceTree = "<group>"; };
+		CEB533482FF7B358003C1587 /* UDBindDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBindDefInspectorController.m; sourceTree = "<group>"; };
+		CEB533492FF7B358003C1587 /* UDChoiceDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDChoiceDefInspector.xib; sourceTree = "<group>"; };
+		CEB5334A2FF7B358003C1587 /* UDChoiceDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDChoiceDefInspectorController.h; sourceTree = "<group>"; };
+		CEB5334B2FF7B358003C1587 /* UDChoiceDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDChoiceDefInspectorController.m; sourceTree = "<group>"; };
+		CEB5334C2FF7B358003C1587 /* UDEditDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDEditDefInspector.xib; sourceTree = "<group>"; };
+		CEB5334D2FF7B358003C1587 /* UDEditDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEditDefInspectorController.h; sourceTree = "<group>"; };
+		CEB5334E2FF7B358003C1587 /* UDEditDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDEditDefInspectorController.m; sourceTree = "<group>"; };
+		CEB533552FF7B36C003C1587 /* UDListDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDListDefInspector.xib; sourceTree = "<group>"; };
+		CEB533562FF7B36C003C1587 /* UDListDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDListDefInspectorController.h; sourceTree = "<group>"; };
+		CEB533572FF7B36C003C1587 /* UDListDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDListDefInspectorController.m; sourceTree = "<group>"; };
+		CEB533582FF7B36C003C1587 /* UDRenderDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDRenderDefInspector.xib; sourceTree = "<group>"; };
+		CEB533592FF7B36C003C1587 /* UDRenderDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDRenderDefInspectorController.h; sourceTree = "<group>"; };
+		CEB5335A2FF7B36C003C1587 /* UDRenderDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDRenderDefInspectorController.m; sourceTree = "<group>"; };
+		CEB5335B2FF7B36C003C1587 /* UDSliderDefInspector.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDSliderDefInspector.xib; sourceTree = "<group>"; };
+		CEB5335C2FF7B36C003C1587 /* UDSliderDefInspectorController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSliderDefInspectorController.h; sourceTree = "<group>"; };
+		CEB5335D2FF7B36C003C1587 /* UDSliderDefInspectorController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSliderDefInspectorController.m; sourceTree = "<group>"; };
+		CEB533642FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiAttributeSubcontroller.h; sourceTree = "<group>"; };
+		CEB533652FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiAttributeSubcontroller.m; sourceTree = "<group>"; };
 		CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiEditorTests.m; sourceTree = "<group>"; };
 		CEF0C69B2FF66A8F00BC642C /* UDGuiDocumentCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiDocumentCodec.h; sourceTree = "<group>"; };
 		CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiDocumentCodec.m; sourceTree = "<group>"; };
@@ -537,6 +570,26 @@
 		EE00000400000000000000AA /* GuiEd */ = {
 			isa = PBXGroup;
 			children = (
+				CEB533642FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.h */,
+				CEB533652FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m */,
+				CEB533552FF7B36C003C1587 /* UDListDefInspector.xib */,
+				CEB533562FF7B36C003C1587 /* UDListDefInspectorController.h */,
+				CEB533572FF7B36C003C1587 /* UDListDefInspectorController.m */,
+				CEB533582FF7B36C003C1587 /* UDRenderDefInspector.xib */,
+				CEB533592FF7B36C003C1587 /* UDRenderDefInspectorController.h */,
+				CEB5335A2FF7B36C003C1587 /* UDRenderDefInspectorController.m */,
+				CEB5335B2FF7B36C003C1587 /* UDSliderDefInspector.xib */,
+				CEB5335C2FF7B36C003C1587 /* UDSliderDefInspectorController.h */,
+				CEB5335D2FF7B36C003C1587 /* UDSliderDefInspectorController.m */,
+				CEB533462FF7B358003C1587 /* UDBindDefInspector.xib */,
+				CEB533472FF7B358003C1587 /* UDBindDefInspectorController.h */,
+				CEB533482FF7B358003C1587 /* UDBindDefInspectorController.m */,
+				CEB533492FF7B358003C1587 /* UDChoiceDefInspector.xib */,
+				CEB5334A2FF7B358003C1587 /* UDChoiceDefInspectorController.h */,
+				CEB5334B2FF7B358003C1587 /* UDChoiceDefInspectorController.m */,
+				CEB5334C2FF7B358003C1587 /* UDEditDefInspector.xib */,
+				CEB5334D2FF7B358003C1587 /* UDEditDefInspectorController.h */,
+				CEB5334E2FF7B358003C1587 /* UDEditDefInspectorController.m */,
 				CEF355F42FF798B6004089A1 /* UDEditorControllerContext.h */,
 				CEF355F52FF798B6004089A1 /* UDEvents.xib */,
 				CEF355F62FF798B6004089A1 /* UDEventsController.h */,
@@ -725,9 +778,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE01000700000000000000AA /* MainMenu.xib in Resources */,
+				CEB5335E2FF7B36C003C1587 /* UDListDefInspector.xib in Resources */,
+				CEB5335F2FF7B36C003C1587 /* UDSliderDefInspector.xib in Resources */,
+				CEB533602FF7B36C003C1587 /* UDRenderDefInspector.xib in Resources */,
 				EE01000800000000000000AA /* UDGuiEdDocument.xib in Resources */,
 				CEF356052FF798B6004089A1 /* UDVariables.xib in Resources */,
 				CEF356062FF798B6004089A1 /* UDEvents.xib in Resources */,
+				CEB5334F2FF7B358003C1587 /* UDChoiceDefInspector.xib in Resources */,
+				CEB533502FF7B358003C1587 /* UDEditDefInspector.xib in Resources */,
+				CEB533512FF7B358003C1587 /* UDBindDefInspector.xib in Resources */,
 				CEF356072FF798B6004089A1 /* UDOutlinePane.xib in Resources */,
 				CEF356082FF798B6004089A1 /* UDInspector.xib in Resources */,
 			);
@@ -900,11 +959,18 @@
 				CEF0C69E2FF66A8F00BC642C /* UDGuiDocumentCodec.m in Sources */,
 				EE01000900000000000000AA /* UDInspectableTableView.m in Sources */,
 				EE01000300000000000000AA /* UDGuiEdDocumentWindowController.m in Sources */,
+				CEB533662FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m in Sources */,
 				EE01000400000000000000AA /* UDDeclLexer.m in Sources */,
 				EE01000500000000000000AA /* UDDeclParser.m in Sources */,
 				EE01000600000000000000AA /* UDDeclModel.m in Sources */,
 				CE28169F2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */,
 				CE2816A02FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */,
+				CEB533522FF7B358003C1587 /* UDBindDefInspectorController.m in Sources */,
+				CEB533532FF7B358003C1587 /* UDChoiceDefInspectorController.m in Sources */,
+				CEB533612FF7B36C003C1587 /* UDSliderDefInspectorController.m in Sources */,
+				CEB533622FF7B36C003C1587 /* UDListDefInspectorController.m in Sources */,
+				CEB533632FF7B36C003C1587 /* UDRenderDefInspectorController.m in Sources */,
+				CEB533542FF7B358003C1587 /* UDEditDefInspectorController.m in Sources */,
 				CE2816A12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */,
 				EE01000B00000000000000AA /* UDDeclType.m in Sources */,
 			);

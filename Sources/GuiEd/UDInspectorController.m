@@ -79,12 +79,12 @@
         sync ? @selector(syncRenderPanelFromWindow:) : @selector(applyRenderPanelToWindow:),
     };
 
-    for (NSInteger i = 0; i < (NSInteger)(sizeof(windowClasses) / sizeof(windowClasses[0])); i++) {
-        id typedWindow = [self typedWindow:window class:windowClasses[i]];
+    for (NSInteger typeIndex = 0; typeIndex < (NSInteger)(sizeof(windowClasses) / sizeof(windowClasses[0])); typeIndex++) {
+        id typedWindow = [self typedWindow:window class:windowClasses[typeIndex]];
         if (!sync && !typedWindow) {
             continue;
         }
-        SEL selector = selectors[i];
+        SEL selector = selectors[typeIndex];
         typedef void (*TypedPanelDispatch)(id, SEL, id);
         TypedPanelDispatch dispatch = (TypedPanelDispatch)[self methodForSelector:selector];
         dispatch(self, selector, typedWindow);
@@ -304,18 +304,18 @@
         { self.infoModalButton,          UDGuiWindowPropertyModal,          NO },
         { self.infoInvertRectButton,     UDGuiWindowPropertyInvertRect,     NO },
     };
-    for (size_t i = 0; i < sizeof(boolBindings)/sizeof(boolBindings[0]); i++) {
-        if (boolBindings[i].btn) {
-            [self syncBoolButton:boolBindings[i].btn key:boolBindings[i].key
-                          window:window defaultOnWhenNil:boolBindings[i].defaultOn];
+    for (size_t bindingIndex = 0; bindingIndex < sizeof(boolBindings)/sizeof(boolBindings[0]); bindingIndex++) {
+        if (boolBindings[bindingIndex].btn) {
+            [self syncBoolButton:boolBindings[bindingIndex].btn key:boolBindings[bindingIndex].key
+                          window:window defaultOnWhenNil:boolBindings[bindingIndex].defaultOn];
         }
     }
 
     // Double fields
     NSTextField *__weak doubleFields[]  = { self.infoForceAspectWidthField, self.infoForceAspectHeightField, self.infoMatScaleXField, self.infoMatScaleYField, self.infoBorderSizeField, self.infoTextAlignXField, self.infoTextAlignYField };
     NSString    *doubleKeys[]           = { UDGuiWindowPropertyForceAspectWidth, UDGuiWindowPropertyForceAspectHeight, UDGuiWindowPropertyMatScaleX, UDGuiWindowPropertyMatScaleY, UDGuiWindowPropertyBorderSize, UDGuiWindowPropertyTextAlignX, UDGuiWindowPropertyTextAlignY };
-    for (size_t i = 0; i < sizeof(doubleFields)/sizeof(doubleFields[0]); i++) {
-        if (doubleFields[i]) { [self syncDoubleField:doubleFields[i] key:doubleKeys[i] window:window]; }
+    for (size_t fieldIndex = 0; fieldIndex < sizeof(doubleFields)/sizeof(doubleFields[0]); fieldIndex++) {
+        if (doubleFields[fieldIndex]) { [self syncDoubleField:doubleFields[fieldIndex] key:doubleKeys[fieldIndex] window:window]; }
     }
 
     // Integer fields
@@ -324,8 +324,8 @@
     // String fields
     NSTextField *__weak stringFields[] = { self.infoForeColorField, self.infoHoverColorField, self.infoBackColorField, self.infoBorderColorField, self.infoMatColorField, self.infoShearField, self.infoNameOverrideField, self.infoTextField, self.infoBackgroundField, self.infoVarBackgroundField, self.infoRunScriptField, self.infoPlayField, self.infoCommentField, self.infoFontField };
     NSString    *stringKeys[]          = { UDGuiWindowPropertyForeColor, UDGuiWindowPropertyHoverColor, UDGuiWindowPropertyBackColor, UDGuiWindowPropertyBorderColor, UDGuiWindowPropertyMatColor, UDGuiWindowPropertyShear, UDGuiWindowPropertyNameOverride, UDGuiWindowPropertyText, UDGuiWindowPropertyBackground, UDGuiWindowPropertyVarBackground, UDGuiWindowPropertyRunScript, UDGuiWindowPropertyPlay, UDGuiWindowPropertyComment, UDGuiWindowPropertyFont };
-    for (size_t i = 0; i < sizeof(stringFields)/sizeof(stringFields[0]); i++) {
-        if (stringFields[i]) { [self syncStringField:stringFields[i] key:stringKeys[i] window:window]; }
+    for (size_t fieldIndex = 0; fieldIndex < sizeof(stringFields)/sizeof(stringFields[0]); fieldIndex++) {
+        if (stringFields[fieldIndex]) { [self syncStringField:stringFields[fieldIndex] key:stringKeys[fieldIndex] window:window]; }
     }
 }
 
@@ -354,15 +354,15 @@
         { self.infoModalButton,           UDGuiWindowPropertyModal },
         { self.infoInvertRectButton,      UDGuiWindowPropertyInvertRect },
     };
-    for (size_t i = 0; i < sizeof(boolBindings)/sizeof(boolBindings[0]); i++) {
-        if (boolBindings[i].btn) { [self applyBoolButton:boolBindings[i].btn key:boolBindings[i].key window:window]; }
+    for (size_t bindingIndex = 0; bindingIndex < sizeof(boolBindings)/sizeof(boolBindings[0]); bindingIndex++) {
+        if (boolBindings[bindingIndex].btn) { [self applyBoolButton:boolBindings[bindingIndex].btn key:boolBindings[bindingIndex].key window:window]; }
     }
 
     // Double fields
     NSTextField *__weak doubleFields[] = { self.infoForceAspectWidthField, self.infoForceAspectHeightField, self.infoMatScaleXField, self.infoMatScaleYField, self.infoBorderSizeField, self.infoTextAlignXField, self.infoTextAlignYField };
     NSString    *doubleKeys[]          = { UDGuiWindowPropertyForceAspectWidth, UDGuiWindowPropertyForceAspectHeight, UDGuiWindowPropertyMatScaleX, UDGuiWindowPropertyMatScaleY, UDGuiWindowPropertyBorderSize, UDGuiWindowPropertyTextAlignX, UDGuiWindowPropertyTextAlignY };
-    for (size_t i = 0; i < sizeof(doubleFields)/sizeof(doubleFields[0]); i++) {
-        if (doubleFields[i]) { [self applyDoubleField:doubleFields[i] key:doubleKeys[i] window:window]; }
+    for (size_t fieldIndex = 0; fieldIndex < sizeof(doubleFields)/sizeof(doubleFields[0]); fieldIndex++) {
+        if (doubleFields[fieldIndex]) { [self applyDoubleField:doubleFields[fieldIndex] key:doubleKeys[fieldIndex] window:window]; }
     }
 
     // Integer fields
@@ -371,8 +371,8 @@
     // String fields
     NSTextField *__weak stringFields[] = { self.infoForeColorField, self.infoHoverColorField, self.infoBackColorField, self.infoBorderColorField, self.infoMatColorField, self.infoShearField, self.infoNameOverrideField, self.infoTextField, self.infoBackgroundField, self.infoVarBackgroundField, self.infoRunScriptField, self.infoPlayField, self.infoCommentField, self.infoFontField };
     NSString    *stringKeys[]          = { UDGuiWindowPropertyForeColor, UDGuiWindowPropertyHoverColor, UDGuiWindowPropertyBackColor, UDGuiWindowPropertyBorderColor, UDGuiWindowPropertyMatColor, UDGuiWindowPropertyShear, UDGuiWindowPropertyNameOverride, UDGuiWindowPropertyText, UDGuiWindowPropertyBackground, UDGuiWindowPropertyVarBackground, UDGuiWindowPropertyRunScript, UDGuiWindowPropertyPlay, UDGuiWindowPropertyComment, UDGuiWindowPropertyFont };
-    for (size_t i = 0; i < sizeof(stringFields)/sizeof(stringFields[0]); i++) {
-        if (stringFields[i]) { [self applyStringField:stringFields[i] key:stringKeys[i] window:window]; }
+    for (size_t fieldIndex = 0; fieldIndex < sizeof(stringFields)/sizeof(stringFields[0]); fieldIndex++) {
+        if (stringFields[fieldIndex]) { [self applyStringField:stringFields[fieldIndex] key:stringKeys[fieldIndex] window:window]; }
     }
 }
 
@@ -418,9 +418,9 @@
         [UDSliderDefWindowNode class],
         [UDRenderDefWindowNode class],
     };
-    for (NSInteger i = 0; i < (NSInteger)(sizeof(windowClasses) / sizeof(windowClasses[0])); i++) {
-        if ([window isKindOfClass:windowClasses[i]]) {
-            return (UDGuiAttributeTypeTab)i;
+    for (NSInteger classIndex = 0; classIndex < (NSInteger)(sizeof(windowClasses) / sizeof(windowClasses[0])); classIndex++) {
+        if ([window isKindOfClass:windowClasses[classIndex]]) {
+            return (UDGuiAttributeTypeTab)classIndex;
         }
     }
     return (UDGuiAttributeTypeTab)-1;

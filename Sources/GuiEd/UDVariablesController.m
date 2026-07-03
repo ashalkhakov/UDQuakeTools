@@ -26,8 +26,8 @@
                                 inWindow:(UDGuiWindowNode *)window {
     NSString *prefix = type == UDGuiVariableDefinitionTypeVec4 ? @"vec4Var" : @"floatVar";
     NSSet<NSString *> *existingNames = [NSSet setWithArray:[[self variableDefinitionsForWindow:window] valueForKey:@"name"] ?: @[]];
-    for (NSUInteger i = 1; i < 10000; i++) {
-        NSString *candidate = [NSString stringWithFormat:@"%@%lu", prefix, (unsigned long)i];
+    for (NSUInteger candidateNumber = 1; candidateNumber < 10000; candidateNumber++) {
+        NSString *candidate = [NSString stringWithFormat:@"%@%lu", prefix, (unsigned long)candidateNumber];
         if (![existingNames containsObject:candidate]) {
             return candidate;
         }

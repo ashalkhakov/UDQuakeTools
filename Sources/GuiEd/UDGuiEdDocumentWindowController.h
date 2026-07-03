@@ -86,11 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) IBOutlet NSTableView *variablesTableView;
 @property (nonatomic, strong) IBOutlet NSSegmentedControl *variablesTypeControl;
 
-@property (nonatomic, strong) IBOutlet NSTextField *eventsOnActionField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventsOnTimeField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventsOnActionHintLabel;
-@property (nonatomic, strong) IBOutlet NSTextField *eventsOnTimeHintLabel;
-
 @property (nonatomic, strong) IBOutlet NSButton *infoShowTimeButton;
 @property (nonatomic, strong) IBOutlet NSButton *infoShowCoordsButton;
 @property (nonatomic, strong) IBOutlet NSButton *infoVisibleButton;

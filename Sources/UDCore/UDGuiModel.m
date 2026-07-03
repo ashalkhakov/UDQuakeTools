@@ -5,6 +5,243 @@
 
 #import "UDGuiModel.h"
 
+static NSString *const UDGuiValidationErrorDomain = @"com.udquake.validation.gui";
+NSString *const UDGuiWindowPropertyShowTime = @"showTime";
+NSString *const UDGuiWindowPropertyShowCoords = @"showCoords";
+NSString *const UDGuiWindowPropertyVisible = @"visible";
+NSString *const UDGuiWindowPropertyNoEvents = @"noEvents";
+NSString *const UDGuiWindowPropertyForceAspectWidth = @"forceAspectWidth";
+NSString *const UDGuiWindowPropertyForceAspectHeight = @"forceAspectHeight";
+NSString *const UDGuiWindowPropertyMatScaleX = @"matScaleX";
+NSString *const UDGuiWindowPropertyMatScaleY = @"matScaleY";
+NSString *const UDGuiWindowPropertyBorderSize = @"borderSize";
+NSString *const UDGuiWindowPropertyForeColor = @"foreColor";
+NSString *const UDGuiWindowPropertyHoverColor = @"hoverColor";
+NSString *const UDGuiWindowPropertyBackColor = @"backColor";
+NSString *const UDGuiWindowPropertyBorderColor = @"borderColor";
+NSString *const UDGuiWindowPropertyMatColor = @"matColor";
+NSString *const UDGuiWindowPropertyNoWrap = @"noWrap";
+NSString *const UDGuiWindowPropertyShadow = @"shadow";
+NSString *const UDGuiWindowPropertyTextAlign = @"textAlign";
+NSString *const UDGuiWindowPropertyTextAlignX = @"textAlignX";
+NSString *const UDGuiWindowPropertyTextAlignY = @"textAlignY";
+NSString *const UDGuiWindowPropertyShear = @"shear";
+NSString *const UDGuiWindowPropertyWantEnter = @"wantEnter";
+NSString *const UDGuiWindowPropertyNaturalMatScale = @"naturalMatScale";
+NSString *const UDGuiWindowPropertyNoClip = @"noClip";
+NSString *const UDGuiWindowPropertyNoCursor = @"noCursor";
+NSString *const UDGuiWindowPropertyMenuGUI = @"menuGUI";
+NSString *const UDGuiWindowPropertyModal = @"modal";
+NSString *const UDGuiWindowPropertyInvertRect = @"invertRect";
+NSString *const UDGuiWindowPropertyNameOverride = @"nameOverride";
+NSString *const UDGuiWindowPropertyText = @"text";
+NSString *const UDGuiWindowPropertyBackground = @"background";
+NSString *const UDGuiWindowPropertyVarBackground = @"varBackground";
+NSString *const UDGuiWindowPropertyRunScript = @"runScript";
+NSString *const UDGuiWindowPropertyPlay = @"play";
+NSString *const UDGuiWindowPropertyComment = @"comment";
+NSString *const UDGuiWindowPropertyFont = @"font";
+NSString *const UDGuiWindowPropertyRect = @"rect";
+NSString *const UDGuiWindowPropertyRotate = @"rotate";
+NSString *const UDGuiWindowPropertyScale = @"scale";
+NSString *const UDGuiWindowPropertyTranslate = @"translate";
+NSString *const UDGuiWindowPropertyTextScale = @"textScale";
+NSString *const UDGuiWindowPropertyTabStops = @"tabstops";
+NSString *const UDGuiWindowPropertyTabAligns = @"tabaligns";
+
+static NSString *UDGuiTrimmedString(NSString *value) {
+    return [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSString *keyword,
+                                                        NSString *setVariable,
+                                                        NSString *setValue,
+                                                        NSString *setFocusWindow,
+                                                        NSString *resetTimeWindow,
+                                                        NSString *resetTimeValue,
+                                                        NSString *transitionVariable,
+                                                        NSString *transitionFrom,
+                                                        NSString *transitionTo,
+                                                        NSString *transitionTime,
+                                                        NSString *transitionAccel,
+                                                        NSString *transitionDecel,
+                                                        NSString *localSound,
+                                                        NSString *runScript,
+                                                        NSString *showCursor,
+                                                        NSString *fallbackArguments) {
+    NSString *canonicalKeyword = keyword ?: @"";
+    NSString *lower = canonicalKeyword.lowercaseString;
+
+    if ([lower isEqualToString:@"set"]) {
+        NSString *variable = UDGuiTrimmedString(setVariable ?: @"");
+        NSString *value = UDGuiTrimmedString(setValue ?: @"");
+        if (variable.length == 0) {
+            NSString *arguments = [NSString stringWithFormat:@"%@ %@", variable, value];
+            return [[UDGuiScriptCommand alloc] initWithKeyword:canonicalKeyword arguments:UDGuiTrimmedString(arguments)];
+        }
+        return [[UDGuiSetCommand alloc] initWithVariable:variable valueExpression:value ?: @""];
+    }
+
+    if ([lower isEqualToString:@"setfocus"]) {
+        NSString *windowName = UDGuiTrimmedString(setFocusWindow ?: @"");
+        if (windowName.length == 0) {
+            return [[UDGuiScriptCommand alloc] initWithKeyword:canonicalKeyword arguments:@""];
+        }
+        return [[UDGuiSetFocusCommand alloc] initWithWindowName:windowName];
+    }
+
+    if ([lower isEqualToString:@"resettime"]) {
+        return [[UDGuiResetTimeCommand alloc] initWithWindowName:UDGuiTrimmedString(resetTimeWindow ?: @"")
+                                                   timeExpression:UDGuiTrimmedString(resetTimeValue ?: @"")];
+    }
+
+    if ([lower isEqualToString:@"transition"]) {
+        NSString *variable = UDGuiTrimmedString(transitionVariable ?: @"");
+        NSString *fromValue = UDGuiTrimmedString(transitionFrom ?: @"");
+        NSString *toValue = UDGuiTrimmedString(transitionTo ?: @"");
+        NSString *timeExpression = UDGuiTrimmedString(transitionTime ?: @"");
+        NSString *accel = UDGuiTrimmedString(transitionAccel ?: @"");
+        NSString *decel = UDGuiTrimmedString(transitionDecel ?: @"");
+
+        if (variable.length > 0 && fromValue.length > 0 && toValue.length > 0 && timeExpression.length > 0) {
+            return [[UDGuiTransitionCommand alloc] initWithVariable:variable
+                                                           fromValue:fromValue
+                                                             toValue:toValue
+                                                      timeExpression:timeExpression
+                                                     accelExpression:(accel.length > 0 ? accel : nil)
+                                                     decelExpression:(decel.length > 0 ? decel : nil)];
+        }
+
+        NSString *arguments = [NSString stringWithFormat:@"%@ %@ %@ %@ %@ %@", variable, fromValue, toValue, timeExpression, accel, decel];
+        return [[UDGuiScriptCommand alloc] initWithKeyword:canonicalKeyword arguments:UDGuiTrimmedString(arguments)];
+    }
+
+    if ([lower isEqualToString:@"localsound"] || [lower isEqualToString:@"runscript"] || [lower isEqualToString:@"showcursor"]) {
+        NSString *value = @"";
+        if ([lower isEqualToString:@"localsound"]) {
+            value = UDGuiTrimmedString(localSound ?: @"");
+        } else if ([lower isEqualToString:@"runscript"]) {
+            value = UDGuiTrimmedString(runScript ?: @"");
+        } else {
+            value = UDGuiTrimmedString(showCursor ?: @"");
+        }
+        return [[UDGuiSingleArgumentCommand alloc] initWithKeyword:canonicalKeyword value:value ?: @""];
+    }
+
+    if ([lower isEqualToString:@"evalregs"] || [lower isEqualToString:@"resetcinematics"] || [lower isEqualToString:@"endgame"]) {
+        return [[UDGuiScriptCommand alloc] initWithKeyword:canonicalKeyword arguments:@""];
+    }
+
+    return [[UDGuiScriptCommand alloc] initWithKeyword:canonicalKeyword
+                                             arguments:UDGuiTrimmedString(fallbackArguments ?: @"") ?: @""];
+}
+
+NSString *UDGuiEventKeywordForType(UDGuiEventHandlerType type) {
+    switch (type) {
+        case UDGuiEventHandlerTypeOnTime: return @"onTime";
+        case UDGuiEventHandlerTypeOnNamedEvent: return @"onNamedEvent";
+        case UDGuiEventHandlerTypeOnAction: return @"onAction";
+        case UDGuiEventHandlerTypeOnActionRelease: return @"onActionRelease";
+        case UDGuiEventHandlerTypeOnMouseEnter: return @"onMouseEnter";
+        case UDGuiEventHandlerTypeOnMouseExit: return @"onMouseExit";
+        case UDGuiEventHandlerTypeOnActivate: return @"onActivate";
+        case UDGuiEventHandlerTypeOnDeactivate: return @"onDeactivate";
+        case UDGuiEventHandlerTypeOnEsc: return @"onEsc";
+        case UDGuiEventHandlerTypeOnEvent: return @"onEvent";
+        case UDGuiEventHandlerTypeOnTrigger: return @"onTrigger";
+        case UDGuiEventHandlerTypeOnEnter: return @"onEnter";
+        case UDGuiEventHandlerTypeOnEnterRelease: return @"onEnterRelease";
+    }
+}
+
+BOOL UDGuiEventTypeFromKeyword(NSString *keyword, UDGuiEventHandlerType *outType) {
+    NSString *lower = keyword.lowercaseString;
+    if ([lower isEqualToString:@"ontime"]) { *outType = UDGuiEventHandlerTypeOnTime; return YES; }
+    if ([lower isEqualToString:@"onnamedevent"]) { *outType = UDGuiEventHandlerTypeOnNamedEvent; return YES; }
+    if ([lower isEqualToString:@"onaction"]) { *outType = UDGuiEventHandlerTypeOnAction; return YES; }
+    if ([lower isEqualToString:@"onactionrelease"]) { *outType = UDGuiEventHandlerTypeOnActionRelease; return YES; }
+    if ([lower isEqualToString:@"onmouseenter"]) { *outType = UDGuiEventHandlerTypeOnMouseEnter; return YES; }
+    if ([lower isEqualToString:@"onmouseexit"]) { *outType = UDGuiEventHandlerTypeOnMouseExit; return YES; }
+    if ([lower isEqualToString:@"onactivate"]) { *outType = UDGuiEventHandlerTypeOnActivate; return YES; }
+    if ([lower isEqualToString:@"ondeactivate"]) { *outType = UDGuiEventHandlerTypeOnDeactivate; return YES; }
+    if ([lower isEqualToString:@"onesc"]) { *outType = UDGuiEventHandlerTypeOnEsc; return YES; }
+    if ([lower isEqualToString:@"onevent"]) { *outType = UDGuiEventHandlerTypeOnEvent; return YES; }
+    if ([lower isEqualToString:@"ontrigger"]) { *outType = UDGuiEventHandlerTypeOnTrigger; return YES; }
+    if ([lower isEqualToString:@"onenter"]) { *outType = UDGuiEventHandlerTypeOnEnter; return YES; }
+    if ([lower isEqualToString:@"onenterrelease"]) { *outType = UDGuiEventHandlerTypeOnEnterRelease; return YES; }
+    return NO;
+}
+
+BOOL UDGuiIsScalarString(NSString *value) {
+    if (value.length == 0) {
+        return NO;
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:value];
+    double parsed = 0.0;
+    return [scanner scanDouble:&parsed] && scanner.isAtEnd;
+}
+
+BOOL UDGuiIsRectString(NSString *value) {
+    NSString *normalized = [[value stringByReplacingOccurrencesOfString:@"," withString:@" "]
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (normalized.length == 0) {
+        return NO;
+    }
+
+    NSArray<NSString *> *parts = [normalized componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSUInteger count = 0;
+    for (NSString *part in parts) {
+        if (part.length == 0) {
+            continue;
+        }
+        if (!UDGuiIsScalarString(part)) {
+            return NO;
+        }
+        count++;
+    }
+    return count == 4;
+}
+
+BOOL UDGuiIsCommaSeparatedIntegerList(NSString *value) {
+    NSString *trimmed = [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length == 0) {
+        return NO;
+    }
+
+    NSArray<NSString *> *parts = [trimmed componentsSeparatedByString:@","];
+    for (NSString *raw in parts) {
+        NSString *part = [raw stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (part.length == 0) {
+            return NO;
+        }
+        NSScanner *scanner = [NSScanner scannerWithString:part];
+        NSInteger parsed = 0;
+        if (![scanner scanInteger:&parsed] || !scanner.isAtEnd) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
+BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
+    NSString *trimmed = [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length == 0) {
+        return NO;
+    }
+
+    NSArray<NSString *> *parts = [trimmed componentsSeparatedByString:@","];
+    for (NSString *raw in parts) {
+        NSString *part = [raw stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (part.length == 0) {
+            return NO;
+        }
+        if (![part isEqualToString:@"0"] && ![part isEqualToString:@"1"] && ![part isEqualToString:@"2"]) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
 @interface UDGuiWindowNode ()
 @property (nonatomic, strong) NSMutableArray<UDGuiProperty *> *mutableProperties;
 @property (nonatomic, strong) NSMutableArray<UDGuiVariableDefinition *> *mutableVariableDefinitions;
@@ -994,6 +1231,32 @@
     return copy;
 }
 
+- (BOOL)validateRect:(id  _Nullable __autoreleasing *)ioValue error:(NSError * _Nullable __autoreleasing *)outError {
+    NSString *value = [*ioValue isKindOfClass:[NSString class]] ? *ioValue : @"";
+    if (value.length == 0 || UDGuiIsRectString(value)) {
+        return YES;
+    }
+    if (outError) {
+        *outError = [NSError errorWithDomain:UDGuiValidationErrorDomain
+                                        code:1
+                                    userInfo:@{NSLocalizedDescriptionKey: @"Expected 4 numeric values: x, y, w, h"}];
+    }
+    return NO;
+}
+
+- (BOOL)validateRotate:(id  _Nullable __autoreleasing *)ioValue error:(NSError * _Nullable __autoreleasing *)outError {
+    NSString *value = [*ioValue isKindOfClass:[NSString class]] ? *ioValue : @"";
+    if (value.length == 0 || UDGuiIsScalarString(value)) {
+        return YES;
+    }
+    if (outError) {
+        *outError = [NSError errorWithDomain:UDGuiValidationErrorDomain
+                                        code:2
+                                    userInfo:@{NSLocalizedDescriptionKey: @"Expected numeric rotate value"}];
+    }
+    return NO;
+}
+
 @end
 
 @implementation UDEditDefWindowNode
@@ -1366,6 +1629,32 @@
 
 - (void)setMultipleSelection:(BOOL)multipleSelection {
     [self setBoolPropertyValue:multipleSelection forKey:@"multiplesel"];
+}
+
+- (BOOL)validateTabStops:(id  _Nullable __autoreleasing *)ioValue error:(NSError * _Nullable __autoreleasing *)outError {
+    NSString *value = [*ioValue isKindOfClass:[NSString class]] ? *ioValue : @"";
+    if (value.length == 0 || UDGuiIsCommaSeparatedIntegerList(value)) {
+        return YES;
+    }
+    if (outError) {
+        *outError = [NSError errorWithDomain:UDGuiValidationErrorDomain
+                                        code:3
+                                    userInfo:@{NSLocalizedDescriptionKey: @"tabstops must be comma-separated integers"}];
+    }
+    return NO;
+}
+
+- (BOOL)validateTabAligns:(id  _Nullable __autoreleasing *)ioValue error:(NSError * _Nullable __autoreleasing *)outError {
+    NSString *value = [*ioValue isKindOfClass:[NSString class]] ? *ioValue : @"";
+    if (value.length == 0 || UDGuiIsCommaSeparatedAlignmentList(value)) {
+        return YES;
+    }
+    if (outError) {
+        *outError = [NSError errorWithDomain:UDGuiValidationErrorDomain
+                                        code:4
+                                    userInfo:@{NSLocalizedDescriptionKey: @"tabaligns must be 0,1,2 values"}];
+    }
+    return NO;
 }
 
 @end

@@ -64,10 +64,8 @@
                 <outlet property="editorContainerView" destination="VIE-EDIT" id="OWN-01"/>
                 <outlet property="eventCommandEditorTabView" destination="TV-EVT-CMD-EDITOR" id="OWN-EVT-18"/>
                 <outlet property="eventCommandTypePopup" destination="POP-EVT-CMD-TYPE" id="OWN-EVT-05"/>
-                <outlet property="eventCommandsActionControl" destination="SEG-EVT-CMD-ACT" id="OWN-EVT-04"/>
                 <outlet property="eventCommandsTableView" destination="TBL-EVT-CMD" id="OWN-EVT-02"/>
                 <outlet property="eventFallbackArgumentsField" destination="FLD-EVT-CMD-FALLBACK" id="OWN-EVT-34"/>
-                <outlet property="eventHandlersActionControl" destination="SEG-EVT-HDL-ACT" id="OWN-EVT-03"/>
                 <outlet property="eventHandlersTableView" destination="TBL-EVT-HDL" id="OWN-EVT-01"/>
                 <outlet property="eventLocalSoundField" destination="FLD-EVT-CMD-LOCALSOUND" id="OWN-EVT-31"/>
                 <outlet property="eventResetTimeValueField" destination="FLD-EVT-CMD-RESET-TIME" id="OWN-EVT-27"/>
@@ -252,11 +250,11 @@
                                         <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="TAB-INSPECTOR-CELL">
                                             <font key="font" metaFont="smallSystem"/>
                                             <segments>
-                                                <segment width="128"/>
-                                                <segment width="100"/>
-                                                <segment width="66"/>
-                                                <segment width="92"/>
-                                                <segment width="78"/>
+                                                <segment label="Identity &amp; Type" width="128"/>
+                                                <segment label="Attributes" width="100"/>
+                                                <segment label="Size" width="66"/>
+                                                <segment label="Variables" width="92"/>
+                                                <segment label="Events" width="78"/>
                                             </segments>
                                         </segmentedCell>
                                         <connections>
@@ -1181,7 +1179,7 @@
                                                                                                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-LIST-TABSTOPS"/>
                                                                                                     </connections>
                                                                                                 </textField>
-                                                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-LIST-TABSTOPS-HINT">
+                                                                                                <textField toolTip="tabstops must be comma-separated integers" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-LIST-TABSTOPS-HINT">
                                                                                                     <rect key="frame" x="228" y="104" width="120" height="14"/>
                                                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="ints" id="LBL-ATTR-LIST-TABSTOPS-HINT-CELL">
@@ -1202,7 +1200,7 @@
                                                                                                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-LIST-TABALIGNS"/>
                                                                                                     </connections>
                                                                                                 </textField>
-                                                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-LIST-TABALIGNS-HINT">
+                                                                                                <textField toolTip="tabaligns must be 0,1,2 values" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-LIST-TABALIGNS-HINT">
                                                                                                     <rect key="frame" x="354" y="104" width="118" height="14"/>
                                                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="0,1,2" id="LBL-ATTR-LIST-TABALIGNS-HINT-CELL">
@@ -1516,7 +1514,7 @@
                                                                 <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-RECT"/>
                                                             </connections>
                                                         </textField>
-                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT-HINT">
+                                                        <textField toolTip="Expected 4 numeric values: x, y, w, h" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT-HINT">
                                                             <rect key="frame" x="0.0" y="92" width="320" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: x, y, w, h" id="LBL-SIZE-RECT-HINT-CELL">
@@ -1546,7 +1544,7 @@
                                                                 <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-ROTATE"/>
                                                             </connections>
                                                         </textField>
-                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE-HINT">
+                                                        <textField toolTip="Expected numeric rotate value" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE-HINT">
                                                             <rect key="frame" x="334" y="92" width="220" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: scalar (degrees)" id="LBL-SIZE-ROTATE-HINT-CELL">

@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class UDGuiScriptCommand;
+
 @interface UDGuiProperty : NSObject
 
 @property (nonatomic, readonly, copy) NSString *key;
@@ -37,6 +39,71 @@ typedef NS_ENUM(NSInteger, UDGuiEventHandlerType) {
     UDGuiEventHandlerTypeOnEnter,
     UDGuiEventHandlerTypeOnEnterRelease,
 };
+
+FOUNDATION_EXPORT NSString *UDGuiEventKeywordForType(UDGuiEventHandlerType type);
+FOUNDATION_EXPORT BOOL UDGuiEventTypeFromKeyword(NSString *keyword, UDGuiEventHandlerType *outType);
+FOUNDATION_EXPORT BOOL UDGuiIsScalarString(NSString *value);
+FOUNDATION_EXPORT BOOL UDGuiIsRectString(NSString *value);
+FOUNDATION_EXPORT BOOL UDGuiIsCommaSeparatedIntegerList(NSString *value);
+FOUNDATION_EXPORT BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value);
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyShowTime;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyShowCoords;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyVisible;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNoEvents;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyForceAspectWidth;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyForceAspectHeight;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyMatScaleX;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyMatScaleY;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyBorderSize;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyForeColor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyHoverColor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyBackColor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyBorderColor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyMatColor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNoWrap;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyShadow;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTextAlign;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTextAlignX;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTextAlignY;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyShear;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyWantEnter;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNaturalMatScale;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNoClip;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNoCursor;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyMenuGUI;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyModal;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyInvertRect;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyNameOverride;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyText;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyBackground;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyVarBackground;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyRunScript;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyPlay;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyComment;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyFont;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyRect;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyRotate;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyScale;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTranslate;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTextScale;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTabStops;
+FOUNDATION_EXPORT NSString *const UDGuiWindowPropertyTabAligns;
+FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSString *keyword,
+                                                                          NSString *setVariable,
+                                                                          NSString *setValue,
+                                                                          NSString *setFocusWindow,
+                                                                          NSString *resetTimeWindow,
+                                                                          NSString *resetTimeValue,
+                                                                          NSString *transitionVariable,
+                                                                          NSString *transitionFrom,
+                                                                          NSString *transitionTo,
+                                                                          NSString *transitionTime,
+                                                                          NSString *transitionAccel,
+                                                                          NSString *transitionDecel,
+                                                                          NSString *localSound,
+                                                                          NSString *runScript,
+                                                                          NSString *showCursor,
+                                                                          NSString *fallbackArguments);
 
 @interface UDGuiScriptCommand : NSObject
 

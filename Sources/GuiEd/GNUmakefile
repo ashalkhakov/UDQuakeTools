@@ -13,15 +13,10 @@ GuiEd_OBJC_FILES = \
     UDInspectableOutlineView.m \
     UDInspectableTableView.m \
     UDGuiEdDocumentWindowController.m \
-    UDGuiEdDocumentWindowController+TypedPanels.m \
-    UDGuiEdDocumentWindowController+Events.m \
-    UDGuiEdDocumentWindowController+Variables.m \
-    UDGuiEdDocumentWindowController+EventsTable.m \
-    UDGuiEdDocumentWindowController+VariablesTable.m \
-    UDGuiEdDocumentWindowController+TableSelection.m \
-    UDGuiEdDocumentWindowController+OutlinePane.m \
-    UDGuiEdDocumentWindowController+DetailPane.m \
-    UDGuiEdDocumentWindowController+Conventions.m \
+    UDInspectorController.m \
+    UDEventsController.m \
+    UDVariablesController.m \
+    UDOutlinePaneController.m \
     ../UDCore/UDDeclLexer.m \
     ../UDCore/UDDeclParser.m \
     ../UDCore/UDDeclModel.m \

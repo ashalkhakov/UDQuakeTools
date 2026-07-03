@@ -16,6 +16,15 @@
 #import "UDGuiEditorService.h"
 #import "UDGuiEditorViewModel.h"
 
+static NSArray<NSString *> *GetAllowedClassNames(void) {
+    static NSArray<NSString *> *names = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        names = @[@"listDef", @"renderDef", @"sliderDef", @"bindDef", @"choiceDef", @"editDef"];
+    });
+    return names;
+}
+
 @interface UDInspectorController ()
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UDGuiAttributeSubcontroller *> *subcontrollerCache;
 @end
@@ -40,6 +49,14 @@
 #endif
     }
     return self;
+}
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    if (self.classNameField) {
+        [self.classNameField removeAllItems];
+        [self.classNameField addItemsWithObjectValues:GetAllowedClassNames()];
+    }
 }
 
 // MARK: - Private helpers
@@ -360,15 +377,36 @@
     UDGuiWindowNode *selectedWindow = self.context.ownerDocument.viewModel.selectedWindow;
     if (!selectedWindow) { return; }
 
-    if (self.classNameField.stringValue.length > 0) {
-       [self.context.ownerDocument.editorService updateWindow:selectedWindow
-                                                    className:self.classNameField.stringValue];
+    NSString *newClassName = self.classNameField.stringValue;
+    NSArray *allowedClasses = GetAllowedClassNames();
+    if (newClassName.length > 0 && [allowedClasses containsObject:newClassName]) {
+        [self.context.ownerDocument.editorService updateWindow:selectedWindow
+                                                    className:newClassName];
+    } else {
+        self.classNameField.stringValue = selectedWindow.className ?: @"";
     }
+
     if (self.windowNameField.stringValue.length > 0) {
        [self.context.ownerDocument.editorService updateWindow:selectedWindow
-                                                         name:self.windowNameField.stringValue];
+                                                        name:self.windowNameField.stringValue];
     }
     [self.context notifyModelChangedAndRefresh];
+}
+
+// MARK: - NSComboBoxDelegate
+
+- (void)comboBoxSelectionDidChange:(NSNotification *)notification {
+    if (notification.object == self.classNameField) {
+        NSInteger selectedIndex = [self.classNameField indexOfSelectedItem];
+        if (selectedIndex >= 0) {
+            NSString *className = [self.classNameField itemObjectValueAtIndex:selectedIndex];
+            UDGuiWindowNode *selectedWindow = self.context.ownerDocument.viewModel.selectedWindow;
+            if (selectedWindow && className.length > 0) {
+                [self.context.ownerDocument.editorService updateWindow:selectedWindow className:className];
+                [self.context notifyModelChangedAndRefresh];
+            }
+        }
+    }
 }
 
 // MARK: - NSTextFieldDelegate

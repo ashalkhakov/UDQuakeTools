@@ -14,6 +14,13 @@ GuiEd_OBJC_FILES = \
     UDInspectableTableView.m \
     UDGuiEdDocumentWindowController.m \
     UDInspectorController.m \
+    UDGuiAttributeSubcontroller.m \
+    UDEditDefInspectorController.m \
+    UDChoiceDefInspectorController.m \
+    UDBindDefInspectorController.m \
+    UDListDefInspectorController.m \
+    UDSliderDefInspectorController.m \
+    UDRenderDefInspectorController.m \
     UDEventsController.m \
     UDVariablesController.m \
     UDOutlinePaneController.m \
@@ -34,6 +41,12 @@ GuiEd_RESOURCE_FILES = \
     UDGuiEdDocument.xib \
     UDOutlinePane.xib \
     UDInspector.xib \
+    UDEditDefInspector.xib \
+    UDChoiceDefInspector.xib \
+    UDBindDefInspector.xib \
+    UDListDefInspector.xib \
+    UDSliderDefInspector.xib \
+    UDRenderDefInspector.xib \
     UDVariables.xib \
     UDEvents.xib \
     GuiEd-Info.plist

@@ -207,10 +207,10 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     self.inspectorController.windowNameField.enabled = identitySection && hasWindow;
 
     if (!hasWindow) {
-        self.inspectorController.classNameField.stringValue  = @"";
+        [self.inspectorController.classNameField selectItemAtIndex:-1];
         self.inspectorController.windowNameField.stringValue = @"";
     } else {
-        self.inspectorController.classNameField.stringValue  = selectedWindow.className ?: @"";
+        [self.inspectorController.classNameField selectItemWithTitle:selectedWindow.className ?: @""];
         self.inspectorController.windowNameField.stringValue = selectedWindow.name ?: @"";
     }
 

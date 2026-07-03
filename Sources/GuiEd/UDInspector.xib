@@ -70,19 +70,27 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Class" id="LBL-CLASS-CELL"/>
                 </textField>
-                <comboBox verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-CLASS">
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-CLASS">
                     <rect key="frame" x="0.0" y="120" width="300" height="24"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Class name" drawsBackground="YES" numberOfVisibleItems="6" id="FLD-CLASS-CELL">
+                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FLD-CLASS-CELL">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </comboBoxCell>
+                        <menu key="menu" title="Class" id="FLD-CLASS-MENU">
+                            <items>
+                                <menuItem title="listDef" id="ITM-CLASS-LIST"/>
+                                <menuItem title="renderDef" id="ITM-CLASS-RENDER"/>
+                                <menuItem title="sliderDef" id="ITM-CLASS-SLIDER"/>
+                                <menuItem title="bindDef" id="ITM-CLASS-BIND"/>
+                                <menuItem title="choiceDef" id="ITM-CLASS-CHOICE"/>
+                                <menuItem title="editDef" id="ITM-CLASS-EDIT"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
                     <connections>
                         <action selector="commitWindowIdentityEdit:" target="-2" id="ACT-CLASS"/>
-                        <outlet property="delegate" destination="-2" id="DEL-CLASS"/>
                     </connections>
-                </comboBox>
+                </popUpButton>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-NAME">
                     <rect key="frame" x="316" y="610" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

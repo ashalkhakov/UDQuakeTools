@@ -15,11 +15,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDInspectorController : NSObject <NSComboBoxDelegate, NSTextFieldDelegate> {
+@interface UDInspectorController : NSObject <NSTextFieldDelegate> {
     NSView *_view;
     NSView *_identityView;
     NSView *_sizeView;
-    __weak NSComboBox *_classNameField;
+    __weak NSPopUpButton *_classNameField;
     __weak NSTextField *_windowNameField;
 }
 
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) IBOutlet NSView *view;
 @property (nonatomic, strong, nullable) IBOutlet NSView *identityView;
 @property (nonatomic, strong, nullable) IBOutlet NSView *sizeView;
-@property (nonatomic, weak, nullable) IBOutlet NSComboBox *classNameField;
+@property (nonatomic, weak, nullable) IBOutlet NSPopUpButton *classNameField;
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *windowNameField;
 
 // Container view for typed attribute panels

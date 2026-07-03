@@ -55,7 +55,7 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
     [super awakeFromNib];
     if (self.classNameField) {
         [self.classNameField removeAllItems];
-        [self.classNameField addItemsWithObjectValues:GetAllowedClassNames()];
+        [self.classNameField addItemsWithTitles:GetAllowedClassNames()];
     }
 }
 
@@ -377,13 +377,13 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
     UDGuiWindowNode *selectedWindow = self.context.ownerDocument.viewModel.selectedWindow;
     if (!selectedWindow) { return; }
 
-    NSString *newClassName = self.classNameField.stringValue;
+    NSString *newClassName = self.classNameField.selectedItem.title ?: @"";
     NSArray *allowedClasses = GetAllowedClassNames();
     if (newClassName.length > 0 && [allowedClasses containsObject:newClassName]) {
         [self.context.ownerDocument.editorService updateWindow:selectedWindow
                                                     className:newClassName];
     } else {
-        self.classNameField.stringValue = selectedWindow.className ?: @"";
+        [self.classNameField selectItemWithTitle:selectedWindow.className ?: @""];
     }
 
     if (self.windowNameField.stringValue.length > 0) {
@@ -393,26 +393,10 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
     [self.context notifyModelChangedAndRefresh];
 }
 
-// MARK: - NSComboBoxDelegate
-
-- (void)comboBoxSelectionDidChange:(NSNotification *)notification {
-    if (notification.object == self.classNameField) {
-        NSInteger selectedIndex = [self.classNameField indexOfSelectedItem];
-        if (selectedIndex >= 0) {
-            NSString *className = [self.classNameField itemObjectValueAtIndex:selectedIndex];
-            UDGuiWindowNode *selectedWindow = self.context.ownerDocument.viewModel.selectedWindow;
-            if (selectedWindow && className.length > 0) {
-                [self.context.ownerDocument.editorService updateWindow:selectedWindow className:className];
-                [self.context notifyModelChangedAndRefresh];
-            }
-        }
-    }
-}
-
 // MARK: - NSTextFieldDelegate
 
 - (BOOL)isWindowIdentityField:(id)sender {
-    return sender == self.classNameField || sender == self.windowNameField;
+    return sender == self.windowNameField;
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)notification {

@@ -26,7 +26,7 @@
             <rect key="frame" x="0.0" y="0.0" width="668" height="168"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-SLIDERDEF">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-SLIDERDEF">
                     <rect key="frame" x="0.0" y="146" width="180" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="sliderDef" id="LBL-ATTR-SLIDERDEF-CELL">
@@ -35,7 +35,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERCVAR">
+                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERCVAR">
                     <rect key="frame" x="0.0" y="120" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvar" id="FLD-ATTR-SLIDERCVAR-CELL">
@@ -47,7 +47,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-SLIDERCVAR"/>
                     </connections>
                 </textField>
-                <textField toolTip="The minimum value." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERLOW">
+                <textField toolTip="The minimum value." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERLOW">
                     <rect key="frame" x="124" y="120" width="64" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="low" id="FLD-ATTR-SLIDERLOW-CELL">
@@ -59,7 +59,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-SLIDERLOW"/>
                     </connections>
                 </textField>
-                <textField toolTip="The maximum value." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERHIGH">
+                <textField toolTip="The maximum value." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERHIGH">
                     <rect key="frame" x="194" y="120" width="64" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="high" id="FLD-ATTR-SLIDERHIGH-CELL">
@@ -71,7 +71,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-SLIDERHIGH"/>
                     </connections>
                 </textField>
-                <textField toolTip="The amount to change when the arrow keys are used." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERSTEP">
+                <textField toolTip="The amount to change when the arrow keys are used." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERSTEP">
                     <rect key="frame" x="264" y="120" width="64" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="step" id="FLD-ATTR-SLIDERSTEP-CELL">
@@ -105,7 +105,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-SLIDER-SCROLLBAR"/>
                     </connections>
                 </button>
-                <textField toolTip="Material to use for the thumb, the part that moves." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERTHUMBSHADER">
+                <textField toolTip="Material to use for the thumb, the part that moves." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERTHUMBSHADER">
                     <rect key="frame" x="0.0" y="92" width="210" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="thumbShader" id="FLD-ATTR-SLIDERTHUMBSHADER-CELL">
@@ -117,7 +117,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-SLIDERTHUMBSHADER"/>
                     </connections>
                 </textField>
-                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERCVARGROUP">
+                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-SLIDERCVARGROUP">
                     <rect key="frame" x="216" y="92" width="180" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvarGroup" id="FLD-ATTR-SLIDERCVARGROUP-CELL">

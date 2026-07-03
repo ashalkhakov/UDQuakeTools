@@ -25,7 +25,7 @@
             <rect key="frame" x="0.0" y="0.0" width="668" height="168"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-CHOICEDEF">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-CHOICEDEF">
                     <rect key="frame" x="0.0" y="146" width="180" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="choiceDef" id="LBL-ATTR-CHOICEDEF-CELL">
@@ -34,7 +34,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECVAR">
+                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECVAR">
                     <rect key="frame" x="0.0" y="120" width="150" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvar" id="FLD-ATTR-CHOICECVAR-CELL">
@@ -46,7 +46,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-CHOICECVAR"/>
                     </connections>
                 </textField>
-                <textField toolTip="Semicolon separated list of choices (Yes;No)." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICES">
+                <textField toolTip="Semicolon separated list of choices (Yes;No)." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICES">
                     <rect key="frame" x="156" y="120" width="176" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="choices" id="FLD-ATTR-CHOICES-CELL">
@@ -58,7 +58,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-CHOICES"/>
                     </connections>
                 </textField>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-VALUES">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-VALUES">
                     <rect key="frame" x="338" y="120" width="176" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <string key="toolTip">Semicolon separated list of values. It should have the same number of items as 'choices'. Defaults to the choices list when left empty.</string>
@@ -71,7 +71,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-VALUES"/>
                     </connections>
                 </textField>
-                <textField toolTip="The currently selected choice." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECUR">
+                <textField toolTip="The currently selected choice." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECUR">
                     <rect key="frame" x="520" y="120" width="84" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="current" id="FLD-ATTR-CHOICECUR-CELL">
@@ -83,7 +83,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-CHOICECUR"/>
                     </connections>
                 </textField>
-                <textField toolTip="0 means the cvar contains a 0-based index. 1 means the cvar contains a value string." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICETYPE">
+                <textField toolTip="0 means the cvar contains a 0-based index. 1 means the cvar contains a value string." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICETYPE">
                     <rect key="frame" x="0.0" y="92" width="80" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="choicetype" id="FLD-ATTR-CHOICETYPE-CELL">
@@ -95,7 +95,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-CHOICETYPE"/>
                     </connections>
                 </textField>
-                <textField toolTip="GUI parm to attach to. It will contain the current choice as a numeric value." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICEGUI">
+                <textField toolTip="GUI parm to attach to. It will contain the current choice as a numeric value." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICEGUI">
                     <rect key="frame" x="88" y="92" width="220" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="gui" id="FLD-ATTR-CHOICEGUI-CELL">
@@ -107,7 +107,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-CHOICEGUI"/>
                     </connections>
                 </textField>
-                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECVARGROUP">
+                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-CHOICECVARGROUP">
                     <rect key="frame" x="316" y="92" width="180" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvarGroup" id="FLD-ATTR-CHOICECVARGROUP-CELL">

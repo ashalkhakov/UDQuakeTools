@@ -78,7 +78,7 @@
                         <action selector="changeVariablesActionButtons:" target="-2" id="ACT-VAR-ACTIONS"/>
                     </connections>
                 </segmentedControl>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-VAR-HINT">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-VAR-HINT">
                     <rect key="frame" x="68" y="472" width="240" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Double-click a row to edit name or value." id="LBL-VAR-HINT-CELL">

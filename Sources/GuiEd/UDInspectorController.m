@@ -20,7 +20,7 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
     static NSArray<NSString *> *names = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        names = @[@"listDef", @"renderDef", @"sliderDef", @"bindDef", @"choiceDef", @"editDef"];
+        names = @[@"windowDef", @"listDef", @"renderDef", @"sliderDef", @"bindDef", @"choiceDef", @"editDef"];
     });
     return names;
 }
@@ -124,17 +124,17 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
        subcontrollerClass = [UDBindDefInspectorController class];
        nibName = @"UDBindDefInspector";
     } else if ([window isKindOfClass:[UDListDefWindowNode class]]) {
-       subcontrollerKey = @"listDef";
-       subcontrollerClass = [UDListDefInspectorController class];
-       nibName = @"UDListDefInspector";
+        subcontrollerKey = @"listDef";
+        subcontrollerClass = [UDListDefInspectorController class];
+        nibName = @"UDListDefInspector";
     } else if ([window isKindOfClass:[UDSliderDefWindowNode class]]) {
-       subcontrollerKey = @"sliderDef";
-       subcontrollerClass = [UDSliderDefInspectorController class];
-       nibName = @"UDSliderDefInspector";
+        subcontrollerKey = @"sliderDef";
+        subcontrollerClass = [UDSliderDefInspectorController class];
+        nibName = @"UDSliderDefInspector";
     } else if ([window isKindOfClass:[UDRenderDefWindowNode class]]) {
-       subcontrollerKey = @"renderDef";
-       subcontrollerClass = [UDRenderDefInspectorController class];
-       nibName = @"UDRenderDefInspector";
+        subcontrollerKey = @"renderDef";
+        subcontrollerClass = [UDRenderDefInspectorController class];
+        nibName = @"UDRenderDefInspector";
     }
     
     UDGuiAttributeSubcontroller *targetSubcontroller = nil;

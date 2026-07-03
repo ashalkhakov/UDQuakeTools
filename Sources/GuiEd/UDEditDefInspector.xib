@@ -27,7 +27,7 @@
             <rect key="frame" x="0.0" y="0.0" width="667" height="168"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-EDITDEF">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ATTR-EDITDEF">
                     <rect key="frame" x="0.0" y="146" width="180" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="editDef" id="LBL-ATTR-EDITDEF-CELL">
@@ -36,7 +36,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITCVAR">
+                <textField toolTip="The cvar to attach to. It displays the value of the cvar, and changes the cvar when the user changes the text." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITCVAR">
                     <rect key="frame" x="0.0" y="120" width="150" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvar" id="FLD-ATTR-EDITCVAR-CELL">
@@ -48,7 +48,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-EDITCVAR"/>
                     </connections>
                 </textField>
-                <textField toolTip="Maximum number of characters that can be typed. Default: 128." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-MAXCHARS">
+                <textField toolTip="Maximum number of characters that can be typed. Default: 128." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-MAXCHARS">
                     <rect key="frame" x="158" y="120" width="74" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="maxChars" id="FLD-ATTR-MAXCHARS-CELL">
@@ -60,7 +60,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-MAXCHARS"/>
                     </connections>
                 </textField>
-                <textField toolTip="File to read the initial text from." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITSOURCE">
+                <textField toolTip="File to read the initial text from." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITSOURCE">
                     <rect key="frame" x="240" y="120" width="190" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="source file" id="FLD-ATTR-EDITSOURCE-CELL">
@@ -72,7 +72,7 @@
                         <action selector="commitTypedAttributesPanel:" target="-2" id="ACT-ATTR-EDITSOURCE"/>
                     </connections>
                 </textField>
-                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITCVARGROUP">
+                <textField toolTip="Cvar group this item belongs to. This allows grouped cvar read/write commands such as 'cvar read audio'." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-ATTR-EDITCVARGROUP">
                     <rect key="frame" x="438" y="120" width="180" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="cvarGroup" id="FLD-ATTR-EDITCVARGROUP-CELL">

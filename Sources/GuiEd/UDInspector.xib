@@ -75,7 +75,7 @@
                     <autoresizingMask key="autoresizingMask"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FLD-CLASS-CELL">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="message"/>
                         <menu key="menu" title="Class" id="FLD-CLASS-MENU">
                             <items>
                                 <menuItem title="listDef" id="ITM-CLASS-LIST"/>

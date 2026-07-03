@@ -102,7 +102,6 @@
                 <outlet property="sizeTextScaleField" destination="FLD-SIZE-TEXTSCALE" id="OWN-119"/>
                 <outlet property="sizeTranslateField" destination="FLD-SIZE-TRANSLATE" id="OWN-120"/>
                 <outlet property="windowNameField" destination="FLD-NAME" id="OWN-14"/>
-                </connections>
                 <outlet property="view" destination="PNL-ATTR" id="OWN-VIEW"/>
                 <outlet property="identityView" destination="PNL-IDENTITY" id="OWN-IDENTITY-VIEW"/>
                 <outlet property="sizeView" destination="PNL-SIZE" id="OWN-SIZE-VIEW"/>
@@ -163,8 +162,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                     </subviews>
-                                                </view>
-                                            </tabViewItem>
+                                                </customView>
                                                 <customView id="PNL-ATTR">
                                                     <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1332,8 +1330,7 @@
                                                             </scroller>
                                                         </scrollView>
                                                     </subviews>
-                                                </view>
-                                            </tabViewItem>
+                                                </customView>
                                                 <customView id="PNL-SIZE">
                                                     <rect key="frame" x="0.0" y="464" width="668" height="168"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1462,8 +1459,7 @@
                                                             </connections>
                                                         </textField>
                                                     </subviews>
-                                                </view>
-                                            </tabViewItem>
+                                                </customView>
 
     </objects>
 </document>

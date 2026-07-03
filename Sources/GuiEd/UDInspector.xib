@@ -9,20 +9,17 @@
         <customObject id="-2" userLabel="File's Owner" customClass="UDInspectorController">
             <connections>
                 <outlet property="attrBindField" destination="FLD-ATTR-BIND" id="OWN-49"/>
-                <outlet property="attrBindGroupLabel" destination="LBL-ATTR-BINDDEF" id="OWN-50"/>
                 <outlet property="attrChoiceChoiceTypeField" destination="FLD-ATTR-CHOICETYPE" id="OWN-76"/>
                 <outlet property="attrChoiceChoicesField" destination="FLD-ATTR-CHOICES" id="OWN-25"/>
                 <outlet property="attrChoiceCurrentField" destination="FLD-ATTR-CHOICECUR" id="OWN-27"/>
                 <outlet property="attrChoiceCvarField" destination="FLD-ATTR-CHOICECVAR" id="OWN-24"/>
                 <outlet property="attrChoiceCvarGroupField" destination="FLD-ATTR-CHOICECVARGROUP" id="OWN-77"/>
-                <outlet property="attrChoiceGroupLabel" destination="LBL-ATTR-CHOICEDEF" id="OWN-51"/>
                 <outlet property="attrChoiceGuiField" destination="FLD-ATTR-CHOICEGUI" id="OWN-78"/>
                 <outlet property="attrChoiceLiveUpdateButton" destination="CHK-ATTR-CHOICELIVEUPDATE" id="OWN-79"/>
                 <outlet property="attrChoiceValuesField" destination="FLD-ATTR-VALUES" id="OWN-26"/>
                 <outlet property="attrEditCvarField" destination="FLD-ATTR-EDITCVAR" id="OWN-21"/>
                 <outlet property="attrEditCvarGroupField" destination="FLD-ATTR-EDITCVARGROUP" id="OWN-71"/>
                 <outlet property="attrEditForceScrollButton" destination="CHK-ATTR-FORCESCROLL" id="OWN-72"/>
-                <outlet property="attrEditGroupLabel" destination="LBL-ATTR-EDITDEF" id="OWN-52"/>
                 <outlet property="attrEditLiveUpdateButton" destination="CHK-ATTR-LIVEUPDATE" id="OWN-73"/>
                 <outlet property="attrEditMaxCharsField" destination="FLD-ATTR-MAXCHARS" id="OWN-22"/>
                 <outlet property="attrEditNumericButton" destination="CHK-ATTR-NUMERIC" id="OWN-28"/>
@@ -30,7 +27,6 @@
                 <outlet property="attrEditReadOnlyButton" destination="CHK-ATTR-READONLY" id="OWN-29"/>
                 <outlet property="attrEditSourceField" destination="FLD-ATTR-EDITSOURCE" id="OWN-74"/>
                 <outlet property="attrEditWrapButton" destination="CHK-ATTR-WRAP" id="OWN-75"/>
-                <outlet property="attrListGroupLabel" destination="LBL-ATTR-LISTDEF" id="OWN-65"/>
                 <outlet property="attrListHorizontalButton" destination="CHK-ATTR-LIST-HORIZONTAL" id="OWN-60"/>
                 <outlet property="attrListMultipleSelButton" destination="CHK-ATTR-LIST-MULTI" id="OWN-61"/>
                 <outlet property="attrListNameField" destination="FLD-ATTR-LIST-NAME" id="OWN-62"/>
@@ -52,7 +48,6 @@
                 <outlet property="attrSliderHighField" destination="FLD-ATTR-SLIDERHIGH" id="OWN-38"/>
                 <outlet property="attrSliderLiveUpdateButton" destination="CHK-ATTR-SLIDER-LIVEUPDATE" id="OWN-88"/>
                 <outlet property="attrSliderLowField" destination="FLD-ATTR-SLIDERLOW" id="OWN-37"/>
-                <outlet property="attrSliderRenderGroupLabel" destination="LBL-ATTR-SLIDERDEF" id="OWN-53"/>
                 <outlet property="attrSliderScrollBarButton" destination="CHK-ATTR-SLIDER-SCROLLBAR" id="OWN-89"/>
                 <outlet property="attrSliderStepField" destination="FLD-ATTR-SLIDERSTEP" id="OWN-39"/>
                 <outlet property="attrSliderThumbShaderField" destination="FLD-ATTR-SLIDERTHUMBSHADER" id="OWN-90"/>

@@ -9,6 +9,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="UDInspectorController">
             <connections>
                 <outlet property="attributeTypeTabView" destination="TV-ATTR-TYPES" id="OWN-70"/>
+                <outlet property="attributesScrollView" destination="SCR-ATTR-COMPOSITE" id="OWN-ATTRSCR"/>
                 <outlet property="classNameField" destination="FLD-CLASS" id="OWN-CLASS-FIELD"/>
                 <outlet property="identityView" destination="PNL-IDENTITY" id="OWN-IDENTITY-VIEW"/>
                 <outlet property="infoBackColorField" destination="FLD-INFO-BACKCOLOR" id="OWN-121"/>
@@ -66,13 +67,13 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-CLASS">
-                    <rect key="frame" x="0.0" y="610" width="80" height="16"/>
+                    <rect key="frame" x="0.0" y="610" width="236" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Class" id="LBL-CLASS-CELL"/>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-CLASS">
-                    <rect key="frame" x="0.0" y="120" width="300" height="24"/>
-                    <autoresizingMask key="autoresizingMask"/>
+                    <rect key="frame" x="0.0" y="584" width="236" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FLD-CLASS-CELL">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="message"/>
@@ -92,13 +93,13 @@
                     </connections>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-NAME">
-                    <rect key="frame" x="316" y="610" width="80" height="16"/>
+                    <rect key="frame" x="0.0" y="554" width="236" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Name" id="LBL-NAME-CELL"/>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-NAME">
-                    <rect key="frame" x="316" y="120" width="300" height="24"/>
-                    <autoresizingMask key="autoresizingMask"/>
+                    <rect key="frame" x="0.0" y="528" width="236" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Window name" id="FLD-NAME-CELL">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -110,8 +111,8 @@
                     </connections>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ID-HELP">
-                    <rect key="frame" x="0.0" y="88" width="660" height="20"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <rect key="frame" x="0.0" y="504" width="236" height="20"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" alignment="left" title="Set the window class and name for the selected GUI node here." id="LBL-ID-HELP-CELL">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -671,7 +672,7 @@
                         <rect key="frame" x="1" y="616" width="651" height="15"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </scroller>
-                    <scroller key="verticalScroller" doubleValue="1" horizontal="NO" id="SCR-ATTR-COMPOSITE-V">
+                    <scroller key="verticalScroller" horizontal="NO" id="SCR-ATTR-COMPOSITE-V">
                         <rect key="frame" x="652" y="1" width="15" height="615"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </scroller>
@@ -684,7 +685,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT">
-                    <rect key="frame" x="0.0" y="138" width="80" height="16"/>
+                    <rect key="frame" x="0.0" y="148" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Rect" id="LBL-SIZE-RECT-CELL">
                         <font key="font" metaFont="system"/>
@@ -693,7 +694,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-RECT">
-                    <rect key="frame" x="0.0" y="112" width="320" height="22"/>
+                    <rect key="frame" x="0.0" y="124" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y, w, h" id="FLD-SIZE-RECT-CELL">
                         <font key="font" metaFont="system"/>
@@ -705,7 +706,7 @@
                     </connections>
                 </textField>
                 <textField toolTip="Expected 4 numeric values: x, y, w, h" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT-HINT">
-                    <rect key="frame" x="0.0" y="92" width="320" height="16"/>
+                    <rect key="frame" x="0.0" y="106" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: x, y, w, h" id="LBL-SIZE-RECT-HINT-CELL">
                         <font key="font" metaFont="miniSystem"/>
@@ -714,7 +715,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE">
-                    <rect key="frame" x="334" y="138" width="80" height="16"/>
+                    <rect key="frame" x="126" y="148" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Rotate" id="LBL-SIZE-ROTATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -723,7 +724,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-ROTATE">
-                    <rect key="frame" x="334" y="112" width="120" height="22"/>
+                    <rect key="frame" x="126" y="124" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="degrees" id="FLD-SIZE-ROTATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -735,7 +736,7 @@
                     </connections>
                 </textField>
                 <textField toolTip="Expected numeric rotate value" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE-HINT">
-                    <rect key="frame" x="334" y="92" width="220" height="16"/>
+                    <rect key="frame" x="126" y="106" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: scalar (degrees)" id="LBL-SIZE-ROTATE-HINT-CELL">
                         <font key="font" metaFont="miniSystem"/>
@@ -744,7 +745,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-SCALE">
-                    <rect key="frame" x="0.0" y="62" width="80" height="16"/>
+                    <rect key="frame" x="0.0" y="78" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Scale" id="LBL-SIZE-SCALE-CELL">
                         <font key="font" metaFont="system"/>
@@ -753,7 +754,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-SCALE">
-                    <rect key="frame" x="0.0" y="36" width="180" height="22"/>
+                    <rect key="frame" x="0.0" y="54" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y" id="FLD-SIZE-SCALE-CELL">
                         <font key="font" metaFont="system"/>
@@ -765,7 +766,7 @@
                     </connections>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TRANSLATE">
-                    <rect key="frame" x="194" y="62" width="80" height="16"/>
+                    <rect key="frame" x="126" y="78" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Translate" id="LBL-SIZE-TRANSLATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -774,7 +775,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TRANSLATE">
-                    <rect key="frame" x="194" y="36" width="180" height="22"/>
+                    <rect key="frame" x="126" y="54" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y" id="FLD-SIZE-TRANSLATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -786,7 +787,7 @@
                     </connections>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TEXTSCALE">
-                    <rect key="frame" x="388" y="62" width="80" height="16"/>
+                    <rect key="frame" x="0.0" y="28" width="118" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Text Scale" id="LBL-SIZE-TEXTSCALE-CELL">
                         <font key="font" metaFont="system"/>
@@ -795,7 +796,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TEXTSCALE">
-                    <rect key="frame" x="388" y="36" width="120" height="22"/>
+                    <rect key="frame" x="0.0" y="4" width="118" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1" id="FLD-SIZE-TEXTSCALE-CELL">
                         <font key="font" metaFont="system"/>

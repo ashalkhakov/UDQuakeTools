@@ -94,11 +94,11 @@
                                         <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="TAB-INSPECTOR-CELL">
                                             <font key="font" metaFont="smallSystem"/>
                                             <segments>
-                                                <segment label="Identity &amp; Type" width="128"/>
-                                                <segment label="Attributes" width="100"/>
-                                                <segment label="Size" width="66"/>
-                                                <segment label="Variables" width="92"/>
-                                                <segment label="Events" width="78"/>
+                                                <segment image="person.text.rectangle" width="40"/>
+                                                <segment image="slider.horizontal.3" width="40"/>
+                                                <segment image="arrow.up.left.and.arrow.down.right" width="40"/>
+                                                <segment image="curlybraces" width="40"/>
+                                                <segment image="bolt" width="40"/>
                                             </segments>
                                         </segmentedCell>
                                         <connections>
@@ -158,4 +158,11 @@
             <point key="canvasLocation" x="140" y="144"/>
         </window>
     </objects>
+    <resources>
+        <image name="person.text.rectangle" catalog="system" width="16" height="16"/>
+        <image name="slider.horizontal.3" catalog="system" width="16" height="12"/>
+        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="16"/>
+        <image name="curlybraces" catalog="system" width="16" height="11"/>
+        <image name="bolt" catalog="system" width="10" height="16"/>
+    </resources>
 </document>

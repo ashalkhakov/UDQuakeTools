@@ -102,6 +102,11 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 
     if (self.inspectorSectionTabs) {
         [self.inspectorSectionTabs setSelectedSegment:(NSInteger)self.activeInspectorSection];
+        [self.inspectorSectionTabs setToolTip:@"Identity & Type" forSegment:0];
+        [self.inspectorSectionTabs setToolTip:@"Attributes" forSegment:1];
+        [self.inspectorSectionTabs setToolTip:@"Size" forSegment:2];
+        [self.inspectorSectionTabs setToolTip:@"Variables" forSegment:3];
+        [self.inspectorSectionTabs setToolTip:@"Events" forSegment:4];
     }
     [self.eventsController registerDragTypes];
     [self refreshFromDocument];
@@ -284,6 +289,9 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     (void)sender;
     self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedSegment;
     [self refreshFromDocument];
+    if (self.activeInspectorSection == UDGuiInspectorSectionAttributes) {
+        [self.inspectorController scrollAttributesPanelToTop];
+    }
 }
 
 - (void)beginEditingSelectedWindowIdentity:(id)sender {

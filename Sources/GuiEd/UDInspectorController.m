@@ -57,6 +57,16 @@ static NSArray<NSString *> *GetAllowedClassNames(void) {
         [self.classNameField removeAllItems];
         [self.classNameField addItemsWithTitles:GetAllowedClassNames()];
     }
+    [self scrollAttributesPanelToTop];
+}
+
+- (void)scrollAttributesPanelToTop {
+    if (!self.attributesScrollView) { return; }
+    NSView *docView = self.attributesScrollView.documentView;
+    if (!docView) { return; }
+    CGFloat maxY = NSMaxY(docView.bounds) - NSHeight(self.attributesScrollView.contentView.bounds);
+    [self.attributesScrollView.contentView scrollToPoint:NSMakePoint(0.0, MAX(0.0, maxY))];
+    [self.attributesScrollView reflectScrolledClipView:self.attributesScrollView.contentView];
 }
 
 // MARK: - Private helpers

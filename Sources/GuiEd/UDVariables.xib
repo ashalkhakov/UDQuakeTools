@@ -78,18 +78,9 @@
                         <action selector="changeVariablesActionButtons:" target="-2" id="ACT-VAR-ACTIONS"/>
                     </connections>
                 </segmentedControl>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-VAR-HINT">
-                    <rect key="frame" x="68" y="472" width="240" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Double-click a row to edit name or value." id="LBL-VAR-HINT-CELL">
-                        <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <segmentedControl fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SEG-VAR-TYPE">
-                    <rect key="frame" x="484" y="468" width="184" height="28"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <rect key="frame" x="64" y="468" width="180" height="28"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="SEG-VAR-TYPE-CELL">
                         <font key="font" metaFont="smallSystem"/>
                         <segments>

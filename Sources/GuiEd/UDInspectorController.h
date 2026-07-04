@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Container view for typed attribute panels
 @property (nonatomic, weak, nullable) IBOutlet NSView *attributeTypeTabView;
 
+// Scroll view wrapping the attributes content
+@property (nonatomic, weak, nullable) IBOutlet NSScrollView *attributesScrollView;
+
 // Size section
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *sizeRectField;
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *sizeRotateField;
@@ -87,6 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: - Dynamic subcontrollers
 @property (nonatomic, strong, nullable, readonly) UDGuiAttributeSubcontroller *activeSubcontroller;
+
+/// Scroll the attributes panel to the top so general attributes are shown first.
+- (void)scrollAttributesPanelToTop;
 
 // MARK: - Sync (model → UI)
 

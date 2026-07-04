@@ -112,6 +112,11 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     self.window.delegate = (id<NSWindowDelegate>)self;
     if (self.inspectorSectionTabs) {
         [self.inspectorSectionTabs setSelectedSegment:(NSInteger)self.activeInspectorSection];
+        [self.inspectorSectionTabs setToolTip:@"Identity & Type" forSegment:0];
+        [self.inspectorSectionTabs setToolTip:@"Attributes" forSegment:1];
+        [self.inspectorSectionTabs setToolTip:@"Size" forSegment:2];
+        [self.inspectorSectionTabs setToolTip:@"Variables" forSegment:3];
+        [self.inspectorSectionTabs setToolTip:@"Events" forSegment:4];
     }
 
     if (self.eventHandlersTableView) {
@@ -124,6 +129,7 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     }
 
     [self refreshFromDocument];
+    [self scrollAttributesPanelToTop];
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
@@ -131,10 +137,24 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     [self updateInspectorSectionLayout];
 }
 
+- (void)scrollAttributesPanelToTop {
+    if (!self.attributesScrollView) {
+        return;
+    }
+    NSView *docView = self.attributesScrollView.documentView;
+    if (!docView) {
+        return;
+    }
+    CGFloat maxY = NSMaxY(docView.bounds) - NSHeight(self.attributesScrollView.contentView.bounds);
+    [self.attributesScrollView.contentView scrollToPoint:NSMakePoint(0.0, MAX(0.0, maxY))];
+    [self.attributesScrollView reflectScrolledClipView:self.attributesScrollView.contentView];
+}
+
 - (IBAction)changeInspectorSection:(id)sender {
     (void)sender;
     self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedSegment;
     [self refreshFromDocument];
+    [self scrollAttributesPanelToTop];
 }
 
 - (void)refreshFromDocument {

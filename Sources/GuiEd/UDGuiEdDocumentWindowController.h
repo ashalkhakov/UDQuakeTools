@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) IBOutlet NSTabView *attributeTypeTabView;
 @property (nonatomic, strong) IBOutlet NSView *identityPanelView;
 @property (nonatomic, strong) IBOutlet NSView *attributesPanelView;
+@property (nonatomic, strong) IBOutlet NSScrollView *attributesScrollView;
 @property (nonatomic, strong) IBOutlet NSView *sizePanelView;
 @property (nonatomic, strong) IBOutlet NSView *variablesPanelView;
 @property (nonatomic, strong) IBOutlet NSView *eventsPanelView;

@@ -59,6 +59,7 @@
                 <outlet property="attrSliderVerticalButton" destination="CHK-ATTR-VERTICAL" id="OWN-42"/>
                 <outlet property="attributeTypeTabView" destination="TV-ATTR-TYPES" id="OWN-70"/>
                 <outlet property="attributesPanelView" destination="PNL-ATTR" id="OWN-33"/>
+                <outlet property="attributesScrollView" destination="SCR-ATTR-COMPOSITE" id="OWN-ATTRSCR"/>
                 <outlet property="breadcrumbLabel" destination="LBL-BREAD" id="OWN-05"/>
                 <outlet property="classNameField" destination="FLD-CLASS" id="OWN-06"/>
                 <outlet property="editorContainerView" destination="VIE-EDIT" id="OWN-01"/>
@@ -250,11 +251,11 @@
                                         <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="TAB-INSPECTOR-CELL">
                                             <font key="font" metaFont="smallSystem"/>
                                             <segments>
-                                                <segment label="Identity &amp; Type" width="128"/>
-                                                <segment label="Attributes" width="100"/>
-                                                <segment label="Size" width="66"/>
-                                                <segment label="Variables" width="92"/>
-                                                <segment label="Events" width="78"/>
+                                                <segment image="person.text.rectangle" width="40"/>
+                                                <segment image="slider.horizontal.3" width="40"/>
+                                                <segment image="arrow.up.left.and.arrow.down.right" width="40"/>
+                                                <segment image="curlybraces" width="40"/>
+                                                <segment image="bolt" width="40"/>
                                             </segments>
                                         </segmentedCell>
                                         <connections>
@@ -276,8 +277,8 @@
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Class" id="LBL-CLASS-CELL"/>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-CLASS">
-                                                            <rect key="frame" x="0.0" y="120" width="300" height="24"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <rect key="frame" x="0.0" y="582" width="300" height="24"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Class name" id="FLD-CLASS-CELL">
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -294,8 +295,8 @@
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Name" id="LBL-NAME-CELL"/>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-NAME">
-                                                            <rect key="frame" x="316" y="120" width="300" height="24"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <rect key="frame" x="316" y="582" width="300" height="24"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Window name" id="FLD-NAME-CELL">
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -307,8 +308,8 @@
                                                             </connections>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ID-HELP">
-                                                            <rect key="frame" x="0.0" y="88" width="660" height="20"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                            <rect key="frame" x="0.0" y="558" width="660" height="20"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" scrollable="YES" alignment="left" title="Set the window class and name for the selected GUI node here." id="LBL-ID-HELP-CELL">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -1480,7 +1481,7 @@
                                                                 <rect key="frame" x="1" y="616" width="651" height="15"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             </scroller>
-                                                            <scroller key="verticalScroller" doubleValue="1" horizontal="NO" id="SCR-ATTR-COMPOSITE-V">
+                                                            <scroller key="verticalScroller" horizontal="NO" id="SCR-ATTR-COMPOSITE-V">
                                                                 <rect key="frame" x="652" y="1" width="15" height="615"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             </scroller>
@@ -2262,4 +2263,11 @@
             <point key="canvasLocation" x="140" y="144"/>
         </window>
     </objects>
+    <resources>
+        <image name="person.text.rectangle" catalog="system" width="16" height="16"/>
+        <image name="slider.horizontal.3" catalog="system" width="16" height="12"/>
+        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="16"/>
+        <image name="curlybraces" catalog="system" width="16" height="11"/>
+        <image name="bolt" catalog="system" width="10" height="16"/>
+    </resources>
 </document>

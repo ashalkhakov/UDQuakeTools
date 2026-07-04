@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UDGuiEdDocument;
 
-@interface UDGuiEdDocumentWindowController : NSWindowController <NSTextFieldDelegate, NSWindowDelegate, UDEditorControllerContext>
+@interface UDGuiEdDocumentWindowController : NSWindowController <NSTextFieldDelegate, NSWindowDelegate, UDEditorControllerContext, NSSplitViewDelegate>
 
 - (instancetype)initWithDocument:(UDGuiEdDocument *)document;
 

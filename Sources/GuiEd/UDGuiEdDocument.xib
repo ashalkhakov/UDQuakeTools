@@ -10,13 +10,14 @@
             <connections>
                 <outlet property="attributesPanelView" destination="PNL-ATTR" id="OWN-08"/>
                 <outlet property="breadcrumbLabel" destination="LBL-BREAD" id="OWN-03"/>
-                <outlet property="editorContainerView" destination="VIE-EDIT" id="OWN-06"/>
+                <outlet property="editorContainerView" destination="xIg-23-69L" id="wQ6-fB-O2A"/>
                 <outlet property="eventsPanelView" destination="PNL-EVENTS" id="OWN-11"/>
                 <outlet property="identityPanelView" destination="PNL-IDENTITY" id="OWN-07"/>
                 <outlet property="inspectorSectionTabView" destination="TV-INSPECTOR-SECTIONS" id="OWN-05"/>
                 <outlet property="inspectorSectionTabs" destination="TAB-INSPECTOR" id="OWN-04"/>
                 <outlet property="sidebarContainerView" destination="VIE-SIDEBAR" id="OWN-12"/>
                 <outlet property="sizePanelView" destination="PNL-SIZE" id="OWN-09"/>
+                <outlet property="sourceTextView" destination="TXT-SRC" id="OWN-13"/>
                 <outlet property="statusLabel" destination="LBL-STS" id="OWN-02"/>
                 <outlet property="variablesPanelView" destination="PNL-VARS" id="OWN-10"/>
                 <outlet property="window" destination="WND-01" id="OWN-00"/>
@@ -27,14 +28,14 @@
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
         <window title="GuiEd" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="WND-01">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <rect key="contentRect" x="196" y="240" width="1120" height="760"/>
+            <rect key="contentRect" x="196" y="240" width="1400" height="760"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="CNT-01">
-                <rect key="frame" x="0.0" y="0.0" width="1120" height="760"/>
+                <rect key="frame" x="0.0" y="0.0" width="1400" height="760"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-STS">
-                        <rect key="frame" x="20" y="16" width="1080" height="20"/>
+                        <rect key="frame" x="20" y="16" width="1360" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Ready" id="LBL-STS-cell">
                             <font key="font" metaFont="system"/>
@@ -42,20 +43,44 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <view id="VIE-EDIT">
-                        <rect key="frame" x="20" y="48" width="1080" height="692"/>
+                    <splitView dividerStyle="thin" vertical="YES" id="xIg-23-69L">
+                        <rect key="frame" x="20" y="48" width="1360" height="692"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view id="VIE-SIDEBAR">
-                                <rect key="frame" x="0.0" y="0.0" width="400" height="692"/>
-                                <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
+                            <view fixedFrame="YES" id="VIE-SIDEBAR">
+                                <rect key="frame" x="0.0" y="0.0" width="145" height="692"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             </view>
-                            <view id="VIE-INSPECTOR">
-                                <rect key="frame" x="412" y="0.0" width="668" height="692"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" id="SCR-SRC">
+                                <rect key="frame" x="146" y="0.0" width="830" height="692"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <clipView key="contentView" id="CLP-SRC">
+                                    <rect key="frame" x="1" y="1" width="828" height="690"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textView editable="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" allowsUndo="YES" id="TXT-SRC">
+                                            <rect key="frame" x="0.0" y="0.0" width="828" height="690"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <size key="minSize" width="828" height="690"/>
+                                            <size key="maxSize" width="1000000000" height="1000000000"/>
+                                        </textView>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hfV-DV-uDU">
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="0.0"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="ghX-u1-ffY">
+                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="100"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <view fixedFrame="YES" id="VIE-INSPECTOR">
+                                <rect key="frame" x="977" y="0.0" width="383" height="692"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-BREAD">
-                                        <rect key="frame" x="0.0" y="664" width="668" height="20"/>
+                                        <rect key="frame" x="0.0" y="664" width="383" height="20"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No selection" id="LBL-BREAD-CELL">
                                             <font key="font" metaFont="systemBold"/>
@@ -64,7 +89,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <segmentedControl fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TAB-INSPECTOR">
-                                        <rect key="frame" x="0.0" y="632" width="668" height="24"/>
+                                        <rect key="frame" x="0.0" y="632" width="383" height="24"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="TAB-INSPECTOR-CELL">
                                             <font key="font" metaFont="smallSystem"/>
@@ -81,36 +106,36 @@
                                         </connections>
                                     </segmentedControl>
                                     <tabView type="noTabsNoBorder" id="TV-INSPECTOR-SECTIONS">
-                                        <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="383" height="632"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <tabViewItems>
                                             <tabViewItem label="Identity" identifier="identity" id="TVI-SECTION-IDENTITY">
                                                 <view key="view" id="PNL-IDENTITY">
-                                                    <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="383" height="632"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
                                             <tabViewItem label="Attributes" identifier="attributes" id="TVI-SECTION-ATTRIBUTES">
                                                 <view key="view" id="PNL-ATTR">
-                                                    <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="340" height="632"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
                                             <tabViewItem label="Size" identifier="size" id="TVI-SECTION-SIZE">
                                                 <view key="view" id="PNL-SIZE">
-                                                    <rect key="frame" x="0.0" y="464" width="668" height="168"/>
+                                                    <rect key="frame" x="0.0" y="464" width="340" height="168"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
                                             <tabViewItem label="Variables" identifier="variables" id="TVI-SECTION-VARS">
                                                 <view key="view" id="PNL-VARS">
-                                                    <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="340" height="632"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
                                             <tabViewItem label="Events" identifier="events" id="TVI-SECTION-EVENTS">
                                                 <view key="view" id="PNL-EVENTS">
-                                                    <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="340" height="632"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
@@ -119,7 +144,15 @@
                                 </subviews>
                             </view>
                         </subviews>
-                    </view>
+                        <holdingPriorities>
+                            <real value="250"/>
+                            <real value="250"/>
+                            <real value="250"/>
+                        </holdingPriorities>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="7KR-Hz-wpX"/>
+                        </connections>
+                    </splitView>
                 </subviews>
             </view>
             <point key="canvasLocation" x="140" y="144"/>

@@ -44,9 +44,10 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 @property (nonatomic, assign) UDGuiInspectorSection activeInspectorSection;
 
 // MARK: Layout / structural outlets
-@property (nonatomic, strong) IBOutlet NSView            *editorContainerView;
+@property (nonatomic, strong) IBOutlet NSSplitView       *editorContainerView;
 @property (nonatomic, strong) IBOutlet NSTextField       *statusLabel;
 @property (nonatomic, strong) IBOutlet NSTextField       *breadcrumbLabel;
+@property (nonatomic, strong) IBOutlet NSTextView        *sourceTextView;
 @property (nonatomic, strong) IBOutlet NSSegmentedControl *inspectorSectionTabs;
 @property (nonatomic, strong) IBOutlet NSTabView         *inspectorSectionTabView;
 @property (nonatomic, strong) IBOutlet NSView            *identityPanelView;
@@ -91,6 +92,13 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 
     [self createCollaborators];
     [self embedCollaboratorViews];
+    [self configureSourceTextView];
+    
+    // Set the divider position programmatically
+    // dividerIndex 0 is between Left and Center
+    // dividerIndex 1 is between Center and Right
+    [self.editorContainerView setPosition:280.0 ofDividerAtIndex:0];
+    [self.editorContainerView setPosition:(self.editorContainerView.bounds.size.width - 250.0) ofDividerAtIndex:1];
 
     if (self.inspectorSectionTabs) {
         [self.inspectorSectionTabs setSelectedSegment:(NSInteger)self.activeInspectorSection];
@@ -127,6 +135,28 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     [self embedView:self.inspectorController.sizeView inContainer:self.sizePanelView];
     [self embedView:self.variablesController.view inContainer:self.variablesPanelView];
     [self embedView:self.eventsController.view inContainer:self.eventsPanelView];
+}
+
+- (void)configureSourceTextView {
+    if (!self.sourceTextView) { return; }
+    self.sourceTextView.editable = NO;
+    self.sourceTextView.richText = NO;
+    self.sourceTextView.importsGraphics = NO;
+    self.sourceTextView.font = [NSFont userFixedPitchFontOfSize:11.0];
+}
+
+// MARK: - SplitView delegate
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex {
+    // Keep the left panel at least 280px
+    if (dividerIndex == 0) return 280.0;
+    return proposedMin;
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex {
+    // Keep the right panel at least 200px
+    if (dividerIndex == 1) return splitView.bounds.size.width - 200.0;
+    return proposedMax;
 }
 
 // MARK: - Window delegate
@@ -180,6 +210,7 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 - (void)refreshFromDocument {
     [self.outlinePaneController refreshOutlinePane];
     [self refreshDetailPaneForSelectedWindow];
+    [self refreshSourcePane];
 
     NSUInteger rootCount = self.ownerDocument.viewModel.rootWindows.count;
     if (self.statusLabel) {
@@ -197,6 +228,19 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     }
 
     [self updateInspectorPresentationForWindow:selectedWindow];
+}
+
+- (void)refreshSourcePane {
+    if (!self.sourceTextView) { return; }
+
+    NSString *sourceText = [self.ownerDocument serializedSourceText];
+    if (sourceText.length == 0) {
+        sourceText = self.ownerDocument.sourceText ?: @"";
+    }
+
+    if (![self.sourceTextView.string isEqualToString:sourceText]) {
+        [self.sourceTextView setString:sourceText];
+    }
 }
 
 - (void)updateInspectorPresentationForWindow:(nullable UDGuiWindowNode *)selectedWindow {

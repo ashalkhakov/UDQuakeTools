@@ -18,4 +18,6 @@ udtesttool_INCLUDE_DIRS = \
 
 udtesttool_LIBRARIES = gnustep-base
 
+ADDITIONAL_LDFLAGS += -lobjc
+
 include $(GNUSTEP_MAKEFILES)/tool.make

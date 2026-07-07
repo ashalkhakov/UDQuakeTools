@@ -862,7 +862,10 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         // Non-atomic replacement under GNUstep
         NSError *removeError = nil;
         if (![fm removeItemAtURL:targetURL error:&removeError]) {
-            [fm removeItemAtURL:tempURL error:nil];
+            NSError *cleanupError = nil;
+            if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
+                NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
+            }
             if (error) {
                 *error = removeError ?: [NSError errorWithDomain:UDVFSErrorDomain
                                                            code:UDVFSErrorCodeWriteFailed
@@ -871,11 +874,14 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             return NO;
         }
         if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
-            [fm removeItemAtURL:tempURL error:nil];
+            NSError *cleanupError = nil;
+            if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
+                NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
+            }
             if (error) {
                 *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
-                                                            code:UDVFSErrorCodeWriteFailed
-                                                         userInfo:@{NSLocalizedDescriptionKey: @"Move failed."}];
+                                                           code:UDVFSErrorCodeWriteFailed
+                                                        userInfo:@{NSLocalizedDescriptionKey: @"Failed to move item to target location for non-atomic replace."}];
             }
             return NO;
         }

@@ -858,6 +858,19 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 
     NSError *replaceError = nil;
     if ([fm fileExistsAtPath:targetURL.path]) {
+#ifdef GNUSTEP
+        // Non-atomic replacement under GNUstep
+        [fm removeItemAtURL:targetURL error:nil];
+        if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
+            [fm removeItemAtURL:tempURL error:nil];
+            if (error) {
+                *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
+                                                            code:UDVFSErrorCodeWriteFailed
+                                                         userInfo:@{NSLocalizedDescriptionKey: @"Move failed."}];
+            }
+            return NO;
+        }
+#else
         if (![fm replaceItemAtURL:targetURL
                     withItemAtURL:tempURL
                    backupItemName:nil
@@ -867,11 +880,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             [fm removeItemAtURL:tempURL error:nil];
             if (error) {
                 *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
-                                                             code:UDVFSErrorCodeWriteFailed
+                                                            code:UDVFSErrorCodeWriteFailed
                                                          userInfo:@{NSLocalizedDescriptionKey: @"Transactional replace failed."}];
             }
             return NO;
         }
+#endif
     } else if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
         [fm removeItemAtURL:tempURL error:nil];
         if (error) {

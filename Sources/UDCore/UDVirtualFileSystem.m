@@ -242,13 +242,14 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     NSString *basePath = [[_directoryURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
     NSString *basePrefix = [basePath stringByAppendingString:@"/"];
 
+    NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSString *> *paths = [NSMutableArray array];
     for (NSURL *fileURL in enumerator) {
         NSNumber *isRegularFile = nil;
         BOOL success = [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
         if (!success || isRegularFile == nil) {
             BOOL isDirectory = NO;
-            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDirectory];
+            BOOL exists = [fm fileExistsAtPath:fileURL.path isDirectory:&isDirectory];
             isRegularFile = @(exists && !isDirectory);
         }
         if (![isRegularFile boolValue]) {
@@ -582,13 +583,14 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         [mountedArchivePaths addObject:mount.sourceURL.path.stringByStandardizingPath];
     }
 
+    NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSURL *> *candidates = [NSMutableArray array];
     for (NSURL *entryURL in contents) {
         NSNumber *isRegularFile = nil;
         BOOL success = [entryURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
         if (!success || isRegularFile == nil) {
             BOOL isDirectory = NO;
-            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:entryURL.path isDirectory:&isDirectory];
+            BOOL exists = [fm fileExistsAtPath:entryURL.path isDirectory:&isDirectory];
             isRegularFile = @(exists && !isDirectory);
         }
         if (![isRegularFile boolValue]) {

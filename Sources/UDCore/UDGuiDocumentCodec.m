@@ -1123,16 +1123,16 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     if (token.kind == UDIdTokenKindString) {
         BOOL isVariable = NO;
         if (token.text.length > 0) {
-            static NSCharacterSet *disallowedSet = nil;
+            static NSCharacterSet *invalidVariableCharSet = nil;
             static dispatch_once_t initOnce;
             dispatch_once(&initOnce, ^{
                 // Allowed characters for variables/properties include alphanumeric characters,
                 // underscores, colons (for namespace qualifiers), and periods (for property references).
                 NSMutableCharacterSet *allowedSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
                 [allowedSet addCharactersInString:@"_:."];
-                disallowedSet = [allowedSet invertedSet];
+                invalidVariableCharSet = [allowedSet invertedSet];
             });
-            if ([token.text rangeOfCharacterFromSet:disallowedSet].location == NSNotFound) {
+            if ([token.text rangeOfCharacterFromSet:invalidVariableCharSet].location == NSNotFound) {
                 isVariable = YES;
             }
         }

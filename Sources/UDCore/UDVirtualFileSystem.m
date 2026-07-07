@@ -869,12 +869,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     NSError *replaceError = nil;
     if ([fm fileExistsAtPath:targetURL.path]) {
 #ifdef GNUSTEP
-        // Non-atomic replacement under GNUstep
+        // Manual atomic replacement for GNUstep (no native replaceItemAtURL support)
         NSError *removeError = nil;
         if (![fm removeItemAtURL:targetURL error:&removeError]) {
             NSError *cleanupError = nil;
             if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
-                NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
+                NSLog(@"UDVirtualFileSystem: Failed to remove temporary file at %@ after failed target removal: %@", tempURL, cleanupError);
             }
             if (error) {
                 *error = removeError;
@@ -884,7 +884,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
             NSError *cleanupError = nil;
             if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
-                NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
+                NSLog(@"UDVirtualFileSystem: Failed to remove temporary file at %@ after failed move operation: %@", tempURL, cleanupError);
             }
             if (error) {
                 *error = replaceError;

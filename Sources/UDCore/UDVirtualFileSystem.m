@@ -869,7 +869,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             if (error) {
                 *error = removeError ?: [NSError errorWithDomain:UDVFSErrorDomain
                                                            code:UDVFSErrorCodeWriteFailed
-                                                        userInfo:@{NSLocalizedDescriptionKey: @"Failed to remove target item for non-atomic replace."}];
+                                                        userInfo:@{NSLocalizedDescriptionKey:
+                                                                      [NSString stringWithFormat:@"Failed to remove target item for non-atomic replace (target: %@).", targetURL]}];
             }
             return NO;
         }
@@ -881,7 +882,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             if (error) {
                 *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
                                                            code:UDVFSErrorCodeWriteFailed
-                                                        userInfo:@{NSLocalizedDescriptionKey: @"Failed to move item to target location for non-atomic replace."}];
+                                                        userInfo:@{NSLocalizedDescriptionKey:
+                                                                      [NSString stringWithFormat:@"Failed to move item to target location for non-atomic replace (from: %@, to: %@).", tempURL, targetURL]}];
             }
             return NO;
         }

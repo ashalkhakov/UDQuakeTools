@@ -100,7 +100,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 @synthesize fileURL = _fileURL;
 
 - (instancetype)init {
-    self = [self initWithVirtualPath:@"empty" mount:[[UDVFSMount alloc] init] contentSource:(id<UDContentSource>)[NSNull null] length:0 sourcePath:@"empty" fileURL:[NSURL fileURLWithPath:@"/dev/null"]];
+    self = [self initWithVirtualPath:@"empty" mount:[[UDVFSMount alloc] initWithIdentifier:@"empty" kind:UDVFSMountKindDirectory sourceURL:[NSURL fileURLWithPath:@"/dev/null"] virtualRoot:@"empty" priority:0 mountOrder:0] contentSource:(id<UDContentSource>)[NSNull null] length:0 sourcePath:@"empty" fileURL:[NSURL fileURLWithPath:@"/dev/null"]];
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
@@ -909,7 +909,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             [fm removeItemAtURL:tempURL error:nil];
             if (error) {
                 *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
-                                                            code:UDVFSErrorCodeWriteFailed
+                                                             code:UDVFSErrorCodeWriteFailed
                                                          userInfo:@{NSLocalizedDescriptionKey: @"Transactional replace failed."}];
             }
             return NO;

@@ -12,7 +12,7 @@
 @implementation UDGuiEditorViewModel
 
 - (instancetype)init {
-    self = [self initWithService:[[UDGuiEditorService alloc] init]];
+    self = [self initWithService:[[UDGuiEditorService alloc] initWithDocument:[[UDGuiDocument alloc] initWithSourceVirtualPath:@"empty"] undoManager:nil]];
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }

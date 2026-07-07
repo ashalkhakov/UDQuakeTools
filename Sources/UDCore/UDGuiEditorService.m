@@ -15,7 +15,7 @@
 @implementation UDGuiEditorService
 
 - (instancetype)init {
-    self = [self initWithDocument:[[UDGuiDocument alloc] init] undoManager:nil];
+    self = [self initWithDocument:[[UDGuiDocument alloc] initWithSourceVirtualPath:@"empty"] undoManager:nil];
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }

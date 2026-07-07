@@ -92,16 +92,16 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     if (!container) { return; }
 
     // 1. Mode segmented control
-    NSSegmentedControl *modeControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - kUDEventsModeControlWidth, container.bounds.size.height - kUDEventsTopBarHeight, kUDEventsModeControlWidth, kUDEventsModeControlHeight)];
-    modeControl.segmentCount = 2;
-    [modeControl setLabel:@"Structured" forSegment:0];
-    [modeControl setLabel:@"Script" forSegment:1];
-    modeControl.selectedSegment = 0;
-    modeControl.target = self;
-    modeControl.action = @selector(toggleEditorMode:);
-    modeControl.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin;
-    [container addSubview:modeControl];
-    self.modeSegmentedControl = modeControl;
+    NSSegmentedControl *modeSegmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - kUDEventsModeControlWidth, container.bounds.size.height - kUDEventsTopBarHeight, kUDEventsModeControlWidth, kUDEventsModeControlHeight)];
+    modeSegmentedControl.segmentCount = 2;
+    [modeSegmentedControl setLabel:@"Structured" forSegment:0];
+    [modeSegmentedControl setLabel:@"Script" forSegment:1];
+    modeSegmentedControl.selectedSegment = 0;
+    modeSegmentedControl.target = self;
+    modeSegmentedControl.action = @selector(toggleEditorMode:);
+    modeSegmentedControl.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin;
+    [container addSubview:modeSegmentedControl];
+    self.modeSegmentedControl = modeSegmentedControl;
 
     // 2. Error Label
     NSTextField *errLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width, kUDEventsErrorLabelHeight)];
@@ -127,23 +127,23 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     scroll.borderType = NSBezelBorder;
     scroll.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-    NSTextView *text = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - kUDEventsScrollBorderOffset, scrollHeight - kUDEventsScrollBorderOffset)];
-    text.minSize = NSMakeSize(0.0, scrollHeight - kUDEventsScrollBorderOffset);
-    text.maxSize = NSMakeSize(1e7, 1e7);
-    text.verticallyResizable = YES;
-    text.horizontallyResizable = YES;
-    text.autoresizingMask = NSViewWidthSizable;
-    [text.textContainer setContainerSize:NSMakeSize(1e7, 1e7)];
-    [text.textContainer setWidthTracksTextView:NO];
-    text.font = [NSFont userFixedPitchFontOfSize:11.0];
-    text.delegate = self;
+    NSTextView *textView = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - kUDEventsScrollBorderOffset, scrollHeight - kUDEventsScrollBorderOffset)];
+    textView.minSize = NSMakeSize(0.0, scrollHeight - kUDEventsScrollBorderOffset);
+    textView.maxSize = NSMakeSize(1e7, 1e7);
+    textView.verticallyResizable = YES;
+    textView.horizontallyResizable = YES;
+    textView.autoresizingMask = NSViewWidthSizable;
+    [textView.textContainer setContainerSize:NSMakeSize(1e7, 1e7)];
+    [textView.textContainer setWidthTracksTextView:NO];
+    textView.font = [NSFont userFixedPitchFontOfSize:11.0];
+    textView.delegate = self;
 
-    scroll.documentView = text;
+    scroll.documentView = textView;
     scroll.hidden = YES;
     [container addSubview:scroll];
 
     self.scriptScrollView = scroll;
-    self.scriptTextView = text;
+    self.scriptTextView = textView;
 }
 
 - (void)toggleEditorMode:(id)sender {
@@ -279,6 +279,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
         // to prevent keypress bloat on the document's undo stack. Local text changes are already
         // managed by the NSTextView's local undo manager, and a consolidated bulk commit with
         // global undo is performed on focus loss (textDidEndEditing:), row change, or mode toggle.
+        // If a parsing/compilation error occurs, model updates are prevented and detailed visual error feedback
+        // is displayed on the error label instead.
         [handler replaceCommandsWithArray:commands];
 
         [self.context.ownerDocument notifyGUIModelDidChange];

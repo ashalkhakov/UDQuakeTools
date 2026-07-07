@@ -810,7 +810,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         UDIdToken *lastToken = [cursor peekToken];
         NSUInteger offset = lastToken ? lastToken.start : inner.length;
         if (error) {
-            NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character offset %lu.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
+            NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character offset %lu. Expected a valid command or end of script.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
             NSDictionary *userInfo = @{
                 NSLocalizedDescriptionKey: msg,
                 @"characterOffset": @(offset),
@@ -832,7 +832,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         UDIdToken *token = [cursor readToken];
         if (token.kind == UDIdTokenKindEOF) {
             if (stopAtCloseBrace) {
-                NSLog(@"UDGuiDocumentCodec: Parsing script commands failed: reached EOF without matching close brace. Expected matching brace at character offset %lu.", (unsigned long)token.start);
+                NSLog(@"UDGuiDocumentCodec: Parsing script commands failed: reached EOF without matching close brace. Expected closing brace at character offset %lu.", (unsigned long)token.start);
                 return nil; // Unmatched open brace
             }
             break;

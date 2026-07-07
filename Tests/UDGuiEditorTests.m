@@ -291,12 +291,15 @@
     XCTAssertNotNil(branch1.condition);
     XCTAssertTrue([branch1.condition isKindOfClass:[UDGuiBinaryExpression class]]);
     XCTAssertEqual(branch1.commands.count, 1U);
+
     UDGuiIfBranch *branch2 = [ifCmd.branches objectAtIndex:1];
     XCTAssertNotNil(branch2.condition);
     XCTAssertEqual(branch2.commands.count, 1U);
+
     UDGuiIfBranch *branch3 = [ifCmd.branches objectAtIndex:2];
     XCTAssertNil(branch3.condition);
     XCTAssertEqual(branch3.commands.count, 1U);
+
     NSError *serializeError = nil;
     NSString *serialized = [codec serializeDocument:document error:&serializeError];
     XCTAssertNil(serializeError);

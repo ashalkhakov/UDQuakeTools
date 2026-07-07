@@ -867,10 +867,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
                 NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
             }
             if (error) {
-                *error = removeError ?: [NSError errorWithDomain:UDVFSErrorDomain
-                                                           code:UDVFSErrorCodeWriteFailed
-                                                        userInfo:@{NSLocalizedDescriptionKey:
-                                                                      [NSString stringWithFormat:@"Failed to remove target item for non-atomic replace (target: %@).", targetURL]}];
+                *error = removeError;
             }
             return NO;
         }
@@ -880,10 +877,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
                 NSLog(@"UDVirtualFileSystem: Failed to clean up temporary file at %@: %@", tempURL, cleanupError);
             }
             if (error) {
-                *error = replaceError ?: [NSError errorWithDomain:UDVFSErrorDomain
-                                                           code:UDVFSErrorCodeWriteFailed
-                                                        userInfo:@{NSLocalizedDescriptionKey:
-                                                                      [NSString stringWithFormat:@"Failed to move item to target location for non-atomic replace (from: %@, to: %@).", tempURL, targetURL]}];
+                *error = replaceError;
             }
             return NO;
         }

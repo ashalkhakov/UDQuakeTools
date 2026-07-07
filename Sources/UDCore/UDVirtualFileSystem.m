@@ -245,29 +245,41 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return @[];
     }
 
-    NSString *basePath = [[_directoryURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
+    NSString *basePath = [[_directoryURL.absoluteURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
     NSString *basePrefix = [basePath stringByAppendingString:@"/"];
 
     NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSString *> *paths = [NSMutableArray array];
     for (NSURL *fileURL in enumerator) {
+        NSURL *absoluteFileURL = fileURL.absoluteURL;
         NSNumber *isRegularFile = nil;
-        BOOL success = [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        BOOL success = [absoluteFileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
         if (!success || isRegularFile == nil) {
             BOOL isDirectory = NO;
-            BOOL exists = [fm fileExistsAtPath:fileURL.path isDirectory:&isDirectory];
+            BOOL exists = [fm fileExistsAtPath:absoluteFileURL.path isDirectory:&isDirectory];
             isRegularFile = @(exists && !isDirectory);
         }
         if (![isRegularFile boolValue]) {
             continue;
         }
 
-        NSString *filePath = [[fileURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
-        if (![filePath hasPrefix:basePrefix]) {
-            continue;
+        NSString *filePath = [[absoluteFileURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
+        NSString *relativePath = nil;
+        if ([filePath hasPrefix:basePrefix]) {
+            relativePath = [filePath substringFromIndex:basePrefix.length];
+        } else if (![filePath hasPrefix:@"/"]) {
+            relativePath = filePath;
+        } else {
+            // Fallback: try match without resolving symlinks in case of resolution differences
+            NSString *filePathStandard = [absoluteFileURL.path stringByStandardizingPath];
+            NSString *basePrefixStandard = [[_directoryURL.absoluteURL.path stringByStandardizingPath] stringByAppendingString:@"/"];
+            if ([filePathStandard hasPrefix:basePrefixStandard]) {
+                relativePath = [filePathStandard substringFromIndex:basePrefixStandard.length];
+            } else {
+                continue;
+            }
         }
 
-        NSString *relativePath = [filePath substringFromIndex:basePrefix.length];
         relativePath = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
         if (relativePath.length > 0) {
             [paths addObject:relativePath];
@@ -298,12 +310,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     }
 
     BOOL isDirectory = NO;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDirectory] || isDirectory) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.absoluteURL.path isDirectory:&isDirectory] || isDirectory) {
         return nil;
     }
 
     NSError *attrsError = nil;
-    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&attrsError];
+    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.absoluteURL.path error:&attrsError];
     if (!attrs) {
         if (error) {
             *error = attrsError;

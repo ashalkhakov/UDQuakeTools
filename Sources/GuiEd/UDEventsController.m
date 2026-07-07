@@ -681,7 +681,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 - (UDGuiScriptCommand *)eventCommandFromEditorState {
     NSString *keyword = self.eventCommandTypePopup.selectedItem.title ?: @"";
     if ([keyword isEqualToString:@"if"]) {
-       UDGuiIfBranch *thenBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
+       UDGuiExpression *defaultCond = [self parseExpressionText:@"1"];
+       UDGuiIfBranch *thenBranch = [[UDGuiIfBranch alloc] initWithCondition:defaultCond commands:@[]];
        UDGuiIfBranch *elseBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
        return [[UDGuiIfCommand alloc] initWithBranches:@[thenBranch, elseBranch]];
     }

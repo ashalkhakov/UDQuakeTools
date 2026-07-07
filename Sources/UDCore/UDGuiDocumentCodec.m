@@ -1128,11 +1128,12 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
             dispatch_once(&initOnce, ^{
                 // Allowed characters for variables/properties include alphanumeric characters,
                 // underscores, colons (for namespace qualifiers), and periods (for property references).
-                NSMutableCharacterSet *allowedSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+                NSMutableCharacterSet *allowedSet = (NSMutableCharacterSet *)[[NSCharacterSet alphanumericCharacterSet] mutableCopy];
                 [allowedSet addCharactersInString:@"_:."];
                 invalidVariableCharSet = [allowedSet invertedSet];
             });
-            if ([token.text rangeOfCharacterFromSet:invalidVariableCharSet].location == NSNotFound) {
+            NSRange range = [token.text rangeOfCharacterFromSet:invalidVariableCharSet];
+            if (range.location == NSNotFound) {
                 isVariable = YES;
             }
         }

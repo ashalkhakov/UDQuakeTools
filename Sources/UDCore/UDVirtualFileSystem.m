@@ -99,6 +99,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 @synthesize sourcePath = _sourcePath;
 @synthesize fileURL = _fileURL;
 
+- (instancetype)init {
+    self = [self initWithVirtualPath:@"empty" mount:[[UDVFSMount alloc] init] contentSource:(id<UDContentSource>)[NSNull null] length:0 sourcePath:@"empty" fileURL:[NSURL fileURLWithPath:@"/dev/null"]];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (instancetype)initWithVirtualPath:(NSString *)virtualPath
                               mount:(UDVFSMount *)mount
                       contentSource:(id<UDContentSource>)contentSource
@@ -929,18 +935,40 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 }
 
 - (NSArray<UDVFSMount *> *)sortedMountsForResolution {
-    return [_mounts sortedArrayUsingComparator:^NSComparisonResult(UDVFSMount *left, UDVFSMount *right) {
-        if ([self mount:left shouldSortBefore:right]) {
-            return NSOrderedAscending;
+    return [_mounts sortedArrayUsingComparator:^NSComparisonResult(UDVFSMount *a, UDVFSMount *b) {
+        if (a == b) {
+            return NSOrderedSame;
         }
-        if ([self mount:right shouldSortBefore:left]) {
-            return NSOrderedDescending;
+
+        if (a.priority != b.priority) {
+            return (a.priority > b.priority) ? NSOrderedAscending : NSOrderedDescending;
         }
+
+        if (a.kind != b.kind) {
+            /* Loose files should override archives at the same priority. */
+            return (a.kind == UDVFSMountKindDirectory) ? NSOrderedAscending : NSOrderedDescending;
+        }
+
+        if (a.kind == UDVFSMountKindArchive && b.kind == UDVFSMountKindArchive) {
+            NSComparisonResult archiveCompare = [self compareArchiveMountPrecedence:a other:b];
+            if (archiveCompare != NSOrderedSame) {
+                return archiveCompare;
+            }
+        }
+
+        if (a.mountOrder != b.mountOrder) {
+            return (a.mountOrder > b.mountOrder) ? NSOrderedAscending : NSOrderedDescending;
+        }
+
         return NSOrderedSame;
     }];
 }
 
 - (BOOL)mount:(UDVFSMount *)a shouldSortBefore:(UDVFSMount *)b {
+    if (a == b) {
+        return NO;
+    }
+
     if (a.priority != b.priority) {
         return (a.priority > b.priority);
     }
@@ -964,7 +992,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return (a.mountOrder > b.mountOrder);
     }
 
-    return YES;
+    return NO;
 }
 
 - (NSComparisonResult)compareArchiveMountPrecedence:(UDVFSMount *)a other:(UDVFSMount *)b {

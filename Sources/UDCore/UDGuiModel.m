@@ -1858,7 +1858,8 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     for (UDGuiScriptCommand *cmd in self.commands) {
         [copiedCommands addObject:[cmd deepCopy]];
     }
-    return [[UDGuiIfBranch alloc] initWithCondition:[self.condition deepCopy] commands:copiedCommands];
+    UDGuiExpression *copiedCondition = self.condition ? [self.condition deepCopy] : nil;
+    return [[UDGuiIfBranch alloc] initWithCondition:copiedCondition commands:copiedCommands];
 }
 
 @end

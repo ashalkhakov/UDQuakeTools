@@ -274,19 +274,19 @@
 
     XCTAssertNil(parseError);
     XCTAssertNotNil(document);
-    
+
     UDGuiWindowNode *root = [document.rootWindows objectAtIndex:0];
     XCTAssertEqual(root.eventHandlers.count, 1U);
-    
+
     UDGuiEventHandler *handler = [root.eventHandlers objectAtIndex:0];
     XCTAssertEqual(handler.commands.count, 1U);
-    
+
     UDGuiScriptCommand *command = [handler.commands objectAtIndex:0];
     XCTAssertTrue([command isKindOfClass:[UDGuiIfCommand class]]);
-    
+
     UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)command;
     XCTAssertEqual(ifCmd.branches.count, 3U);
-    
+
     UDGuiIfBranch *branch1 = [ifCmd.branches objectAtIndex:0];
     XCTAssertNotNil(branch1.condition);
     XCTAssertTrue([branch1.condition isKindOfClass:[UDGuiBinaryExpression class]]);
@@ -295,7 +295,7 @@
     UDGuiIfBranch *branch2 = [ifCmd.branches objectAtIndex:1];
     XCTAssertNotNil(branch2.condition);
     XCTAssertEqual(branch2.commands.count, 1U);
-    
+
     UDGuiIfBranch *branch3 = [ifCmd.branches objectAtIndex:2];
     XCTAssertNil(branch3.condition);
     XCTAssertEqual(branch3.commands.count, 1U);

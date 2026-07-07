@@ -51,6 +51,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 @synthesize eventRunScriptField = _eventRunScriptField;
 @synthesize eventShowCursorField = _eventShowCursorField;
 @synthesize eventFallbackArgumentsField = _eventFallbackArgumentsField;
+@synthesize eventIfConditionField = _eventIfConditionField;
+@synthesize eventIfBranchesPopup = _eventIfBranchesPopup;
 @synthesize modeSegmentedControl = _modeSegmentedControl;
 @synthesize scriptScrollView = _scriptScrollView;
 @synthesize scriptTextView = _scriptTextView;
@@ -74,10 +76,6 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     if (self.eventHandlersTableView) {
         [self.eventHandlersTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
         [self.eventHandlersTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
-    }
-    if (self.eventCommandsTableView) {
-        [self.eventCommandsTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
-        [self.eventCommandsTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     }
 }
 
@@ -250,13 +248,192 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     return [handlers objectAtIndex:(NSUInteger)row];
 }
 
-- (nullable UDGuiScriptCommand *)selectedEventCommand {
-    UDGuiEventHandler *handler = [self selectedEventHandler];
+- (nullable id)selectedOutlineItem {
     NSInteger row = self.eventCommandsTableView.selectedRow;
-    if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) {
-        return nil;
+    if (row < 0) {
+       return nil;
     }
-    return [handler.commands objectAtIndex:(NSUInteger)row];
+    return [self.eventCommandsTableView itemAtRow:row];
+}
+
+- (nullable UDGuiScriptCommand *)selectedEventCommand {
+    id item = [self selectedOutlineItem];
+    if ([item isKindOfClass:[UDGuiScriptCommand class]]) {
+       return (UDGuiScriptCommand *)item;
+    }
+    return nil;
+}
+
+- (void)expandAllOutlineItems {
+    for (NSInteger i = 0; i < self.eventCommandsTableView.numberOfRows; i++) {
+       id item = [self.eventCommandsTableView itemAtRow:i];
+       if (item) {
+           [self.eventCommandsTableView expandItem:item expandChildren:YES];
+       }
+    }
+}
+
+- (nullable id)parentForItem:(id)item {
+    if (!item) {
+       return nil;
+    }
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    if (!handler) {
+       return nil;
+    }
+    return [self findParentOfItem:item inCommands:handler.commands currentParent:nil];
+}
+
+- (nullable id)findParentOfItem:(id)item inCommands:(NSArray<UDGuiScriptCommand *> *)commands currentParent:(nullable id)currentParent {
+    for (UDGuiScriptCommand *cmd in commands) {
+       if (cmd == item) {
+           return currentParent;
+        }
+       if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+           for (UDGuiIfBranch *branch in ifCmd.branches) {
+               if (branch == item) {
+                   return ifCmd;
+               }
+               id found = [self findParentOfItem:item inCommands:branch.commands currentParent:branch];
+               if (found) {
+                   return found;
+               }
+           }
+       }
+    }
+    return nil;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)arrayByReplacingItem:(id)target withItem:(nullable id)replacement inCommands:(NSArray<UDGuiScriptCommand *> *)commands {
+    NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray array];
+    for (UDGuiScriptCommand *cmd in commands) {
+       if (cmd == target) {
+           if (replacement) {
+               [newCommands addObject:replacement];
+           }
+       } else if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
+           for (UDGuiIfBranch *branch in ifCmd.branches) {
+               if (branch == target) {
+                   if (replacement) {
+                       [newBranches addObject:replacement];
+                   }
+               } else {
+                   NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByReplacingItem:target withItem:replacement inCommands:branch.commands];
+                   [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
+               }
+           }
+           [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
+       } else {
+           [newCommands addObject:cmd];
+       }
+    }
+    return newCommands;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)arrayByInsertingItem:(UDGuiScriptCommand *)newItem afterItem:(id)target inCommands:(NSArray<UDGuiScriptCommand *> *)commands {
+    NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray array];
+    for (UDGuiScriptCommand *cmd in commands) {
+       [newCommands addObject:cmd];
+       if (cmd == target) {
+           [newCommands addObject:newItem];
+       }
+       if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
+           for (UDGuiIfBranch *branch in ifCmd.branches) {
+               if (branch == target) {
+                   NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithObject:newItem];
+                   [branchCommands addObjectsFromArray:branch.commands];
+                   [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
+               } else {
+                   NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByInsertingItem:newItem afterItem:target inCommands:branch.commands];
+                   [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
+               }
+           }
+           [newCommands removeLastObject];
+           [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
+       }
+    }
+    return newCommands;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)arrayByAddingItem:(UDGuiScriptCommand *)newItem toCommands:(NSArray<UDGuiScriptCommand *> *)commands {
+    NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray arrayWithArray:commands];
+    [newCommands addObject:newItem];
+    return newCommands;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)arrayByRemovingItem:(id)item inCommands:(NSArray<UDGuiScriptCommand *> *)commands {
+    NSUInteger index = [commands indexOfObject:item];
+    if (index != NSNotFound) {
+       NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray arrayWithArray:commands];
+       [newCommands removeObjectAtIndex:index];
+       return newCommands;
+    }
+    
+    NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray array];
+    for (UDGuiScriptCommand *cmd in commands) {
+       if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
+           for (UDGuiIfBranch *branch in ifCmd.branches) {
+               NSArray<UDGuiScriptCommand *> *removedBranchCommands = [self arrayByRemovingItem:item inCommands:branch.commands];
+               [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:removedBranchCommands]];
+           }
+           [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
+       } else {
+           [newCommands addObject:cmd];
+       }
+    }
+    return newCommands;
+}
+
+- (NSArray<UDGuiScriptCommand *> *)arrayByMovingItem:(id)item direction:(NSInteger)direction inCommands:(NSArray<UDGuiScriptCommand *> *)commands {
+    NSUInteger index = [commands indexOfObject:item];
+    if (index != NSNotFound) {
+       NSInteger targetIndex = (NSInteger)index + direction;
+       if (targetIndex >= 0 && targetIndex < (NSInteger)commands.count) {
+           NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray arrayWithArray:commands];
+           [newCommands removeObjectAtIndex:index];
+           [newCommands insertObject:item atIndex:(NSUInteger)targetIndex];
+           return newCommands;
+       }
+       return commands;
+    }
+    
+    NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray array];
+    for (UDGuiScriptCommand *cmd in commands) {
+       if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
+           for (UDGuiIfBranch *branch in ifCmd.branches) {
+               NSArray<UDGuiScriptCommand *> *movedBranchCommands = [self arrayByMovingItem:item direction:direction inCommands:branch.commands];
+               [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:movedBranchCommands]];
+           }
+           [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
+       } else {
+           [newCommands addObject:cmd];
+       }
+    }
+    return newCommands;
+}
+
+- (nullable UDGuiExpression *)parseExpressionText:(NSString *)text {
+    if (text.length == 0) {
+       return nil;
+    }
+    NSString *wrapped = [NSString stringWithFormat:@"if ( %@ ) { }", text];
+    NSArray<UDGuiScriptCommand *> *commands = [self.context.ownerDocument.codec scriptCommandsFromBlockValue:wrapped];
+    if (commands.count > 0 && [commands[0] isKindOfClass:[UDGuiIfCommand class]]) {
+       UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)commands[0];
+       if (ifCmd.branches.count > 0) {
+           return ifCmd.branches[0].condition;
+       }
+    }
+    return nil;
 }
 
 // MARK: - Reload
@@ -268,12 +445,12 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     NSInteger handlerCount = (NSInteger)[self eventHandlersForSelectedWindow].count;
     if (handlerCount > 0) {
-        NSInteger row = selectedHandler;
-        if (row == NSNotFound || row < 0) { row = 0; }
-        if (row >= handlerCount) { row = handlerCount - 1; }
-        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+       NSInteger row = selectedHandler;
+       if (row == NSNotFound || row < 0) { row = 0; }
+       if (row >= handlerCount) { row = handlerCount - 1; }
+       [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
     } else {
-        [self.eventHandlersTableView deselectAll:nil];
+       [self.eventHandlersTableView deselectAll:nil];
     }
     [self syncCommandsTableForSelectedHandler];
 }
@@ -282,26 +459,33 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
 - (void)syncCommandsTableForSelectedHandler {
     if (self.isScriptMode) {
-        [self loadScriptForSelectedHandler];
+       [self loadScriptForSelectedHandler];
     } else {
-        [self.eventCommandsTableView reloadData];
-        UDGuiEventHandler *handler = [self selectedEventHandler];
-        if (handler.commands.count > 0) {
-            [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-        } else {
-            [self.eventCommandsTableView deselectAll:nil];
-        }
-        [self syncEventCommandEditorFromSelection];
+       [self.eventCommandsTableView reloadData];
+       [self expandAllOutlineItems];
+       UDGuiEventHandler *handler = [self selectedEventHandler];
+       if (handler.commands.count > 0) {
+           [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+       } else {
+           [self.eventCommandsTableView deselectAll:nil];
+       }
+       [self syncEventCommandEditorFromSelection];
     }
 }
 
-- (void)finishCommandListMutationForHandler:(UDGuiEventHandler *)handler selectedRow:(NSInteger)row {
+- (void)finishCommandListMutationForHandler:(UDGuiEventHandler *)handler selectedItem:(nullable id)item {
     [self.context.ownerDocument notifyGUIModelDidChange];
     [self.eventCommandsTableView reloadData];
-    if (row >= 0 && row < (NSInteger)handler.commands.count) {
-        [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [self expandAllOutlineItems];
+    if (item) {
+       NSInteger row = [self.eventCommandsTableView rowForItem:item];
+       if (row >= 0) {
+           [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+       } else {
+           [self.eventCommandsTableView deselectAll:nil];
+       }
     } else {
-        [self.eventCommandsTableView deselectAll:nil];
+       [self.eventCommandsTableView deselectAll:nil];
     }
     [self syncEventCommandEditorFromSelection];
 }
@@ -313,23 +497,23 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     NSTabViewItem *item = nil;
     for (NSTabViewItem *candidate in self.eventCommandEditorTabView.tabViewItems) {
-        if ([[candidate identifier] isKindOfClass:[NSString class]] &&
-            [[candidate identifier] isEqualToString:identifier]) {
-            item = candidate;
-            break;
-        }
+       if ([[candidate identifier] isKindOfClass:[NSString class]] &&
+           [[candidate identifier] isEqualToString:identifier]) {
+           item = candidate;
+           break;
+       }
     }
     if (!item) {
-        for (NSTabViewItem *candidate in self.eventCommandEditorTabView.tabViewItems) {
-            if ([[candidate identifier] isKindOfClass:[NSString class]] &&
-                [[candidate identifier] isEqualToString:@"none"]) {
-                item = candidate;
-                break;
-            }
-        }
+       for (NSTabViewItem *candidate in self.eventCommandEditorTabView.tabViewItems) {
+           if ([[candidate identifier] isKindOfClass:[NSString class]] &&
+               [[candidate identifier] isEqualToString:@"none"]) {
+               item = candidate;
+               break;
+           }
+       }
     }
     if (item) {
-        [self.eventCommandEditorTabView selectTabViewItem:item];
+       [self.eventCommandEditorTabView selectTabViewItem:item];
     }
 }
 
@@ -340,16 +524,16 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     self.eventCommandTypePopup.enabled = hasSelection;
 
     if (!command) {
-        [self.eventCommandTypePopup selectItemAtIndex:-1];
-        [self selectEventCommandEditorTabIdentifier:@"none"];
-        self.suppressEventCommandEditorCommit = NO;
-        return;
+       [self.eventCommandTypePopup selectItemAtIndex:-1];
+       [self selectEventCommandEditorTabIdentifier:@"none"];
+       self.suppressEventCommandEditorCommit = NO;
+       return;
     }
 
     NSString *keyword = command.keyword ?: @"";
     NSString *lower   = keyword.lowercaseString;
     if (![self.eventCommandTypePopup itemWithTitle:keyword]) {
-        [self.eventCommandTypePopup addItemWithTitle:keyword];
+       [self.eventCommandTypePopup addItemWithTitle:keyword];
     }
     [self.eventCommandTypePopup selectItemWithTitle:keyword];
 
@@ -359,24 +543,27 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
 - (void)populateEventEditorForCommand:(UDGuiScriptCommand *)command keyword:(NSString *)lowerKeyword {
     if ([command isKindOfClass:[UDGuiSetCommand class]]) {
-        [self populateEditorForSetCommand:(UDGuiSetCommand *)command]; return;
+       [self populateEditorForSetCommand:(UDGuiSetCommand *)command]; return;
     }
     if ([command isKindOfClass:[UDGuiSetFocusCommand class]]) {
-        [self populateEditorForSetFocusCommand:(UDGuiSetFocusCommand *)command]; return;
+       [self populateEditorForSetFocusCommand:(UDGuiSetFocusCommand *)command]; return;
     }
     if ([command isKindOfClass:[UDGuiResetTimeCommand class]]) {
-        [self populateEditorForResetTimeCommand:(UDGuiResetTimeCommand *)command]; return;
+       [self populateEditorForResetTimeCommand:(UDGuiResetTimeCommand *)command]; return;
     }
     if ([command isKindOfClass:[UDGuiTransitionCommand class]]) {
-        [self populateEditorForTransitionCommand:(UDGuiTransitionCommand *)command]; return;
+       [self populateEditorForTransitionCommand:(UDGuiTransitionCommand *)command]; return;
     }
     if ([command isKindOfClass:[UDGuiSingleArgumentCommand class]]) {
-        [self populateEditorForSingleArgumentCommand:(UDGuiSingleArgumentCommand *)command keyword:lowerKeyword]; return;
+       [self populateEditorForSingleArgumentCommand:(UDGuiSingleArgumentCommand *)command keyword:lowerKeyword]; return;
+    }
+    if ([command isKindOfClass:[UDGuiIfCommand class]]) {
+       [self populateEditorForIfCommand:(UDGuiIfCommand *)command]; return;
     }
     if ([lowerKeyword isEqualToString:@"evalregs"] ||
-        [lowerKeyword isEqualToString:@"resetcinematics"] ||
-        [lowerKeyword isEqualToString:@"endgame"]) {
-        [self selectEventCommandEditorTabIdentifier:lowerKeyword]; return;
+       [lowerKeyword isEqualToString:@"resetcinematics"] ||
+       [lowerKeyword isEqualToString:@"endgame"]) {
+       [self selectEventCommandEditorTabIdentifier:lowerKeyword]; return;
     }
     [self populateEditorForFallbackCommand:command];
 }
@@ -410,21 +597,80 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
 - (void)populateEditorForSingleArgumentCommand:(UDGuiSingleArgumentCommand *)command keyword:(NSString *)lowerKeyword {
     if ([lowerKeyword isEqualToString:@"localsound"]) {
-        [self selectEventCommandEditorTabIdentifier:@"localSound"];
-        self.eventLocalSoundField.stringValue = command.value ?: @"";
-        return;
+       [self selectEventCommandEditorTabIdentifier:@"localSound"];
+       self.eventLocalSoundField.stringValue = command.value ?: @"";
+       return;
     }
     if ([lowerKeyword isEqualToString:@"runscript"]) {
-        [self selectEventCommandEditorTabIdentifier:@"runScript"];
-        self.eventRunScriptField.stringValue = command.value ?: @"";
-        return;
+       [self selectEventCommandEditorTabIdentifier:@"runScript"];
+       self.eventRunScriptField.stringValue = command.value ?: @"";
+       return;
     }
     if ([lowerKeyword isEqualToString:@"showcursor"]) {
-        [self selectEventCommandEditorTabIdentifier:@"showCursor"];
-        self.eventShowCursorField.stringValue = command.value ?: @"";
-        return;
+       [self selectEventCommandEditorTabIdentifier:@"showCursor"];
+       self.eventShowCursorField.stringValue = command.value ?: @"";
+       return;
     }
     [self populateEditorForFallbackCommand:command];
+}
+
+- (void)populateEditorForIfCommand:(UDGuiIfCommand *)command {
+    [self selectEventCommandEditorTabIdentifier:@"if"];
+    
+    [self.eventIfBranchesPopup removeAllItems];
+    for (NSUInteger idx = 0; idx < command.branches.count; idx++) {
+       UDGuiIfBranch *branch = [command.branches objectAtIndex:idx];
+       NSString *title;
+       if (idx == 0) {
+           title = @"if";
+       } else if (branch.condition) {
+           title = [NSString stringWithFormat:@"else if (%lu)", (unsigned long)idx];
+       } else {
+           title = @"else";
+       }
+       [self.eventIfBranchesPopup addItemWithTitle:title];
+    }
+    
+    if (command.branches.count > 0) {
+       [self.eventIfBranchesPopup selectItemAtIndex:0];
+    }
+    
+    [self syncIfConditionFieldFromSelectedBranch];
+}
+
+- (void)syncIfConditionFieldFromSelectedBranch {
+    id item = [self selectedOutlineItem];
+    UDGuiIfCommand *ifCmd = nil;
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       ifCmd = (UDGuiIfCommand *)item;
+    } else if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       id parent = [self parentForItem:item];
+       if ([parent isKindOfClass:[UDGuiIfCommand class]]) {
+           ifCmd = (UDGuiIfCommand *)parent;
+       }
+    }
+    
+    if (!ifCmd) {
+       self.eventIfConditionField.stringValue = @"";
+       return;
+    }
+    
+    NSInteger selectedBranchIndex = self.eventIfBranchesPopup.indexOfSelectedItem;
+    if (selectedBranchIndex >= 0 && selectedBranchIndex < (NSInteger)ifCmd.branches.count) {
+       UDGuiIfBranch *branch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
+       if (branch.condition) {
+           self.eventIfConditionField.stringValue = [self.context.ownerDocument.codec serializeExpression:branch.condition] ?: @"";
+       } else {
+           self.eventIfConditionField.stringValue = @"";
+       }
+    } else {
+       self.eventIfConditionField.stringValue = @"";
+    }
+}
+
+- (IBAction)eventIfBranchesPopupChanged:(id)sender {
+    (void)sender;
+    [self syncIfConditionFieldFromSelectedBranch];
 }
 
 - (void)populateEditorForFallbackCommand:(UDGuiScriptCommand *)command {
@@ -434,22 +680,27 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
 - (UDGuiScriptCommand *)eventCommandFromEditorState {
     NSString *keyword = self.eventCommandTypePopup.selectedItem.title ?: @"";
+    if ([keyword isEqualToString:@"if"]) {
+       UDGuiIfBranch *thenBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
+       UDGuiIfBranch *elseBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
+       return [[UDGuiIfCommand alloc] initWithBranches:@[thenBranch, elseBranch]];
+    }
     return UDGuiScriptCommandFromEditorValues(keyword,
-        self.eventSetVariableField.stringValue       ?: @"",
-        self.eventSetValueField.stringValue          ?: @"",
-        self.eventSetFocusWindowField.stringValue    ?: @"",
-        self.eventResetTimeWindowField.stringValue   ?: @"",
-        self.eventResetTimeValueField.stringValue    ?: @"",
-        self.eventTransitionVariableField.stringValue?: @"",
-        self.eventTransitionFromField.stringValue    ?: @"",
-        self.eventTransitionToField.stringValue      ?: @"",
-        self.eventTransitionTimeField.stringValue    ?: @"",
-        self.eventTransitionAccelField.stringValue   ?: @"",
-        self.eventTransitionDecelField.stringValue   ?: @"",
-        self.eventLocalSoundField.stringValue        ?: @"",
-        self.eventRunScriptField.stringValue         ?: @"",
-        self.eventShowCursorField.stringValue        ?: @"",
-        self.eventFallbackArgumentsField.stringValue ?: @"");
+       self.eventSetVariableField.stringValue       ?: @"",
+       self.eventSetValueField.stringValue          ?: @"",
+       self.eventSetFocusWindowField.stringValue    ?: @"",
+       self.eventResetTimeWindowField.stringValue   ?: @"",
+       self.eventResetTimeValueField.stringValue    ?: @"",
+       self.eventTransitionVariableField.stringValue?: @"",
+       self.eventTransitionFromField.stringValue    ?: @"",
+       self.eventTransitionToField.stringValue      ?: @"",
+       self.eventTransitionTimeField.stringValue    ?: @"",
+       self.eventTransitionAccelField.stringValue   ?: @"",
+       self.eventTransitionDecelField.stringValue   ?: @"",
+       self.eventLocalSoundField.stringValue        ?: @"",
+       self.eventRunScriptField.stringValue         ?: @"",
+       self.eventShowCursorField.stringValue        ?: @"",
+       self.eventFallbackArgumentsField.stringValue ?: @"");
 }
 
 // MARK: - Actions
@@ -459,22 +710,72 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     if (self.suppressEventCommandEditorCommit) { return; }
 
     UDGuiEventHandler *handler = [self selectedEventHandler];
-    NSInteger row = self.eventCommandsTableView.selectedRow;
-    if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) { return; }
+    id item = [self selectedOutlineItem];
+    if (!handler || !item) { return; }
 
-    [handler replaceCommandAtIndex:(NSUInteger)row withCommand:[self eventCommandFromEditorState]];
+    UDGuiIfCommand *ifCmd = nil;
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       ifCmd = (UDGuiIfCommand *)item;
+    } else if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       id parent = [self parentForItem:item];
+       if ([parent isKindOfClass:[UDGuiIfCommand class]]) {
+           ifCmd = (UDGuiIfCommand *)parent;
+       }
+    }
+
+    BOOL isTypeChange = (sender == self.eventCommandTypePopup);
+    if (ifCmd && !isTypeChange) {
+       NSInteger selectedBranchIndex = self.eventIfBranchesPopup.indexOfSelectedItem;
+       if (selectedBranchIndex >= 0 && selectedBranchIndex < (NSInteger)ifCmd.branches.count) {
+           UDGuiIfBranch *oldBranch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
+           NSString *conditionText = self.eventIfConditionField.stringValue ?: @"";
+           UDGuiExpression *newCondition = [self parseExpressionText:conditionText];
+           UDGuiIfBranch *newBranch = [[UDGuiIfBranch alloc] initWithCondition:newCondition commands:oldBranch.commands];
+            
+           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray arrayWithArray:ifCmd.branches];
+           [newBranches replaceObjectAtIndex:(NSUInteger)selectedBranchIndex withObject:newBranch];
+           UDGuiIfCommand *newIfCmd = [[UDGuiIfCommand alloc] initWithBranches:newBranches];
+            
+           NSArray<UDGuiScriptCommand *> *newCommands = [self arrayByReplacingItem:ifCmd withItem:newIfCmd inCommands:handler.commands];
+           [handler replaceCommandsWithArray:newCommands];
+           [self.context.ownerDocument notifyGUIModelDidChange];
+           [self.eventCommandsTableView reloadData];
+           [self expandAllOutlineItems];
+            
+           NSInteger row = [self.eventCommandsTableView rowForItem:newIfCmd];
+           if (row >= 0) {
+               [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+           }
+           [self syncEventCommandEditorFromSelection];
+       }
+       return;
+    }
+
+    NSInteger row = self.eventCommandsTableView.selectedRow;
+    if (row < 0) { return; }
+    UDGuiScriptCommand *oldCmd = [self.eventCommandsTableView itemAtRow:row];
+    if (![oldCmd isKindOfClass:[UDGuiScriptCommand class]]) { return; }
+
+    UDGuiScriptCommand *newCmd = [self eventCommandFromEditorState];
+    NSArray<UDGuiScriptCommand *> *newCommands = [self arrayByReplacingItem:oldCmd withItem:newCmd inCommands:handler.commands];
+    [handler replaceCommandsWithArray:newCommands];
     [self.context.ownerDocument notifyGUIModelDidChange];
     [self.eventCommandsTableView reloadData];
-    [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [self expandAllOutlineItems];
+    
+    row = [self.eventCommandsTableView rowForItem:newCmd];
+    if (row >= 0) {
+       [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    }
     [self syncEventCommandEditorFromSelection];
 }
 
 - (UDGuiEventHandler *)newEventHandlerForType:(UDGuiEventHandlerType)type qualifier:(NSString *)qualifier {
     if (type == UDGuiEventHandlerTypeOnTime) {
-        return [[UDGuiTimedEventHandler alloc] initWithTimeExpression:(qualifier.length > 0 ? qualifier : @"0")];
+       return [[UDGuiTimedEventHandler alloc] initWithTimeExpression:(qualifier.length > 0 ? qualifier : @"0")];
     }
     if (type == UDGuiEventHandlerTypeOnNamedEvent) {
-        return [[UDGuiNamedEventHandler alloc] initWithEventName:qualifier ?: @""];
+       return [[UDGuiNamedEventHandler alloc] initWithEventName:qualifier ?: @""];
     }
     return [[UDGuiSimpleEventHandler alloc] initWithType:type];
 }
@@ -484,7 +785,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     if (!window) { return; }
 
     if (self.isScriptMode) {
-        [self commitTextEdits];
+       [self commitTextEdits];
     }
 
     NSSegmentedControl *control = (NSSegmentedControl *)sender;
@@ -493,30 +794,30 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     NSInteger row = self.eventHandlersTableView.selectedRow;
     if (segment == 0) {
-        UDGuiEventHandler *handler = [[UDGuiSimpleEventHandler alloc] initWithType:UDGuiEventHandlerTypeOnAction];
-        [handler addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"]];
-        [window addEventHandler:handler];
-        [self.context.ownerDocument notifyGUIModelDidChange];
-        [self reloadForWindow:window preserveSelection:NO];
-        NSInteger newRow = (NSInteger)window.eventHandlers.count - 1;
-        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)newRow] byExtendingSelection:NO];
-        return;
+       UDGuiEventHandler *handler = [[UDGuiSimpleEventHandler alloc] initWithType:UDGuiEventHandlerTypeOnAction];
+       [handler addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"]];
+       [window addEventHandler:handler];
+       [self.context.ownerDocument notifyGUIModelDidChange];
+       [self reloadForWindow:window preserveSelection:NO];
+       NSInteger newRow = (NSInteger)window.eventHandlers.count - 1;
+       [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)newRow] byExtendingSelection:NO];
+       return;
     }
 
     if (row < 0 || row >= (NSInteger)window.eventHandlers.count) { return; }
 
     if (segment == 1) {
-        [window removeEventHandlerAtIndex:(NSUInteger)row];
+       [window removeEventHandlerAtIndex:(NSUInteger)row];
     } else if (segment == 2 && row > 0) {
-        UDGuiEventHandler *h = [window.eventHandlers objectAtIndex:(NSUInteger)row];
-        [window removeEventHandlerAtIndex:(NSUInteger)row];
-        [window insertEventHandler:h atIndex:(NSUInteger)(row - 1)];
+       UDGuiEventHandler *h = [window.eventHandlers objectAtIndex:(NSUInteger)row];
+       [window removeEventHandlerAtIndex:(NSUInteger)row];
+       [window insertEventHandler:h atIndex:(NSUInteger)(row - 1)];
     } else if (segment == 3 && row < (NSInteger)window.eventHandlers.count - 1) {
-        UDGuiEventHandler *h = [window.eventHandlers objectAtIndex:(NSUInteger)row];
-        [window removeEventHandlerAtIndex:(NSUInteger)row];
-        [window insertEventHandler:h atIndex:(NSUInteger)(row + 1)];
+       UDGuiEventHandler *h = [window.eventHandlers objectAtIndex:(NSUInteger)row];
+       [window removeEventHandlerAtIndex:(NSUInteger)row];
+       [window insertEventHandler:h atIndex:(NSUInteger)(row + 1)];
     } else {
-        return;
+       return;
     }
 
     [self.context.ownerDocument notifyGUIModelDidChange];
@@ -531,105 +832,101 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     NSInteger segment = control.selectedSegment;
     control.selectedSegment = -1;
 
-    NSInteger row = self.eventCommandsTableView.selectedRow;
+    id item = [self selectedOutlineItem];
+    id targetItem = nil;
+
     if (segment == 0) {
-        [handler addCommand:[[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"]];
-        row = (NSInteger)handler.commands.count - 1;
+       UDGuiScriptCommand *newCmd = [[UDGuiScriptCommand alloc] initWithKeyword:@"set" arguments:@"notime 0"];
+       NSArray<UDGuiScriptCommand *> *newCommands;
+       if (!item) {
+           newCommands = [self arrayByAddingItem:newCmd toCommands:handler.commands];
+       } else {
+           newCommands = [self arrayByInsertingItem:newCmd afterItem:item inCommands:handler.commands];
+       }
+       [handler replaceCommandsWithArray:newCommands];
+       targetItem = newCmd;
     } else if (segment == 1) {
-        if (row < 0 || row >= (NSInteger)handler.commands.count) { return; }
-        [handler removeCommandAtIndex:(NSUInteger)row];
-        if (row >= (NSInteger)handler.commands.count) { row = (NSInteger)handler.commands.count - 1; }
+       if (!item) { return; }
+       NSArray<UDGuiScriptCommand *> *newCommands = [self arrayByRemovingItem:item inCommands:handler.commands];
+       [handler replaceCommandsWithArray:newCommands];
+       targetItem = nil;
     } else if (segment == 2) {
-        if (row <= 0 || row >= (NSInteger)handler.commands.count) { return; }
-        UDGuiScriptCommand *cmd = [handler.commands objectAtIndex:(NSUInteger)row];
-        [handler removeCommandAtIndex:(NSUInteger)row];
-        [handler insertCommand:cmd atIndex:(NSUInteger)(row - 1)];
-        row -= 1;
+       if (!item) { return; }
+       NSArray<UDGuiScriptCommand *> *newCommands = [self arrayByMovingItem:item direction:-1 inCommands:handler.commands];
+       [handler replaceCommandsWithArray:newCommands];
+       targetItem = item;
     } else if (segment == 3) {
-        if (row < 0 || row >= (NSInteger)handler.commands.count - 1) { return; }
-        UDGuiScriptCommand *cmd = [handler.commands objectAtIndex:(NSUInteger)row];
-        [handler removeCommandAtIndex:(NSUInteger)row];
-        [handler insertCommand:cmd atIndex:(NSUInteger)(row + 1)];
-        row += 1;
+       if (!item) { return; }
+       NSArray<UDGuiScriptCommand *> *newCommands = [self arrayByMovingItem:item direction:1 inCommands:handler.commands];
+       [handler replaceCommandsWithArray:newCommands];
+       targetItem = item;
     } else {
-        return;
+       return;
     }
 
-    [self finishCommandListMutationForHandler:handler selectedRow:row];
+    [self finishCommandListMutationForHandler:handler selectedItem:targetItem];
 }
 
 // MARK: - NSTableViewDataSource (data)
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     if (tableView == self.eventHandlersTableView) {
-        return (NSInteger)[self eventHandlersForSelectedWindow].count;
-    }
-    if (tableView == self.eventCommandsTableView) {
-        return (NSInteger)[self selectedEventHandler].commands.count;
+       return (NSInteger)[self eventHandlersForSelectedWindow].count;
     }
     return 0;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     if (tableView == self.eventHandlersTableView) {
-        NSArray<UDGuiEventHandler *> *handlers = [self eventHandlersForSelectedWindow];
-        if (row < 0 || row >= (NSInteger)handlers.count) { return @""; }
-        UDGuiEventHandler *handler = [handlers objectAtIndex:(NSUInteger)row];
-        if ([tableColumn.identifier isEqualToString:@"event"]) {
-            return UDGuiEventKeywordForType(handler.type);
-        }
-        if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
-            return [handler eventQualifier] ?: @"";
-        }
-        return @"";
+       NSArray<UDGuiEventHandler *> *handlers = [self eventHandlersForSelectedWindow];
+       if (row < 0 || row >= (NSInteger)handlers.count) { return @""; }
+       UDGuiEventHandler *handler = [handlers objectAtIndex:(NSUInteger)row];
+       if ([tableColumn.identifier isEqualToString:@"event"]) {
+           return UDGuiEventKeywordForType(handler.type);
+       }
+       if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
+           return [handler eventQualifier] ?: @"";
+       }
     }
-
-    if (tableView == self.eventCommandsTableView) {
-        UDGuiEventHandler *handler = [self selectedEventHandler];
-        if (!handler || row < 0 || row >= (NSInteger)handler.commands.count) { return @""; }
-        return [[handler.commands objectAtIndex:(NSUInteger)row] serializedStatement];
-    }
-
     return @"";
 }
 
 - (void)tableView:(NSTableView *)tableView
    setObjectValue:(nullable id)object
    forTableColumn:(nullable NSTableColumn *)tableColumn
-              row:(NSInteger)row {
+             row:(NSInteger)row {
     if (tableView == self.eventHandlersTableView) {
-        UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
-        NSArray<UDGuiEventHandler *> *handlers = [self eventHandlersForSelectedWindow];
-        if (!window || row < 0 || row >= (NSInteger)handlers.count) { return; }
+       UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+       NSArray<UDGuiEventHandler *> *handlers = [self eventHandlersForSelectedWindow];
+       if (!window || row < 0 || row >= (NSInteger)handlers.count) { return; }
 
-        UDGuiEventHandler *existing = [handlers objectAtIndex:(NSUInteger)row];
-        NSString *stringValue = [object isKindOfClass:[NSString class]] ? (NSString *)object : [[object description] copy];
+       UDGuiEventHandler *existing = [handlers objectAtIndex:(NSUInteger)row];
+       NSString *stringValue = [object isKindOfClass:[NSString class]] ? (NSString *)object : [[object description] copy];
 
-        if ([tableColumn.identifier isEqualToString:@"event"]) {
-            UDGuiEventHandlerType type = existing.type;
-            if (!UDGuiEventTypeFromKeyword(stringValue ?: @"", &type)) { return; }
-            UDGuiEventHandler *replacement = [self newEventHandlerForType:type qualifier:[existing eventQualifier] ?: @""];
-            [self copyCommandsFromHandler:existing toHandler:replacement];
-            [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
-        } else if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
-            UDGuiEventHandler *replacement = [self newEventHandlerForType:existing.type qualifier:stringValue ?: @""];
-            [self copyCommandsFromHandler:existing toHandler:replacement];
-            [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
-        } else {
-            return;
-        }
+       if ([tableColumn.identifier isEqualToString:@"event"]) {
+           UDGuiEventHandlerType type = existing.type;
+           if (!UDGuiEventTypeFromKeyword(stringValue ?: @"", &type)) { return; }
+           UDGuiEventHandler *replacement = [self newEventHandlerForType:type qualifier:[existing eventQualifier] ?: @""];
+           [self copyCommandsFromHandler:existing toHandler:replacement];
+           [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
+       } else if ([tableColumn.identifier isEqualToString:@"qualifier"]) {
+           UDGuiEventHandler *replacement = [self newEventHandlerForType:existing.type qualifier:stringValue ?: @""];
+           [self copyCommandsFromHandler:existing toHandler:replacement];
+           [window replaceEventHandlerAtIndex:(NSUInteger)row withEventHandler:replacement];
+       } else {
+           return;
+       }
 
-        [self.context.ownerDocument notifyGUIModelDidChange];
-        [self reloadForWindow:window preserveSelection:NO];
-        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
-        return;
+       [self.context.ownerDocument notifyGUIModelDidChange];
+       [self reloadForWindow:window preserveSelection:NO];
+       [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+       return;
     }
-    // event-commands table is edited through the command editor controls only
 }
 
 - (void)copyCommandsFromHandler:(UDGuiEventHandler *)source toHandler:(UDGuiEventHandler *)target {
     for (UDGuiScriptCommand *cmd in source.commands) {
-        [target addCommand:[cmd deepCopy]];
+       [target addCommand:[cmd deepCopy]];
     }
 }
 
@@ -637,22 +934,25 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     if (notification.object == self.eventHandlersTableView) {
-        if (self.isScriptMode) {
-            [self commitTextEdits];
-            [self loadScriptForSelectedHandler];
-        } else {
-            [self.eventCommandsTableView reloadData];
-            if ([self selectedEventHandler].commands.count > 0) {
-                [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-            } else {
-                [self.eventCommandsTableView deselectAll:nil];
-            }
-            [self syncEventCommandEditorFromSelection];
-        }
-        return;
+       if (self.isScriptMode) {
+           [self commitTextEdits];
+           [self loadScriptForSelectedHandler];
+       } else {
+           [self.eventCommandsTableView reloadData];
+           [self expandAllOutlineItems];
+           if ([self selectedEventHandler].commands.count > 0) {
+               [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+           } else {
+               [self.eventCommandsTableView deselectAll:nil];
+           }
+           [self syncEventCommandEditorFromSelection];
+       }
     }
+}
+
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification {
     if (notification.object == self.eventCommandsTableView) {
-        [self syncEventCommandEditorFromSelection];
+       [self syncEventCommandEditorFromSelection];
     }
 }
 
@@ -661,13 +961,11 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 - (BOOL)tableView:(NSTableView *)tableView
 writeRowsWithIndexes:(NSIndexSet *)rowIndexes
      toPasteboard:(NSPasteboard *)pasteboard {
-    if ((tableView != self.eventHandlersTableView && tableView != self.eventCommandsTableView) ||
-        rowIndexes.count == 0) {
-        return NO;
+    if (tableView != self.eventHandlersTableView || rowIndexes.count == 0) {
+       return NO;
     }
     NSInteger row = (NSInteger)rowIndexes.firstIndex;
-    NSString *kind = (tableView == self.eventHandlersTableView) ? @"handlers" : @"commands";
-    NSDictionary *payload = @{ @"kind": kind, @"row": @(row) };
+    NSDictionary *payload = @{ @"kind": @"handlers", @"row": @(row) };
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:payload];
     if (!data) { return NO; }
     [pasteboard declareTypes:@[UDGuiEventsReorderPasteboardType] owner:nil];
@@ -676,28 +974,27 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 }
 
 - (NSDragOperation)tableView:(NSTableView *)tableView
-                validateDrop:(id<NSDraggingInfo>)info
+               validateDrop:(id<NSDraggingInfo>)info
                  proposedRow:(NSInteger)row
        proposedDropOperation:(NSTableViewDropOperation)dropOperation {
-    if (tableView != self.eventHandlersTableView && tableView != self.eventCommandsTableView) {
-        return NSDragOperationNone;
+    if (tableView != self.eventHandlersTableView) {
+       return NSDragOperationNone;
     }
     if (dropOperation != NSTableViewDropAbove) {
-        [tableView setDropRow:row dropOperation:NSTableViewDropAbove];
+       [tableView setDropRow:row dropOperation:NSTableViewDropAbove];
     }
     NSDictionary *payload = [self dragPayloadFromDraggingInfo:info];
     if (!payload) { return NSDragOperationNone; }
     NSString *kind = payload[@"kind"];
-    if ((tableView == self.eventHandlersTableView && ![kind isEqualToString:@"handlers"]) ||
-        (tableView == self.eventCommandsTableView && ![kind isEqualToString:@"commands"])) {
-        return NSDragOperationNone;
+    if (![kind isEqualToString:@"handlers"]) {
+       return NSDragOperationNone;
     }
     return NSDragOperationMove;
 }
 
 - (BOOL)tableView:(NSTableView *)tableView
-       acceptDrop:(id<NSDraggingInfo>)info
-              row:(NSInteger)row
+      acceptDrop:(id<NSDraggingInfo>)info
+             row:(NSInteger)row
     dropOperation:(NSTableViewDropOperation)dropOperation {
     (void)dropOperation;
     NSDictionary *payload = [self dragPayloadFromDraggingInfo:info];
@@ -705,39 +1002,22 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
     NSInteger sourceRow = [payload[@"row"] integerValue];
 
     if (tableView == self.eventHandlersTableView) {
-        if (self.isScriptMode) {
-            [self commitTextEdits];
-        }
-        UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
-        NSInteger count = (NSInteger)window.eventHandlers.count;
-        if (!window || sourceRow < 0 || sourceRow >= count) { return NO; }
-        NSInteger destRow = [self normalizedDestinationRow:row count:count sourceRow:sourceRow];
-        if (destRow == NSNotFound) { return NO; }
-        UDGuiEventHandler *item = [window.eventHandlers objectAtIndex:(NSUInteger)sourceRow];
-        [window removeEventHandlerAtIndex:(NSUInteger)sourceRow];
-        [window insertEventHandler:item atIndex:(NSUInteger)destRow];
-        [self.context.ownerDocument notifyGUIModelDidChange];
-        [self reloadForWindow:window preserveSelection:NO];
-        [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)destRow] byExtendingSelection:NO];
-        return YES;
+       if (self.isScriptMode) {
+           [self commitTextEdits];
+       }
+       UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+       NSInteger count = (NSInteger)window.eventHandlers.count;
+       if (!window || sourceRow < 0 || sourceRow >= count) { return NO; }
+       NSInteger destRow = [self normalizedDestinationRow:row count:count sourceRow:sourceRow];
+       if (destRow == NSNotFound) { return NO; }
+       UDGuiEventHandler *item = [window.eventHandlers objectAtIndex:(NSUInteger)sourceRow];
+       [window removeEventHandlerAtIndex:(NSUInteger)sourceRow];
+       [window insertEventHandler:item atIndex:(NSUInteger)destRow];
+       [self.context.ownerDocument notifyGUIModelDidChange];
+       [self reloadForWindow:window preserveSelection:NO];
+       [self.eventHandlersTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)destRow] byExtendingSelection:NO];
+       return YES;
     }
-
-    if (tableView == self.eventCommandsTableView) {
-        UDGuiEventHandler *handler = [self selectedEventHandler];
-        NSInteger count = (NSInteger)handler.commands.count;
-        if (!handler || sourceRow < 0 || sourceRow >= count) { return NO; }
-        NSInteger destRow = [self normalizedDestinationRow:row count:count sourceRow:sourceRow];
-        if (destRow == NSNotFound) { return NO; }
-        UDGuiScriptCommand *item = [handler.commands objectAtIndex:(NSUInteger)sourceRow];
-        [handler removeCommandAtIndex:(NSUInteger)sourceRow];
-        [handler insertCommand:item atIndex:(NSUInteger)destRow];
-        [self.context.ownerDocument notifyGUIModelDidChange];
-        [self.eventCommandsTableView reloadData];
-        [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)destRow] byExtendingSelection:NO];
-        [self syncEventCommandEditorFromSelection];
-        return YES;
-    }
-
     return NO;
 }
 
@@ -754,9 +1034,94 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 - (NSInteger)normalizedDestinationRow:(NSInteger)row count:(NSInteger)count sourceRow:(NSInteger)sourceRow {
     NSInteger destinationRow = MIN(MAX(row, 0), count);
     if (destinationRow == sourceRow || destinationRow == sourceRow + 1) {
-        return NSNotFound;
+       return NSNotFound;
     }
     return (destinationRow > sourceRow) ? destinationRow - 1 : destinationRow;
+}
+
+// MARK: - NSOutlineViewDataSource
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item {
+    if (!item) {
+       UDGuiEventHandler *handler = [self selectedEventHandler];
+       return (NSInteger)handler.commands.count;
+    }
+    
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       return (NSInteger)((UDGuiIfCommand *)item).branches.count;
+    }
+    
+    if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       return (NSInteger)((UDGuiIfBranch *)item).commands.count;
+    }
+    
+    return 0;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item {
+    if (!item) {
+       UDGuiEventHandler *handler = [self selectedEventHandler];
+       return [handler.commands objectAtIndex:(NSUInteger)index];
+    }
+    
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       return [((UDGuiIfCommand *)item).branches objectAtIndex:(NSUInteger)index];
+    }
+    
+    if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       return [((UDGuiIfBranch *)item).commands objectAtIndex:(NSUInteger)index];
+    }
+    
+    return nil;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       return ((UDGuiIfCommand *)item).branches.count > 0;
+    }
+    if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       return ((UDGuiIfBranch *)item).commands.count > 0;
+    }
+    return NO;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn byItem:(nullable id)item {
+    if ([item isKindOfClass:[UDGuiIfCommand class]]) {
+       UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)item;
+       if (ifCmd.branches.count > 0) {
+           UDGuiIfBranch *firstBranch = [ifCmd.branches objectAtIndex:0];
+           if (firstBranch.condition) {
+               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:firstBranch.condition];
+               return [NSString stringWithFormat:@"if ( %@ )", condStr];
+           }
+       }
+       return @"if/else block";
+    }
+    
+    if ([item isKindOfClass:[UDGuiIfBranch class]]) {
+       UDGuiIfBranch *branch = (UDGuiIfBranch *)item;
+       id parent = [self parentForItem:branch];
+       if ([parent isKindOfClass:[UDGuiIfCommand class]]) {
+           UDGuiIfCommand *parentIf = (UDGuiIfCommand *)parent;
+           NSUInteger idx = [parentIf.branches indexOfObject:branch];
+           if (idx == 0) {
+               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : @"";
+               return [NSString stringWithFormat:@"if ( %@ )", condStr];
+           } else if (branch.condition) {
+               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];
+               return [NSString stringWithFormat:@"else if ( %@ )", condStr];
+           } else {
+               return @"else";
+           }
+       }
+       return @"branch";
+    }
+    
+    if ([item isKindOfClass:[UDGuiScriptCommand class]]) {
+       return [self.context.ownerDocument.codec serializeScriptCommand:(UDGuiScriptCommand *)item];
+    }
+    
+    return @"";
 }
 
 @end

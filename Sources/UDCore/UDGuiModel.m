@@ -1717,10 +1717,14 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     return [self deepCopy];
 }
 - (NSString *)serializedString {
-    return @"";
+    [NSException raise:NSInternalInconsistencyException
+                format:@"Method '%@' must be overridden in subclass", NSStringFromSelector(_cmd)];
+    return nil;
 }
 - (UDGuiExpression *)deepCopy {
-    return [[[self class] alloc] init];
+    [NSException raise:NSInternalInconsistencyException
+                format:@"Method '%@' must be overridden in subclass", NSStringFromSelector(_cmd)];
+    return nil;
 }
 @end
 

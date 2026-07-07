@@ -811,6 +811,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         UDIdToken *token = [cursor readToken];
         if (token.kind == UDIdTokenKindEOF) {
             if (stopAtCloseBrace) {
+                NSLog(@"UDGuiDocumentCodec: Parsing script commands failed: reached EOF without matching close brace.");
                 return nil; // Unmatched open brace
             }
             break;
@@ -1074,6 +1075,9 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     if (token.kind == UDIdTokenKindIdentifier) {
         NSScanner *scanner = [NSScanner scannerWithString:token.text];
         double dVal;
+        // The dVal variable is discarded because the objective is solely to validate
+        // whether token.text represents a valid numeric literal. If the scan succeeds and
+        // reaches the end, we treat the token as a literal number rather than a variable.
         if ([scanner scanDouble:&dVal] && scanner.isAtEnd) {
             return [[UDGuiLiteralExpression alloc] initWithValue:token.text isQuoted:NO];
         }

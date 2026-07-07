@@ -341,8 +341,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
             NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
             for (UDGuiIfBranch *branch in ifCmd.branches) {
                 if (branch == target) {
-                    NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithObject:newItem];
-                    [branchCommands addObjectsFromArray:branch.commands];
+                    NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithArray:branch.commands];
+                    [branchCommands insertObject:newItem atIndex:0];
                     [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
                 } else {
                     NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByInsertingItem:newItem afterItem:target inCommands:branch.commands];
@@ -724,11 +724,11 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
        }
     }
 
-    BOOL isTypeChange = (sender == self.eventCommandTypePopup);
+    BOOL isCommandTypePopup = (sender == self.eventCommandTypePopup);
     NSArray<UDGuiScriptCommand *> *newCommands = nil;
     id newItemToSelect = nil;
 
-    if (ifCmd && !isTypeChange) {
+    if (ifCmd && !isCommandTypePopup) {
        NSInteger selectedBranchIndex = self.eventIfBranchesPopup.indexOfSelectedItem;
        if (selectedBranchIndex >= 0 && selectedBranchIndex < (NSInteger)ifCmd.branches.count) {
            UDGuiIfBranch *oldBranch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
@@ -757,17 +757,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     if (newCommands) {
         [handler replaceCommandsWithArray:newCommands];
-        [self.context.ownerDocument notifyGUIModelDidChange];
-        [self.eventCommandsTableView reloadData];
-        [self expandAllOutlineItems];
-        
-        if (newItemToSelect) {
-            NSInteger row = [self.eventCommandsTableView rowForItem:newItemToSelect];
-            if (row >= 0) {
-                [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
-            }
-        }
-        [self syncEventCommandEditorFromSelection];
+        [self finishCommandListMutationForHandler:handler selectedItem:newItemToSelect];
     }
 }
 

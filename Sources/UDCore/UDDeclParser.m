@@ -26,6 +26,12 @@ static NSString *UDCanonicalDeclType(NSString *declType) {
 
 @implementation UDIdParser
 
+- (instancetype)init {
+    self = [self initWithText:@""];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (instancetype)initWithText:(NSString *)text {
     self = [super init];
     if (self) {

@@ -14,6 +14,12 @@
 
 @implementation UDGuiEditorService
 
+- (instancetype)init {
+    self = [self initWithDocument:[[UDGuiDocument alloc] init] undoManager:nil];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (instancetype)initWithDocument:(UDGuiDocument *)document undoManager:(NSUndoManager *)undoManager {
     NSParameterAssert(document != nil);
 

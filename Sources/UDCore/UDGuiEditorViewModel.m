@@ -11,6 +11,12 @@
 
 @implementation UDGuiEditorViewModel
 
+- (instancetype)init {
+    self = [self initWithService:[[UDGuiEditorService alloc] init]];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @synthesize selectedWindow = _selectedWindow;
 
 - (instancetype)initWithService:(UDGuiEditorService *)service {

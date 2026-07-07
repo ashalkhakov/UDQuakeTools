@@ -67,6 +67,12 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
 
 @implementation UDAssetIndexEntry
 
+- (instancetype)init {
+    self = [self initWithVirtualPath:@"empty" name:@"empty" fileExtension:@"empty" kind:UDAssetKindUnknown mountIdentifier:@"empty" sourceURL:[NSURL fileURLWithPath:@"/dev/null"] sourcePath:@"empty" archiveBacked:NO];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @synthesize virtualPath = _virtualPath;
 @synthesize name = _name;
 @synthesize fileExtension = _fileExtension;
@@ -116,6 +122,12 @@ static UDAssetIndexEntry *UDAssetEntryFromResolvedFile(UDVFSResolvedFile *resolv
 @implementation UDAssetIndex
 
 @synthesize entries = _entries;
+
+- (instancetype)init {
+    self = [self initWithEntries:@[]];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
 
 - (instancetype)initWithEntries:(NSArray<UDAssetIndexEntry *> *)entries {
     NSParameterAssert(entries != nil);

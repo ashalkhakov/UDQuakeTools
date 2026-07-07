@@ -24,6 +24,12 @@
 }
 
 - (instancetype)init {
+    self = [self initWithType:UDGameTypeUnknown displayName:@"" identifier:@""];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
++ (instancetype)new {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }

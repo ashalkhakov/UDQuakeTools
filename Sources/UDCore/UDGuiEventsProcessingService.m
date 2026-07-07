@@ -12,6 +12,12 @@
 
 @implementation UDGuiEventsProcessingService
 
+- (instancetype)init {
+    self = [self initWithCodec:[[UDGuiDocumentCodec alloc] init]];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (instancetype)initWithCodec:(UDGuiDocumentCodec *)codec {
     self = [super init];
     if (self) {

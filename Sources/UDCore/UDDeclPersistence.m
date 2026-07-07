@@ -9,6 +9,12 @@ static NSString *const UDDeclParserErrorDomain = @"com.udquake.error.declparser"
 
 @implementation UDVFSDeclPersistenceAdapter
 
+- (instancetype)init {
+    self = [self initWithVirtualFileSystem:[[UDVirtualFileSystem alloc] init]];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @synthesize virtualFileSystem = _virtualFileSystem;
 
 - (instancetype)initWithVirtualFileSystem:(UDVirtualFileSystem *)virtualFileSystem {

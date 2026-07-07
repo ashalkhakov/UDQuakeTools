@@ -217,6 +217,7 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
 - (void)insertCommand:(UDGuiScriptCommand *)command atIndex:(NSUInteger)index;
 - (void)replaceCommandAtIndex:(NSUInteger)index withCommand:(UDGuiScriptCommand *)command;
 - (void)removeCommandAtIndex:(NSUInteger)index;
+- (void)replaceCommandsWithArray:(NSArray<UDGuiScriptCommand *> *)newCommands;
 
 - (UDGuiEventHandler *)deepCopy;
 

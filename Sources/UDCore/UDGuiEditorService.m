@@ -229,12 +229,7 @@
     NSArray<UDGuiScriptCommand *> *oldCommands = handler.commands;
 
     UDGuiEventHandler *newHandler = [handler deepCopy];
-    while (newHandler.commands.count > 0) {
-        [newHandler removeCommandAtIndex:0];
-    }
-    for (UDGuiScriptCommand *cmd in newCommands) {
-        [newHandler addCommand:[cmd deepCopy]];
-    }
+    [newHandler replaceCommandsWithArray:newCommands];
 
     [window replaceEventHandlerAtIndex:handlerIndex withEventHandler:newHandler];
 

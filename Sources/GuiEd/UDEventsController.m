@@ -263,12 +263,12 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
         self.errorLabel.hidden = YES;
         self.errorLabel.stringValue = @"";
 
-        while (handler.commands.count > 0) {
-            [handler removeCommandAtIndex:0];
-        }
-        for (UDGuiScriptCommand *cmd in commands) {
-            [handler addCommand:[cmd deepCopy]];
-        }
+        // Bulk replace to avoid O(n^2) removal operations.
+        // We update the underlying model in real-time without registering global undo operations
+        // to prevent keypress bloat on the document's undo stack. Local text changes are already
+        // managed by the NSTextView's local undo manager, and a consolidated bulk commit with
+        // global undo is performed on focus loss (textDidEndEditing:), row change, or mode toggle.
+        [handler replaceCommandsWithArray:commands];
 
         [self.context.ownerDocument notifyGUIModelDidChange];
     } else {

@@ -539,6 +539,14 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     [_mutableCommands removeObjectAtIndex:index];
 }
 
+- (void)replaceCommandsWithArray:(NSArray<UDGuiScriptCommand *> *)newCommands {
+    NSParameterAssert(newCommands != nil);
+    [_mutableCommands removeAllObjects];
+    for (UDGuiScriptCommand *cmd in newCommands) {
+        [_mutableCommands addObject:[cmd deepCopy]];
+    }
+}
+
 - (UDGuiEventHandler *)deepCopy {
     UDGuiEventHandler *copy = [[[self class] alloc] initWithType:self.type];
     for (UDGuiScriptCommand *command in self.commands) {

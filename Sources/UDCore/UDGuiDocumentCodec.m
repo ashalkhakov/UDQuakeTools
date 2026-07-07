@@ -813,7 +813,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
             NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character %lu.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
             NSDictionary *userInfo = @{
                 NSLocalizedDescriptionKey: msg,
-                @"offset": @(offset),
+                @"characterOffset": @(offset),
                 @"tokenText": lastToken ? (lastToken.text ?: @"") : @""
             };
             *error = [NSError errorWithDomain:@"com.udquake.error.scripteditor"

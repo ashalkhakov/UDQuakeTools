@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDOutlinePaneController">
+            <connections>
+                <outlet property="outlineView" destination="OUT-01" id="OWN-OUTLINE"/>
+                <outlet property="view" destination="VIE-SIDEBAR" id="OWN-VIEW"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <customView id="VIE-SIDEBAR">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="692"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <customView id="VIE-BUTTONS">
+                    <rect key="frame" x="0.0" y="656" width="280" height="28"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <subviews>
+                        <button id="BTN-ADD-ROOT">
+                            <rect key="frame" x="0.0" y="0.0" width="90" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="push" title="Add Root" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADD-ROOT-CELL">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="addRootWindow:" target="-2" id="ACT-ADD-ROOT"/>
+                            </connections>
+                        </button>
+                        <button id="BTN-ADD-CHILD">
+                            <rect key="frame" x="96" y="0.0" width="92" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="push" title="Add Child" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-ADD-CHILD-CELL">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="addChildWindow:" target="-2" id="ACT-ADD-CHILD"/>
+                            </connections>
+                        </button>
+                        <button id="BTN-DEL-WIN">
+                            <rect key="frame" x="194" y="0.0" width="78" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTN-DEL-WIN-CELL">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="deleteSelectedWindow:" target="-2" id="ACT-DEL-WIN"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </customView>
+                <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" translatesAutoresizingMaskIntoConstraints="NO" id="SCR-OUT">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="648"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" id="CLP-OUT">
+                        <rect key="frame" x="1" y="1" width="278" height="631"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <outlineView multipleSelection="NO" rowHeight="20" indentationPerLevel="16" outlineTableColumn="OUT-COL" id="OUT-01" customClass="UDInspectableOutlineView">
+                                <rect key="frame" x="0.0" y="0.0" width="410" height="631"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <tableColumns>
+                                    <tableColumn identifier="node" width="398" minWidth="16" maxWidth="1000" id="OUT-COL">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Hierarchy"/>
+                                        <textFieldCell key="dataCell" controlSize="small" alignment="left" title="Text Cell" id="OUT-COL-CELL">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <outlet property="dataSource" destination="-2" id="OUT-DS"/>
+                                    <outlet property="delegate" destination="-2" id="OUT-DEL"/>
+                                </connections>
+                            </outlineView>
+                        </subviews>
+                    </clipView>
+                </scrollView>
+            </subviews>
+            <point key="canvasLocation" x="140" y="154"/>
+        </customView>
+    </objects>
+</document>

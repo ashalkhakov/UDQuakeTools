@@ -1,21 +1,23 @@
 /*
  * SPDX-License-Identifier: GPL-2.0-or-later
+ * UDGuiEdDocumentWindowController.m
+ *
+ * Thin orchestration layer: creates and wires collaborator controllers, handles
+ * window lifecycle, inspector-section switching, and identity-field commits.
  */
 
 #import "UDGuiEdDocumentWindowController.h"
-#import "UDGuiEdDocumentWindowController+Events.h"
-#import "UDGuiEdDocumentWindowController+EventsTable.h"
-#import "UDGuiEdDocumentWindowController+OutlinePane.h"
-#import "UDGuiEdDocumentWindowController+TableSelection.h"
-#import "UDGuiEdDocumentWindowController+TypedPanels.h"
-#import "UDGuiEdDocumentWindowController+DetailPane.h"
-#import "UDGuiEdDocumentWindowController+Variables.h"
-#import "UDGuiEdDocumentWindowController+VariablesTable.h"
+#import "UDInspectorController.h"
+#import "UDEventsController.h"
+#import "UDVariablesController.h"
+#import "UDOutlinePaneController.h"
 #import "UDGuiEdDocument.h"
-#import "UDInspectableTableView.h"
+#import "UDInspectorIcons.h"
+#import "UDIconTabBarView.h"
 
 #import "../UDCore/UDGuiEditorViewModel.h"
 #import "../UDCore/UDGuiModel.h"
+
 typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     UDGuiInspectorSectionIdentity = 0,
     UDGuiInspectorSectionAttributes,
@@ -24,42 +26,180 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     UDGuiInspectorSectionEvents,
 };
 
-static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Private extension — structural outlets and collaborators
+// ---------------------------------------------------------------------------
 
 @interface UDGuiEdDocumentWindowController ()
+
+// MARK: Icons
+@property (nonatomic, strong) UDInspectorIcons        *inspectorIcons;
+
+// MARK: Collaborators
+@property (nonatomic, strong) UDInspectorController   *inspectorController;
+@property (nonatomic, strong) UDEventsController      *eventsController;
+@property (nonatomic, strong) UDVariablesController   *variablesController;
+@property (nonatomic, strong) UDOutlinePaneController *outlinePaneController;
+
+// MARK: Document reference
 @property (nonatomic, assign) UDGuiEdDocument *ownerDocument;
+
+// MARK: Inspector state
 @property (nonatomic, assign) UDGuiInspectorSection activeInspectorSection;
-@property (nonatomic, strong) NSTableView *eventHandlersTableView;
-@property (nonatomic, strong) NSTableView *eventCommandsTableView;
-@property (nonatomic, strong) IBOutlet NSPopUpButton *eventCommandTypePopup;
-@property (nonatomic, strong) IBOutlet NSTabView *eventCommandEditorTabView;
-@property (nonatomic, strong) IBOutlet NSTextField *eventSetVariableField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventSetValueField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventSetFocusWindowField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventResetTimeWindowField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventResetTimeValueField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionVariableField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionFromField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionToField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionTimeField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionAccelField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventTransitionDecelField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventLocalSoundField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventRunScriptField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventShowCursorField;
-@property (nonatomic, strong) IBOutlet NSTextField *eventFallbackArgumentsField;
-@property (nonatomic, assign) BOOL suppressEventCommandEditorCommit;
+
+// MARK: Layout / structural outlets
+@property (nonatomic, strong) IBOutlet NSSplitView       *editorContainerView;
+@property (nonatomic, strong) IBOutlet NSTextField       *statusLabel;
+@property (nonatomic, strong) IBOutlet NSTextField       *breadcrumbLabel;
+@property (nonatomic, strong) IBOutlet NSTextView        *sourceTextView;
+@property (nonatomic, strong) IBOutlet UDIconTabBarView  *inspectorSectionTabs;
+@property (nonatomic, strong) IBOutlet NSTabView         *inspectorSectionTabView;
+@property (nonatomic, strong) IBOutlet NSView            *identityPanelView;
+@property (nonatomic, strong) IBOutlet NSView            *attributesPanelView;
+@property (nonatomic, strong) IBOutlet NSView            *sizePanelView;
+@property (nonatomic, strong) IBOutlet NSView            *variablesPanelView;
+@property (nonatomic, strong) IBOutlet NSView            *eventsPanelView;
+@property (nonatomic, strong) IBOutlet NSView            *sidebarContainerView;
+
 @end
+
+// ---------------------------------------------------------------------------
 
 @implementation UDGuiEdDocumentWindowController
 
+// MARK: - Init
+
+- (instancetype)initWithDocument:(UDGuiEdDocument *)document {
+    self = [super initWithWindowNibName:@"UDGuiEdDocument"];
+    if (!self) { return nil; }
+    _ownerDocument = document;
+    _activeInspectorSection = UDGuiInspectorSectionAttributes;
+    return self;
+}
+
+// MARK: - UDEditorControllerContext
+
+- (UDGuiEdDocument *)ownerDocument {
+    return _ownerDocument;
+}
+
+- (void)notifyModelChangedAndRefresh {
+    [self.ownerDocument notifyGUIModelDidChange];
+    [self refreshFromDocument];
+}
+
+// MARK: - Lifecycle
+
+- (void)windowDidLoad {
+    [super windowDidLoad];
+
+    self.window.delegate = self;
+    
+    self.inspectorIcons = [[UDInspectorIcons alloc] init];
+
+    [self createCollaborators];
+    [self embedCollaboratorViews];
+    [self configureSourceTextView];
+    
+    // Set the divider position programmatically
+    // dividerIndex 0 is between Left and Center
+    // dividerIndex 1 is between Center and Right
+    [self.editorContainerView setPosition:280.0 ofDividerAtIndex:0];
+    [self.editorContainerView setPosition:(self.editorContainerView.bounds.size.width - 250.0) ofDividerAtIndex:1];
+
+    if (self.inspectorSectionTabs) {
+        
+        NSArray *icons = @[
+            self.inspectorIcons.identityInspectorIcon,
+            self.inspectorIcons.attributesInspectorIcon,
+            self.inspectorIcons.sizeInspectorIcon,
+            self.inspectorIcons.connectionsInspectorIcon,
+            self.inspectorIcons.effectsInspectorIcon
+        ];
+        NSArray *iconsActive = @[
+            self.inspectorIcons.identityInspectorIconActive,
+            self.inspectorIcons.attributesInspectorIconActive,
+            self.inspectorIcons.sizeInspectorIconActive,
+            self.inspectorIcons.connectionsInspectorIconActive,
+            self.inspectorIcons.effectsInspectorIconActive
+        ];
+        
+        [self.inspectorSectionTabs setIcons:icons];
+        [self.inspectorSectionTabs setAlternateIcons:iconsActive];
+
+        [self.inspectorSectionTabs selectTabAtIndex:(NSInteger)self.activeInspectorSection];
+    }
+    [self.eventsController registerDragTypes];
+    [self refreshFromDocument];
+}
+
+// MARK: - Collaborator setup and view embedding
+
+- (void)createCollaborators {
+    self.inspectorController   = [[UDInspectorController alloc] init];
+    self.eventsController      = [[UDEventsController alloc] init];
+    self.variablesController   = [[UDVariablesController alloc] init];
+    self.outlinePaneController = [[UDOutlinePaneController alloc] init];
+
+    self.inspectorController.context   = self;
+    self.eventsController.context      = self;
+    self.variablesController.context   = self;
+    self.outlinePaneController.context = self;
+}
+
+- (void)embedView:(NSView *)subview inContainer:(NSView *)container {
+    if (!subview || !container) { return; }
+    subview.frame = container.bounds;
+    subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [container addSubview:subview];
+}
+
+- (void)embedCollaboratorViews {
+    [self embedView:self.outlinePaneController.view inContainer:self.sidebarContainerView];
+    [self embedView:self.inspectorController.identityView inContainer:self.identityPanelView];
+    [self embedView:self.inspectorController.view inContainer:self.attributesPanelView];
+    [self embedView:self.inspectorController.sizeView inContainer:self.sizePanelView];
+    [self embedView:self.variablesController.view inContainer:self.variablesPanelView];
+    [self embedView:self.eventsController.view inContainer:self.eventsPanelView];
+}
+
+- (void)configureSourceTextView {
+    if (!self.sourceTextView) { return; }
+    self.sourceTextView.editable = NO;
+    self.sourceTextView.richText = NO;
+    self.sourceTextView.importsGraphics = NO;
+    self.sourceTextView.font = [NSFont userFixedPitchFontOfSize:11.0];
+}
+
+// MARK: - SplitView delegate
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex {
+    // Keep the left panel at least 280px
+    if (dividerIndex == 0) return 280.0;
+    return proposedMin;
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex {
+    // Keep the right panel at least 200px
+    if (dividerIndex == 1) return splitView.bounds.size.width - 200.0;
+    return proposedMax;
+}
+
+// MARK: - Window delegate
+
+- (void)windowDidResize:(NSNotification *)notification {
+    (void)notification;
+    [self updateInspectorSectionLayout];
+}
+
+// MARK: - Inspector section layout
+
 - (NSRect)frameForInspectorSection:(UDGuiInspectorSection)section {
     NSView *containerView = self.inspectorSectionTabView.superview;
-    if (!containerView) {
-        return NSZeroRect;
-    }
+    if (!containerView) { return NSZeroRect; }
 
-    CGFloat availableWidth = NSWidth(containerView.bounds);
+    CGFloat availableWidth  = NSWidth(containerView.bounds);
     CGFloat availableHeight = NSMinY(self.inspectorSectionTabs.frame);
     if (availableHeight <= 0.0) {
         availableHeight = NSHeight(containerView.bounds);
@@ -74,201 +214,114 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
 }
 
 - (void)updateInspectorSectionLayout {
-    if (!self.inspectorSectionTabView || !self.inspectorSectionTabs) {
-        return;
-    }
+    if (!self.inspectorSectionTabView || !self.inspectorSectionTabs) { return; }
 
     NSRect sectionFrame = [self frameForInspectorSection:self.activeInspectorSection];
-    if (NSEqualRects(sectionFrame, NSZeroRect)) {
-        return;
-    }
+    if (NSEqualRects(sectionFrame, NSZeroRect)) { return; }
 
     self.inspectorSectionTabView.frame = sectionFrame;
 
     CGFloat compactHeight = 168.0;
-    CGFloat fullHeight = NSHeight(sectionFrame);
-    CGFloat panelWidth = NSWidth(sectionFrame);
+    CGFloat fullHeight    = NSHeight(sectionFrame);
+    CGFloat panelWidth    = NSWidth(sectionFrame);
 
-    self.identityPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
+    self.identityPanelView.frame   = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
     self.attributesPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, fullHeight);
-    self.sizePanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
-    self.variablesPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
-    self.eventsPanelView.frame = NSMakeRect(0.0, 0.0, panelWidth, fullHeight);
+    self.sizePanelView.frame       = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
+    self.variablesPanelView.frame  = NSMakeRect(0.0, 0.0, panelWidth, compactHeight);
+    self.eventsPanelView.frame     = NSMakeRect(0.0, 0.0, panelWidth, fullHeight);
 }
 
-- (instancetype)initWithDocument:(UDGuiEdDocument *)document {
-    self = [super initWithWindowNibName:@"UDGuiEdDocument"];
-    if (!self) {
-        return nil;
-    }
-
-    _ownerDocument = document;
-    _activeInspectorSection = UDGuiInspectorSectionAttributes;
-    return self;
-}
-
-- (void)windowDidLoad {
-    [super windowDidLoad];
-    self.window.delegate = (id<NSWindowDelegate>)self;
-    if (self.inspectorSectionTabs) {
-        [self.inspectorSectionTabs setSelectedSegment:(NSInteger)self.activeInspectorSection];
-    }
-
-    if (self.eventHandlersTableView) {
-        [self.eventHandlersTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
-        [self.eventHandlersTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
-    }
-    if (self.eventCommandsTableView) {
-        [self.eventCommandsTableView registerForDraggedTypes:@[UDGuiEventsReorderPasteboardType]];
-        [self.eventCommandsTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
-    }
-
-    [self refreshFromDocument];
-}
-
-- (void)windowDidResize:(NSNotification *)notification {
-    (void)notification;
-    [self updateInspectorSectionLayout];
-}
-
-- (IBAction)changeInspectorSection:(id)sender {
-    (void)sender;
-    self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedSegment;
-    [self refreshFromDocument];
-}
+// MARK: - Refresh
 
 - (void)refreshFromDocument {
-    [self refreshOutlinePane];
+    [self.outlinePaneController refreshOutlinePane];
     [self refreshDetailPaneForSelectedWindow];
+    [self refreshSourcePane];
 
     NSUInteger rootCount = self.ownerDocument.viewModel.rootWindows.count;
     if (self.statusLabel) {
-        self.statusLabel.stringValue = [NSString stringWithFormat:@"%lu root window%@", (unsigned long)rootCount, rootCount == 1 ? @"" : @"s"];
+        self.statusLabel.stringValue = [NSString stringWithFormat:@"%lu root window%@",
+                                       (unsigned long)rootCount, rootCount == 1 ? @"" : @"s"];
     }
     self.window.title = self.ownerDocument.displayName ?: @"GuiEd";
 }
 
-- (void)updateInspectorPresentationForWindow:(UDGuiWindowNode *)selectedWindow {
-    BOOL hasWindow = selectedWindow != nil;
-    BOOL identitySection = self.activeInspectorSection == UDGuiInspectorSectionIdentity;
+- (void)refreshDetailPaneForSelectedWindow {
+    UDGuiWindowNode *selectedWindow = self.ownerDocument.viewModel.selectedWindow;
 
-    self.classNameField.enabled = identitySection && hasWindow;
-    self.windowNameField.enabled = identitySection && hasWindow;
+    if (self.breadcrumbLabel) {
+        self.breadcrumbLabel.stringValue = self.ownerDocument.viewModel.selectedWindowBreadcrumb ?: @"";
+    }
+
+    [self updateInspectorPresentationForWindow:selectedWindow];
+}
+
+- (void)refreshSourcePane {
+    if (!self.sourceTextView) { return; }
+
+    NSString *sourceText = [self.ownerDocument serializedSourceText];
+    if (sourceText.length == 0) {
+        sourceText = self.ownerDocument.sourceText ?: @"";
+    }
+
+    if (![self.sourceTextView.string isEqualToString:sourceText]) {
+        [self.sourceTextView setString:sourceText];
+    }
+}
+
+- (void)updateInspectorPresentationForWindow:(nullable UDGuiWindowNode *)selectedWindow {
+    BOOL hasWindow      = selectedWindow != nil;
+    BOOL identitySection= self.activeInspectorSection == UDGuiInspectorSectionIdentity;
+
+    self.inspectorController.classNameField.enabled  = identitySection && hasWindow;
+    self.inspectorController.windowNameField.enabled = identitySection && hasWindow;
+
+    if (!hasWindow) {
+        [self.inspectorController.classNameField selectItemAtIndex:-1];
+        self.inspectorController.windowNameField.stringValue = @"";
+    } else {
+        [self.inspectorController.classNameField selectItemWithTitle:selectedWindow.className ?: @""];
+        self.inspectorController.windowNameField.stringValue = selectedWindow.name ?: @"";
+    }
 
     if (self.inspectorSectionTabView) {
         NSInteger sectionIndex = (NSInteger)self.activeInspectorSection;
         if (sectionIndex >= 0 && sectionIndex < (NSInteger)self.inspectorSectionTabView.numberOfTabViewItems) {
-            [self.inspectorSectionTabView selectTabViewItemAtIndex:sectionIndex];
+            [self.inspectorSectionTabs selectTabAtIndex:sectionIndex];
         }
     }
-
     [self updateInspectorSectionLayout];
 
-    [self updateAttributeGroupVisibilityForWindow:selectedWindow];
+    // Delegate panel sync to collaborators
+    [self.inspectorController updateAttributeGroupVisibilityForWindow:selectedWindow];
+    [self.inspectorController syncFromWindow:selectedWindow];
+    [self.inspectorController refreshValidationHintsForWindow:selectedWindow];
 
-    [self syncCommonInfoPanelFromWindow:selectedWindow];
-    [self syncTypedPanelsFromWindow:selectedWindow];
-    [self refreshTypedValidationHintsForWindow:selectedWindow];
-
-    if (self.activeInspectorSection == UDGuiInspectorSectionAttributes) {
-        self.statusLabel.stringValue = selectedWindow ? @"Common and typed attribute editor active. Generic properties are shown first." : self.statusLabel.stringValue;
-    }
-
-    if (!hasWindow) {
-        self.classNameField.stringValue = @"";
-        self.windowNameField.stringValue = @"";
-    }
+    [self.variablesController reloadForWindow:selectedWindow
+                             preserveSelection:YES
+                                     selectRow:NSNotFound
+                                  beginEditing:NO];
+    [self.eventsController reloadForWindow:selectedWindow preserveSelection:YES];
 }
 
-- (IBAction)commitTypedAttributesPanel:(id)sender {
+// MARK: - Actions
+
+- (IBAction)changeInspectorSection:(id)sender {
     (void)sender;
-    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
-    if (!window) {
-        return;
-    }
-
-    if (![self validateTypedPanelsForWindow:window]) {
-        [self refreshTypedValidationHintsForWindow:window];
-        return;
-    }
-
-    [self applyTypedPanelsToWindow:window];
-
-    [self.ownerDocument notifyGUIModelDidChange];
+    self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedIndex;
     [self refreshFromDocument];
 }
 
-- (IBAction)commitWindowInfoPanel:(id)sender {
+- (void)beginEditingSelectedWindowIdentity:(id)sender {
     (void)sender;
-    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
-    if (!window) {
-        return;
-    }
-
-    [self applyCommonInfoPanelToWindow:window];
-
-    [self.ownerDocument notifyGUIModelDidChange];
+    if (!self.ownerDocument.viewModel.selectedWindow) { return; }
+    self.activeInspectorSection = UDGuiInspectorSectionIdentity;
     [self refreshFromDocument];
-}
-
-- (IBAction)commitTypedSizePanel:(id)sender {
-    (void)sender;
-    UDGuiWindowNode *window = self.ownerDocument.viewModel.selectedWindow;
-    if (!window) {
-        return;
-    }
-
-    if (![self validateSizePanelForWindow:window]) {
-        [self refreshTypedValidationHintsForWindow:window];
-        return;
-    }
-
-    [self applySizePanelToWindow:window];
-    [self.ownerDocument notifyGUIModelDidChange];
-    [self refreshTypedValidationHintsForWindow:self.ownerDocument.viewModel.selectedWindow];
-    [self refreshFromDocument];
-}
-
-- (IBAction)commitTypedVariablesPanel:(id)sender {
-    (void)sender;
-}
-
-- (IBAction)commitTypedEventsPanel:(id)sender {
-    (void)sender;
-    // Events are committed through the handlers/commands table editor actions.
-}
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    if (tableView == self.variablesTableView) {
-        return (NSInteger)[self selectedWindowVariableDefinitions].count;
-    }
-    if (tableView == self.eventHandlersTableView) {
-        return (NSInteger)[self selectedWindowEventHandlers].count;
-    }
-    if (tableView == self.eventCommandsTableView) {
-        return (NSInteger)[self selectedEventHandler].commands.count;
-    }
-    return 0;
-}
-
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if (tableView == self.variablesTableView) {
-        return [self tableViewObjectValueForVariablesTableView:tableView column:tableColumn row:row];
-    }
-    return [self tableViewObjectValueForEventsTableView:tableView column:tableColumn row:row];
-}
-
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if (tableView == self.variablesTableView) {
-        [self tableViewSetObjectValueForVariablesTableView:tableView object:object column:tableColumn row:row];
-    } else {
-        [self tableViewSetObjectValueForEventsTableView:tableView object:object column:tableColumn row:row];
-    }
-}
-
-- (void)tableViewSelectionDidChange:(NSNotification *)notification {
-    [self handleTableViewSelectionDidChangeNotification:notification];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.window makeFirstResponder:self.inspectorController.windowNameField];
+        [self.inspectorController.windowNameField selectText:nil];
+    }];
 }
 
 @end

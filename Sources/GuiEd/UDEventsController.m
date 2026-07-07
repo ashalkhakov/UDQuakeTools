@@ -223,7 +223,9 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
             changed = YES;
         } else {
             for (NSUInteger i = 0; i < commands.count; i++) {
-                if (![[[commands objectAtIndex:i] serializedStatement] isEqualToString:[[handler.commands objectAtIndex:i] serializedStatement]]) {
+                NSString *newCmdStr = [[commands objectAtIndex:i] serializedStatement];
+                NSString *oldCmdStr = [[handler.commands objectAtIndex:i] serializedStatement];
+                if (![newCmdStr isEqualToString:oldCmdStr]) {
                     changed = YES;
                     break;
                 }

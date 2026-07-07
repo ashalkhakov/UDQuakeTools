@@ -810,7 +810,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         UDIdToken *lastToken = [cursor peekToken];
         NSUInteger offset = lastToken ? lastToken.start : inner.length;
         if (error) {
-            NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character %lu.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
+            NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character offset %lu.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
             NSDictionary *userInfo = @{
                 NSLocalizedDescriptionKey: msg,
                 @"characterOffset": @(offset),

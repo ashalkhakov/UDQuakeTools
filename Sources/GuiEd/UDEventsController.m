@@ -265,11 +265,10 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 }
 
 - (void)expandAllOutlineItems {
-    for (NSInteger i = 0; i < self.eventCommandsTableView.numberOfRows; i++) {
-       id item = [self.eventCommandsTableView itemAtRow:i];
-       if (item) {
-           [self.eventCommandsTableView expandItem:item expandChildren:YES];
-       }
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    if (!handler) { return; }
+    for (UDGuiScriptCommand *cmd in handler.commands) {
+        [self.eventCommandsTableView expandItem:cmd expandChildren:YES];
     }
 }
 
@@ -682,6 +681,9 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     NSString *keyword = self.eventCommandTypePopup.selectedItem.title ?: @"";
     if ([keyword isEqualToString:@"if"]) {
        UDGuiExpression *defaultCond = [self parseExpressionText:@"1"];
+       if (!defaultCond) {
+           defaultCond = [[UDGuiNumberLiteralExpression alloc] initWithValue:@"1"];
+       }
        UDGuiIfBranch *thenBranch = [[UDGuiIfBranch alloc] initWithCondition:defaultCond commands:@[]];
        UDGuiIfBranch *elseBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
        return [[UDGuiIfCommand alloc] initWithBranches:@[thenBranch, elseBranch]];
@@ -734,6 +736,12 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
            UDGuiIfBranch *oldBranch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
            NSString *conditionText = self.eventIfConditionField.stringValue ?: @"";
            UDGuiExpression *newCondition = [self parseExpressionText:conditionText];
+           if (!newCondition && selectedBranchIndex < (NSInteger)ifCmd.branches.count - 1) {
+               newCondition = [self parseExpressionText:@"1"];
+               if (!newCondition) {
+                   newCondition = [[UDGuiNumberLiteralExpression alloc] initWithValue:@"1"];
+               }
+           }
            UDGuiIfBranch *newBranch = [[UDGuiIfBranch alloc] initWithCondition:newCondition commands:oldBranch.commands];
             
            NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray arrayWithArray:ifCmd.branches];
@@ -1081,10 +1089,8 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
        UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)item;
        if (ifCmd.branches.count > 0) {
            UDGuiIfBranch *firstBranch = [ifCmd.branches objectAtIndex:0];
-           if (firstBranch.condition) {
-               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:firstBranch.condition];
-               return [NSString stringWithFormat:@"if ( %@ )", condStr];
-           }
+           NSString *condStr = firstBranch.condition ? [self.context.ownerDocument.codec serializeExpression:firstBranch.condition] : @"<invalid>";
+           return [NSString stringWithFormat:@"if ( %@ )", condStr];
        }
        return @"if/else block";
     }
@@ -1096,7 +1102,7 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
            UDGuiIfCommand *parentIf = (UDGuiIfCommand *)parent;
            NSUInteger idx = [parentIf.branches indexOfObject:branch];
            if (idx == 0) {
-               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : @"";
+               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : @"<invalid>";
                return [NSString stringWithFormat:@"if ( %@ )", condStr];
            } else if (branch.condition) {
                NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];

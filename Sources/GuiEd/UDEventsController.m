@@ -11,6 +11,13 @@
 
 static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
 
+// Layout constants for the script editor workspace UI
+static const CGFloat kUDEventsErrorLabelHeight = 24.0;
+static const CGFloat kUDEventsModeControlWidth = 160.0;
+static const CGFloat kUDEventsModeControlHeight = 24.0;
+static const CGFloat kUDEventsTopBarHeight = 28.0;
+static const CGFloat kUDEventsScrollBorderOffset = 2.0;
+
 @interface UDEventsController () <NSTextViewDelegate>
 @property (nonatomic, assign) BOOL suppressEventCommandEditorCommit;
 @property (nonatomic, strong) NSSegmentedControl *modeSegmentedControl;
@@ -85,7 +92,7 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     if (!container) { return; }
 
     // 1. Mode segmented control
-    NSSegmentedControl *modeControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - 160, container.bounds.size.height - 28, 160, 24)];
+    NSSegmentedControl *modeControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - kUDEventsModeControlWidth, container.bounds.size.height - kUDEventsTopBarHeight, kUDEventsModeControlWidth, kUDEventsModeControlHeight)];
     modeControl.segmentCount = 2;
     [modeControl setLabel:@"Structured" forSegment:0];
     [modeControl setLabel:@"Script" forSegment:1];
@@ -97,7 +104,7 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     self.modeSegmentedControl = modeControl;
 
     // 2. Error Label
-    NSTextField *errLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width, 24)];
+    NSTextField *errLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width, kUDEventsErrorLabelHeight)];
     errLabel.editable = NO;
     errLabel.selectable = YES;
     errLabel.bordered = NO;
@@ -111,15 +118,17 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     self.errorLabel = errLabel;
 
     // 3. Script ScrollView & TextView
-    NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 24, container.bounds.size.width, container.bounds.size.height - 24 - 32)];
+    CGFloat scrollY = kUDEventsErrorLabelHeight;
+    CGFloat scrollHeight = container.bounds.size.height - kUDEventsErrorLabelHeight - kUDEventsTopBarHeight - 4.0;
+    NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, scrollY, container.bounds.size.width, scrollHeight)];
     scroll.hasVerticalScroller = YES;
     scroll.hasHorizontalScroller = YES;
     scroll.autohidesScrollers = YES;
     scroll.borderType = NSBezelBorder;
     scroll.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-    NSTextView *text = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - 2, container.bounds.size.height - 24 - 34)];
-    text.minSize = NSMakeSize(0.0, container.bounds.size.height - 24 - 34);
+    NSTextView *text = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - kUDEventsScrollBorderOffset, scrollHeight - kUDEventsScrollBorderOffset)];
+    text.minSize = NSMakeSize(0.0, scrollHeight - kUDEventsScrollBorderOffset);
     text.maxSize = NSMakeSize(1e7, 1e7);
     text.verticallyResizable = YES;
     text.horizontallyResizable = YES;

@@ -860,7 +860,16 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     if ([fm fileExistsAtPath:targetURL.path]) {
 #ifdef GNUSTEP
         // Non-atomic replacement under GNUstep
-        [fm removeItemAtURL:targetURL error:nil];
+        NSError *removeError = nil;
+        if (![fm removeItemAtURL:targetURL error:&removeError]) {
+            [fm removeItemAtURL:tempURL error:nil];
+            if (error) {
+                *error = removeError ?: [NSError errorWithDomain:UDVFSErrorDomain
+                                                           code:UDVFSErrorCodeWriteFailed
+                                                        userInfo:@{NSLocalizedDescriptionKey: @"Failed to remove target item for non-atomic replace."}];
+            }
+            return NO;
+        }
         if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
             [fm removeItemAtURL:tempURL error:nil];
             if (error) {

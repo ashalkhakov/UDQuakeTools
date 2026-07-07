@@ -245,7 +245,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     NSMutableArray<NSString *> *paths = [NSMutableArray array];
     for (NSURL *fileURL in enumerator) {
         NSNumber *isRegularFile = nil;
-        [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        BOOL success = [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        if (!success || isRegularFile == nil) {
+            BOOL isDirectory = NO;
+            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDirectory];
+            isRegularFile = (exists && !isDirectory) ? @YES : @NO;
+        }
         if (![isRegularFile boolValue]) {
             continue;
         }
@@ -580,7 +585,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     NSMutableArray<NSURL *> *candidates = [NSMutableArray array];
     for (NSURL *entryURL in contents) {
         NSNumber *isRegularFile = nil;
-        [entryURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        BOOL success = [entryURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        if (!success || isRegularFile == nil) {
+            BOOL isDirectory = NO;
+            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:entryURL.path isDirectory:&isDirectory];
+            isRegularFile = (exists && !isDirectory) ? @YES : @NO;
+        }
         if (![isRegularFile boolValue]) {
             continue;
         }

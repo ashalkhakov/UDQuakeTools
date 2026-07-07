@@ -4,6 +4,7 @@
  */
 
 #import "UDDeclPersistence.h"
+#import "UDCodecRegistry.h"
 
 static NSString *const UDDeclParserErrorDomain = @"com.udquake.error.declparser";
 

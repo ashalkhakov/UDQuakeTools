@@ -341,8 +341,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
             NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
             for (UDGuiIfBranch *branch in ifCmd.branches) {
                 if (branch == target) {
-                    NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithArray:branch.commands];
-                    [branchCommands insertObject:newItem atIndex:0];
+                    NSArray<UDGuiScriptCommand *> *branchCommands = [@[newItem] arrayByAddingObjectsFromArray:branch.commands];
                     [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
                 } else {
                     NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByInsertingItem:newItem afterItem:target inCommands:branch.commands];
@@ -1088,17 +1087,30 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
     return NO;
 }
 
+- (NSString *)formattedIfLabelWithCondition:(nullable UDGuiExpression *)condition {
+    if (condition) {
+        NSString *condStr = [self.context.ownerDocument.codec serializeExpression:condition];
+        return [NSString stringWithFormat:@"if ( %@ )", condStr];
+    } else {
+        return [NSString stringWithFormat:@"if %@", kInvalidConditionPlaceholder];
+    }
+}
+
+- (NSString *)formattedElseIfLabelWithCondition:(nullable UDGuiExpression *)condition {
+    if (condition) {
+        NSString *condStr = [self.context.ownerDocument.codec serializeExpression:condition];
+        return [NSString stringWithFormat:@"else if ( %@ )", condStr];
+    } else {
+        return [NSString stringWithFormat:@"else if %@", kInvalidConditionPlaceholder];
+    }
+}
+
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn byItem:(nullable id)item {
     if ([item isKindOfClass:[UDGuiIfCommand class]]) {
        UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)item;
        if (ifCmd.branches.count > 0) {
            UDGuiIfBranch *firstBranch = [ifCmd.branches objectAtIndex:0];
-           if (firstBranch.condition) {
-               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:firstBranch.condition];
-               return [NSString stringWithFormat:@"if ( %@ )", condStr];
-           } else {
-               return [NSString stringWithFormat:@"if %@", kInvalidConditionPlaceholder];
-           }
+           return [self formattedIfLabelWithCondition:firstBranch.condition];
        }
        return @"if/else block";
     }
@@ -1110,15 +1122,9 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
            UDGuiIfCommand *parentIf = (UDGuiIfCommand *)parent;
            NSUInteger idx = [parentIf.branches indexOfObject:branch];
            if (idx == 0) {
-               if (branch.condition) {
-                   NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];
-                   return [NSString stringWithFormat:@"if ( %@ )", condStr];
-               } else {
-                   return [NSString stringWithFormat:@"if %@", kInvalidConditionPlaceholder];
-               }
+               return [self formattedIfLabelWithCondition:branch.condition];
            } else if (branch.condition) {
-               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];
-               return [NSString stringWithFormat:@"else if ( %@ )", condStr];
+               return [self formattedElseIfLabelWithCondition:branch.condition];
            } else {
                return @"else";
            }

@@ -1718,12 +1718,12 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 }
 - (NSString *)serializedString {
     [NSException raise:NSInternalInconsistencyException
-                format:@"Method '%@' must be overridden in subclass", NSStringFromSelector(_cmd)];
+                format:@"Method '%@' must be overridden in subclass. Subclasses must implement this method.", NSStringFromSelector(_cmd)];
     return nil;
 }
 - (UDGuiExpression *)deepCopy {
     [NSException raise:NSInternalInconsistencyException
-                format:@"Method '%@' must be overridden in subclass", NSStringFromSelector(_cmd)];
+                format:@"Method '%@' must be overridden in subclass. Subclasses must implement this method.", NSStringFromSelector(_cmd)];
     return nil;
 }
 @end

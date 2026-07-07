@@ -34,6 +34,12 @@
     return self;
 }
 
+- (instancetype)init {
+    self = [self initWithName:@"empty" fullPath:@"empty" leaf:NO definition:nil];
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (NSArray<UDDeclBrowserTreeNode *> *)children {
     return [self.mutableChildren copy];
 }

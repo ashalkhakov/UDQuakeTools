@@ -22,6 +22,7 @@ DeclBrowser_OBJC_FILES = \
     ../UDCore/UDGuiModel.m \
     ../UDCore/UDGuiDocumentCodec.m \
     ../UDCore/UDGuiEditorService.m \
+    ../UDCore/UDGuiEventsProcessingService.m \
     ../UDCore/UDGuiEditorViewModel.m \
     ../UDCore/UDGame.m \
     ../UDCore/UDGameDetectionService.m \

@@ -322,11 +322,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     return self;
 }
 
-- (NSString *)serializedStatement {
-    NSString *trimmedArguments = [self.arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    return trimmedArguments.length > 0 ? [NSString stringWithFormat:@"%@ %@", self.keyword, trimmedArguments] : self.keyword;
-}
-
 - (UDGuiScriptCommand *)deepCopy {
     return [[[self class] alloc] initWithKeyword:self.keyword arguments:self.arguments];
 }
@@ -1724,7 +1719,7 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 - (id)copyWithZone:(nullable NSZone *)zone {
     return [self deepCopy];
 }
-- (NSString *)serializedString {
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
     [NSException raise:NSInternalInconsistencyException
                 format:@"Method '%@' must be overridden in subclass. Subclasses must implement this method.", NSStringFromSelector(_cmd)];
     return nil;
@@ -1736,28 +1731,39 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 }
 @end
 
-@implementation UDGuiLiteralExpression
+@implementation UDGuiNumberLiteralExpression
 @synthesize value = _value;
-@synthesize isQuoted = _isQuoted;
 
-- (instancetype)initWithValue:(NSString *)value isQuoted:(BOOL)isQuoted {
+- (instancetype)initWithValue:(NSString *)value {
     self = [super init];
     if (self) {
         _value = [value copy];
-        _isQuoted = isQuoted;
     }
     return self;
 }
-
-- (NSString *)serializedString {
-    if (self.isQuoted) {
-        return [NSString stringWithFormat:@"\"%@\"", self.value];
-    }
-    return self.value;
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitNumberLiteralExpression:self];
 }
-
 - (UDGuiExpression *)deepCopy {
-    return [[UDGuiLiteralExpression alloc] initWithValue:self.value isQuoted:self.isQuoted];
+    return [[UDGuiNumberLiteralExpression alloc] initWithValue:self.value];
+}
+@end
+
+@implementation UDGuiStringLiteralExpression
+@synthesize value = _value;
+
+- (instancetype)initWithValue:(NSString *)value {
+    self = [super init];
+    if (self) {
+        _value = [value copy];
+    }
+    return self;
+}
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitStringLiteralExpression:self];
+}
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiStringLiteralExpression alloc] initWithValue:self.value];
 }
 @end
 
@@ -1771,11 +1777,9 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     }
     return self;
 }
-
-- (NSString *)serializedString {
-    return self.name;
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitVariableExpression:self];
 }
-
 - (UDGuiExpression *)deepCopy {
     return [[UDGuiVariableExpression alloc] initWithName:self.name];
 }
@@ -1791,11 +1795,9 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     }
     return self;
 }
-
-- (NSString *)serializedString {
-    return [NSString stringWithFormat:@"( %@ )", [self.expression serializedString]];
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitParenthesizedExpression:self];
 }
-
 - (UDGuiExpression *)deepCopy {
     return [[UDGuiParenthesizedExpression alloc] initWithExpression:[self.expression deepCopy]];
 }
@@ -1813,11 +1815,9 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     }
     return self;
 }
-
-- (NSString *)serializedString {
-    return [NSString stringWithFormat:@"%@%@", self.operatorString, [self.operand serializedString]];
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitUnaryExpression:self];
 }
-
 - (UDGuiExpression *)deepCopy {
     return [[UDGuiUnaryExpression alloc] initWithOperator:self.operatorString operand:[self.operand deepCopy]];
 }
@@ -1837,11 +1837,9 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     }
     return self;
 }
-
-- (NSString *)serializedString {
-    return [NSString stringWithFormat:@"%@ %@ %@", [self.left serializedString], self.operatorString, [self.right serializedString]];
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor {
+    return [visitor visitBinaryExpression:self];
 }
-
 - (UDGuiExpression *)deepCopy {
     return [[UDGuiBinaryExpression alloc] initWithLeft:[self.left deepCopy] operator:self.operatorString right:[self.right deepCopy]];
 }
@@ -1886,32 +1884,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
         _branches = [branches copy];
     }
     return self;
-}
-
-- (NSString *)serializedStatement {
-    NSMutableString *result = [NSMutableString string];
-    for (NSUInteger idx = 0; idx < self.branches.count; idx++) {
-        UDGuiIfBranch *branch = [self.branches objectAtIndex:idx];
-        if (idx > 0) {
-            [result appendString:@" "];
-        }
-        if (branch.condition) {
-            if (idx == 0) {
-                [result appendFormat:@"if ( %@ ) {", [branch.condition serializedString]];
-            } else {
-                [result appendFormat:@"else if ( %@ ) {", [branch.condition serializedString]];
-            }
-        } else {
-            [result appendString:@"else {"];
-        }
-        
-        for (UDGuiScriptCommand *cmd in branch.commands) {
-            [result appendFormat:@" %@ ;", [cmd serializedStatement]];
-        }
-        
-        [result appendString:@" }"];
-    }
-    return result;
 }
 
 - (UDGuiScriptCommand *)deepCopy {

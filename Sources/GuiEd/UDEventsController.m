@@ -8,6 +8,7 @@
 
 #import "../UDCore/UDGuiEditorViewModel.h"
 #import "../UDCore/UDGuiModel.h"
+#import "../UDCore/UDGuiEventsProcessingService.h"
 
 static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
 
@@ -50,6 +51,10 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 @synthesize eventRunScriptField = _eventRunScriptField;
 @synthesize eventShowCursorField = _eventShowCursorField;
 @synthesize eventFallbackArgumentsField = _eventFallbackArgumentsField;
+@synthesize modeSegmentedControl = _modeSegmentedControl;
+@synthesize scriptScrollView = _scriptScrollView;
+@synthesize scriptTextView = _scriptTextView;
+@synthesize errorLabel = _errorLabel;
 
 - (instancetype)init {
     self = [super init];
@@ -88,62 +93,14 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 }
 
 - (void)awakeFromNib {
-    NSView *container = [self commandsContainer];
-    if (!container) { return; }
+    self.errorLabel.textColor = [NSColor redColor];
+    self.errorLabel.stringValue = @"";
+    self.errorLabel.hidden = YES;
 
-    // 1. Mode segmented control
-    NSSegmentedControl *modeSegmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - kUDEventsModeControlWidth, container.bounds.size.height - kUDEventsTopBarHeight, kUDEventsModeControlWidth, kUDEventsModeControlHeight)];
-    modeSegmentedControl.segmentCount = 2;
-    [modeSegmentedControl setLabel:@"Structured" forSegment:0];
-    [modeSegmentedControl setLabel:@"Script" forSegment:1];
-    modeSegmentedControl.selectedSegment = 0;
-    modeSegmentedControl.target = self;
-    modeSegmentedControl.action = @selector(toggleEditorMode:);
-    modeSegmentedControl.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin;
-    [container addSubview:modeSegmentedControl];
-    self.modeSegmentedControl = modeSegmentedControl;
+    self.scriptTextView.font = [NSFont userFixedPitchFontOfSize:11.0];
+    self.scriptTextView.delegate = self;
 
-    // 2. Error Label
-    NSTextField *errLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width, kUDEventsErrorLabelHeight)];
-    errLabel.editable = NO;
-    errLabel.selectable = YES;
-    errLabel.bordered = NO;
-    errLabel.drawsBackground = NO;
-    errLabel.textColor = [NSColor redColor];
-    errLabel.font = [NSFont systemFontOfSize:11.0];
-    errLabel.stringValue = @"";
-    errLabel.hidden = YES;
-    errLabel.autoresizingMask = NSViewWidthSizable | NSViewMaxYMargin;
-    [container addSubview:errLabel];
-    self.errorLabel = errLabel;
-
-    // 3. Script ScrollView & TextView
-    CGFloat scrollY = kUDEventsErrorLabelHeight;
-    CGFloat scrollHeight = container.bounds.size.height - kUDEventsErrorLabelHeight - kUDEventsTopBarHeight - 4.0;
-    NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, scrollY, container.bounds.size.width, scrollHeight)];
-    scroll.hasVerticalScroller = YES;
-    scroll.hasHorizontalScroller = YES;
-    scroll.autohidesScrollers = YES;
-    scroll.borderType = NSBezelBorder;
-    scroll.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-
-    NSTextView *textView = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - kUDEventsScrollBorderOffset, scrollHeight - kUDEventsScrollBorderOffset)];
-    textView.minSize = NSMakeSize(0.0, scrollHeight - kUDEventsScrollBorderOffset);
-    textView.maxSize = NSMakeSize(1e7, 1e7);
-    textView.verticallyResizable = YES;
-    textView.horizontallyResizable = YES;
-    textView.autoresizingMask = NSViewWidthSizable;
-    [textView.textContainer setContainerSize:NSMakeSize(1e7, 1e7)];
-    [textView.textContainer setWidthTracksTextView:NO];
-    textView.font = [NSFont userFixedPitchFontOfSize:11.0];
-    textView.delegate = self;
-
-    scroll.documentView = textView;
-    scroll.hidden = YES;
-    [container addSubview:scroll];
-
-    self.scriptScrollView = scroll;
-    self.scriptTextView = textView;
+    self.scriptScrollView.hidden = YES;
 }
 
 - (void)toggleEditorMode:(id)sender {
@@ -196,19 +153,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     self.scriptTextView.editable = YES;
 
-    NSMutableString *text = [NSMutableString string];
-    for (UDGuiScriptCommand *command in handler.commands) {
-        if ([command.keyword isEqualToString:@"__ud_raw_script_body__"]) {
-            NSString *rawBody = command.arguments ?: @"";
-            [text appendString:rawBody];
-        } else {
-            if ([command isKindOfClass:[UDGuiIfCommand class]]) {
-                [text appendFormat:@"%@\n", [command serializedStatement]];
-            } else {
-                [text appendFormat:@"%@ ;\n", [command serializedStatement]];
-            }
-        }
-    }
+    UDGuiEventsProcessingService *service = [[UDGuiEventsProcessingService alloc] initWithCodec:self.context.ownerDocument.codec];
+    NSString *text = [service serializeCommands:handler.commands];
 
     self.scriptTextView.string = text;
     self.errorLabel.hidden = YES;
@@ -222,24 +168,13 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     NSString *text = self.scriptTextView.string ?: @"";
     NSError *error = nil;
-    NSArray<UDGuiScriptCommand *> *commands = [self.context.ownerDocument.codec scriptCommandsFromBlockValue:text error:&error];
+    UDGuiEventsProcessingService *service = [[UDGuiEventsProcessingService alloc] initWithCodec:self.context.ownerDocument.codec];
+    NSArray<UDGuiScriptCommand *> *commands = [service parseCommandsFromText:text error:&error];
     if (commands) {
         self.errorLabel.hidden = YES;
         self.errorLabel.stringValue = @"";
 
-        BOOL changed = NO;
-        if (commands.count != handler.commands.count) {
-            changed = YES;
-        } else {
-            for (NSUInteger i = 0; i < commands.count; i++) {
-                NSString *newCmdStr = [[commands objectAtIndex:i] serializedStatement];
-                NSString *oldCmdStr = [[handler.commands objectAtIndex:i] serializedStatement];
-                if (![newCmdStr isEqualToString:oldCmdStr]) {
-                    changed = YES;
-                    break;
-                }
-            }
-        }
+        BOOL changed = ![service areCommands:commands equalToCommands:handler.commands];
 
         if (changed) {
             UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
@@ -269,7 +204,8 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 
     NSString *text = self.scriptTextView.string ?: @"";
     NSError *error = nil;
-    NSArray<UDGuiScriptCommand *> *commands = [self.context.ownerDocument.codec scriptCommandsFromBlockValue:text error:&error];
+    UDGuiEventsProcessingService *service = [[UDGuiEventsProcessingService alloc] initWithCodec:self.context.ownerDocument.codec];
+    NSArray<UDGuiScriptCommand *> *commands = [service parseCommandsFromText:text error:&error];
     if (commands) {
         self.errorLabel.hidden = YES;
         self.errorLabel.stringValue = @"";

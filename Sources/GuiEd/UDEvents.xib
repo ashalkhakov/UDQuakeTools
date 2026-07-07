@@ -27,6 +27,10 @@
                 <outlet property="eventTransitionTimeField" destination="FLD-EVT-CMD-TRANS-TIME" id="OWN-EVT-28"/>
                 <outlet property="eventTransitionToField" destination="FLD-EVT-CMD-TRANS-TO" id="OWN-EVT-22"/>
                 <outlet property="eventTransitionVariableField" destination="FLD-EVT-CMD-TRANS-VARIABLE" id="OWN-EVT-20"/>
+                <outlet property="modeSegmentedControl" destination="SEG-EVT-MODE" id="OWN-EVT-MODE"/>
+                <outlet property="scriptScrollView" destination="SCR-EVT-SCRIPT" id="OWN-EVT-SCRIPT-SCROLL"/>
+                <outlet property="scriptTextView" destination="TXT-EVT-SCRIPT" id="OWN-EVT-SCRIPT-TEXT"/>
+                <outlet property="errorLabel" destination="LBL-EVT-ERR" id="OWN-EVT-ERR-LBL"/>
                 <outlet property="view" destination="PNL-EVENTS" id="OWN-VIEW"/>
             </connections>
         </customObject>
@@ -99,6 +103,50 @@
                     <rect key="frame" x="268" y="0.0" width="400" height="632"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
+                        <segmentedControl fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SEG-EVT-MODE">
+                            <rect key="frame" x="240" y="604" width="160" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="SEG-EVT-MODE-CELL">
+                                <font key="font" metaFont="smallSystem"/>
+                                <segments>
+                                    <segment label="Structured" width="78" selected="YES"/>
+                                    <segment label="Script" width="78"/>
+                                </segments>
+                            </segmentedCell>
+                            <connections>
+                                <action selector="toggleEditorMode:" target="-2" id="ACT-EVT-MODE"/>
+                            </connections>
+                        </segmentedControl>
+                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-ERR">
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="24"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" alignment="left" title="" id="LBL-EVT-ERR-CELL">
+                                <font key="font" metaFont="smallSystem"/>
+                                <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="YES" hasVerticalScroller="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SCR-EVT-SCRIPT">
+                            <rect key="frame" x="0.0" y="24" width="400" height="576"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <clipView key="contentView" id="CLP-EVT-SCRIPT">
+                                <rect key="frame" x="1" y="1" width="398" height="559"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="TXT-EVT-SCRIPT">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="559"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <size key="minSize" width="398" height="559"/>
+                                        <size key="maxSize" width="10000000" height="10000000"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="DEL-EVT-SCRIPT"/>
+                                        </connections>
+                                    </textView>
+                                </subviews>
+                            </clipView>
+                        </scrollView>
                         <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-EVT-CMD-TYPE">
                             <rect key="frame" x="0.0" y="604" width="170" height="24"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>

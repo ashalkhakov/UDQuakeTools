@@ -1090,7 +1090,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     }
 
     if (token.kind == UDIdTokenKindString) {
-        return [[UDGuiLiteralExpression alloc] initWithValue:token.text isQuoted:YES];
+        return [[UDGuiStringLiteralExpression alloc] initWithValue:token.text];
     }
 
     if (token.kind == UDIdTokenKindIdentifier) {
@@ -1098,7 +1098,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         double dVal;
         // Check if token.text is a numeric literal
         if ([scanner scanDouble:&dVal] && scanner.isAtEnd) {
-            return [[UDGuiLiteralExpression alloc] initWithValue:token.text isQuoted:NO];
+            return [[UDGuiNumberLiteralExpression alloc] initWithValue:token.text];
         }
         return [[UDGuiVariableExpression alloc] initWithName:token.text];
     }
@@ -1380,9 +1380,9 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 
     for (UDGuiScriptCommand *command in eventHandler.commands) {
         if ([command isKindOfClass:[UDGuiIfCommand class]]) {
-            [block appendFormat:@"%@%@\n", lineIndent, [command serializedStatement]];
+            [block appendFormat:@"%@%@\n", lineIndent, [self serializeScriptCommand:command]];
         } else {
-            [block appendFormat:@"%@%@ ;\n", lineIndent, [command serializedStatement]];
+            [block appendFormat:@"%@%@ ;\n", lineIndent, [self serializeScriptCommand:command]];
         }
     }
     [block appendFormat:@"%@}", indent];
@@ -1507,6 +1507,81 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     NSString *escaped = [[value stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"]
         stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
     return [NSString stringWithFormat:@"\"%@\"", escaped];
+}
+
+- (NSString *)serializeExpression:(UDGuiExpression *)expression {
+    if (!expression) {
+        return @"";
+    }
+    UDGuiExpressionSerializer *serializer = [[UDGuiExpressionSerializer alloc] init];
+    return [expression acceptVisitor:serializer];
+}
+
+- (NSString *)serializeScriptCommand:(UDGuiScriptCommand *)command {
+    if (!command) {
+        return @"";
+    }
+    if ([command isKindOfClass:[UDGuiIfCommand class]]) {
+        UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)command;
+        NSMutableString *result = [NSMutableString string];
+        for (NSUInteger idx = 0; idx < ifCmd.branches.count; idx++) {
+            UDGuiIfBranch *branch = [ifCmd.branches objectAtIndex:idx];
+            if (idx > 0) {
+                [result appendString:@" "];
+            }
+            if (branch.condition) {
+                NSString *condStr = [self serializeExpression:branch.condition];
+                if (idx == 0) {
+                    [result appendFormat:@"if ( %@ ) {", condStr];
+                } else {
+                    [result appendFormat:@"else if ( %@ ) {", condStr];
+                }
+            } else {
+                [result appendString:@"else {"];
+            }
+            
+            for (UDGuiScriptCommand *cmd in branch.commands) {
+                [result appendFormat:@" %@ ;", [self serializeScriptCommand:cmd]];
+            }
+            
+            [result appendString:@" }"];
+        }
+        return result;
+    } else {
+        NSString *trimmedArguments = [command.arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        return trimmedArguments.length > 0 ? [NSString stringWithFormat:@"%@ %@", command.keyword, trimmedArguments] : command.keyword;
+    }
+}
+
+@end
+
+@interface UDGuiExpressionSerializer : NSObject <UDGuiExpressionVisitor>
+@end
+
+@implementation UDGuiExpressionSerializer
+
+- (id)visitNumberLiteralExpression:(UDGuiNumberLiteralExpression *)expression {
+    return expression.value;
+}
+
+- (id)visitStringLiteralExpression:(UDGuiStringLiteralExpression *)expression {
+    return [NSString stringWithFormat:@"\"%@\"", expression.value];
+}
+
+- (id)visitVariableExpression:(UDGuiVariableExpression *)expression {
+    return expression.name;
+}
+
+- (id)visitParenthesizedExpression:(UDGuiParenthesizedExpression *)expression {
+    return [NSString stringWithFormat:@"( %@ )", [expression.expression acceptVisitor:self]];
+}
+
+- (id)visitUnaryExpression:(UDGuiUnaryExpression *)expression {
+    return [NSString stringWithFormat:@"%@%@", expression.operatorString, [expression.operand acceptVisitor:self]];
+}
+
+- (id)visitBinaryExpression:(UDGuiBinaryExpression *)expression {
+    return [NSString stringWithFormat:@"%@ %@ %@", [expression.left acceptVisitor:self], expression.operatorString, [expression.right acceptVisitor:self]];
 }
 
 @end

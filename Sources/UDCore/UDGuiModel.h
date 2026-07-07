@@ -114,7 +114,6 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
                       arguments:(NSString *)arguments NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (NSString *)serializedStatement;
 - (UDGuiScriptCommand *)deepCopy;
 
 @end
@@ -156,15 +155,39 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
 - (instancetype)initWithKeyword:(NSString *)keyword value:(NSString *)value;
 @end
 
+@class UDGuiNumberLiteralExpression;
+@class UDGuiStringLiteralExpression;
+@class UDGuiVariableExpression;
+@class UDGuiParenthesizedExpression;
+@class UDGuiUnaryExpression;
+@class UDGuiBinaryExpression;
+
+@protocol UDGuiExpressionVisitor <NSObject>
+- (id)visitNumberLiteralExpression:(UDGuiNumberLiteralExpression *)expression;
+- (id)visitStringLiteralExpression:(UDGuiStringLiteralExpression *)expression;
+- (id)visitVariableExpression:(UDGuiVariableExpression *)expression;
+- (id)visitParenthesizedExpression:(UDGuiParenthesizedExpression *)expression;
+- (id)visitUnaryExpression:(UDGuiUnaryExpression *)expression;
+- (id)visitBinaryExpression:(UDGuiBinaryExpression *)expression;
+@end
+
 @interface UDGuiExpression : NSObject <NSCopying>
-- (NSString *)serializedString;
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor;
 - (UDGuiExpression *)deepCopy;
 @end
 
-@interface UDGuiLiteralExpression : UDGuiExpression
+@interface UDGuiNumberLiteralExpression : UDGuiExpression {
+    NSString *_value;
+}
 @property (nonatomic, readonly, copy) NSString *value;
-@property (nonatomic, readonly, assign) BOOL isQuoted;
-- (instancetype)initWithValue:(NSString *)value isQuoted:(BOOL)isQuoted;
+- (instancetype)initWithValue:(NSString *)value;
+@end
+
+@interface UDGuiStringLiteralExpression : UDGuiExpression {
+    NSString *_value;
+}
+@property (nonatomic, readonly, copy) NSString *value;
+- (instancetype)initWithValue:(NSString *)value;
 @end
 
 @interface UDGuiVariableExpression : UDGuiExpression

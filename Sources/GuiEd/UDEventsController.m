@@ -11,8 +11,14 @@
 
 static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
 
-@interface UDEventsController ()
+@interface UDEventsController () <NSTextViewDelegate>
 @property (nonatomic, assign) BOOL suppressEventCommandEditorCommit;
+@property (nonatomic, strong) NSSegmentedControl *modeSegmentedControl;
+@property (nonatomic, strong) NSScrollView *scriptScrollView;
+@property (nonatomic, strong) NSTextView *scriptTextView;
+@property (nonatomic, strong) NSTextField *errorLabel;
+@property (nonatomic, assign) BOOL isScriptMode;
+@property (nonatomic, strong, nullable) UDGuiEventHandler *activeEventHandler;
 @end
 
 @implementation UDEventsController
@@ -63,6 +69,222 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     }
 }
 
+- (NSView *)commandsContainer {
+    NSView *container = self.eventCommandsTableView.superview;
+    while (container && container != self.view) {
+        if (container.superview == self.view) {
+            return container;
+        }
+        container = container.superview;
+    }
+    return container;
+}
+
+- (void)awakeFromNib {
+    NSView *container = [self commandsContainer];
+    if (!container) { return; }
+
+    // 1. Mode segmented control
+    NSSegmentedControl *modeControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(container.bounds.size.width - 160, container.bounds.size.height - 28, 160, 24)];
+    modeControl.segmentCount = 2;
+    [modeControl setLabel:@"Structured" forSegment:0];
+    [modeControl setLabel:@"Script" forSegment:1];
+    modeControl.selectedSegment = 0;
+    modeControl.target = self;
+    modeControl.action = @selector(toggleEditorMode:);
+    modeControl.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin;
+    [container addSubview:modeControl];
+    self.modeSegmentedControl = modeControl;
+
+    // 2. Error Label
+    NSTextField *errLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width, 24)];
+    errLabel.editable = NO;
+    errLabel.selectable = YES;
+    errLabel.bordered = NO;
+    errLabel.drawsBackground = NO;
+    errLabel.textColor = [NSColor redColor];
+    errLabel.font = [NSFont systemFontOfSize:11.0];
+    errLabel.stringValue = @"";
+    errLabel.hidden = YES;
+    errLabel.autoresizingMask = NSViewWidthSizable | NSViewMaxYMargin;
+    [container addSubview:errLabel];
+    self.errorLabel = errLabel;
+
+    // 3. Script ScrollView & TextView
+    NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 24, container.bounds.size.width, container.bounds.size.height - 24 - 32)];
+    scroll.hasVerticalScroller = YES;
+    scroll.hasHorizontalScroller = YES;
+    scroll.autohidesScrollers = YES;
+    scroll.borderType = NSBezelBorder;
+    scroll.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
+    NSTextView *text = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, container.bounds.size.width - 2, container.bounds.size.height - 24 - 34)];
+    text.minSize = NSMakeSize(0.0, container.bounds.size.height - 24 - 34);
+    text.maxSize = NSMakeSize(1e7, 1e7);
+    text.verticallyResizable = YES;
+    text.horizontallyResizable = YES;
+    text.autoresizingMask = NSViewWidthSizable;
+    [text.textContainer setContainerSize:NSMakeSize(1e7, 1e7)];
+    [text.textContainer setWidthTracksTextView:NO];
+    text.font = [NSFont userFixedPitchFontOfSize:11.0];
+    text.delegate = self;
+
+    scroll.documentView = text;
+    scroll.hidden = YES;
+    [container addSubview:scroll];
+
+    self.scriptScrollView = scroll;
+    self.scriptTextView = text;
+}
+
+- (void)toggleEditorMode:(id)sender {
+    NSInteger selectedSegment = self.modeSegmentedControl.selectedSegment;
+    BOOL newScriptMode = (selectedSegment == 1);
+    if (self.isScriptMode == newScriptMode) {
+        return;
+    }
+
+    if (self.isScriptMode) {
+        [self commitTextEdits];
+    }
+
+    self.isScriptMode = newScriptMode;
+    [self updateViewVisibilityForCurrentMode];
+
+    if (self.isScriptMode) {
+        [self loadScriptForSelectedHandler];
+    } else {
+        [self syncCommandsTableForSelectedHandler];
+    }
+}
+
+- (void)updateViewVisibilityForCurrentMode {
+    BOOL isScript = self.isScriptMode;
+    NSView *container = [self commandsContainer];
+    for (NSView *subview in container.subviews) {
+        if (subview == self.modeSegmentedControl) {
+            continue;
+        }
+        if (subview == self.scriptScrollView || subview == self.errorLabel) {
+            subview.hidden = !isScript;
+        } else {
+            subview.hidden = isScript;
+        }
+    }
+}
+
+- (void)loadScriptForSelectedHandler {
+    UDGuiEventHandler *handler = [self selectedEventHandler];
+    self.activeEventHandler = handler;
+
+    if (!handler) {
+        self.scriptTextView.string = @"";
+        self.scriptTextView.editable = NO;
+        self.errorLabel.hidden = YES;
+        self.errorLabel.stringValue = @"";
+        return;
+    }
+
+    self.scriptTextView.editable = YES;
+
+    NSMutableString *text = [NSMutableString string];
+    for (UDGuiScriptCommand *command in handler.commands) {
+        if ([command.keyword isEqualToString:@"__ud_raw_script_body__"]) {
+            NSString *rawBody = command.arguments ?: @"";
+            [text appendString:rawBody];
+        } else {
+            if ([command isKindOfClass:[UDGuiIfCommand class]]) {
+                [text appendFormat:@"%@\n", [command serializedStatement]];
+            } else {
+                [text appendFormat:@"%@ ;\n", [command serializedStatement]];
+            }
+        }
+    }
+
+    self.scriptTextView.string = text;
+    self.errorLabel.hidden = YES;
+    self.errorLabel.stringValue = @"";
+}
+
+- (void)commitTextEdits {
+    if (!self.isScriptMode) { return; }
+    UDGuiEventHandler *handler = self.activeEventHandler;
+    if (!handler) { return; }
+
+    NSString *text = self.scriptTextView.string ?: @"";
+    NSError *error = nil;
+    NSArray<UDGuiScriptCommand *> *commands = [self.context.ownerDocument.codec scriptCommandsFromBlockValue:text error:&error];
+    if (commands) {
+        self.errorLabel.hidden = YES;
+        self.errorLabel.stringValue = @"";
+
+        BOOL changed = NO;
+        if (commands.count != handler.commands.count) {
+            changed = YES;
+        } else {
+            for (NSUInteger i = 0; i < commands.count; i++) {
+                if (![[[commands objectAtIndex:i] serializedStatement] isEqualToString:[[handler.commands objectAtIndex:i] serializedStatement]]) {
+                    changed = YES;
+                    break;
+                }
+            }
+        }
+
+        if (changed) {
+            UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
+            NSUInteger handlerIndex = [window.eventHandlers indexOfObject:handler];
+            if (handlerIndex != NSNotFound) {
+                [self.context.ownerDocument.editorService updateCommandsForEventHandlerAtIndex:handlerIndex
+                                                                                       onWindow:window
+                                                                                    newCommands:commands];
+                [self.context.ownerDocument notifyGUIModelDidChange];
+            }
+        }
+    } else {
+        if (error) {
+            self.errorLabel.stringValue = error.localizedDescription;
+            self.errorLabel.hidden = NO;
+        }
+    }
+}
+
+// MARK: - NSTextViewDelegate
+
+- (void)textDidChange:(NSNotification *)notification {
+    if (notification.object != self.scriptTextView) { return; }
+
+    UDGuiEventHandler *handler = self.activeEventHandler;
+    if (!handler) { return; }
+
+    NSString *text = self.scriptTextView.string ?: @"";
+    NSError *error = nil;
+    NSArray<UDGuiScriptCommand *> *commands = [self.context.ownerDocument.codec scriptCommandsFromBlockValue:text error:&error];
+    if (commands) {
+        self.errorLabel.hidden = YES;
+        self.errorLabel.stringValue = @"";
+
+        while (handler.commands.count > 0) {
+            [handler removeCommandAtIndex:0];
+        }
+        for (UDGuiScriptCommand *cmd in commands) {
+            [handler addCommand:[cmd deepCopy]];
+        }
+
+        [self.context.ownerDocument notifyGUIModelDidChange];
+    } else {
+        if (error) {
+            self.errorLabel.stringValue = error.localizedDescription;
+            self.errorLabel.hidden = NO;
+        }
+    }
+}
+
+- (void)textDidEndEditing:(NSNotification *)notification {
+    if (notification.object == self.scriptTextView) {
+        [self commitTextEdits];
+    }
+}
+
 // MARK: - Selection accessors
 
 - (NSArray<UDGuiEventHandler *> *)eventHandlersForSelectedWindow {
@@ -110,14 +332,18 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
 // MARK: - Commands table sync
 
 - (void)syncCommandsTableForSelectedHandler {
-    [self.eventCommandsTableView reloadData];
-    UDGuiEventHandler *handler = [self selectedEventHandler];
-    if (handler.commands.count > 0) {
-        [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    if (self.isScriptMode) {
+        [self loadScriptForSelectedHandler];
     } else {
-        [self.eventCommandsTableView deselectAll:nil];
+        [self.eventCommandsTableView reloadData];
+        UDGuiEventHandler *handler = [self selectedEventHandler];
+        if (handler.commands.count > 0) {
+            [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        } else {
+            [self.eventCommandsTableView deselectAll:nil];
+        }
+        [self syncEventCommandEditorFromSelection];
     }
-    [self syncEventCommandEditorFromSelection];
 }
 
 - (void)finishCommandListMutationForHandler:(UDGuiEventHandler *)handler selectedRow:(NSInteger)row {
@@ -308,6 +534,10 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
     UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
     if (!window) { return; }
 
+    if (self.isScriptMode) {
+        [self commitTextEdits];
+    }
+
     NSSegmentedControl *control = (NSSegmentedControl *)sender;
     NSInteger segment = control.selectedSegment;
     control.selectedSegment = -1;
@@ -458,13 +688,18 @@ static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.g
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     if (notification.object == self.eventHandlersTableView) {
-        [self.eventCommandsTableView reloadData];
-        if ([self selectedEventHandler].commands.count > 0) {
-            [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        if (self.isScriptMode) {
+            [self commitTextEdits];
+            [self loadScriptForSelectedHandler];
         } else {
-            [self.eventCommandsTableView deselectAll:nil];
+            [self.eventCommandsTableView reloadData];
+            if ([self selectedEventHandler].commands.count > 0) {
+                [self.eventCommandsTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+            } else {
+                [self.eventCommandsTableView deselectAll:nil];
+            }
+            [self syncEventCommandEditorFromSelection];
         }
-        [self syncEventCommandEditorFromSelection];
         return;
     }
     if (notification.object == self.eventCommandsTableView) {
@@ -521,6 +756,9 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
     NSInteger sourceRow = [payload[@"row"] integerValue];
 
     if (tableView == self.eventHandlersTableView) {
+        if (self.isScriptMode) {
+            [self commitTextEdits];
+        }
         UDGuiWindowNode *window = self.context.ownerDocument.viewModel.selectedWindow;
         NSInteger count = (NSInteger)window.eventHandlers.count;
         if (!window || sourceRow < 0 || sourceRow >= count) { return NO; }

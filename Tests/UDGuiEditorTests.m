@@ -1012,4 +1012,63 @@
     XCTAssertEqual(viewModel.rootWindows.count, 1U);
 }
 
+- (void)testScriptEditorASTRoundTripAndDiagnostics {
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    
+    // 1. Valid script parsing and serialization
+    NSString *validScript = 
+        @"set \"notime\" \"1\" ;\n"
+        @"if ( \"gui::state\" == 1 ) {\n"
+        @"    resetTime \"Desktop\" \"0\" ;\n"
+        @"} else {\n"
+        @"    set \"cmd\" \"play click\" ;\n"
+        @"}\n"
+        @"transition \"rect\" \"0\" \"1\" \"200\" ;\n";
+        
+    NSError *error = nil;
+    NSArray<UDGuiScriptCommand *> *commands = [codec scriptCommandsFromBlockValue:validScript error:&error];
+    
+    XCTAssertNil(error);
+    XCTAssertNotNil(commands);
+    XCTAssertEqual(commands.count, 3U);
+    XCTAssertEqualObjects([[commands objectAtIndex:0] keyword], @"set");
+    XCTAssertTrue([[commands objectAtIndex:1] isKindOfClass:[UDGuiIfCommand class]]);
+    XCTAssertEqualObjects([[commands objectAtIndex:2] keyword], @"transition");
+    
+    // Test round-trip formatting/serialization
+    NSMutableString *serialized = [NSMutableString string];
+    for (UDGuiScriptCommand *cmd in commands) {
+        if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+            [serialized appendFormat:@"%@\n", [cmd serializedStatement]];
+        } else {
+            [serialized appendFormat:@"%@ ;\n", [cmd serializedStatement]];
+        }
+    }
+    
+    XCTAssertTrue([serialized containsString:@"set notime 1 ;"]);
+    XCTAssertTrue([serialized containsString:@"if ( gui::state == 1 ) {"]);
+    XCTAssertTrue([serialized containsString:@"resetTime Desktop 0 ;"]);
+    XCTAssertTrue([serialized containsString:@"transition rect 0 1 200 ;"]);
+    
+    // 2. Diagnostics checking (invalid syntax error handling)
+    NSString *invalidScript = 
+        @"set \"notime\" \"1\" ;\n"
+        @"if ( \"gui::state\" == 1 ) {\n"
+        @"    resetTime \"Desktop\" ;\n" // missing closing brace or nested syntax issue or wrong format
+        @"    set \"cmd\" \"play\n" // unclosed quote
+        @"} else {\n"
+        @"}\n";
+        
+    NSError *parseError = nil;
+    NSArray<UDGuiScriptCommand *> *failedCommands = [codec scriptCommandsFromBlockValue:invalidScript error:&parseError];
+    
+    XCTAssertNil(failedCommands);
+    XCTAssertNotNil(parseError);
+    XCTAssertEqual(parseError.code, 1);
+    
+    NSNumber *offsetNum = parseError.userInfo[@"characterOffset"];
+    XCTAssertNotNil(offsetNum);
+    XCTAssertTrue([offsetNum integerValue] > 0);
+}
+
 @end

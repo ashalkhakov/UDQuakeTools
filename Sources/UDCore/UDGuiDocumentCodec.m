@@ -795,13 +795,34 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 }
 
 - (nullable NSArray<UDGuiScriptCommand *> *)scriptCommandsFromBlockValue:(NSString *)blockValue {
+    return [self scriptCommandsFromBlockValue:blockValue error:nil];
+}
+
+- (nullable NSArray<UDGuiScriptCommand *> *)scriptCommandsFromBlockValue:(NSString *)blockValue error:(NSError **)error {
     NSString *inner = [self rawScriptBodyFromBlockValue:blockValue];
     if (inner.length == 0) {
         return @[];
     }
 
     UDGuiDeclCursor *cursor = [[UDGuiDeclCursor alloc] initWithText:inner];
-    return [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:NO];
+    NSArray<UDGuiScriptCommand *> *commands = [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:NO];
+    if (!commands) {
+        UDIdToken *lastToken = [cursor peekToken];
+        NSUInteger offset = lastToken ? lastToken.start : inner.length;
+        if (error) {
+            NSString *msg = [NSString stringWithFormat:@"Syntax error near '%@' at character %lu.", lastToken ? lastToken.text : @"EOF", (unsigned long)offset];
+            NSDictionary *userInfo = @{
+                NSLocalizedDescriptionKey: msg,
+                @"offset": @(offset),
+                @"tokenText": lastToken ? (lastToken.text ?: @"") : @""
+            };
+            *error = [NSError errorWithDomain:@"com.udquake.error.scripteditor"
+                                         code:1
+                                     userInfo:userInfo];
+        }
+        return nil;
+    }
+    return commands;
 }
 
 - (nullable NSArray<UDGuiScriptCommand *> *)parseScriptCommandsWithCursor:(UDGuiDeclCursor *)cursor stopAtCloseBrace:(BOOL)stopAtCloseBrace {

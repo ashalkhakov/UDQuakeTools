@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
        toNewParent:(nullable UDGuiWindowNode *)newParent
             atIndex:(NSUInteger)index;
 
+- (void)updateCommandsForEventHandlerAtIndex:(NSUInteger)handlerIndex
+                                    onWindow:(UDGuiWindowNode *)window
+                                 newCommands:(NSArray<UDGuiScriptCommand *> *)newCommands;
+
 @end
 
 NS_ASSUME_NONNULL_END

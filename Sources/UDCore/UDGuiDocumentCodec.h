@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)serializeDocument:(UDGuiDocument *)document error:(NSError **)error;
 
+- (nullable NSArray<UDGuiScriptCommand *> *)scriptCommandsFromBlockValue:(NSString *)blockValue error:(NSError **)error;
+- (nullable NSArray<UDGuiScriptCommand *> *)scriptCommandsFromBlockValue:(NSString *)blockValue;
+
 @end
 
 NS_ASSUME_NONNULL_END

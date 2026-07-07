@@ -624,7 +624,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
        if (idx == 0) {
            title = @"if";
        } else if (branch.condition) {
-           title = [NSString stringWithFormat:@"else if (%lu)", (unsigned long)idx];
+           title = [NSString stringWithFormat:@"else if ( %@ )", branch.condition];
        } else {
            title = @"else";
        }

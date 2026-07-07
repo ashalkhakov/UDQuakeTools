@@ -336,26 +336,26 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 - (NSArray<UDGuiScriptCommand *> *)arrayByInsertingItem:(UDGuiScriptCommand *)newItem afterItem:(id)target inCommands:(NSArray<UDGuiScriptCommand *> *)commands {
     NSMutableArray<UDGuiScriptCommand *> *newCommands = [NSMutableArray array];
     for (UDGuiScriptCommand *cmd in commands) {
-       [newCommands addObject:cmd];
-       if (cmd == target) {
-           [newCommands addObject:newItem];
-       }
-       if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
-           UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
-           NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
-           for (UDGuiIfBranch *branch in ifCmd.branches) {
-               if (branch == target) {
-                   NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithObject:newItem];
-                   [branchCommands addObjectsFromArray:branch.commands];
-                   [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
-               } else {
-                   NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByInsertingItem:newItem afterItem:target inCommands:branch.commands];
-                   [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
-               }
-           }
-           [newCommands removeLastObject];
-           [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
-       }
+        if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+            UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)cmd;
+            NSMutableArray<UDGuiIfBranch *> *newBranches = [NSMutableArray array];
+            for (UDGuiIfBranch *branch in ifCmd.branches) {
+                if (branch == target) {
+                    NSMutableArray<UDGuiScriptCommand *> *branchCommands = [NSMutableArray arrayWithObject:newItem];
+                    [branchCommands addObjectsFromArray:branch.commands];
+                    [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
+                } else {
+                    NSArray<UDGuiScriptCommand *> *branchCommands = [self arrayByInsertingItem:newItem afterItem:target inCommands:branch.commands];
+                    [newBranches addObject:[[UDGuiIfBranch alloc] initWithCondition:branch.condition commands:branchCommands]];
+                }
+            }
+            [newCommands addObject:[[UDGuiIfCommand alloc] initWithBranches:newBranches]];
+        } else {
+            [newCommands addObject:cmd];
+        }
+        if (cmd == target) {
+            [newCommands addObject:newItem];
+        }
     }
     return newCommands;
 }

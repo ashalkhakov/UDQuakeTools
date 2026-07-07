@@ -1123,21 +1123,17 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     if (token.kind == UDIdTokenKindString) {
         BOOL isVariable = NO;
         if (token.text.length > 0) {
-            if ([token.text rangeOfString:@"::"].location != NSNotFound) {
+            static NSCharacterSet *disallowedSet = nil;
+            static dispatch_once_t disallowedSetOnceToken;
+            dispatch_once(&disallowedSetOnceToken, ^{
+                // Allowed characters for variables/properties include alphanumeric characters,
+                // underscores, colons (for namespace qualifiers), and periods (for property references).
+                NSMutableCharacterSet *allowedSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+                [allowedSet addCharactersInString:@"_:."];
+                disallowedSet = [allowedSet invertedSet];
+            });
+            if ([token.text rangeOfCharacterFromSet:disallowedSet].location == NSNotFound) {
                 isVariable = YES;
-            } else {
-                static NSCharacterSet *disallowedSet = nil;
-                static dispatch_once_t disallowedSetOnceToken;
-                dispatch_once(&disallowedSetOnceToken, ^{
-                    // Allowed characters for variables/properties include alphanumeric characters,
-                    // underscores, colons (for namespace qualifiers), and periods (for property references).
-                    NSMutableCharacterSet *allowedSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
-                    [allowedSet addCharactersInString:@"_:."];
-                    disallowedSet = [allowedSet invertedSet];
-                });
-                if ([token.text rangeOfCharacterFromSet:disallowedSet].location == NSNotFound) {
-                    isVariable = YES;
-                }
             }
         }
         if (isVariable) {

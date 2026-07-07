@@ -249,7 +249,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         if (!success || isRegularFile == nil) {
             BOOL isDirectory = NO;
             BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDirectory];
-            isRegularFile = (exists && !isDirectory) ? @YES : @NO;
+            isRegularFile = @(exists && !isDirectory);
         }
         if (![isRegularFile boolValue]) {
             continue;
@@ -589,7 +589,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         if (!success || isRegularFile == nil) {
             BOOL isDirectory = NO;
             BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:entryURL.path isDirectory:&isDirectory];
-            isRegularFile = (exists && !isDirectory) ? @YES : @NO;
+            isRegularFile = @(exists && !isDirectory);
         }
         if (![isRegularFile boolValue]) {
             continue;

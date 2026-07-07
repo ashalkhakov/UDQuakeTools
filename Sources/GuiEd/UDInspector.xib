@@ -47,9 +47,7 @@
                 <outlet property="infoVisibleButton" destination="CHK-INFO-VISIBLE" id="OWN-131"/>
                 <outlet property="infoWantEnterButton" destination="CHK-INFO-WANTENTER" id="OWN-117"/>
                 <outlet property="sizeRectField" destination="FLD-SIZE-RECT" id="OWN-43"/>
-                <outlet property="sizeRectHintLabel" destination="LBL-SIZE-RECT-HINT" id="OWN-56"/>
                 <outlet property="sizeRotateField" destination="FLD-SIZE-ROTATE" id="OWN-44"/>
-                <outlet property="sizeRotateHintLabel" destination="LBL-SIZE-ROTATE-HINT" id="OWN-57"/>
                 <outlet property="sizeScaleField" destination="FLD-SIZE-SCALE" id="OWN-118"/>
                 <outlet property="sizeTextScaleField" destination="FLD-SIZE-TEXTSCALE" id="OWN-119"/>
                 <outlet property="sizeTranslateField" destination="FLD-SIZE-TRANSLATE" id="OWN-120"/>
@@ -61,18 +59,21 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-        <customView id="PNL-IDENTITY">
-            <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
+        <customView id="PNL-IDENTITY" customClass="FormContainerView">
+            <rect key="frame" x="0.0" y="0.0" width="322" height="632"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-CLASS">
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-CLASS">
                     <rect key="frame" x="0.0" y="610" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Class" id="LBL-CLASS-CELL"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Class" id="LBL-CLASS-CELL">
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-CLASS">
-                    <rect key="frame" x="0.0" y="120" width="300" height="24"/>
-                    <autoresizingMask key="autoresizingMask"/>
+                    <rect key="frame" x="-1" y="579" width="300" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FLD-CLASS-CELL">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="message"/>
@@ -91,14 +92,17 @@
                         <action selector="commitWindowIdentityEdit:" target="-2" id="ACT-CLASS"/>
                     </connections>
                 </popUpButton>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-NAME">
-                    <rect key="frame" x="316" y="610" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-NAME">
+                    <rect key="frame" x="0.0" y="559" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Name" id="LBL-NAME-CELL"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Name" id="LBL-NAME-CELL">
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-NAME">
-                    <rect key="frame" x="316" y="120" width="300" height="24"/>
-                    <autoresizingMask key="autoresizingMask"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-NAME">
+                    <rect key="frame" x="2" y="529" width="300" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Window name" id="FLD-NAME-CELL">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -109,17 +113,8 @@
                         <outlet property="delegate" destination="-2" id="DEL-NAME"/>
                     </connections>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-ID-HELP">
-                    <rect key="frame" x="0.0" y="88" width="660" height="20"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" alignment="left" title="Set the window class and name for the selected GUI node here." id="LBL-ID-HELP-CELL">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
             </subviews>
-            <point key="canvasLocation" x="140" y="154"/>
+            <point key="canvasLocation" x="-33" y="154"/>
         </customView>
         <customView id="PNL-ATTR">
             <rect key="frame" x="0.0" y="0.0" width="668" height="632"/>
@@ -136,7 +131,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="667" height="800"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <subviews>
-                                    <view id="VIE-INFO-CONTENT">
+                                    <view id="VIE-INFO-CONTENT" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="180" width="667" height="620"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <subviews>
@@ -162,12 +157,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-NOEVENTS"/>
                                                 </connections>
                                             </button>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORECOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORECOLOR">
                                                 <rect key="frame" x="0.0" y="572" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="foreColor" id="LBL-INFO-FORECOLOR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="foreColor" id="LBL-INFO-FORECOLOR-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORECOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORECOLOR">
                                                 <rect key="frame" x="0.0" y="546" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1, 1, 1, 1" id="FLD-INFO-FORECOLOR-CELL">
@@ -179,12 +177,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-FORECOLOR"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-HOVERCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-HOVERCOLOR">
                                                 <rect key="frame" x="158" y="572" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="hoverColor" id="LBL-INFO-HOVERCOLOR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="hoverColor" id="LBL-INFO-HOVERCOLOR-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-HOVERCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-HOVERCOLOR">
                                                 <rect key="frame" x="158" y="546" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1, 1, 1, 1" id="FLD-INFO-HOVERCOLOR-CELL">
@@ -196,12 +197,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-HOVERCOLOR"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BACKCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BACKCOLOR">
                                                 <rect key="frame" x="316" y="572" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="backColor" id="LBL-INFO-BACKCOLOR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="backColor" id="LBL-INFO-BACKCOLOR-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BACKCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BACKCOLOR">
                                                 <rect key="frame" x="316" y="546" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0, 0, 0, 0" id="FLD-INFO-BACKCOLOR-CELL">
@@ -213,12 +217,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-BACKCOLOR"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BORDERCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BORDERCOLOR">
                                                 <rect key="frame" x="474" y="572" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="borderColor" id="LBL-INFO-BORDERCOLOR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="borderColor" id="LBL-INFO-BORDERCOLOR-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BORDERCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BORDERCOLOR">
                                                 <rect key="frame" x="474" y="546" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0, 0, 0, 0" id="FLD-INFO-BORDERCOLOR-CELL">
@@ -230,12 +237,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-BORDERCOLOR"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATCOLOR">
                                                 <rect key="frame" x="0.0" y="520" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matColor" id="LBL-INFO-MATCOLOR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matColor" id="LBL-INFO-MATCOLOR-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATCOLOR">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATCOLOR">
                                                 <rect key="frame" x="0.0" y="494" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1, 1, 1, 1" id="FLD-INFO-MATCOLOR-CELL">
@@ -291,12 +301,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-SHADOW"/>
                                                 </connections>
                                             </button>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORCEASPECTWIDTH">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORCEASPECTWIDTH">
                                                 <rect key="frame" x="0.0" y="468" width="150" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="forceAspectWidth" id="LBL-INFO-FORCEASPECTWIDTH-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="forceAspectWidth" id="LBL-INFO-FORCEASPECTWIDTH-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Force a specific draw surface width. Use on the desktop window." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORCEASPECTWIDTH">
+                                            <textField toolTip="Force a specific draw surface width. Use on the desktop window." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORCEASPECTWIDTH">
                                                 <rect key="frame" x="0.0" y="442" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="640" id="FLD-INFO-FORCEASPECTWIDTH-CELL">
@@ -308,12 +321,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-FORCEASPECTWIDTH"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORCEASPECTHEIGHT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FORCEASPECTHEIGHT">
                                                 <rect key="frame" x="158" y="468" width="150" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="forceAspectHeight" id="LBL-INFO-FORCEASPECTHEIGHT-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="forceAspectHeight" id="LBL-INFO-FORCEASPECTHEIGHT-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Force a specific draw surface height. Use on the desktop window." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORCEASPECTHEIGHT">
+                                            <textField toolTip="Force a specific draw surface height. Use on the desktop window." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FORCEASPECTHEIGHT">
                                                 <rect key="frame" x="158" y="442" width="150" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="480" id="FLD-INFO-FORCEASPECTHEIGHT-CELL">
@@ -325,12 +341,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-FORCEASPECTHEIGHT"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BORDERSIZE">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BORDERSIZE">
                                                 <rect key="frame" x="316" y="468" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="borderSize" id="LBL-INFO-BORDERSIZE-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="borderSize" id="LBL-INFO-BORDERSIZE-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Sets the size of the border. It must be non-zero for borderColor to have any effect." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BORDERSIZE">
+                                            <textField toolTip="Sets the size of the border. It must be non-zero for borderColor to have any effect." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BORDERSIZE">
                                                 <rect key="frame" x="316" y="442" width="120" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0" id="FLD-INFO-BORDERSIZE-CELL">
@@ -342,12 +361,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-BORDERSIZE"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATSCALEX">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATSCALEX">
                                                 <rect key="frame" x="0.0" y="416" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matScaleX" id="LBL-INFO-MATSCALEX-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matScaleX" id="LBL-INFO-MATSCALEX-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Scales the background material in the x direction." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATSCALEX">
+                                            <textField toolTip="Scales the background material in the x direction." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATSCALEX">
                                                 <rect key="frame" x="0.0" y="390" width="120" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1" id="FLD-INFO-MATSCALEX-CELL">
@@ -359,12 +381,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-MATSCALEX"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATSCALEY">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-MATSCALEY">
                                                 <rect key="frame" x="128" y="416" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matScaleY" id="LBL-INFO-MATSCALEY-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="matScaleY" id="LBL-INFO-MATSCALEY-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Scales the background material in the y direction." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATSCALEY">
+                                            <textField toolTip="Scales the background material in the y direction." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-MATSCALEY">
                                                 <rect key="frame" x="128" y="390" width="120" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1" id="FLD-INFO-MATSCALEY-CELL">
@@ -376,12 +401,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-MATSCALEY"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGN">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGN">
                                                 <rect key="frame" x="256" y="416" width="80" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlign" id="LBL-INFO-TEXTALIGN-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlign" id="LBL-INFO-TEXTALIGN-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Specify the text alignment. 0=left, 1=center, 2=right." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGN">
+                                            <textField toolTip="Specify the text alignment. 0=left, 1=center, 2=right." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGN">
                                                 <rect key="frame" x="256" y="390" width="80" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0" id="FLD-INFO-TEXTALIGN-CELL">
@@ -393,12 +421,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-TEXTALIGN"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGNX">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGNX">
                                                 <rect key="frame" x="344" y="416" width="110" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlignX" id="LBL-INFO-TEXTALIGNX-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlignX" id="LBL-INFO-TEXTALIGNX-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Offset the x value of the text relative to the window." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGNX">
+                                            <textField toolTip="Offset the x value of the text relative to the window." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGNX">
                                                 <rect key="frame" x="344" y="390" width="110" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0" id="FLD-INFO-TEXTALIGNX-CELL">
@@ -410,12 +441,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-TEXTALIGNX"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGNY">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXTALIGNY">
                                                 <rect key="frame" x="462" y="416" width="110" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlignY" id="LBL-INFO-TEXTALIGNY-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="textAlignY" id="LBL-INFO-TEXTALIGNY-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Offset the y value of the text relative to the window." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGNY">
+                                            <textField toolTip="Offset the y value of the text relative to the window." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXTALIGNY">
                                                 <rect key="frame" x="462" y="390" width="110" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0" id="FLD-INFO-TEXTALIGNY-CELL">
@@ -427,21 +461,25 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-TEXTALIGNY"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-SHEAR">
-                                                <rect key="frame" x="0.0" y="364" width="150" height="16"/>
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TEXTSCALE">
+                                                <rect key="frame" x="2" y="363" width="80" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="shear" id="LBL-INFO-SHEAR-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Text Scale" id="LBL-SIZE-TEXTSCALE-CELL">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Shear the rectangle into a parallelogram. Range is 0 to 1." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-SHEAR">
-                                                <rect key="frame" x="0.0" y="338" width="150" height="22"/>
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TEXTSCALE">
+                                                <rect key="frame" x="2" y="337" width="120" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0, 0" id="FLD-INFO-SHEAR-CELL">
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1" id="FLD-SIZE-TEXTSCALE-CELL">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                                 <connections>
-                                                    <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-SHEAR"/>
+                                                    <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-TEXTSCALE"/>
                                                 </connections>
                                             </textField>
                                             <button toolTip="Sends onAction to the window when the user presses Enter." id="CHK-INFO-WANTENTER">
@@ -521,12 +559,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-INVERTRECT"/>
                                                 </connections>
                                             </button>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-NAME">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-NAME">
                                                 <rect key="frame" x="0.0" y="280" width="220" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="name" id="LBL-INFO-NAME-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="name" id="LBL-INFO-NAME-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Set the window name property. This overrides the name specified before the opening curly brace." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-NAME">
+                                            <textField toolTip="Set the window name property. This overrides the name specified before the opening curly brace." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-NAME">
                                                 <rect key="frame" x="0.0" y="254" width="220" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="name" id="FLD-INFO-NAME-CELL">
@@ -538,12 +579,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-NAME"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FONT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-FONT">
                                                 <rect key="frame" x="228" y="280" width="180" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="font" id="LBL-INFO-FONT-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="font" id="LBL-INFO-FONT-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Sets the font. Choices are fonts/micro, fonts/bank, or fonts/an." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FONT">
+                                            <textField toolTip="Sets the font. Choices are fonts/micro, fonts/bank, or fonts/an." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-FONT">
                                                 <rect key="frame" x="228" y="254" width="180" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="fonts/an" id="FLD-INFO-FONT-CELL">
@@ -555,12 +599,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-FONT"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-TEXT">
                                                 <rect key="frame" x="0.0" y="228" width="220" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="text" id="LBL-INFO-TEXT-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="text" id="LBL-INFO-TEXT-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-TEXT">
                                                 <rect key="frame" x="0.0" y="202" width="220" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="text" id="FLD-INFO-TEXT-CELL">
@@ -572,12 +619,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-TEXT"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BACKGROUND">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-BACKGROUND">
                                                 <rect key="frame" x="228" y="228" width="220" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="background" id="LBL-INFO-BACKGROUND-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="background" id="LBL-INFO-BACKGROUND-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BACKGROUND">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-BACKGROUND">
                                                 <rect key="frame" x="228" y="202" width="220" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="material" id="FLD-INFO-BACKGROUND-CELL">
@@ -589,12 +639,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-BACKGROUND"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-VARBACKGROUND">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-VARBACKGROUND">
                                                 <rect key="frame" x="456" y="228" width="150" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="varBackground" id="LBL-INFO-VARBACKGROUND-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="varBackground" id="LBL-INFO-VARBACKGROUND-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-VARBACKGROUND">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-VARBACKGROUND">
                                                 <rect key="frame" x="456" y="202" width="170" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="unused" id="FLD-INFO-VARBACKGROUND-CELL">
@@ -606,12 +659,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-VARBACKGROUND"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-RUNSCRIPT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-RUNSCRIPT">
                                                 <rect key="frame" x="0.0" y="176" width="150" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="runScript" id="LBL-INFO-RUNSCRIPT-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="runScript" id="LBL-INFO-RUNSCRIPT-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-RUNSCRIPT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-RUNSCRIPT">
                                                 <rect key="frame" x="0.0" y="150" width="220" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="unused" id="FLD-INFO-RUNSCRIPT-CELL">
@@ -623,12 +679,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-RUNSCRIPT"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-PLAY">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-PLAY">
                                                 <rect key="frame" x="228" y="176" width="220" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="play" id="LBL-INFO-PLAY-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="play" id="LBL-INFO-PLAY-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Prints a warning message telling you not to use it." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-PLAY">
+                                            <textField toolTip="Prints a warning message telling you not to use it." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-PLAY">
                                                 <rect key="frame" x="228" y="150" width="220" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="play" id="FLD-INFO-PLAY-CELL">
@@ -640,12 +699,15 @@
                                                     <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-PLAY"/>
                                                 </connections>
                                             </textField>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-COMMENT">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-COMMENT">
                                                 <rect key="frame" x="456" y="176" width="170" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="comment" id="LBL-INFO-COMMENT-CELL"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="comment" id="LBL-INFO-COMMENT-CELL">
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
                                             </textField>
-                                            <textField toolTip="Free form comment area." verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-COMMENT">
+                                            <textField toolTip="Free form comment area." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-COMMENT">
                                                 <rect key="frame" x="456" y="150" width="170" height="22"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="comment" id="FLD-INFO-COMMENT-CELL">
@@ -679,12 +741,12 @@
             </subviews>
             <point key="canvasLocation" x="1" y="-543"/>
         </customView>
-        <customView id="PNL-SIZE">
-            <rect key="frame" x="0.0" y="0.0" width="668" height="168"/>
+        <customView id="PNL-SIZE" customClass="FormContainerView">
+            <rect key="frame" x="0.0" y="0.0" width="668" height="303"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT">
-                    <rect key="frame" x="0.0" y="138" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT">
+                    <rect key="frame" x="0.0" y="280" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Rect" id="LBL-SIZE-RECT-CELL">
                         <font key="font" metaFont="system"/>
@@ -692,8 +754,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-RECT">
-                    <rect key="frame" x="0.0" y="112" width="320" height="22"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-RECT">
+                    <rect key="frame" x="0.0" y="254" width="320" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y, w, h" id="FLD-SIZE-RECT-CELL">
                         <font key="font" metaFont="system"/>
@@ -704,17 +766,8 @@
                         <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-RECT"/>
                     </connections>
                 </textField>
-                <textField toolTip="Expected 4 numeric values: x, y, w, h" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-RECT-HINT">
-                    <rect key="frame" x="0.0" y="92" width="320" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: x, y, w, h" id="LBL-SIZE-RECT-HINT-CELL">
-                        <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE">
-                    <rect key="frame" x="334" y="138" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE">
+                    <rect key="frame" x="0.0" y="230" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Rotate" id="LBL-SIZE-ROTATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -722,8 +775,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-ROTATE">
-                    <rect key="frame" x="334" y="112" width="120" height="22"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-ROTATE">
+                    <rect key="frame" x="0.0" y="204" width="120" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="degrees" id="FLD-SIZE-ROTATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -734,17 +787,8 @@
                         <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-ROTATE"/>
                     </connections>
                 </textField>
-                <textField toolTip="Expected numeric rotate value" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-ROTATE-HINT">
-                    <rect key="frame" x="334" y="92" width="220" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Format: scalar (degrees)" id="LBL-SIZE-ROTATE-HINT-CELL">
-                        <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-SCALE">
-                    <rect key="frame" x="0.0" y="62" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-SCALE">
+                    <rect key="frame" x="2" y="180" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Scale" id="LBL-SIZE-SCALE-CELL">
                         <font key="font" metaFont="system"/>
@@ -752,8 +796,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-SCALE">
-                    <rect key="frame" x="0.0" y="36" width="180" height="22"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-SCALE">
+                    <rect key="frame" x="2" y="154" width="180" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y" id="FLD-SIZE-SCALE-CELL">
                         <font key="font" metaFont="system"/>
@@ -764,8 +808,8 @@
                         <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-SCALE"/>
                     </connections>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TRANSLATE">
-                    <rect key="frame" x="194" y="62" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TRANSLATE">
+                    <rect key="frame" x="196" y="180" width="80" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Translate" id="LBL-SIZE-TRANSLATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -773,8 +817,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TRANSLATE">
-                    <rect key="frame" x="194" y="36" width="180" height="22"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TRANSLATE">
+                    <rect key="frame" x="196" y="154" width="180" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="x, y" id="FLD-SIZE-TRANSLATE-CELL">
                         <font key="font" metaFont="system"/>
@@ -785,29 +829,28 @@
                         <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-TRANSLATE"/>
                     </connections>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-SIZE-TEXTSCALE">
-                    <rect key="frame" x="388" y="62" width="80" height="16"/>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-INFO-SHEAR">
+                    <rect key="frame" x="4" y="120" width="150" height="16"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Text Scale" id="LBL-SIZE-TEXTSCALE-CELL">
-                        <font key="font" metaFont="system"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Shear" id="LBL-INFO-SHEAR-CELL">
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-SIZE-TEXTSCALE">
-                    <rect key="frame" x="388" y="36" width="120" height="22"/>
+                <textField toolTip="Shear the rectangle into a parallelogram. Range is 0 to 1." focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-INFO-SHEAR">
+                    <rect key="frame" x="4" y="94" width="150" height="22"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="1" id="FLD-SIZE-TEXTSCALE-CELL">
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="0, 0" id="FLD-INFO-SHEAR-CELL">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <action selector="commitTypedSizePanel:" target="-2" id="ACT-SIZE-TEXTSCALE"/>
+                        <action selector="commitWindowInfoPanel:" target="-2" id="ACT-INFO-SHEAR"/>
                     </connections>
                 </textField>
             </subviews>
-            <point key="canvasLocation" x="-155" y="-1008"/>
+            <point key="canvasLocation" x="-230" y="-1175.5"/>
         </customView>
     </objects>
 </document>

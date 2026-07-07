@@ -100,6 +100,9 @@
 		CE28169F2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */; };
 		CE2816A02FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE28169B2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m */; };
 		CE2816A12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */; };
+		CE503D3C2FFA7BA4004EF5CA /* FormContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE503D3B2FFA7BA4004EF5CA /* FormContainerView.m */; };
+		CE503D3F2FFA97D9004EF5CA /* UDInspectorIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = CE503D3E2FFA97D4004EF5CA /* UDInspectorIcons.m */; };
+		CE503D422FFBAD5E004EF5CA /* UDIconTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE503D412FFBAD5E004EF5CA /* UDIconTabBarView.m */; };
 		CE734C3B2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
 		CE734C3C2FF4335000AE8333 /* UDVirtualFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C3A2FF4335000AE8333 /* UDVirtualFileSystem.m */; };
 		CE734C3D2FF4335000AE8333 /* UDVFSMount.m in Sources */ = {isa = PBXBuildFile; fileRef = CE734C382FF4335000AE8333 /* UDVFSMount.m */; };
@@ -247,6 +250,12 @@
 		CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiEditorViewModel.m; sourceTree = SOURCE_ROOT; };
 		CE28169A2FF5401B00ADCFC5 /* UDGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiModel.h; sourceTree = "<group>"; };
 		CE28169B2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiModel.m; sourceTree = SOURCE_ROOT; };
+		CE503D3A2FFA7BA4004EF5CA /* FormContainerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FormContainerView.h; sourceTree = "<group>"; };
+		CE503D3B2FFA7BA4004EF5CA /* FormContainerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FormContainerView.m; sourceTree = "<group>"; };
+		CE503D3D2FFA9787004EF5CA /* UDInspectorIcons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDInspectorIcons.h; sourceTree = "<group>"; };
+		CE503D3E2FFA97D4004EF5CA /* UDInspectorIcons.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDInspectorIcons.m; sourceTree = "<group>"; };
+		CE503D402FFBACFA004EF5CA /* UDIconTabBarView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDIconTabBarView.h; sourceTree = "<group>"; };
+		CE503D412FFBAD5E004EF5CA /* UDIconTabBarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDIconTabBarView.m; sourceTree = "<group>"; };
 		CE734C372FF4335000AE8333 /* UDVFSMount.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVFSMount.h; sourceTree = "<group>"; };
 		CE734C382FF4335000AE8333 /* UDVFSMount.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVFSMount.m; sourceTree = "<group>"; };
 		CE734C392FF4335000AE8333 /* UDVirtualFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVirtualFileSystem.h; sourceTree = "<group>"; };
@@ -431,6 +440,8 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
+				CE503D3A2FFA7BA4004EF5CA /* FormContainerView.h */,
+				CE503D3B2FFA7BA4004EF5CA /* FormContainerView.m */,
 				CEF0C69B2FF66A8F00BC642C /* UDGuiDocumentCodec.h */,
 				CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */,
 				CE2816962FF5401B00ADCFC5 /* UDGuiEditorService.h */,
@@ -570,6 +581,10 @@
 		EE00000400000000000000AA /* GuiEd */ = {
 			isa = PBXGroup;
 			children = (
+				CE503D412FFBAD5E004EF5CA /* UDIconTabBarView.m */,
+				CE503D402FFBACFA004EF5CA /* UDIconTabBarView.h */,
+				CE503D3E2FFA97D4004EF5CA /* UDInspectorIcons.m */,
+				CE503D3D2FFA9787004EF5CA /* UDInspectorIcons.h */,
 				CEB533642FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.h */,
 				CEB533652FF7B3E2003C1587 /* UDGuiAttributeSubcontroller.m */,
 				CEB533552FF7B36C003C1587 /* UDListDefInspector.xib */,
@@ -963,15 +978,18 @@
 				EE01000400000000000000AA /* UDDeclLexer.m in Sources */,
 				EE01000500000000000000AA /* UDDeclParser.m in Sources */,
 				EE01000600000000000000AA /* UDDeclModel.m in Sources */,
+				CE503D422FFBAD5E004EF5CA /* UDIconTabBarView.m in Sources */,
 				CE28169F2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */,
 				CE2816A02FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */,
 				CEB533522FF7B358003C1587 /* UDBindDefInspectorController.m in Sources */,
 				CEB533532FF7B358003C1587 /* UDChoiceDefInspectorController.m in Sources */,
 				CEB533612FF7B36C003C1587 /* UDSliderDefInspectorController.m in Sources */,
+				CE503D3F2FFA97D9004EF5CA /* UDInspectorIcons.m in Sources */,
 				CEB533622FF7B36C003C1587 /* UDListDefInspectorController.m in Sources */,
 				CEB533632FF7B36C003C1587 /* UDRenderDefInspectorController.m in Sources */,
 				CEB533542FF7B358003C1587 /* UDEditDefInspectorController.m in Sources */,
 				CE2816A12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */,
+				CE503D3C2FFA7BA4004EF5CA /* FormContainerView.m in Sources */,
 				EE01000B00000000000000AA /* UDDeclType.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

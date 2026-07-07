@@ -129,33 +129,22 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <tabViewItems>
                                 <tabViewItem identifier="none" id="TVI-EVT-CMD-NONE">
-                                    <view key="view" id="VIE-EVT-CMD-NONE">
+                                    <view key="view" id="VIE-EVT-CMD-NONE" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <subviews>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-NONE">
-                                                <rect key="frame" x="0.0" y="64" width="340" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Select a command row to edit parameters." id="LBL-EVT-CMD-NONE-CELL">
-                                                    <font key="font" metaFont="smallSystem"/>
-                                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                        </subviews>
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="set" id="TVI-EVT-CMD-SET">
-                                    <view key="view" id="VIE-EVT-CMD-SET">
+                                    <view key="view" id="VIE-EVT-CMD-SET" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SET-VARIABLE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SET-VARIABLE">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Variable" id="LBL-EVT-CMD-SET-VARIABLE-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SET-VARIABLE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SET-VARIABLE">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-SET-VARIABLE-CELL">
@@ -167,12 +156,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-SET-VARIABLE"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SET-VALUE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SET-VALUE">
                                                 <rect key="frame" x="0.0" y="84" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Value" id="LBL-EVT-CMD-SET-VALUE-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SET-VALUE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SET-VALUE">
                                                 <rect key="frame" x="92" y="80" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-SET-VALUE-CELL">
@@ -188,16 +177,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="setFocus" id="TVI-EVT-CMD-SETFOCUS">
-                                    <view key="view" id="VIE-EVT-CMD-SETFOCUS">
+                                    <view key="view" id="VIE-EVT-CMD-SETFOCUS" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SETFOCUS-WINDOW">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SETFOCUS-WINDOW">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Window" id="LBL-EVT-CMD-SETFOCUS-WINDOW-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SETFOCUS-WINDOW">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SETFOCUS-WINDOW">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-SETFOCUS-WINDOW-CELL">
@@ -213,16 +202,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="resetTime" id="TVI-EVT-CMD-RESETTIME">
-                                    <view key="view" id="VIE-EVT-CMD-RESETTIME">
+                                    <view key="view" id="VIE-EVT-CMD-RESETTIME" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESET-WINDOW">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESET-WINDOW">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Window" id="LBL-EVT-CMD-RESET-WINDOW-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RESET-WINDOW">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RESET-WINDOW">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-RESET-WINDOW-CELL">
@@ -234,12 +223,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-RESET-WINDOW"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESET-TIME">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESET-TIME">
                                                 <rect key="frame" x="0.0" y="84" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Time" id="LBL-EVT-CMD-RESET-TIME-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RESET-TIME">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RESET-TIME">
                                                 <rect key="frame" x="92" y="80" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-RESET-TIME-CELL">
@@ -255,16 +244,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="transition" id="TVI-EVT-CMD-TRANS">
-                                    <view key="view" id="VIE-EVT-CMD-TRANS">
+                                    <view key="view" id="VIE-EVT-CMD-TRANS" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-VARIABLE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-VARIABLE">
                                                 <rect key="frame" x="0.0" y="124" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Variable" id="LBL-EVT-CMD-TRANS-VARIABLE-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-VARIABLE">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-VARIABLE">
                                                 <rect key="frame" x="92" y="120" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-VARIABLE-CELL">
@@ -276,12 +265,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-TRANS-VARIABLE"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-FROM">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-FROM">
                                                 <rect key="frame" x="0.0" y="102" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="From" id="LBL-EVT-CMD-TRANS-FROM-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-FROM">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-FROM">
                                                 <rect key="frame" x="92" y="98" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-FROM-CELL">
@@ -293,12 +282,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-TRANS-FROM"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-TO">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-TO">
                                                 <rect key="frame" x="0.0" y="80" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="To" id="LBL-EVT-CMD-TRANS-TO-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-TO">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-TO">
                                                 <rect key="frame" x="92" y="76" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-TO-CELL">
@@ -310,12 +299,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-TRANS-TO"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-TIME">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-TIME">
                                                 <rect key="frame" x="0.0" y="58" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Time" id="LBL-EVT-CMD-TRANS-TIME-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-TIME">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-TIME">
                                                 <rect key="frame" x="92" y="54" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-TIME-CELL">
@@ -327,12 +316,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-TRANS-TIME"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-ACCEL">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-ACCEL">
                                                 <rect key="frame" x="0.0" y="36" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Accel" id="LBL-EVT-CMD-TRANS-ACCEL-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-ACCEL">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-ACCEL">
                                                 <rect key="frame" x="92" y="32" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-ACCEL-CELL">
@@ -344,12 +333,12 @@
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-TRANS-ACCEL"/>
                                                 </connections>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-DECEL">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-TRANS-DECEL">
                                                 <rect key="frame" x="0.0" y="14" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Decel" id="LBL-EVT-CMD-TRANS-DECEL-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-DECEL">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-TRANS-DECEL">
                                                 <rect key="frame" x="92" y="10" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-TRANS-DECEL-CELL">
@@ -365,16 +354,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="localSound" id="TVI-EVT-CMD-LOCALSOUND">
-                                    <view key="view" id="VIE-EVT-CMD-LOCALSOUND">
+                                    <view key="view" id="VIE-EVT-CMD-LOCALSOUND" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-LOCALSOUND">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-LOCALSOUND">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Sound" id="LBL-EVT-CMD-LOCALSOUND-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-LOCALSOUND">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-LOCALSOUND">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-LOCALSOUND-CELL">
@@ -390,16 +379,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="runScript" id="TVI-EVT-CMD-RUNSCRIPT">
-                                    <view key="view" id="VIE-EVT-CMD-RUNSCRIPT">
+                                    <view key="view" id="VIE-EVT-CMD-RUNSCRIPT" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RUNSCRIPT">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RUNSCRIPT">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Script" id="LBL-EVT-CMD-RUNSCRIPT-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RUNSCRIPT">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-RUNSCRIPT">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-RUNSCRIPT-CELL">
@@ -415,16 +404,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="showCursor" id="TVI-EVT-CMD-SHOWCURSOR">
-                                    <view key="view" id="VIE-EVT-CMD-SHOWCURSOR">
+                                    <view key="view" id="VIE-EVT-CMD-SHOWCURSOR" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SHOWCURSOR">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-SHOWCURSOR">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Value" id="LBL-EVT-CMD-SHOWCURSOR-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SHOWCURSOR">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-SHOWCURSOR">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-SHOWCURSOR-CELL">
@@ -440,11 +429,11 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="evalregs" id="TVI-EVT-CMD-EVALREGS">
-                                    <view key="view" id="VIE-EVT-CMD-EVALREGS">
+                                    <view key="view" id="VIE-EVT-CMD-EVALREGS" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-EVALREGS">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-EVALREGS">
                                                 <rect key="frame" x="0.0" y="64" width="340" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No parameters." id="LBL-EVT-CMD-EVALREGS-CELL">
@@ -457,11 +446,11 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="resetcinematics" id="TVI-EVT-CMD-RESETCIN">
-                                    <view key="view" id="VIE-EVT-CMD-RESETCIN">
+                                    <view key="view" id="VIE-EVT-CMD-RESETCIN" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESETCIN">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-RESETCIN">
                                                 <rect key="frame" x="0.0" y="64" width="340" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No parameters." id="LBL-EVT-CMD-RESETCIN-CELL">
@@ -474,11 +463,11 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="endgame" id="TVI-EVT-CMD-ENDGAME">
-                                    <view key="view" id="VIE-EVT-CMD-ENDGAME">
+                                    <view key="view" id="VIE-EVT-CMD-ENDGAME" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-ENDGAME">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-ENDGAME">
                                                 <rect key="frame" x="0.0" y="64" width="340" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="No parameters." id="LBL-EVT-CMD-ENDGAME-CELL">
@@ -491,16 +480,16 @@
                                     </view>
                                 </tabViewItem>
                                 <tabViewItem identifier="fallback" id="TVI-EVT-CMD-FALLBACK">
-                                    <view key="view" id="VIE-EVT-CMD-FALLBACK">
+                                    <view key="view" id="VIE-EVT-CMD-FALLBACK" customClass="FormContainerView">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-FALLBACK">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-FALLBACK">
                                                 <rect key="frame" x="0.0" y="110" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" title="Arguments" id="LBL-EVT-CMD-FALLBACK-CELL"/>
                                             </textField>
-                                            <textField fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-FALLBACK">
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-FALLBACK">
                                                 <rect key="frame" x="92" y="106" width="304" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-FALLBACK-CELL">
@@ -561,7 +550,7 @@
                                 <action selector="changeEventCommandsActionButtons:" target="-2" id="ACT-EVT-CMD-ACT"/>
                             </connections>
                         </segmentedControl>
-                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-HINT">
+                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-HINT">
                             <rect key="frame" x="120" y="2" width="270" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" alignment="left" title="Select a command and edit parameters above." id="LBL-EVT-CMD-HINT-CELL">

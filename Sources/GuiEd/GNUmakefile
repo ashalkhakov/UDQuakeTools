@@ -31,7 +31,9 @@ GuiEd_OBJC_FILES = \
     ../UDCore/UDGuiModel.m \
     ../UDCore/UDGuiDocumentCodec.m \
     ../UDCore/UDGuiEditorService.m \
-    ../UDCore/UDGuiEditorViewModel.m
+    ../UDCore/UDGuiEditorViewModel.m \
+    ../UDCore/FormContainerView.m \
+    UDInspectorIcons.m
 
 GuiEd_INCLUDE_DIRS = \
     -I../UDCore

@@ -12,6 +12,8 @@
 #import "UDVariablesController.h"
 #import "UDOutlinePaneController.h"
 #import "UDGuiEdDocument.h"
+#import "UDInspectorIcons.h"
+#import "UDIconTabBarView.h"
 
 #import "../UDCore/UDGuiEditorViewModel.h"
 #import "../UDCore/UDGuiModel.h"
@@ -31,6 +33,9 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 
 @interface UDGuiEdDocumentWindowController ()
 
+// MARK: Icons
+@property (nonatomic, strong) UDInspectorIcons        *inspectorIcons;
+
 // MARK: Collaborators
 @property (nonatomic, strong) UDInspectorController   *inspectorController;
 @property (nonatomic, strong) UDEventsController      *eventsController;
@@ -48,7 +53,7 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 @property (nonatomic, strong) IBOutlet NSTextField       *statusLabel;
 @property (nonatomic, strong) IBOutlet NSTextField       *breadcrumbLabel;
 @property (nonatomic, strong) IBOutlet NSTextView        *sourceTextView;
-@property (nonatomic, strong) IBOutlet NSSegmentedControl *inspectorSectionTabs;
+@property (nonatomic, strong) IBOutlet UDIconTabBarView  *inspectorSectionTabs;
 @property (nonatomic, strong) IBOutlet NSTabView         *inspectorSectionTabView;
 @property (nonatomic, strong) IBOutlet NSView            *identityPanelView;
 @property (nonatomic, strong) IBOutlet NSView            *attributesPanelView;
@@ -88,7 +93,10 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+
     self.window.delegate = self;
+    
+    self.inspectorIcons = [[UDInspectorIcons alloc] init];
 
     [self createCollaborators];
     [self embedCollaboratorViews];
@@ -101,7 +109,26 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     [self.editorContainerView setPosition:(self.editorContainerView.bounds.size.width - 250.0) ofDividerAtIndex:1];
 
     if (self.inspectorSectionTabs) {
-        [self.inspectorSectionTabs setSelectedSegment:(NSInteger)self.activeInspectorSection];
+        
+        NSArray *icons = @[
+            self.inspectorIcons.identityInspectorIcon,
+            self.inspectorIcons.attributesInspectorIcon,
+            self.inspectorIcons.sizeInspectorIcon,
+            self.inspectorIcons.connectionsInspectorIcon,
+            self.inspectorIcons.effectsInspectorIcon
+        ];
+        NSArray *iconsActive = @[
+            self.inspectorIcons.identityInspectorIconActive,
+            self.inspectorIcons.attributesInspectorIconActive,
+            self.inspectorIcons.sizeInspectorIconActive,
+            self.inspectorIcons.connectionsInspectorIconActive,
+            self.inspectorIcons.effectsInspectorIconActive
+        ];
+        
+        [self.inspectorSectionTabs setIcons:icons];
+        [self.inspectorSectionTabs setAlternateIcons:iconsActive];
+
+        [self.inspectorSectionTabs selectTabAtIndex:(NSInteger)self.activeInspectorSection];
     }
     [self.eventsController registerDragTypes];
     [self refreshFromDocument];
@@ -261,7 +288,7 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     if (self.inspectorSectionTabView) {
         NSInteger sectionIndex = (NSInteger)self.activeInspectorSection;
         if (sectionIndex >= 0 && sectionIndex < (NSInteger)self.inspectorSectionTabView.numberOfTabViewItems) {
-            [self.inspectorSectionTabView selectTabViewItemAtIndex:sectionIndex];
+            [self.inspectorSectionTabs selectTabAtIndex:sectionIndex];
         }
     }
     [self updateInspectorSectionLayout];
@@ -282,7 +309,7 @@ typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
 
 - (IBAction)changeInspectorSection:(id)sender {
     (void)sender;
-    self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedSegment;
+    self.activeInspectorSection = (UDGuiInspectorSection)self.inspectorSectionTabs.selectedIndex;
     [self refreshFromDocument];
 }
 

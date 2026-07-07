@@ -11,6 +11,7 @@
 #import "../UDCore/UDGuiEventsProcessingService.h"
 
 static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
+static NSString *const kInvalidConditionPlaceholder = @"<invalid>";
 
 // Layout constants for the script editor workspace UI
 static const CGFloat kUDEventsErrorLabelHeight = 24.0;
@@ -435,6 +436,14 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
     return nil;
 }
 
+- (UDGuiExpression *)defaultConditionExpression {
+    UDGuiExpression *defaultCond = [self parseExpressionText:@"1"];
+    if (!defaultCond) {
+        defaultCond = [[UDGuiNumberLiteralExpression alloc] initWithValue:@"1"];
+    }
+    return defaultCond;
+}
+
 // MARK: - Reload
 
 - (void)reloadForWindow:(nullable UDGuiWindowNode *)window preserveSelection:(BOOL)preserveSelection {
@@ -680,10 +689,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
 - (UDGuiScriptCommand *)eventCommandFromEditorState {
     NSString *keyword = self.eventCommandTypePopup.selectedItem.title ?: @"";
     if ([keyword isEqualToString:@"if"]) {
-       UDGuiExpression *defaultCond = [self parseExpressionText:@"1"];
-       if (!defaultCond) {
-           defaultCond = [[UDGuiNumberLiteralExpression alloc] initWithValue:@"1"];
-       }
+       UDGuiExpression *defaultCond = [self defaultConditionExpression];
        UDGuiIfBranch *thenBranch = [[UDGuiIfBranch alloc] initWithCondition:defaultCond commands:@[]];
        UDGuiIfBranch *elseBranch = [[UDGuiIfBranch alloc] initWithCondition:nil commands:@[]];
        return [[UDGuiIfCommand alloc] initWithBranches:@[thenBranch, elseBranch]];
@@ -726,21 +732,19 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
        }
     }
 
-    BOOL isCommandTypePopup = (sender == self.eventCommandTypePopup);
+    BOOL isSwitchingCommandType = (sender == self.eventCommandTypePopup);
     NSArray<UDGuiScriptCommand *> *newCommands = nil;
     id newItemToSelect = nil;
 
-    if (ifCmd && !isCommandTypePopup) {
+    if (ifCmd && !isSwitchingCommandType) {
        NSInteger selectedBranchIndex = self.eventIfBranchesPopup.indexOfSelectedItem;
        if (selectedBranchIndex >= 0 && selectedBranchIndex < (NSInteger)ifCmd.branches.count) {
            UDGuiIfBranch *oldBranch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
            NSString *conditionText = self.eventIfConditionField.stringValue ?: @"";
            UDGuiExpression *newCondition = [self parseExpressionText:conditionText];
-           if (!newCondition && selectedBranchIndex < (NSInteger)ifCmd.branches.count - 1) {
-               newCondition = [self parseExpressionText:@"1"];
-               if (!newCondition) {
-                   newCondition = [[UDGuiNumberLiteralExpression alloc] initWithValue:@"1"];
-               }
+           BOOL isNotElseBranch = (selectedBranchIndex < (NSInteger)ifCmd.branches.count - 1);
+           if (!newCondition && isNotElseBranch) {
+               newCondition = [self defaultConditionExpression];
            }
            UDGuiIfBranch *newBranch = [[UDGuiIfBranch alloc] initWithCondition:newCondition commands:oldBranch.commands];
             
@@ -1089,7 +1093,7 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
        UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)item;
        if (ifCmd.branches.count > 0) {
            UDGuiIfBranch *firstBranch = [ifCmd.branches objectAtIndex:0];
-           NSString *condStr = firstBranch.condition ? [self.context.ownerDocument.codec serializeExpression:firstBranch.condition] : @"<invalid>";
+           NSString *condStr = firstBranch.condition ? [self.context.ownerDocument.codec serializeExpression:firstBranch.condition] : kInvalidConditionPlaceholder;
            return [NSString stringWithFormat:@"if ( %@ )", condStr];
        }
        return @"if/else block";
@@ -1102,7 +1106,7 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
            UDGuiIfCommand *parentIf = (UDGuiIfCommand *)parent;
            NSUInteger idx = [parentIf.branches indexOfObject:branch];
            if (idx == 0) {
-               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : @"<invalid>";
+               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : kInvalidConditionPlaceholder;
                return [NSString stringWithFormat:@"if ( %@ )", condStr];
            } else if (branch.condition) {
                NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];

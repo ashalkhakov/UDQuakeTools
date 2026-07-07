@@ -1039,9 +1039,9 @@
     NSMutableString *serialized = [NSMutableString string];
     for (UDGuiScriptCommand *cmd in commands) {
         if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
-            [serialized appendFormat:@"%@\n", [cmd serializedStatement]];
+            [serialized appendFormat:@"%@\n", [codec serializeScriptCommand:cmd]];
         } else {
-            [serialized appendFormat:@"%@ ;\n", [cmd serializedStatement]];
+            [serialized appendFormat:@"%@ ;\n", [codec serializeScriptCommand:cmd]];
         }
     }
     

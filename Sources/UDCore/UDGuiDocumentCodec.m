@@ -656,24 +656,25 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 - (BOOL)isChildWindowDefinitionIdentifier:(NSString *)identifier {
     NSString *lower = identifier.lowercaseString;
     static NSSet<NSString *> *definitionKeys = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        definitionKeys = [NSSet setWithObjects:
-            @"windowdef",
-            @"animationdef",
-            @"editdef",
-            @"choicedef",
-            @"sliderdef",
-            @"markerdef",
-            @"binddef",
-            @"listdef",
-            @"fielddef",
-            @"renderdef",
-            @"gamessddef",
-            @"gamebearshootdef",
-            @"gamebustoutdef",
-            nil];
-    });
+    @synchronized([self class]) {
+        if (definitionKeys == nil) {
+            definitionKeys = [NSSet setWithObjects:
+                @"windowdef",
+                @"animationdef",
+                @"editdef",
+                @"choicedef",
+                @"sliderdef",
+                @"markerdef",
+                @"binddef",
+                @"listdef",
+                @"fielddef",
+                @"renderdef",
+                @"gamessddef",
+                @"gamebearshootdef",
+                @"gamebustoutdef",
+                nil];
+        }
+    }
 
     return [definitionKeys containsObject:lower];
 }
@@ -681,24 +682,25 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 - (BOOL)isEventHandlerIdentifier:(NSString *)identifier {
     NSString *lower = identifier.lowercaseString;
     static NSSet<NSString *> *eventKeys = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        eventKeys = [NSSet setWithObjects:
-            @"ontime",
-            @"onnamedevent",
-            @"onaction",
-            @"onactionrelease",
-            @"onmouseenter",
-            @"onmouseexit",
-            @"onactivate",
-            @"ondeactivate",
-            @"onesc",
-            @"onevent",
-            @"ontrigger",
-            @"onenter",
-            @"onenterrelease",
-            nil];
-    });
+    @synchronized([self class]) {
+        if (eventKeys == nil) {
+            eventKeys = [NSSet setWithObjects:
+                @"ontime",
+                @"onnamedevent",
+                @"onaction",
+                @"onactionrelease",
+                @"onmouseenter",
+                @"onmouseexit",
+                @"onactivate",
+                @"ondeactivate",
+                @"onesc",
+                @"onevent",
+                @"ontrigger",
+                @"onenter",
+                @"onenterrelease",
+                nil];
+        }
+    }
 
     return [eventKeys containsObject:lower];
 }
@@ -706,22 +708,23 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 - (BOOL)isScriptEntryIdentifier:(NSString *)identifier {
     NSString *lower = identifier.lowercaseString;
     static NSSet<NSString *> *scriptEntryKeys = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        scriptEntryKeys = [NSSet setWithObjects:
-            @"onaction",
-            @"onactionrelease",
-            @"onmouseenter",
-            @"onmouseexit",
-            @"onactivate",
-            @"ondeactivate",
-            @"onesc",
-            @"onevent",
-            @"ontrigger",
-            @"onenter",
-            @"onenterrelease",
-            nil];
-    });
+    @synchronized([self class]) {
+        if (scriptEntryKeys == nil) {
+            scriptEntryKeys = [NSSet setWithObjects:
+                @"onaction",
+                @"onactionrelease",
+                @"onmouseenter",
+                @"onmouseexit",
+                @"onactivate",
+                @"ondeactivate",
+                @"onesc",
+                @"onevent",
+                @"ontrigger",
+                @"onenter",
+                @"onenterrelease",
+                nil];
+        }
+    }
 
     return [scriptEntryKeys containsObject:lower];
 }
@@ -931,7 +934,9 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
                 return nil;
             }
         } else {
-            [cursor unreadToken:elseToken];
+            if (elseToken.kind != UDIdTokenKindEOF) {
+                [cursor unreadToken:elseToken];
+            }
             break;
         }
     }
@@ -1038,7 +1043,9 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         return [[UDGuiUnaryExpression alloc] initWithOperator:op operand:operand];
     }
 
-    [cursor unreadToken:token];
+    if (token.kind != UDIdTokenKindEOF) {
+        [cursor unreadToken:token];
+    }
     return [self parsePrimaryExpressionWithCursor:cursor];
 }
 
@@ -1073,14 +1080,18 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         return [[UDGuiVariableExpression alloc] initWithName:token.text];
     }
 
-    [cursor unreadToken:token];
+    if (token.kind != UDIdTokenKindEOF) {
+        [cursor unreadToken:token];
+    }
     return nil;
 }
 
 - (nullable NSString *)peekOperatorWithCursor:(UDGuiDeclCursor *)cursor {
     UDIdToken *first = [cursor readToken];
     if (first.kind != UDIdTokenKindPunctuation) {
-        [cursor unreadToken:first];
+        if (first.kind != UDIdTokenKindEOF) {
+            [cursor unreadToken:first];
+        }
         return nil;
     }
 
@@ -1096,8 +1107,12 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         else if ([op isEqualToString:@"|"] && [second.text isEqualToString:@"|"]) combined = @"||";
     }
 
-    [cursor unreadToken:second];
-    [cursor unreadToken:first];
+    if (second.kind != UDIdTokenKindEOF) {
+        [cursor unreadToken:second];
+    }
+    if (first.kind != UDIdTokenKindEOF) {
+        [cursor unreadToken:first];
+    }
 
     if (combined) {
         return combined;
@@ -1117,7 +1132,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         return nil;
     }
 
-    UDIdToken *first = [cursor readToken];
+    [cursor readToken];
     if (peeked.length == 2) {
         [cursor readToken];
     }

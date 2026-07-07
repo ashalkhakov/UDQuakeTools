@@ -742,7 +742,7 @@ static const CGFloat kUDEventsScrollBorderOffset = 2.0;
            UDGuiIfBranch *oldBranch = [ifCmd.branches objectAtIndex:(NSUInteger)selectedBranchIndex];
            NSString *conditionText = self.eventIfConditionField.stringValue ?: @"";
            UDGuiExpression *newCondition = [self parseExpressionText:conditionText];
-           BOOL isNotElseBranch = (selectedBranchIndex < (NSInteger)ifCmd.branches.count - 1);
+           BOOL isNotElseBranch = (selectedBranchIndex == 0) || (oldBranch.condition != nil);
            if (!newCondition && isNotElseBranch) {
                newCondition = [self defaultConditionExpression];
            }
@@ -1093,8 +1093,12 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
        UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)item;
        if (ifCmd.branches.count > 0) {
            UDGuiIfBranch *firstBranch = [ifCmd.branches objectAtIndex:0];
-           NSString *condStr = firstBranch.condition ? [self.context.ownerDocument.codec serializeExpression:firstBranch.condition] : kInvalidConditionPlaceholder;
-           return [NSString stringWithFormat:@"if ( %@ )", condStr];
+           if (firstBranch.condition) {
+               NSString *condStr = [self.context.ownerDocument.codec serializeExpression:firstBranch.condition];
+               return [NSString stringWithFormat:@"if ( %@ )", condStr];
+           } else {
+               return [NSString stringWithFormat:@"if %@", kInvalidConditionPlaceholder];
+           }
        }
        return @"if/else block";
     }
@@ -1106,8 +1110,12 @@ writeRowsWithIndexes:(NSIndexSet *)rowIndexes
            UDGuiIfCommand *parentIf = (UDGuiIfCommand *)parent;
            NSUInteger idx = [parentIf.branches indexOfObject:branch];
            if (idx == 0) {
-               NSString *condStr = branch.condition ? [self.context.ownerDocument.codec serializeExpression:branch.condition] : kInvalidConditionPlaceholder;
-               return [NSString stringWithFormat:@"if ( %@ )", condStr];
+               if (branch.condition) {
+                   NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];
+                   return [NSString stringWithFormat:@"if ( %@ )", condStr];
+               } else {
+                   return [NSString stringWithFormat:@"if %@", kInvalidConditionPlaceholder];
+               }
            } else if (branch.condition) {
                NSString *condStr = [self.context.ownerDocument.codec serializeExpression:branch.condition];
                return [NSString stringWithFormat:@"else if ( %@ )", condStr];

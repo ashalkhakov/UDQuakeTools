@@ -7,6 +7,37 @@
 
 #import "UDDeclParser.h"
 
+@interface UDGuiExpressionSerializer : NSObject <UDGuiExpressionVisitor>
+@end
+
+@implementation UDGuiExpressionSerializer
+
+- (id)visitNumberLiteralExpression:(UDGuiNumberLiteralExpression *)expression {
+    return expression.value;
+}
+
+- (id)visitStringLiteralExpression:(UDGuiStringLiteralExpression *)expression {
+    return [NSString stringWithFormat:@"\"%@\"", expression.value];
+}
+
+- (id)visitVariableExpression:(UDGuiVariableExpression *)expression {
+    return expression.name;
+}
+
+- (id)visitParenthesizedExpression:(UDGuiParenthesizedExpression *)expression {
+    return [NSString stringWithFormat:@"( %@ )", [expression.expression acceptVisitor:self]];
+}
+
+- (id)visitUnaryExpression:(UDGuiUnaryExpression *)expression {
+    return [NSString stringWithFormat:@"%@%@", expression.operatorString, [expression.operand acceptVisitor:self]];
+}
+
+- (id)visitBinaryExpression:(UDGuiBinaryExpression *)expression {
+    return [NSString stringWithFormat:@"%@ %@ %@", [expression.left acceptVisitor:self], expression.operatorString, [expression.right acceptVisitor:self]];
+}
+
+@end
+
 static NSString *const UDGuiDocumentCodecErrorDomain = @"com.udquake.error.guidocumentcodec";
 static NSString *const UDGuiRawScriptBodyCommandKeyword = @"__ud_raw_script_body__";
 
@@ -1551,37 +1582,6 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         NSString *trimmedArguments = [command.arguments stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         return trimmedArguments.length > 0 ? [NSString stringWithFormat:@"%@ %@", command.keyword, trimmedArguments] : command.keyword;
     }
-}
-
-@end
-
-@interface UDGuiExpressionSerializer : NSObject <UDGuiExpressionVisitor>
-@end
-
-@implementation UDGuiExpressionSerializer
-
-- (id)visitNumberLiteralExpression:(UDGuiNumberLiteralExpression *)expression {
-    return expression.value;
-}
-
-- (id)visitStringLiteralExpression:(UDGuiStringLiteralExpression *)expression {
-    return [NSString stringWithFormat:@"\"%@\"", expression.value];
-}
-
-- (id)visitVariableExpression:(UDGuiVariableExpression *)expression {
-    return expression.name;
-}
-
-- (id)visitParenthesizedExpression:(UDGuiParenthesizedExpression *)expression {
-    return [NSString stringWithFormat:@"( %@ )", [expression.expression acceptVisitor:self]];
-}
-
-- (id)visitUnaryExpression:(UDGuiUnaryExpression *)expression {
-    return [NSString stringWithFormat:@"%@%@", expression.operatorString, [expression.operand acceptVisitor:self]];
-}
-
-- (id)visitBinaryExpression:(UDGuiBinaryExpression *)expression {
-    return [NSString stringWithFormat:@"%@ %@ %@", [expression.left acceptVisitor:self], expression.operatorString, [expression.right acceptVisitor:self]];
 }
 
 @end

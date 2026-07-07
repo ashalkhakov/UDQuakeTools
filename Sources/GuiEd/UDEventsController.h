@@ -12,10 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDEventsController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+@interface UDEventsController : NSObject <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate> {
     NSView *_view;
     __weak NSTableView *_eventHandlersTableView;
-    __weak NSTableView *_eventCommandsTableView;
+    __weak NSOutlineView *_eventCommandsTableView;
     __weak NSPopUpButton *_eventCommandTypePopup;
     __weak NSTabView *_eventCommandEditorTabView;
     __weak NSTextField *_eventSetVariableField;
@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
     __weak NSTextField *_eventRunScriptField;
     __weak NSTextField *_eventShowCursorField;
     __weak NSTextField *_eventFallbackArgumentsField;
+    __weak NSTextField *_eventIfConditionField;
+    __weak NSPopUpButton *_eventIfBranchesPopup;
 }
 
 /// Weak back-reference to the window controller acting as context.
@@ -42,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) IBOutlet NSView *view;
 @property (nonatomic, weak, nullable) IBOutlet NSTableView *eventHandlersTableView;
-@property (nonatomic, weak, nullable) IBOutlet NSTableView *eventCommandsTableView;
+@property (nonatomic, weak, nullable) IBOutlet NSOutlineView *eventCommandsTableView;
 @property (nonatomic, weak, nullable) IBOutlet NSPopUpButton *eventCommandTypePopup;
 @property (nonatomic, weak, nullable) IBOutlet NSTabView *eventCommandEditorTabView;
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *eventSetVariableField;
@@ -60,6 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *eventRunScriptField;
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *eventShowCursorField;
 @property (nonatomic, weak, nullable) IBOutlet NSTextField *eventFallbackArgumentsField;
+@property (nonatomic, weak, nullable) IBOutlet NSTextField *eventIfConditionField;
+@property (nonatomic, weak, nullable) IBOutlet NSPopUpButton *eventIfBranchesPopup;
 
 // MARK: - Interface
 
@@ -81,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: - Actions forwarded from window controller
 
 - (IBAction)eventCommandEditorChanged:(id)sender;
+- (IBAction)eventIfBranchesPopupChanged:(id)sender;
 - (IBAction)changeEventHandlersActionButtons:(id)sender;
 - (IBAction)changeEventCommandsActionButtons:(id)sender;
 

@@ -95,9 +95,11 @@
 		CE2816942FF53E7100ADCFC5 /* UDPK3ZIPEntrySource.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011000000000000000AA /* UDPK3ZIPEntrySource.m */; };
 		CE2816952FF53E7100ADCFC5 /* UDPK4Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00011100000000000000AA /* UDPK4Codec.m */; };
 		CE28169C2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */; };
+		CE2816E22FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816E12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m */; };
 		CE28169D2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE28169B2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m */; };
 		CE28169E2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */; };
 		CE28169F2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */; };
+		CE2816E32FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816E12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m */; };
 		CE2816A02FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE28169B2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m */; };
 		CE2816A12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */; };
 		CE503D3C2FFA7BA4004EF5CA /* FormContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE503D3B2FFA7BA4004EF5CA /* FormContainerView.m */; };
@@ -246,6 +248,8 @@
 		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
 		CE2816962FF5401B00ADCFC5 /* UDGuiEditorService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEditorService.h; sourceTree = "<group>"; };
 		CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiEditorService.m; sourceTree = SOURCE_ROOT; };
+		CE2816E02FF5401B00ADCFC5 /* UDGuiEventsProcessingService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEventsProcessingService.h; sourceTree = "<group>"; };
+		CE2816E12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiEventsProcessingService.m; sourceTree = SOURCE_ROOT; };
 		CE2816982FF5401B00ADCFC5 /* UDGuiEditorViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEditorViewModel.h; sourceTree = "<group>"; };
 		CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiEditorViewModel.m; sourceTree = SOURCE_ROOT; };
 		CE28169A2FF5401B00ADCFC5 /* UDGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiModel.h; sourceTree = "<group>"; };
@@ -446,6 +450,10 @@
 				CEF0C69C2FF66A8F00BC642C /* UDGuiDocumentCodec.m */,
 				CE2816962FF5401B00ADCFC5 /* UDGuiEditorService.h */,
 				CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */,
+				CE2816E02FF5401B00ADCFC5 /* UDGuiEventsProcessingService.h */,
+				CE2816E12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m */,
+				CE2816E02FF5401B00ADCFC5 /* UDGuiEventsProcessingService.h */,
+				CE2816E12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m */,
 				CE2816982FF5401B00ADCFC5 /* UDGuiEditorViewModel.h */,
 				CE2816992FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m */,
 				CE28169A2FF5401B00ADCFC5 /* UDGuiModel.h */,
@@ -900,6 +908,8 @@
 				CEA101032FF5000000A10001 /* UDAssetIndex.m in Sources */,
 				CEA102032FF5000000A10001 /* UDDeclLexer.m in Sources */,
 				CE28169C2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */,
+				CE2816E22FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */,
+				CE2816E22FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */,
 				CE28169D2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */,
 				CE28169E2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */,
 				CEA102132FF5000000A10001 /* UDDeclParser.m in Sources */,
@@ -980,6 +990,8 @@
 				EE01000600000000000000AA /* UDDeclModel.m in Sources */,
 				CE503D422FFBAD5E004EF5CA /* UDIconTabBarView.m in Sources */,
 				CE28169F2FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m in Sources */,
+				CE2816E32FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */,
+				CE2816E32FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEventsProcessingService.m in Sources */,
 				CE2816A02FF5401B00ADCFC5 /* Sources/UDCore/UDGuiModel.m in Sources */,
 				CEB533522FF7B358003C1587 /* UDBindDefInspectorController.m in Sources */,
 				CEB533532FF7B358003C1587 /* UDChoiceDefInspectorController.m in Sources */,

@@ -114,7 +114,6 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
                       arguments:(NSString *)arguments NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (NSString *)serializedStatement;
 - (UDGuiScriptCommand *)deepCopy;
 
 @end
@@ -156,6 +155,76 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
 - (instancetype)initWithKeyword:(NSString *)keyword value:(NSString *)value;
 @end
 
+@class UDGuiNumberLiteralExpression;
+@class UDGuiStringLiteralExpression;
+@class UDGuiVariableExpression;
+@class UDGuiParenthesizedExpression;
+@class UDGuiUnaryExpression;
+@class UDGuiBinaryExpression;
+
+@protocol UDGuiExpressionVisitor <NSObject>
+- (id)visitNumberLiteralExpression:(UDGuiNumberLiteralExpression *)expression;
+- (id)visitStringLiteralExpression:(UDGuiStringLiteralExpression *)expression;
+- (id)visitVariableExpression:(UDGuiVariableExpression *)expression;
+- (id)visitParenthesizedExpression:(UDGuiParenthesizedExpression *)expression;
+- (id)visitUnaryExpression:(UDGuiUnaryExpression *)expression;
+- (id)visitBinaryExpression:(UDGuiBinaryExpression *)expression;
+@end
+
+@interface UDGuiExpression : NSObject <NSCopying>
+- (id)acceptVisitor:(id<UDGuiExpressionVisitor>)visitor;
+- (UDGuiExpression *)deepCopy;
+@end
+
+@interface UDGuiNumberLiteralExpression : UDGuiExpression {
+    NSString *_value;
+}
+@property (nonatomic, readonly, copy) NSString *value;
+- (instancetype)initWithValue:(NSString *)value;
+@end
+
+@interface UDGuiStringLiteralExpression : UDGuiExpression {
+    NSString *_value;
+}
+@property (nonatomic, readonly, copy) NSString *value;
+- (instancetype)initWithValue:(NSString *)value;
+@end
+
+@interface UDGuiVariableExpression : UDGuiExpression
+@property (nonatomic, readonly, copy) NSString *name;
+- (instancetype)initWithName:(NSString *)name;
+@end
+
+@interface UDGuiParenthesizedExpression : UDGuiExpression
+@property (nonatomic, readonly, strong) UDGuiExpression *expression;
+- (instancetype)initWithExpression:(UDGuiExpression *)expression;
+@end
+
+@interface UDGuiUnaryExpression : UDGuiExpression
+@property (nonatomic, readonly, copy) NSString *operatorString;
+@property (nonatomic, readonly, strong) UDGuiExpression *operand;
+- (instancetype)initWithOperator:(NSString *)operatorString operand:(UDGuiExpression *)operand;
+@end
+
+@interface UDGuiBinaryExpression : UDGuiExpression
+@property (nonatomic, readonly, strong) UDGuiExpression *left;
+@property (nonatomic, readonly, copy) NSString *operatorString;
+@property (nonatomic, readonly, strong) UDGuiExpression *right;
+- (instancetype)initWithLeft:(UDGuiExpression *)left operator:(NSString *)operatorString right:(UDGuiExpression *)right;
+@end
+
+@interface UDGuiIfBranch : NSObject <NSCopying>
+@property (nullable, nonatomic, readonly, strong) UDGuiExpression *condition;
+@property (nonatomic, readonly, copy) NSArray<UDGuiScriptCommand *> *commands;
+- (instancetype)initWithCondition:(nullable UDGuiExpression *)condition commands:(NSArray<UDGuiScriptCommand *> *)commands;
+- (UDGuiIfBranch *)deepCopy;
+@end
+
+@interface UDGuiIfCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSArray<UDGuiIfBranch *> *branches;
+- (instancetype)initWithBranches:(NSArray<UDGuiIfBranch *> *)branches;
+@end
+
 @interface UDGuiEventHandler : NSObject
 
 @property (nonatomic, readonly, assign) UDGuiEventHandlerType type;
@@ -171,6 +240,7 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
 - (void)insertCommand:(UDGuiScriptCommand *)command atIndex:(NSUInteger)index;
 - (void)replaceCommandAtIndex:(NSUInteger)index withCommand:(UDGuiScriptCommand *)command;
 - (void)removeCommandAtIndex:(NSUInteger)index;
+- (void)replaceCommandsWithArray:(NSArray<UDGuiScriptCommand *> *)newCommands;
 
 - (UDGuiEventHandler *)deepCopy;
 

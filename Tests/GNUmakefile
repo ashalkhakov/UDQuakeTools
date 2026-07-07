@@ -30,6 +30,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     ../Sources/UDCore/UDGuiModel.m \
     ../Sources/UDCore/UDGuiDocumentCodec.m \
     ../Sources/UDCore/UDGuiEditorService.m \
+    ../Sources/UDCore/UDGuiEventsProcessingService.m \
     ../Sources/UDCore/UDGuiEditorViewModel.m \
     ../Sources/UDCore/UDArchiveEntry.m \
     ../Sources/UDCore/UDArchiveEditor.m \

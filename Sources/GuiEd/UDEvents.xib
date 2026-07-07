@@ -8,11 +8,14 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDEventsController">
             <connections>
+                <outlet property="errorLabel" destination="LBL-EVT-ERR" id="OWN-EVT-ERR-LBL"/>
                 <outlet property="eventCommandEditorTabView" destination="TV-EVT-CMD-EDITOR" id="OWN-EVT-03"/>
                 <outlet property="eventCommandTypePopup" destination="POP-EVT-CMD-TYPE" id="OWN-EVT-02"/>
                 <outlet property="eventCommandsTableView" destination="TBL-EVT-CMD" id="OWN-EVT-01"/>
                 <outlet property="eventFallbackArgumentsField" destination="FLD-EVT-CMD-FALLBACK" id="OWN-EVT-34"/>
                 <outlet property="eventHandlersTableView" destination="TBL-EVT-HDL" id="OWN-EVT-00"/>
+                <outlet property="eventIfBranchesPopup" destination="POP-EVT-CMD-IF-BRANCH" id="OWN-EVT-IF-BRANCH"/>
+                <outlet property="eventIfConditionField" destination="FLD-EVT-CMD-IF-COND" id="OWN-EVT-IF-COND"/>
                 <outlet property="eventLocalSoundField" destination="FLD-EVT-CMD-LOCALSOUND" id="OWN-EVT-31"/>
                 <outlet property="eventResetTimeValueField" destination="FLD-EVT-CMD-RESET-TIME" id="OWN-EVT-15"/>
                 <outlet property="eventResetTimeWindowField" destination="FLD-EVT-CMD-RESET-WINDOW" id="OWN-EVT-14"/>
@@ -27,6 +30,9 @@
                 <outlet property="eventTransitionTimeField" destination="FLD-EVT-CMD-TRANS-TIME" id="OWN-EVT-28"/>
                 <outlet property="eventTransitionToField" destination="FLD-EVT-CMD-TRANS-TO" id="OWN-EVT-22"/>
                 <outlet property="eventTransitionVariableField" destination="FLD-EVT-CMD-TRANS-VARIABLE" id="OWN-EVT-20"/>
+                <outlet property="modeSegmentedControl" destination="SEG-EVT-MODE" id="OWN-EVT-MODE"/>
+                <outlet property="scriptScrollView" destination="SCR-EVT-SCRIPT" id="OWN-EVT-SCRIPT-SCROLL"/>
+                <outlet property="scriptTextView" destination="TXT-EVT-SCRIPT" id="OWN-EVT-SCRIPT-TEXT"/>
                 <outlet property="view" destination="PNL-EVENTS" id="OWN-VIEW"/>
             </connections>
         </customObject>
@@ -99,6 +105,50 @@
                     <rect key="frame" x="268" y="0.0" width="400" height="632"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
+                        <segmentedControl fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SEG-EVT-MODE">
+                            <rect key="frame" x="240" y="604" width="160" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <segmentedCell key="cell" controlSize="small" style="rounded" trackingMode="selectOne" id="SEG-EVT-MODE-CELL">
+                                <font key="font" metaFont="smallSystem"/>
+                                <segments>
+                                    <segment label="Structured" width="78" selected="YES"/>
+                                    <segment label="Script" width="78"/>
+                                </segments>
+                            </segmentedCell>
+                            <connections>
+                                <action selector="toggleEditorMode:" target="-2" id="ACT-EVT-MODE"/>
+                            </connections>
+                        </segmentedControl>
+                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-ERR">
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="24"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" alignment="left" id="LBL-EVT-ERR-CELL">
+                                <font key="font" metaFont="smallSystem"/>
+                                <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" translatesAutoresizingMaskIntoConstraints="NO" id="SCR-EVT-SCRIPT">
+                            <rect key="frame" x="0.0" y="24" width="400" height="576"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <clipView key="contentView" id="CLP-EVT-SCRIPT">
+                                <rect key="frame" x="1" y="1" width="398" height="574"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="TXT-EVT-SCRIPT">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="574"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <size key="minSize" width="398" height="574"/>
+                                        <size key="maxSize" width="10000000" height="10000000"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="DEL-EVT-SCRIPT"/>
+                                        </connections>
+                                    </textView>
+                                </subviews>
+                            </clipView>
+                        </scrollView>
                         <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-EVT-CMD-TYPE">
                             <rect key="frame" x="0.0" y="604" width="170" height="24"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
@@ -108,6 +158,7 @@
                                 <menu key="menu" title="set" id="POP-EVT-CMD-TYPE-MENU">
                                     <items>
                                         <menuItem title="set" state="on" id="ITM-EVT-CMD-TYPE-SET"/>
+                                        <menuItem title="if" id="ITM-EVT-CMD-TYPE-IF"/>
                                         <menuItem title="setFocus" id="ITM-EVT-CMD-TYPE-SETFOCUS"/>
                                         <menuItem title="resetTime" id="ITM-EVT-CMD-TYPE-RESETTIME"/>
                                         <menuItem title="transition" id="ITM-EVT-CMD-TYPE-TRANSITION"/>
@@ -171,6 +222,52 @@
                                                 </textFieldCell>
                                                 <connections>
                                                     <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-SET-VALUE"/>
+                                                </connections>
+                                            </textField>
+                                        </subviews>
+                                    </view>
+                                </tabViewItem>
+                                <tabViewItem identifier="if" id="TVI-EVT-CMD-IF">
+                                    <view key="view" id="VIE-EVT-CMD-IF" customClass="FormContainerView">
+                                        <rect key="frame" x="0.0" y="0.0" width="400" height="190"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-IF-BRANCH">
+                                                <rect key="frame" x="0.0" y="140" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" title="Branch" id="LBL-EVT-CMD-IF-BRANCH-CELL"/>
+                                            </textField>
+                                            <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="POP-EVT-CMD-IF-BRANCH">
+                                                <rect key="frame" x="90" y="136" width="308" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="bevel" title="if" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="ITM-EVT-CMD-IF-BRANCH-IF" id="POP-EVT-CMD-IF-BRANCH-CELL">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="MNU-EVT-CMD-IF-BRANCH">
+                                                        <items>
+                                                            <menuItem title="if" state="on" id="ITM-EVT-CMD-IF-BRANCH-IF"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <action selector="eventIfBranchesPopupChanged:" target="-2" id="ACT-EVT-CMD-IF-BRANCH"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LBL-EVT-CMD-IF-COND">
+                                                <rect key="frame" x="0.0" y="110" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" title="Condition" id="LBL-EVT-CMD-IF-COND-CELL"/>
+                                            </textField>
+                                            <textField focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLD-EVT-CMD-IF-COND">
+                                                <rect key="frame" x="92" y="106" width="304" height="22"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" id="FLD-EVT-CMD-IF-COND-CELL">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <action selector="eventCommandEditorChanged:" target="-2" id="ACT-EVT-CMD-IF-COND"/>
                                                 </connections>
                                             </textField>
                                         </subviews>
@@ -513,7 +610,7 @@
                                 <rect key="frame" x="1" y="1" width="398" height="357"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <tableView rowHeight="20" id="TBL-EVT-CMD" customClass="UDInspectableTableView">
+                                    <outlineView rowHeight="20" indentationPerLevel="16" outlineTableColumn="COL-EVT-CMD" id="TBL-EVT-CMD" customClass="UDInspectableOutlineView">
                                         <rect key="frame" x="0.0" y="0.0" width="407" height="357"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <tableColumns>
@@ -530,7 +627,7 @@
                                             <outlet property="dataSource" destination="-2" id="TBL-EVT-CMD-DS"/>
                                             <outlet property="delegate" destination="-2" id="TBL-EVT-CMD-DEL"/>
                                         </connections>
-                                    </tableView>
+                                    </outlineView>
                                 </subviews>
                             </clipView>
                         </scrollView>

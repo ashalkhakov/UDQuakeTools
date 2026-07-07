@@ -214,4 +214,30 @@
     }];
 }
 
+- (void)updateCommandsForEventHandlerAtIndex:(NSUInteger)handlerIndex
+                                    onWindow:(UDGuiWindowNode *)window
+                                 newCommands:(NSArray<UDGuiScriptCommand *> *)newCommands {
+    NSParameterAssert(window != nil);
+    NSParameterAssert(newCommands != nil);
+
+    NSArray<UDGuiEventHandler *> *handlers = window.eventHandlers;
+    if (handlerIndex >= handlers.count) {
+        return;
+    }
+
+    UDGuiEventHandler *handler = [handlers objectAtIndex:handlerIndex];
+    NSArray<UDGuiScriptCommand *> *oldCommands = handler.commands;
+
+    UDGuiEventHandler *newHandler = [handler deepCopy];
+    [newHandler replaceCommandsWithArray:newCommands];
+
+    [window replaceEventHandlerAtIndex:handlerIndex withEventHandler:newHandler];
+
+    [self registerUndoAction:^{
+        [[self.undoManager prepareWithInvocationTarget:self] updateCommandsForEventHandlerAtIndex:handlerIndex
+                                                                                         onWindow:window
+                                                                                      newCommands:oldCommands];
+    }];
+}
+
 @end

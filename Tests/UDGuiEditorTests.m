@@ -260,6 +260,52 @@
     XCTAssertTrue([serialized containsString:@"resetTime Desktop 0 ;"]);
 }
 
+- (void)testGuiDocumentCodecParsesExpressionsAndIfElseChains {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    onAction {\n"
+         "        if ( gui::alpha0 == 4 ) { set history1::forecolor 1, 1, 1, 1 ; } else if ( gui::alpha0 == 3 ) { set history1::forecolor 1, 1, 1, 0.875 ; } else { set history1::forecolor 1, 1, 1, 0.5 ; }\n"
+         "    }\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *parseError = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&parseError];
+
+    XCTAssertNil(parseError);
+    XCTAssertNotNil(document);
+
+    UDGuiWindowNode *root = [document.rootWindows objectAtIndex:0];
+    XCTAssertEqual(root.eventHandlers.count, 1U);
+
+    UDGuiEventHandler *handler = [root.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(handler.commands.count, 1U);
+
+    UDGuiScriptCommand *command = [handler.commands objectAtIndex:0];
+    XCTAssertTrue([command isKindOfClass:[UDGuiIfCommand class]]);
+
+    UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)command;
+    XCTAssertEqual(ifCmd.branches.count, 3U);
+
+    UDGuiIfBranch *branch1 = [ifCmd.branches objectAtIndex:0];
+    XCTAssertNotNil(branch1.condition);
+    XCTAssertTrue([branch1.condition isKindOfClass:[UDGuiBinaryExpression class]]);
+    XCTAssertEqual(branch1.commands.count, 1U);
+
+    UDGuiIfBranch *branch2 = [ifCmd.branches objectAtIndex:1];
+    XCTAssertNotNil(branch2.condition);
+    XCTAssertEqual(branch2.commands.count, 1U);
+
+    UDGuiIfBranch *branch3 = [ifCmd.branches objectAtIndex:2];
+    XCTAssertNil(branch3.condition);
+    XCTAssertEqual(branch3.commands.count, 1U);
+
+    NSError *serializeError = nil;
+    NSString *serialized = [codec serializeDocument:document error:&serializeError];
+    XCTAssertNil(serializeError);
+    XCTAssertTrue([serialized containsString:@"if ( gui::alpha0 == 4 ) { set history1::forecolor 1, 1, 1, 1 ; } else if ( gui::alpha0 == 3 ) { set history1::forecolor 1, 1, 1, 0.875 ; } else { set history1::forecolor 1, 1, 1, 0.5 ; }"]);
+}
+
 - (void)testGuiDocumentCodecParsesFloatAndDefineFloatDefinitions {
     NSString *text =
         @"windowDef Desktop {\n"
@@ -964,6 +1010,65 @@
 
     [undoManager undo];
     XCTAssertEqual(viewModel.rootWindows.count, 1U);
+}
+
+- (void)testScriptEditorASTRoundTripAndDiagnostics {
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    
+    // 1. Valid script parsing and serialization
+    NSString *validScript = 
+        @"set \"notime\" \"1\" ;\n"
+        @"if ( \"gui::state\" == 1 ) {\n"
+        @"    resetTime \"Desktop\" \"0\" ;\n"
+        @"} else {\n"
+        @"    set \"cmd\" \"play click\" ;\n"
+        @"}\n"
+        @"transition \"rect\" \"0\" \"1\" \"200\" ;\n";
+        
+    NSError *error = nil;
+    NSArray<UDGuiScriptCommand *> *commands = [codec scriptCommandsFromBlockValue:validScript error:&error];
+    
+    XCTAssertNil(error);
+    XCTAssertNotNil(commands);
+    XCTAssertEqual(commands.count, 3U);
+    XCTAssertEqualObjects([[commands objectAtIndex:0] keyword], @"set");
+    XCTAssertTrue([[commands objectAtIndex:1] isKindOfClass:[UDGuiIfCommand class]]);
+    XCTAssertEqualObjects([[commands objectAtIndex:2] keyword], @"transition");
+    
+    // Test round-trip formatting/serialization
+    NSMutableString *serialized = [NSMutableString string];
+    for (UDGuiScriptCommand *cmd in commands) {
+        if ([cmd isKindOfClass:[UDGuiIfCommand class]]) {
+            [serialized appendFormat:@"%@\n", [codec serializeScriptCommand:cmd]];
+        } else {
+            [serialized appendFormat:@"%@ ;\n", [codec serializeScriptCommand:cmd]];
+        }
+    }
+    
+    XCTAssertTrue([serialized containsString:@"set notime 1 ;"]);
+    XCTAssertTrue([serialized containsString:@"if ( gui::state == 1 ) {"]);
+    XCTAssertTrue([serialized containsString:@"resetTime Desktop 0 ;"]);
+    XCTAssertTrue([serialized containsString:@"transition rect 0 1 200 ;"]);
+    
+    // 2. Diagnostics checking (invalid syntax error handling)
+    NSString *invalidScript = 
+        @"set \"notime\" \"1\" ;\n"
+        @"if ( \"gui::state\" == 1 ) {\n"
+        @"    resetTime \"Desktop\" ;\n" // missing closing brace or nested syntax issue or wrong format
+        @"    set \"cmd\" \"play\n" // unclosed quote
+        @"} else {\n"
+        @"}\n";
+        
+    NSError *parseError = nil;
+    NSArray<UDGuiScriptCommand *> *failedCommands = [codec scriptCommandsFromBlockValue:invalidScript error:&parseError];
+    
+    XCTAssertNil(failedCommands);
+    XCTAssertNotNil(parseError);
+    XCTAssertEqual(parseError.code, 1);
+    
+    NSNumber *offsetNum = parseError.userInfo[@"characterOffset"];
+    XCTAssertNotNil(offsetNum);
+    XCTAssertTrue([offsetNum integerValue] > 0);
 }
 
 @end

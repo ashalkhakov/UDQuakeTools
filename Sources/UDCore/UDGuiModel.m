@@ -1714,13 +1714,13 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 
 @implementation UDGuiExpression
 - (id)copyWithZone:(nullable NSZone *)zone {
-    return self;
+    return [self deepCopy];
 }
 - (NSString *)serializedString {
     return @"";
 }
 - (UDGuiExpression *)deepCopy {
-    return [self copy];
+    return [[[self class] alloc] init];
 }
 @end
 
@@ -1850,7 +1850,7 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 }
 
 - (id)copyWithZone:(nullable NSZone *)zone {
-    return self;
+    return [self deepCopy];
 }
 
 - (UDGuiIfBranch *)deepCopy {

@@ -1119,7 +1119,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
 
     UDIdToken *first = [cursor readToken];
     if (peeked.length == 2) {
-        (void)[cursor readToken];
+        [cursor readToken];
     }
     return peeked;
 }

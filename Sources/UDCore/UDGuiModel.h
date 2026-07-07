@@ -156,6 +156,52 @@ FOUNDATION_EXPORT UDGuiScriptCommand *UDGuiScriptCommandFromEditorValues(NSStrin
 - (instancetype)initWithKeyword:(NSString *)keyword value:(NSString *)value;
 @end
 
+@interface UDGuiExpression : NSObject <NSCopying>
+- (NSString *)serializedString;
+- (UDGuiExpression *)deepCopy;
+@end
+
+@interface UDGuiLiteralExpression : UDGuiExpression
+@property (nonatomic, readonly, copy) NSString *value;
+@property (nonatomic, readonly, assign) BOOL isQuoted;
+- (instancetype)initWithValue:(NSString *)value isQuoted:(BOOL)isQuoted;
+@end
+
+@interface UDGuiVariableExpression : UDGuiExpression
+@property (nonatomic, readonly, copy) NSString *name;
+- (instancetype)initWithName:(NSString *)name;
+@end
+
+@interface UDGuiParenthesizedExpression : UDGuiExpression
+@property (nonatomic, readonly, strong) UDGuiExpression *expression;
+- (instancetype)initWithExpression:(UDGuiExpression *)expression;
+@end
+
+@interface UDGuiUnaryExpression : UDGuiExpression
+@property (nonatomic, readonly, copy) NSString *operatorString;
+@property (nonatomic, readonly, strong) UDGuiExpression *operand;
+- (instancetype)initWithOperator:(NSString *)operatorString operand:(UDGuiExpression *)operand;
+@end
+
+@interface UDGuiBinaryExpression : UDGuiExpression
+@property (nonatomic, readonly, strong) UDGuiExpression *left;
+@property (nonatomic, readonly, copy) NSString *operatorString;
+@property (nonatomic, readonly, strong) UDGuiExpression *right;
+- (instancetype)initWithLeft:(UDGuiExpression *)left operator:(NSString *)operatorString right:(UDGuiExpression *)right;
+@end
+
+@interface UDGuiIfBranch : NSObject <NSCopying>
+@property (nullable, nonatomic, readonly, strong) UDGuiExpression *condition;
+@property (nonatomic, readonly, copy) NSArray<UDGuiScriptCommand *> *commands;
+- (instancetype)initWithCondition:(nullable UDGuiExpression *)condition commands:(NSArray<UDGuiScriptCommand *> *)commands;
+- (UDGuiIfBranch *)deepCopy;
+@end
+
+@interface UDGuiIfCommand : UDGuiScriptCommand
+@property (nonatomic, readonly, copy) NSArray<UDGuiIfBranch *> *branches;
+- (instancetype)initWithBranches:(NSArray<UDGuiIfBranch *> *)branches;
+@end
+
 @interface UDGuiEventHandler : NSObject
 
 @property (nonatomic, readonly, assign) UDGuiEventHandlerType type;

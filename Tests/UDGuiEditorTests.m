@@ -260,6 +260,52 @@
     XCTAssertTrue([serialized containsString:@"resetTime Desktop 0 ;"]);
 }
 
+- (void)testGuiDocumentCodecParsesExpressionsAndIfElseChains {
+    NSString *text =
+        @"windowDef Desktop {\n"
+         "    onAction {\n"
+         "        if ( gui::alpha0 == 4 ) { set history1::forecolor 1, 1, 1, 1 ; } else if ( gui::alpha0 == 3 ) { set history1::forecolor 1, 1, 1, 0.875 ; } else { set history1::forecolor 1, 1, 1, 0.5 ; }\n"
+         "    }\n"
+         "}\n";
+
+    UDGuiDocumentCodec *codec = [[UDGuiDocumentCodec alloc] init];
+    NSError *parseError = nil;
+    UDGuiDocument *document = [codec parseDocumentFromText:text sourceVirtualPath:@"guis/test.gui" error:&parseError];
+
+    XCTAssertNil(parseError);
+    XCTAssertNotNil(document);
+    
+    UDGuiWindowNode *root = [document.rootWindows objectAtIndex:0];
+    XCTAssertEqual(root.eventHandlers.count, 1U);
+    
+    UDGuiEventHandler *handler = [root.eventHandlers objectAtIndex:0];
+    XCTAssertEqual(handler.commands.count, 1U);
+    
+    UDGuiScriptCommand *command = [handler.commands objectAtIndex:0];
+    XCTAssertTrue([command isKindOfClass:[UDGuiIfCommand class]]);
+    
+    UDGuiIfCommand *ifCmd = (UDGuiIfCommand *)command;
+    XCTAssertEqual(ifCmd.branches.count, 3U);
+    
+    UDGuiIfBranch *branch1 = [ifCmd.branches objectAtIndex:0];
+    XCTAssertNotNil(branch1.condition);
+    XCTAssertTrue([branch1.condition isKindOfClass:[UDGuiBinaryExpression class]]);
+    XCTAssertEqual(branch1.commands.count, 1U);
+    
+    UDGuiIfBranch *branch2 = [ifCmd.branches objectAtIndex:1];
+    XCTAssertNotNil(branch2.condition);
+    XCTAssertEqual(branch2.commands.count, 1U);
+    
+    UDGuiIfBranch *branch3 = [ifCmd.branches objectAtIndex:2];
+    XCTAssertNil(branch3.condition);
+    XCTAssertEqual(branch3.commands.count, 1U);
+    
+    NSError *serializeError = nil;
+    NSString *serialized = [codec serializeDocument:document error:&serializeError];
+    XCTAssertNil(serializeError);
+    XCTAssertTrue([serialized containsString:@"if ( gui::alpha0 == 4 ) { set history1::forecolor 1, 1, 1, 1 ; } else if ( gui::alpha0 == 3 ) { set history1::forecolor 1, 1, 1, 0.875 ; } else { set history1::forecolor 1, 1, 1, 0.5 ; }"]);
+}
+
 - (void)testGuiDocumentCodecParsesFloatAndDefineFloatDefinitions {
     NSString *text =
         @"windowDef Desktop {\n"

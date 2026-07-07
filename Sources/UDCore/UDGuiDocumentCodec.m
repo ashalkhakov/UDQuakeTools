@@ -70,7 +70,7 @@ static UDGuiEventHandlerType UDGuiEventHandlerTypeForIdentifier(NSString *identi
 @interface UDGuiDeclCursor ()
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UDIdLexer *lexer;
-@property (nullable, nonatomic, strong) UDIdToken *lookahead;
+@property (nonatomic, strong) NSMutableArray<UDIdToken *> *lookaheadTokens;
 @end
 
 @implementation UDGuiDeclCursor
@@ -83,27 +83,33 @@ static UDGuiEventHandlerType UDGuiEventHandlerTypeForIdentifier(NSString *identi
 
     _text = [text copy];
     _lexer = [[UDIdLexer alloc] initWithText:_text];
+    _lookaheadTokens = [NSMutableArray array];
     return self;
 }
 
 - (UDIdToken *)peekToken {
-    if (!self.lookahead) {
-        self.lookahead = [self.lexer nextToken];
+    if (self.lookaheadTokens.count == 0) {
+        UDIdToken *token = [self.lexer nextToken];
+        if (token) {
+            [self.lookaheadTokens addObject:token];
+        }
     }
-    return self.lookahead;
+    return [self.lookaheadTokens firstObject];
 }
 
 - (UDIdToken *)readToken {
-    if (self.lookahead) {
-        UDIdToken *token = self.lookahead;
-        self.lookahead = nil;
+    if (self.lookaheadTokens.count > 0) {
+        UDIdToken *token = [self.lookaheadTokens firstObject];
+        [self.lookaheadTokens removeObjectAtIndex:0];
         return token;
     }
     return [self.lexer nextToken];
 }
 
 - (void)unreadToken:(UDIdToken *)token {
-    self.lookahead = token;
+    if (token) {
+        [self.lookaheadTokens insertObject:token atIndex:0];
+    }
 }
 
 - (BOOL)containsNewlineBetweenToken:(UDIdToken *)leftToken andToken:(UDIdToken *)rightToken {
@@ -206,6 +212,19 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
                                                         error:(NSError **)error;
 - (NSArray<NSString *> *)scriptStatementsFromBlockValue:(NSString *)blockValue;
 - (nullable NSArray<UDGuiScriptCommand *> *)scriptCommandsFromBlockValue:(NSString *)blockValue;
+- (nullable NSArray<UDGuiScriptCommand *> *)parseScriptCommandsWithCursor:(UDGuiDeclCursor *)cursor stopAtCloseBrace:(BOOL)stopAtCloseBrace;
+- (nullable UDGuiScriptCommand *)parseIfCommandWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseLogicalOrExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseLogicalAndExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseEqualityExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseRelationalExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseAdditiveExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseMultiplicativeExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parseUnaryExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable UDGuiExpression *)parsePrimaryExpressionWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable NSString *)peekOperatorWithCursor:(UDGuiDeclCursor *)cursor;
+- (nullable NSString *)readOperatorWithCursor:(UDGuiDeclCursor *)cursor expected:(NSArray<NSString *> *)expectedOps;
 - (NSString *)rawScriptBodyFromBlockValue:(NSString *)blockValue;
 - (NSString *)normalizedRawScriptBodyFromBlockValue:(NSString *)blockValue;
 - (NSString *)normalizedRawScriptTokenText:(UDIdToken *)token;
@@ -779,21 +798,37 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     }
 
     UDGuiDeclCursor *cursor = [[UDGuiDeclCursor alloc] initWithText:inner];
+    return [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:NO];
+}
+
+- (nullable NSArray<UDGuiScriptCommand *> *)parseScriptCommandsWithCursor:(UDGuiDeclCursor *)cursor stopAtCloseBrace:(BOOL)stopAtCloseBrace {
     NSMutableArray<UDGuiScriptCommand *> *commands = [NSMutableArray array];
 
     while (YES) {
         UDIdToken *token = [cursor readToken];
         if (token.kind == UDIdTokenKindEOF) {
+            if (stopAtCloseBrace) {
+                return nil; // Unmatched open brace
+            }
             break;
         }
 
-        if (token.kind == UDIdTokenKindPunctuation && [token.text isEqualToString:@";"]) {
-            continue;
+        if (token.kind == UDIdTokenKindPunctuation) {
+            if ([token.text isEqualToString:@";"]) {
+                continue;
+            }
+            if ([token.text isEqualToString:@"}"] && stopAtCloseBrace) {
+                break;
+            }
         }
 
-        if (token.kind == UDIdTokenKindIdentifier &&
-            ([token.text caseInsensitiveCompare:@"if"] == NSOrderedSame || [token.text caseInsensitiveCompare:@"else"] == NSOrderedSame)) {
-            return nil;
+        if (token.kind == UDIdTokenKindIdentifier && [token.text caseInsensitiveCompare:@"if"] == NSOrderedSame) {
+            UDGuiScriptCommand *ifCmd = [self parseIfCommandWithCursor:cursor];
+            if (!ifCmd) {
+                return nil;
+            }
+            [commands addObject:ifCmd];
+            continue;
         }
 
         if (token.kind != UDIdTokenKindIdentifier && token.kind != UDIdTokenKindString) {
@@ -804,28 +839,26 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         NSMutableArray<NSString *> *arguments = [NSMutableArray array];
 
         while (YES) {
-            UDIdToken *argumentToken = [cursor readToken];
-            if (argumentToken.kind == UDIdTokenKindEOF) {
+            UDIdToken *argToken = [cursor readToken];
+            if (argToken.kind == UDIdTokenKindEOF) {
+                break;
+            }
+            if (argToken.kind == UDIdTokenKindPunctuation) {
+                if ([argToken.text isEqualToString:@";"]) {
+                    break;
+                }
+                if ([argToken.text isEqualToString:@"{"] || [argToken.text isEqualToString:@"}"]) {
+                    [cursor unreadToken:argToken];
+                    break;
+                }
+            }
+            if (argToken.kind == UDIdTokenKindIdentifier && [argToken.text caseInsensitiveCompare:@"if"] == NSOrderedSame) {
+                [cursor unreadToken:argToken];
                 break;
             }
 
-            if (argumentToken.kind == UDIdTokenKindPunctuation) {
-                if ([argumentToken.text isEqualToString:@";"]) {
-                    break;
-                }
-
-                if ([argumentToken.text isEqualToString:@"{"] || [argumentToken.text isEqualToString:@"}"]) {
-                    return nil;
-                }
-            }
-
-            if (argumentToken.kind == UDIdTokenKindIdentifier &&
-                ([argumentToken.text caseInsensitiveCompare:@"if"] == NSOrderedSame || [argumentToken.text caseInsensitiveCompare:@"else"] == NSOrderedSame)) {
-                return nil;
-            }
-
-            if (argumentToken.text.length > 0) {
-                [arguments addObject:argumentToken.text];
+            if (argToken.text.length > 0) {
+                [arguments addObject:argToken.text];
             }
         }
 
@@ -833,6 +866,262 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     }
 
     return [commands copy];
+}
+
+- (nullable UDGuiScriptCommand *)parseIfCommandWithCursor:(UDGuiDeclCursor *)cursor {
+    NSMutableArray<UDGuiIfBranch *> *branches = [NSMutableArray array];
+
+    UDIdToken *openParen = [cursor readToken];
+    if (openParen.kind != UDIdTokenKindPunctuation || ![openParen.text isEqualToString:@"("]) {
+        return nil;
+    }
+    UDGuiExpression *condition = [self parseExpressionWithCursor:cursor];
+    if (!condition) {
+        return nil;
+    }
+    UDIdToken *closeParen = [cursor readToken];
+    if (closeParen.kind != UDIdTokenKindPunctuation || ![closeParen.text isEqualToString:@")"]) {
+        return nil;
+    }
+
+    UDIdToken *openBrace = [cursor readToken];
+    if (openBrace.kind != UDIdTokenKindPunctuation || ![openBrace.text isEqualToString:@"{"]) {
+        return nil;
+    }
+    NSArray<UDGuiScriptCommand *> *thenCommands = [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:YES];
+    if (!thenCommands) {
+        return nil;
+    }
+    [branches addObject:[[UDGuiIfBranch alloc] initWithCondition:condition commands:thenCommands]];
+
+    while (YES) {
+        UDIdToken *elseToken = [cursor readToken];
+        if (elseToken.kind == UDIdTokenKindIdentifier && [elseToken.text caseInsensitiveCompare:@"else"] == NSOrderedSame) {
+            UDIdToken *nextToken = [cursor readToken];
+            if (nextToken.kind == UDIdTokenKindIdentifier && [nextToken.text caseInsensitiveCompare:@"if"] == NSOrderedSame) {
+                UDIdToken *elseOpenParen = [cursor readToken];
+                if (elseOpenParen.kind != UDIdTokenKindPunctuation || ![elseOpenParen.text isEqualToString:@"("]) {
+                    return nil;
+                }
+                UDGuiExpression *elseCondition = [self parseExpressionWithCursor:cursor];
+                if (!elseCondition) {
+                    return nil;
+                }
+                UDIdToken *elseCloseParen = [cursor readToken];
+                if (elseCloseParen.kind != UDIdTokenKindPunctuation || ![elseCloseParen.text isEqualToString:@")"]) {
+                    return nil;
+                }
+                UDIdToken *elseOpenBrace = [cursor readToken];
+                if (elseOpenBrace.kind != UDIdTokenKindPunctuation || ![elseOpenBrace.text isEqualToString:@"{"]) {
+                    return nil;
+                }
+                NSArray<UDGuiScriptCommand *> *elseIfCommands = [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:YES];
+                if (!elseIfCommands) {
+                    return nil;
+                }
+                [branches addObject:[[UDGuiIfBranch alloc] initWithCondition:elseCondition commands:elseIfCommands]];
+            } else if (nextToken.kind == UDIdTokenKindPunctuation && [nextToken.text isEqualToString:@"{"]) {
+                NSArray<UDGuiScriptCommand *> *elseCommands = [self parseScriptCommandsWithCursor:cursor stopAtCloseBrace:YES];
+                if (!elseCommands) {
+                    return nil;
+                }
+                [branches addObject:[[UDGuiIfBranch alloc] initWithCondition:nil commands:elseCommands]];
+                break;
+            } else {
+                return nil;
+            }
+        } else {
+            [cursor unreadToken:elseToken];
+            break;
+        }
+    }
+
+    return [[UDGuiIfCommand alloc] initWithBranches:branches];
+}
+
+- (nullable UDGuiExpression *)parseExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    return [self parseLogicalOrExpressionWithCursor:cursor];
+}
+
+- (nullable UDGuiExpression *)parseLogicalOrExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseLogicalAndExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"||"]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseLogicalAndExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseLogicalAndExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseEqualityExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"&&"]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseEqualityExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseEqualityExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseRelationalExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"==", @"!="]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseRelationalExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseRelationalExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseAdditiveExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"<", @"<=", @">", @">="]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseAdditiveExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseAdditiveExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseMultiplicativeExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"+", @"-"]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseMultiplicativeExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseMultiplicativeExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDGuiExpression *left = [self parseUnaryExpressionWithCursor:cursor];
+    if (!left) return nil;
+
+    while (YES) {
+        NSString *op = [self readOperatorWithCursor:cursor expected:@[@"*", @"/"]];
+        if (!op) break;
+        UDGuiExpression *right = [self parseUnaryExpressionWithCursor:cursor];
+        if (!right) return nil;
+        left = [[UDGuiBinaryExpression alloc] initWithLeft:left operator:op right:right];
+    }
+    return left;
+}
+
+- (nullable UDGuiExpression *)parseUnaryExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDIdToken *token = [cursor readToken];
+    if (token.kind == UDIdTokenKindPunctuation && ([token.text isEqualToString:@"!"] || [token.text isEqualToString:@"-"])) {
+        NSString *op = token.text;
+        UDGuiExpression *operand = [self parseUnaryExpressionWithCursor:cursor];
+        if (!operand) {
+            return nil;
+        }
+        return [[UDGuiUnaryExpression alloc] initWithOperator:op operand:operand];
+    }
+
+    [cursor unreadToken:token];
+    return [self parsePrimaryExpressionWithCursor:cursor];
+}
+
+- (nullable UDGuiExpression *)parsePrimaryExpressionWithCursor:(UDGuiDeclCursor *)cursor {
+    UDIdToken *token = [cursor readToken];
+    if (token.kind == UDIdTokenKindEOF) {
+        return nil;
+    }
+
+    if (token.kind == UDIdTokenKindPunctuation && [token.text isEqualToString:@"("]) {
+        UDGuiExpression *inner = [self parseExpressionWithCursor:cursor];
+        if (!inner) {
+            return nil;
+        }
+        UDIdToken *close = [cursor readToken];
+        if (close.kind != UDIdTokenKindPunctuation || ![close.text isEqualToString:@")"]) {
+            return nil;
+        }
+        return [[UDGuiParenthesizedExpression alloc] initWithExpression:inner];
+    }
+
+    if (token.kind == UDIdTokenKindString) {
+        return [[UDGuiLiteralExpression alloc] initWithValue:token.text isQuoted:YES];
+    }
+
+    if (token.kind == UDIdTokenKindIdentifier) {
+        NSScanner *scanner = [NSScanner scannerWithString:token.text];
+        double dVal;
+        if ([scanner scanDouble:&dVal] && scanner.isAtEnd) {
+            return [[UDGuiLiteralExpression alloc] initWithValue:token.text isQuoted:NO];
+        }
+        return [[UDGuiVariableExpression alloc] initWithName:token.text];
+    }
+
+    [cursor unreadToken:token];
+    return nil;
+}
+
+- (nullable NSString *)peekOperatorWithCursor:(UDGuiDeclCursor *)cursor {
+    UDIdToken *first = [cursor readToken];
+    if (first.kind != UDIdTokenKindPunctuation) {
+        [cursor unreadToken:first];
+        return nil;
+    }
+
+    NSString *op = first.text;
+    UDIdToken *second = [cursor readToken];
+    NSString *combined = nil;
+    if (second.kind == UDIdTokenKindPunctuation) {
+        if ([op isEqualToString:@"="] && [second.text isEqualToString:@"="]) combined = @"==";
+        else if ([op isEqualToString:@"!"] && [second.text isEqualToString:@"="]) combined = @"!=";
+        else if ([op isEqualToString:@"<"] && [second.text isEqualToString:@"="]) combined = @"<=";
+        else if ([op isEqualToString:@">"] && [second.text isEqualToString:@"="]) combined = @">=";
+        else if ([op isEqualToString:@"&"] && [second.text isEqualToString:@"&"]) combined = @"&&";
+        else if ([op isEqualToString:@"|"] && [second.text isEqualToString:@"|"]) combined = @"||";
+    }
+
+    [cursor unreadToken:second];
+    [cursor unreadToken:first];
+
+    if (combined) {
+        return combined;
+    }
+
+    if ([op isEqualToString:@"+"] || [op isEqualToString:@"-"] || [op isEqualToString:@"*"] ||
+        [op isEqualToString:@"/"] || [op isEqualToString:@"<"] || [op isEqualToString:@">"]) {
+        return op;
+    }
+
+    return nil;
+}
+
+- (nullable NSString *)readOperatorWithCursor:(UDGuiDeclCursor *)cursor expected:(NSArray<NSString *> *)expectedOps {
+    NSString *peeked = [self peekOperatorWithCursor:cursor];
+    if (!peeked || ![expectedOps containsObject:peeked]) {
+        return nil;
+    }
+
+    UDIdToken *first = [cursor readToken];
+    if (peeked.length == 2) {
+        (void)[cursor readToken];
+    }
+    return peeked;
 }
 
 - (NSString *)rawScriptBodyFromBlockValue:(NSString *)blockValue {
@@ -1052,7 +1341,11 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     }
 
     for (UDGuiScriptCommand *command in eventHandler.commands) {
-        [block appendFormat:@"%@%@ ;\n", lineIndent, [command serializedStatement]];
+        if ([command isKindOfClass:[UDGuiIfCommand class]]) {
+            [block appendFormat:@"%@%@\n", lineIndent, [command serializedStatement]];
+        } else {
+            [block appendFormat:@"%@%@ ;\n", lineIndent, [command serializedStatement]];
+        }
     }
     [block appendFormat:@"%@}", indent];
     return block;

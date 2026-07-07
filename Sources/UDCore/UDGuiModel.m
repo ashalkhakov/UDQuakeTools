@@ -1710,3 +1710,203 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 }
 
 @end
+
+
+@implementation UDGuiExpression
+- (id)copyWithZone:(nullable NSZone *)zone {
+    return self;
+}
+- (NSString *)serializedString {
+    return @"";
+}
+- (UDGuiExpression *)deepCopy {
+    return [self copy];
+}
+@end
+
+@implementation UDGuiLiteralExpression
+@synthesize value = _value;
+@synthesize isQuoted = _isQuoted;
+
+- (instancetype)initWithValue:(NSString *)value isQuoted:(BOOL)isQuoted {
+    self = [super init];
+    if (self) {
+        _value = [value copy];
+        _isQuoted = isQuoted;
+    }
+    return self;
+}
+
+- (NSString *)serializedString {
+    if (self.isQuoted) {
+        return [NSString stringWithFormat:@"\"%@\"", self.value];
+    }
+    return self.value;
+}
+
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiLiteralExpression alloc] initWithValue:self.value isQuoted:self.isQuoted];
+}
+@end
+
+@implementation UDGuiVariableExpression
+@synthesize name = _name;
+
+- (instancetype)initWithName:(NSString *)name {
+    self = [super init];
+    if (self) {
+        _name = [name copy];
+    }
+    return self;
+}
+
+- (NSString *)serializedString {
+    return self.name;
+}
+
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiVariableExpression alloc] initWithName:self.name];
+}
+@end
+
+@implementation UDGuiParenthesizedExpression
+@synthesize expression = _expression;
+
+- (instancetype)initWithExpression:(UDGuiExpression *)expression {
+    self = [super init];
+    if (self) {
+        _expression = expression;
+    }
+    return self;
+}
+
+- (NSString *)serializedString {
+    return [NSString stringWithFormat:@"( %@ )", [self.expression serializedString]];
+}
+
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiParenthesizedExpression alloc] initWithExpression:[self.expression deepCopy]];
+}
+@end
+
+@implementation UDGuiUnaryExpression
+@synthesize operatorString = _operatorString;
+@synthesize operand = _operand;
+
+- (instancetype)initWithOperator:(NSString *)operatorString operand:(UDGuiExpression *)operand {
+    self = [super init];
+    if (self) {
+        _operatorString = [operatorString copy];
+        _operand = operand;
+    }
+    return self;
+}
+
+- (NSString *)serializedString {
+    return [NSString stringWithFormat:@"%@%@", self.operatorString, [self.operand serializedString]];
+}
+
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiUnaryExpression alloc] initWithOperator:self.operatorString operand:[self.operand deepCopy]];
+}
+@end
+
+@implementation UDGuiBinaryExpression
+@synthesize left = _left;
+@synthesize operatorString = _operatorString;
+@synthesize right = _right;
+
+- (instancetype)initWithLeft:(UDGuiExpression *)left operator:(NSString *)operatorString right:(UDGuiExpression *)right {
+    self = [super init];
+    if (self) {
+        _left = left;
+        _operatorString = [operatorString copy];
+        _right = right;
+    }
+    return self;
+}
+
+- (NSString *)serializedString {
+    return [NSString stringWithFormat:@"%@ %@ %@", [self.left serializedString], self.operatorString, [self.right serializedString]];
+}
+
+- (UDGuiExpression *)deepCopy {
+    return [[UDGuiBinaryExpression alloc] initWithLeft:[self.left deepCopy] operator:self.operatorString right:[self.right deepCopy]];
+}
+@end
+
+@implementation UDGuiIfBranch
+
+@synthesize condition = _condition;
+@synthesize commands = _commands;
+
+- (instancetype)initWithCondition:(nullable UDGuiExpression *)condition commands:(NSArray<UDGuiScriptCommand *> *)commands {
+    self = [super init];
+    if (self) {
+        _condition = condition;
+        _commands = [commands copy];
+    }
+    return self;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone {
+    return self;
+}
+
+- (UDGuiIfBranch *)deepCopy {
+    NSMutableArray *copiedCommands = [NSMutableArray array];
+    for (UDGuiScriptCommand *cmd in self.commands) {
+        [copiedCommands addObject:[cmd deepCopy]];
+    }
+    return [[UDGuiIfBranch alloc] initWithCondition:[self.condition deepCopy] commands:copiedCommands];
+}
+
+@end
+
+@implementation UDGuiIfCommand
+
+@synthesize branches = _branches;
+
+- (instancetype)initWithBranches:(NSArray<UDGuiIfBranch *> *)branches {
+    self = [super initWithKeyword:@"if" arguments:@""];
+    if (self) {
+        _branches = [branches copy];
+    }
+    return self;
+}
+
+- (NSString *)serializedStatement {
+    NSMutableString *result = [NSMutableString string];
+    for (NSUInteger idx = 0; idx < self.branches.count; idx++) {
+        UDGuiIfBranch *branch = [self.branches objectAtIndex:idx];
+        if (idx > 0) {
+            [result appendString:@" "];
+        }
+        if (branch.condition) {
+            if (idx == 0) {
+                [result appendFormat:@"if ( %@ ) {", [branch.condition serializedString]];
+            } else {
+                [result appendFormat:@"else if ( %@ ) {", [branch.condition serializedString]];
+            }
+        } else {
+            [result appendString:@"else {"];
+        }
+        
+        for (UDGuiScriptCommand *cmd in branch.commands) {
+            [result appendFormat:@" %@ ;", [cmd serializedStatement]];
+        }
+        
+        [result appendString:@" }"];
+    }
+    return result;
+}
+
+- (UDGuiScriptCommand *)deepCopy {
+    NSMutableArray *copiedBranches = [NSMutableArray array];
+    for (UDGuiIfBranch *branch in self.branches) {
+        [copiedBranches addObject:[branch deepCopy]];
+    }
+    return [[UDGuiIfCommand alloc] initWithBranches:copiedBranches];
+}
+
+@end

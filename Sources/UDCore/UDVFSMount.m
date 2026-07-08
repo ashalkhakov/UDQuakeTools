@@ -2,12 +2,6 @@
 
 @implementation UDVFSMount
 
-- (instancetype)init {
-    self = [self initWithIdentifier:@"empty" kind:UDVFSMountKindDirectory sourceURL:[NSURL fileURLWithPath:@"/dev/null"] virtualRoot:@"empty" priority:0 mountOrder:0];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 @synthesize identifier = _identifier;
 @synthesize kind = _kind;
 @synthesize sourceURL = _sourceURL;

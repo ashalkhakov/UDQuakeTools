@@ -66,12 +66,6 @@ static NSComparisonResult UDCompareDeclDefinitionsForSortField(UDDeclDefinition 
 
 @implementation UDDeclDefinition
 
-- (instancetype)init {
-    self = [self initWithDeclType:@"empty" declName:@"empty" body:@"empty" sourceVirtualPath:@"empty"];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 @synthesize declType = _declType;
 @synthesize declName = _declName;
 @synthesize body = _body;
@@ -107,12 +101,6 @@ static NSComparisonResult UDCompareDeclDefinitionsForSortField(UDDeclDefinition 
 @implementation UDDeclModel
 
 @synthesize definitions = _definitions;
-
-- (instancetype)init {
-    self = [self initWithDefinitions:@[]];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 - (instancetype)initWithDefinitions:(NSArray<UDDeclDefinition *> *)definitions {
     NSParameterAssert(definitions != nil);

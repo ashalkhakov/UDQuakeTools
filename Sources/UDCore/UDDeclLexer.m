@@ -35,12 +35,6 @@ static BOOL UDDeclLexerIsTokenCharacter(unichar character) {
 
 @implementation UDIdLexer
 
-- (instancetype)init {
-    self = [self initWithText:@""];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 - (instancetype)initWithText:(NSString *)text {
     self = [super init];
     if (self) {

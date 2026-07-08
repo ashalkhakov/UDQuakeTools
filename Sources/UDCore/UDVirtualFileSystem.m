@@ -99,12 +99,6 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 @synthesize sourcePath = _sourcePath;
 @synthesize fileURL = _fileURL;
 
-- (instancetype)init {
-    self = [self initWithVirtualPath:@"empty" mount:[[UDVFSMount alloc] initWithIdentifier:@"empty" kind:UDVFSMountKindDirectory sourceURL:[NSURL fileURLWithPath:@"/dev/null"] virtualRoot:@"empty" priority:0 mountOrder:0] contentSource:(id<UDContentSource>)[NSNull null] length:0 sourcePath:@"empty" fileURL:[NSURL fileURLWithPath:@"/dev/null"]];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 - (instancetype)initWithVirtualPath:(NSString *)virtualPath
                               mount:(UDVFSMount *)mount
                       contentSource:(id<UDContentSource>)contentSource
@@ -232,10 +226,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 }
 
 - (NSArray<NSString *> *)allRelativePaths:(NSError **)error {
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtURL:_directoryURL
-                                                             includingPropertiesForKeys:@[NSURLIsRegularFileKey]
-                                                                                options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                                           errorHandler:nil];
+    NSString *basePath = [_directoryURL.absoluteURL.path stringByStandardizingPath];
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:basePath];
     if (!enumerator) {
         if (error) {
             *error = [NSError errorWithDomain:UDVFSErrorDomain
@@ -245,44 +237,18 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return @[];
     }
 
-    NSString *basePath = [[_directoryURL.absoluteURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
-    NSString *basePrefix = [basePath stringByAppendingString:@"/"];
-
     NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSString *> *paths = [NSMutableArray array];
-    for (NSURL *fileURL in enumerator) {
-        NSURL *absoluteFileURL = fileURL.absoluteURL;
-        NSNumber *isRegularFile = nil;
-        BOOL success = [absoluteFileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
-        if (!success || isRegularFile == nil) {
-            BOOL isDirectory = NO;
-            BOOL exists = [fm fileExistsAtPath:absoluteFileURL.path isDirectory:&isDirectory];
-            isRegularFile = @(exists && !isDirectory);
-        }
-        if (![isRegularFile boolValue]) {
+    for (NSString *relativePath in enumerator) {
+        NSString *fullPath = [basePath stringByAppendingPathComponent:relativePath];
+        BOOL isDirectory = NO;
+        if (![fm fileExistsAtPath:fullPath isDirectory:&isDirectory] || isDirectory) {
             continue;
         }
 
-        NSString *filePath = [[absoluteFileURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
-        NSString *relativePath = nil;
-        if ([filePath hasPrefix:basePrefix]) {
-            relativePath = [filePath substringFromIndex:basePrefix.length];
-        } else if (![filePath hasPrefix:@"/"]) {
-            relativePath = filePath;
-        } else {
-            // Fallback: try match without resolving symlinks in case of resolution differences
-            NSString *filePathStandard = [absoluteFileURL.path stringByStandardizingPath];
-            NSString *basePrefixStandard = [[_directoryURL.absoluteURL.path stringByStandardizingPath] stringByAppendingString:@"/"];
-            if ([filePathStandard hasPrefix:basePrefixStandard]) {
-                relativePath = [filePathStandard substringFromIndex:basePrefixStandard.length];
-            } else {
-                continue;
-            }
-        }
-
-        relativePath = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-        if (relativePath.length > 0) {
-            [paths addObject:relativePath];
+        NSString *normalized = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        if (normalized.length > 0) {
+            [paths addObject:normalized];
         }
     }
 

@@ -255,12 +255,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 
 @implementation UDGuiProperty
 
-- (instancetype)init {
-    self = [self initWithKey:@"empty" value:@""];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 @synthesize key = _key;
 @synthesize value = _value;
 
@@ -281,12 +275,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 @end
 
 @implementation UDGuiVariableDefinition
-
-- (instancetype)init {
-    self = [self initWithType:UDGuiVariableDefinitionTypeFloat name:@"empty" value:@""];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 @synthesize type = _type;
 @synthesize name = _name;
@@ -316,12 +304,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 @end
 
 @implementation UDGuiScriptCommand
-
-- (instancetype)init {
-    self = [self initWithKeyword:@"empty" arguments:@""];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 @synthesize keyword = _keyword;
 @synthesize arguments = _arguments;
@@ -486,12 +468,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
     NSMutableArray<UDGuiScriptCommand *> *_mutableCommands;
 }
 
-- (instancetype)init {
-    self = [self initWithType:UDGuiEventHandlerTypeOnTime];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 @synthesize type = _type;
 
 - (instancetype)initWithType:(UDGuiEventHandlerType)type {
@@ -635,12 +611,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 @end
 
 @implementation UDGuiWindowNode
-
-- (instancetype)init {
-    self = [self initWithClassName:@"empty" name:@"empty"];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 @synthesize className = _className;
 @synthesize name = _name;
@@ -1693,12 +1663,6 @@ BOOL UDGuiIsCommaSeparatedAlignmentList(NSString *value) {
 @end
 
 @implementation UDGuiDocument
-
-- (instancetype)init {
-    self = [self initWithSourceVirtualPath:@"empty"];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 @synthesize sourceVirtualPath = _sourceVirtualPath;
 

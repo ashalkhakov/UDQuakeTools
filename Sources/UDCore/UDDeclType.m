@@ -11,17 +11,6 @@
 
 @implementation UDDeclTypeDescriptor
 
-- (instancetype)init {
-    self = [self initWithIdentifier:@"empty" displayName:@"empty" sourceFileExtensions:@[] defaultDirectory:@"empty" supportedGameTypes:[NSSet set]];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
-+ (instancetype)new {
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
 @synthesize identifier = _identifier;
 @synthesize displayName = _displayName;
 @synthesize sourceFileExtensions = _sourceFileExtensions;

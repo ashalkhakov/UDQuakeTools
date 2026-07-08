@@ -4,17 +4,10 @@
  */
 
 #import "UDDeclPersistence.h"
-#import "UDCodecRegistry.h"
 
 static NSString *const UDDeclParserErrorDomain = @"com.udquake.error.declparser";
 
 @implementation UDVFSDeclPersistenceAdapter
-
-- (instancetype)init {
-    self = [self initWithVirtualFileSystem:[[UDVirtualFileSystem alloc] initWithCodecRegistry:[UDCodecRegistry sharedRegistry]]];
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
 
 @synthesize virtualFileSystem = _virtualFileSystem;
 

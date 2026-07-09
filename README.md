@@ -12,8 +12,7 @@ It ships as a single AppImage on Linux containing a launcher and all tools.
 
 ## Project Layout
 
-- `Sources/UDCore`: Foundation-only domain model and editor logic (built as `libUDCore`)
-- `Sources/UDFormats`: Archive codecs — PAK, PK3, PK4, … (built as `libUDFormats`)
+- `Sources/UDCore`: Foundation-only domain model, editor logic and archive codecs — PAK, PK3, PK4, … (built as `libUDCore`)
 - `Sources/UDLauncher`: Launcher application linking bundled tools
 - `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
 - `Sources/DeclBrowser`: Decl Browser GUI app
@@ -51,7 +50,6 @@ From the repository root (after running `./Scripts/build-gnustep.sh`):
 ```bash
 # 1. Build and install shared libraries
 cd Sources/UDCore   && make && make install && cd -
-cd Sources/UDFormats && make && make install && cd -
 
 # 2. Build all apps
 for app in UDLauncher PakManager DeclBrowser GuiEd; do
@@ -82,7 +80,7 @@ Run tests using your active build system/scheme:
 
 - Xcode: run the `UDQuakeToolsTests` target
 - GNUstep: `cd Tests && make run-tests`
-  (requires UDCore and UDFormats libraries to be installed first)
+  (requires the UDCore library to be installed first)
 
 ## Notes
 

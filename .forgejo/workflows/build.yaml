@@ -52,15 +52,6 @@ jobs:
           make
           make install
 
-      - name: Build and Install UDFormats Library
-        run: |
-          export LOCAL_PREFIX="/opt/gnustep-prefix"
-          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-
-          cd Sources/UDFormats
-          make
-          make install
 
       - name: Build Apps
         run: |

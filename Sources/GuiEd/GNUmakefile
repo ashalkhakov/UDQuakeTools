@@ -54,4 +54,6 @@ GuiEd_RESOURCE_FILES = \
     UDEvents.xib \
     GuiEd-Info.plist
 
+ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
+
 include $(GNUSTEP_MAKEFILES)/application.make

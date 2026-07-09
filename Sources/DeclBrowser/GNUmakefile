@@ -52,6 +52,6 @@ DeclBrowser_RESOURCE_FILES = \
     UDDeclBrowserWindow.xib \
     DeclBrowser-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip
+ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

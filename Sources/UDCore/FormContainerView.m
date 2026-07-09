@@ -257,8 +257,10 @@
 
 - (void)invalidateIntrinsicContentSize
 {
+#if !GNUSTEP
     [super invalidateIntrinsicContentSize];
     // On GNUstep or older systems this may be a no-op; layoutEntries still works.
+#endif
 }
 
 #pragma mark - Key View Chain

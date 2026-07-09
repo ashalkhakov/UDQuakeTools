@@ -11,7 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef GNUSTEP
+@interface UDDeclBrowserWindowController : NSWindowController <NSBrowserDelegate, NSTextFieldDelegate> {
+#else
 @interface UDDeclBrowserWindowController : NSWindowController <NSBrowserDelegate, NSSearchFieldDelegate> {
+#endif
     __unsafe_unretained IBOutlet NSSearchField *_searchField;
     __unsafe_unretained IBOutlet NSPopUpButton *_gamePopUpButton;
     __unsafe_unretained IBOutlet NSBrowser *_browser;

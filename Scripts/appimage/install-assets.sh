@@ -16,6 +16,11 @@ case "$app_id" in
 		app_bundle_id="com.udquake.declbrowser"
 		app_source_dir="DeclBrowser"
 		;;
+    GuiEd)
+        app_display_name="GUI Editor"
+        app_bundle_id="com.udquake.guied"
+        app_source_dir="GuiEd"
+        ;;
 	*)
 		echo "Error: unsupported APP_ID '$app_id'"
 		exit 1

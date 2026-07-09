@@ -226,10 +226,8 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 }
 
 - (NSArray<NSString *> *)allRelativePaths:(NSError **)error {
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtURL:_directoryURL
-                                                             includingPropertiesForKeys:@[NSURLIsRegularFileKey]
-                                                                                options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                                           errorHandler:nil];
+    NSString *basePath = [_directoryURL.absoluteURL.path stringByStandardizingPath];
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:basePath];
     if (!enumerator) {
         if (error) {
             *error = [NSError errorWithDomain:UDVFSErrorDomain
@@ -239,26 +237,18 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return @[];
     }
 
-    NSString *basePath = [[_directoryURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
-    NSString *basePrefix = [basePath stringByAppendingString:@"/"];
-
+    NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSString *> *paths = [NSMutableArray array];
-    for (NSURL *fileURL in enumerator) {
-        NSNumber *isRegularFile = nil;
-        [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
-        if (![isRegularFile boolValue]) {
+    for (NSString *relativePath in enumerator) {
+        NSString *fullPath = [basePath stringByAppendingPathComponent:relativePath];
+        BOOL isDirectory = NO;
+        if (![fm fileExistsAtPath:fullPath isDirectory:&isDirectory] || isDirectory) {
             continue;
         }
 
-        NSString *filePath = [[fileURL.path stringByStandardizingPath] stringByResolvingSymlinksInPath];
-        if (![filePath hasPrefix:basePrefix]) {
-            continue;
-        }
-
-        NSString *relativePath = [filePath substringFromIndex:basePrefix.length];
-        relativePath = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-        if (relativePath.length > 0) {
-            [paths addObject:relativePath];
+        NSString *normalized = [relativePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        if (normalized.length > 0) {
+            [paths addObject:normalized];
         }
     }
 
@@ -286,12 +276,12 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
     }
 
     BOOL isDirectory = NO;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDirectory] || isDirectory) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.absoluteURL.path isDirectory:&isDirectory] || isDirectory) {
         return nil;
     }
 
     NSError *attrsError = nil;
-    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&attrsError];
+    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.absoluteURL.path error:&attrsError];
     if (!attrs) {
         if (error) {
             *error = attrsError;
@@ -577,10 +567,16 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         [mountedArchivePaths addObject:mount.sourceURL.path.stringByStandardizingPath];
     }
 
+    NSFileManager *fm = [NSFileManager defaultManager];
     NSMutableArray<NSURL *> *candidates = [NSMutableArray array];
     for (NSURL *entryURL in contents) {
         NSNumber *isRegularFile = nil;
-        [entryURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        BOOL success = [entryURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+        if (!success || isRegularFile == nil) {
+            BOOL isDirectory = NO;
+            BOOL exists = [fm fileExistsAtPath:entryURL.path isDirectory:&isDirectory];
+            isRegularFile = @(exists && !isDirectory);
+        }
         if (![isRegularFile boolValue]) {
             continue;
         }
@@ -858,6 +854,30 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 
     NSError *replaceError = nil;
     if ([fm fileExistsAtPath:targetURL.path]) {
+#ifdef GNUSTEP
+        // Manual atomic replacement for GNUstep (no native replaceItemAtURL support)
+        NSError *removeError = nil;
+        if (![fm removeItemAtURL:targetURL error:&removeError]) {
+            NSError *cleanupError = nil;
+            if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
+                NSLog(@"UDVirtualFileSystem: Failed to remove temporary file at %@ after failed target removal: %@", tempURL, cleanupError);
+            }
+            if (error) {
+                *error = removeError;
+            }
+            return NO;
+        }
+        if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
+            NSError *cleanupError = nil;
+            if (![fm removeItemAtURL:tempURL error:&cleanupError]) {
+                NSLog(@"UDVirtualFileSystem: Failed to remove temporary file at %@ after failed move operation: %@", tempURL, cleanupError);
+            }
+            if (error) {
+                *error = replaceError;
+            }
+            return NO;
+        }
+#else
         if (![fm replaceItemAtURL:targetURL
                     withItemAtURL:tempURL
                    backupItemName:nil
@@ -872,6 +892,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
             }
             return NO;
         }
+#endif
     } else if (![fm moveItemAtURL:tempURL toURL:targetURL error:&replaceError]) {
         [fm removeItemAtURL:tempURL error:nil];
         if (error) {
@@ -892,18 +913,40 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
 }
 
 - (NSArray<UDVFSMount *> *)sortedMountsForResolution {
-    return [_mounts sortedArrayUsingComparator:^NSComparisonResult(UDVFSMount *left, UDVFSMount *right) {
-        if ([self mount:left shouldSortBefore:right]) {
-            return NSOrderedAscending;
+    return [_mounts sortedArrayUsingComparator:^NSComparisonResult(UDVFSMount *a, UDVFSMount *b) {
+        if (a == b) {
+            return NSOrderedSame;
         }
-        if ([self mount:right shouldSortBefore:left]) {
-            return NSOrderedDescending;
+
+        if (a.priority != b.priority) {
+            return (a.priority > b.priority) ? NSOrderedAscending : NSOrderedDescending;
         }
+
+        if (a.kind != b.kind) {
+            /* Loose files should override archives at the same priority. */
+            return (a.kind == UDVFSMountKindDirectory) ? NSOrderedAscending : NSOrderedDescending;
+        }
+
+        if (a.kind == UDVFSMountKindArchive && b.kind == UDVFSMountKindArchive) {
+            NSComparisonResult archiveCompare = [self compareArchiveMountPrecedence:a other:b];
+            if (archiveCompare != NSOrderedSame) {
+                return archiveCompare;
+            }
+        }
+
+        if (a.mountOrder != b.mountOrder) {
+            return (a.mountOrder > b.mountOrder) ? NSOrderedAscending : NSOrderedDescending;
+        }
+
         return NSOrderedSame;
     }];
 }
 
 - (BOOL)mount:(UDVFSMount *)a shouldSortBefore:(UDVFSMount *)b {
+    if (a == b) {
+        return NO;
+    }
+
     if (a.priority != b.priority) {
         return (a.priority > b.priority);
     }
@@ -927,7 +970,7 @@ typedef NS_ENUM(NSInteger, UDVFSErrorCode) {
         return (a.mountOrder > b.mountOrder);
     }
 
-    return YES;
+    return NO;
 }
 
 - (NSComparisonResult)compareArchiveMountPrecedence:(UDVFSMount *)a other:(UDVFSMount *)b {

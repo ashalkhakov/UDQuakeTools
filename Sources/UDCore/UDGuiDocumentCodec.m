@@ -892,7 +892,7 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         }
 
         NSString *keyword = token.text ?: @"";
-        NSMutableArray<NSString *> *arguments = [NSMutableArray array];
+        NSMutableArray<UDIdToken *> *argTokens = [NSMutableArray array];
 
         while (YES) {
             UDIdToken *argToken = [cursor readToken];
@@ -914,11 +914,25 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
             }
 
             if (argToken.text.length > 0) {
-                [arguments addObject:argToken.text];
+                [argTokens addObject:argToken];
             }
         }
 
-        [commands addObject:[self scriptCommandWithKeyword:keyword arguments:[arguments componentsJoinedByString:@" "]]];
+        NSMutableString *argsStr = [NSMutableString string];
+        for (NSUInteger argIdx = 0; argIdx < argTokens.count; argIdx++) {
+            UDIdToken *curToken = [argTokens objectAtIndex:argIdx];
+            NSString *tokenText = [self normalizedRawScriptTokenText:curToken];
+            if (argIdx > 0) {
+                if ([tokenText isEqualToString:@","]) {
+                    // No space before comma
+                } else {
+                    [argsStr appendString:@" "];
+                }
+            }
+            [argsStr appendString:tokenText];
+        }
+
+        [commands addObject:[self scriptCommandWithKeyword:keyword arguments:argsStr]];
     }
 
     return [commands copy];
@@ -1121,6 +1135,19 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
     }
 
     if (token.kind == UDIdTokenKindString) {
+        BOOL isVariable = NO;
+        if (token.text.length > 0) {
+            NSMutableCharacterSet *allowedSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+            [allowedSet addCharactersInString:@"_:."];
+            NSCharacterSet *invalidVariableCharSet = [allowedSet invertedSet];
+            NSRange range = [token.text rangeOfCharacterFromSet:invalidVariableCharSet];
+            if (range.location == NSNotFound) {
+                isVariable = YES;
+            }
+        }
+        if (isVariable) {
+            return [[UDGuiVariableExpression alloc] initWithName:token.text];
+        }
         return [[UDGuiStringLiteralExpression alloc] initWithValue:token.text];
     }
 
@@ -1258,8 +1285,19 @@ typedef BOOL (^UDGuiWindowEntryVisitBlock)(UDGuiWindowEntryVisitContext *context
         [collapsed addObject:current];
     }
 
-    NSString *normalized = [[collapsed componentsJoinedByString:@" "]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSMutableString *normalizedStr = [NSMutableString string];
+    for (NSUInteger idx = 0; idx < collapsed.count; idx++) {
+        NSString *current = [collapsed objectAtIndex:idx];
+        if (idx > 0) {
+            if ([current isEqualToString:@","]) {
+                // No space before comma
+            } else {
+                [normalizedStr appendString:@" "];
+            }
+        }
+        [normalizedStr appendString:current];
+    }
+    NSString *normalized = [normalizedStr stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     return [normalized stringByReplacingOccurrencesOfString:@"\"" withString:@""];
 }
 

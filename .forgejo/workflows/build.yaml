@@ -15,8 +15,8 @@ permissions:
   contents: read
 
 jobs:
-  build-linux-pakmanager-appimage:
-    name: Build and Package PakManager AppImage
+  build-linux-appimage:
+    name: Build and Package UDQuakeTools AppImage
     runs-on: [linux-amd64, clang]
     steps:
       - name: Checkout repository
@@ -38,138 +38,59 @@ jobs:
                "${{ github.server_url }}/api/packages/${{ github.repository_owner }}/generic/gnustep-toolchain/latest/gnustep-toolchain.tar.gz"
 
           echo "=== Extracting Toolchain to /opt ==="
-          # Extract the tarball directly into /opt (restores /opt/gnustep-prefix)
           tar -xzvf gnustep-toolchain.tar.gz -C /opt
-          
-          # Verify the core Makefile exists where it should
+
           ls -la /opt/gnustep-prefix/System/Library/Makefiles/GNUstep.sh
 
-      - name: Build PakManager App
+      - name: Build and Install UDCore Library
         run: |
           export LOCAL_PREFIX="/opt/gnustep-prefix"
-
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-          
-          cd Sources/PakManager
+
+          cd Sources/UDCore
           make
+          make install
+
+      - name: Build and Install UDFormats Library
+        run: |
+          export LOCAL_PREFIX="/opt/gnustep-prefix"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+
+          cd Sources/UDFormats
+          make
+          make install
+
+      - name: Build Apps
+        run: |
+          export LOCAL_PREFIX="/opt/gnustep-prefix"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+
+          for app in UDLauncher PakManager DeclBrowser GuiEd; do
+            cd "Sources/${app}"
+            make
+            cd "${GITHUB_WORKSPACE}"
+          done
 
       - name: Run Tests
         run: |
           export LOCAL_PREFIX="/opt/gnustep-prefix"
-          
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-          
+
           cd Tests
           make run-tests
 
-      - name: Prepare PakManager AppDir
-        run: APP_ID=PakManager APP_SOURCE_DIR=PakManager APP_BUNDLE_NAME=PakManager.app ./Scripts/prepare-appdir.sh
+      - name: Prepare AppDir
+        run: ./Scripts/prepare-appdir.sh
 
-      - name: Package PakManager AppImage via linuxdeploy
-        run: APP_ID=PakManager ./Scripts/package-appimage.sh
+      - name: Package UDQuakeTools AppImage via linuxdeploy
+        run: ./Scripts/package-appimage.sh
 
-      - name: Upload PakManager AppImage Artifact
+      - name: Upload UDQuakeTools AppImage Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: PakManager-Linux-${{ env.APP_VERSION }}
-          path: ./PakManager-Linux-${{ env.APP_VERSION }}.AppImage
-
-  build-linux-declbrowser-appimage:
-    name: Build and Package DeclBrowser AppImage
-    runs-on: [linux-amd64, clang]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Version Environment Variable
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "APP_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
-          fi
-
-      - name: Download and Install GNUstep Toolchain
-        run: |
-          echo "=== Downloading Pre-compiled Toolchain ==="
-          curl -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" \
-               -o gnustep-toolchain.tar.gz \
-               "${{ github.server_url }}/api/packages/${{ github.repository_owner }}/generic/gnustep-toolchain/latest/gnustep-toolchain.tar.gz"
-
-          echo "=== Extracting Toolchain to /opt ==="
-          tar -xzvf gnustep-toolchain.tar.gz -C /opt
-
-          ls -la /opt/gnustep-prefix/System/Library/Makefiles/GNUstep.sh
-
-      - name: Build DeclBrowser App
-        run: |
-          export LOCAL_PREFIX="/opt/gnustep-prefix"
-
-          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-
-          cd Sources/DeclBrowser
-          make
-
-      - name: Prepare DeclBrowser AppDir
-        run: APP_ID=DeclBrowser APP_SOURCE_DIR=DeclBrowser APP_BUNDLE_NAME=DeclBrowser.app ./Scripts/prepare-appdir.sh
-
-      - name: Package DeclBrowser AppImage via linuxdeploy
-        run: APP_ID=DeclBrowser ./Scripts/package-appimage.sh
-
-      - name: Upload DeclBrowser AppImage Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: DeclBrowser-Linux-${{ env.APP_VERSION }}
-          path: ./DeclBrowser-Linux-${{ env.APP_VERSION }}.AppImage
-
-  build-linux-guied-appimage:
-    name: Build and Package GuiEd AppImage
-    runs-on: [linux-amd64, clang]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Version Environment Variable
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "APP_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            echo "APP_VERSION=1.0.0-build${{ github.run_number }}" >> $GITHUB_ENV
-          fi
-
-      - name: Download and Install GNUstep Toolchain
-        run: |
-          echo "=== Downloading Pre-compiled Toolchain ==="
-          curl -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" \
-               -o gnustep-toolchain.tar.gz \
-               "${{ github.server_url }}/api/packages/${{ github.repository_owner }}/generic/gnustep-toolchain/latest/gnustep-toolchain.tar.gz"
-
-          echo "=== Extracting Toolchain to /opt ==="
-          tar -xzvf gnustep-toolchain.tar.gz -C /opt
-
-          ls -la /opt/gnustep-prefix/System/Library/Makefiles/GNUstep.sh
-
-      - name: Build GuiEd App
-        run: |
-          export LOCAL_PREFIX="/opt/gnustep-prefix"
-
-          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-
-          cd Sources/GuiEd
-          make
-
-      - name: Prepare GuiEd AppDir
-        run: APP_ID=GuiEd APP_SOURCE_DIR=GuiEd APP_BUNDLE_NAME=GuiEd.app ./Scripts/prepare-appdir.sh
-
-      - name: Package GuiEd AppImage via linuxdeploy
-        run: APP_ID=GuiEd ./Scripts/package-appimage.sh
-
-      - name: Upload GuiEd AppImage Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: GuiEd-Linux-${{ env.APP_VERSION }}
-          path: ./GuiEd-Linux-${{ env.APP_VERSION }}.AppImage
+          name: UDQuakeTools-Linux-${{ env.APP_VERSION }}
+          path: ./UDQuakeTools-Linux-${{ env.APP_VERSION }}.AppImage

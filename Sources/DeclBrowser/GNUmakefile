@@ -11,41 +11,13 @@ DeclBrowser_OBJC_FILES = \
     UDDeclBrowserAppDelegate.m \
     UDDeclBrowserTreeModel.m \
     UDDeclBrowserViewModel.m \
-    UDDeclBrowserWindowController.m \
-    ../UDCore/UDAssetIndex.m \
-    ../UDCore/UDDeclLexer.m \
-    ../UDCore/UDDeclParser.m \
-    ../UDCore/UDDeclModel.m \
-    ../UDCore/UDDeclPersistence.m \
-    ../UDCore/UDDeclType.m \
-    ../UDCore/UDDeclManager.m \
-    ../UDCore/UDGuiModel.m \
-    ../UDCore/UDGuiDocumentCodec.m \
-    ../UDCore/UDGuiEditorService.m \
-    ../UDCore/UDGuiEventsProcessingService.m \
-    ../UDCore/UDGuiEditorViewModel.m \
-    ../UDCore/UDGame.m \
-    ../UDCore/UDGameDetectionService.m \
-    ../UDCore/UDArchive.m \
-    ../UDCore/UDArchiveEntry.m \
-    ../UDCore/UDDirectoryNode.m \
-    ../UDCore/UDArchiveMutation.m \
-    ../UDCore/UDArchiveEditor.m \
-    ../UDCore/UDVFSMount.m \
-    ../UDCore/UDVirtualFileSystem.m \
-    ../UDFormats/UDCodecRegistry.m \
-    ../UDFormats/UDPAKCodec.m \
-    ../UDFormats/UDPAKEntrySource.m \
-    ../UDFormats/UDStagedFileSource.m \
-    ../UDFormats/UDPAK2Codec.m \
-    ../UDFormats/UDDaikatanaPAKCodec.m \
-    ../UDFormats/UDPK3Codec.m \
-    ../UDFormats/UDPK3ZIPEntrySource.m \
-    ../UDFormats/UDPK4Codec.m
+    UDDeclBrowserWindowController.m
 
 DeclBrowser_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
+
+DeclBrowser_LIBRARIES = UDCore UDFormats
 
 DeclBrowser_RESOURCE_FILES = \
     MainMenu.xib \

@@ -16,41 +16,13 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDVirtualFileSystemTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
-    UDGameDetectionTests.m \
-    ../Sources/UDCore/UDGame.m \
-    ../Sources/UDCore/UDGameDetectionService.m \
-    ../Sources/UDCore/UDArchive.m \
-    ../Sources/UDCore/UDAssetIndex.m \
-    ../Sources/UDCore/UDDeclLexer.m \
-    ../Sources/UDCore/UDDeclParser.m \
-    ../Sources/UDCore/UDDeclModel.m \
-    ../Sources/UDCore/UDDeclPersistence.m \
-    ../Sources/UDCore/UDDeclType.m \
-    ../Sources/UDCore/UDDeclManager.m \
-    ../Sources/UDCore/UDGuiModel.m \
-    ../Sources/UDCore/UDGuiDocumentCodec.m \
-    ../Sources/UDCore/UDGuiEditorService.m \
-    ../Sources/UDCore/UDGuiEventsProcessingService.m \
-    ../Sources/UDCore/UDGuiEditorViewModel.m \
-    ../Sources/UDCore/UDArchiveEntry.m \
-    ../Sources/UDCore/UDArchiveEditor.m \
-    ../Sources/UDCore/UDArchiveMutation.m \
-    ../Sources/UDCore/UDDirectoryNode.m \
-    ../Sources/UDCore/UDVFSMount.m \
-    ../Sources/UDCore/UDVirtualFileSystem.m \
-    ../Sources/UDFormats/UDCodecRegistry.m \
-    ../Sources/UDFormats/UDPAKCodec.m \
-    ../Sources/UDFormats/UDPAK2Codec.m \
-    ../Sources/UDFormats/UDDaikatanaPAKCodec.m \
-    ../Sources/UDFormats/UDPAKEntrySource.m \
-    ../Sources/UDFormats/UDStagedFileSource.m \
-    ../Sources/UDFormats/UDPK3Codec.m \
-    ../Sources/UDFormats/UDPK3ZIPEntrySource.m \
-    ../Sources/UDFormats/UDPK4Codec.m
+    UDGameDetectionTests.m
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
+
+UDQuakeToolsTests_LIBRARIES = UDCore UDFormats
 
 ADDITIONAL_LDFLAGS += -lzip -lXCTest
 

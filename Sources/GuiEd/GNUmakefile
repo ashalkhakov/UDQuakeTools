@@ -24,20 +24,13 @@ GuiEd_OBJC_FILES = \
     UDEventsController.m \
     UDVariablesController.m \
     UDOutlinePaneController.m \
-    ../UDCore/UDDeclLexer.m \
-    ../UDCore/UDDeclParser.m \
-    ../UDCore/UDDeclModel.m \
-    ../UDCore/UDDeclType.m \
-    ../UDCore/UDGuiModel.m \
-    ../UDCore/UDGuiDocumentCodec.m \
-    ../UDCore/UDGuiEditorService.m \
-    ../UDCore/UDGuiEventsProcessingService.m \
-    ../UDCore/UDGuiEditorViewModel.m \
     ../UDCore/FormContainerView.m \
     UDInspectorIcons.m
 
 GuiEd_INCLUDE_DIRS = \
     -I../UDCore
+
+GuiEd_LIBRARIES = UDCore
 
 GuiEd_RESOURCE_FILES = \
     MainMenu.xib \

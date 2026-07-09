@@ -181,6 +181,10 @@
 		EE01000A00000000000000AA /* UDInspectableOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE00010D00000000000000AA /* UDInspectableOutlineView.m */; };
 		EE01000B00000000000000AA /* UDDeclType.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA103042FF5000000A10001 /* UDDeclType.m */; };
 		EE01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		FF01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010000000000000000AA /* main.m */; };
+		FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010100000000000000AA /* UDLauncherAppDelegate.m */; };
+		FF01000200000000000000AA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF00010300000000000000AA /* MainMenu.xib */; };
+		FF01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -344,6 +348,12 @@
 		EE00010C00000000000000AA /* UDInspectableOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDInspectableOutlineView.h; sourceTree = "<group>"; };
 		EE00010D00000000000000AA /* UDInspectableOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDInspectableOutlineView.m; sourceTree = "<group>"; };
 		EE00050000000000000000AA /* GuiEd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuiEd.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FF00010100000000000000AA /* UDLauncherAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDLauncherAppDelegate.m; sourceTree = "<group>"; };
+		FF00010200000000000000AA /* UDLauncherAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDLauncherAppDelegate.h; sourceTree = "<group>"; };
+		FF00010300000000000000AA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		FF00010400000000000000AA /* UDLauncher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDLauncher-Info.plist"; sourceTree = "<group>"; };
+		FF00050000000000000000AA /* UDLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UDLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -388,6 +398,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF03000100000000000000AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF01001000000000000000AA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -398,6 +416,7 @@
 				AA00000400000000000000AA /* PakManager */,
 				DD00000400000000000000AA /* DeclBrowser */,
 				EE00000400000000000000AA /* GuiEd */,
+				FF00000400000000000000AA /* UDLauncher */,
 				AA00000500000000000000AA /* UDCore */,
 				AA00000600000000000000AA /* UDFormats */,
 				AA00000700000000000000AA /* Tools */,
@@ -414,6 +433,7 @@
 				EE00050000000000000000AA /* GuiEd.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
+				FF00050000000000000000AA /* UDLauncher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -520,6 +540,19 @@
 			);
 			name = UDFormats;
 			path = Sources/UDFormats;
+			sourceTree = "<group>";
+		};
+		FF00000400000000000000AA /* UDLauncher */ = {
+			isa = PBXGroup;
+			children = (
+				FF00010200000000000000AA /* UDLauncherAppDelegate.h */,
+				FF00010100000000000000AA /* UDLauncherAppDelegate.m */,
+				FF00010000000000000000AA /* main.m */,
+				FF00010300000000000000AA /* MainMenu.xib */,
+				FF00010400000000000000AA /* UDLauncher-Info.plist */,
+			);
+			name = UDLauncher;
+			path = Sources/UDLauncher;
 			sourceTree = "<group>";
 		};
 		AA00000700000000000000AA /* Tools */ = {
@@ -731,6 +764,23 @@
 			productReference = EE00050000000000000000AA /* GuiEd.app */;
 			productType = "com.apple.product-type.application";
 		};
+		FF04000000000000000000AA /* UDLauncher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDLauncher" */;
+			buildPhases = (
+				FF03000000000000000000AA /* Sources */,
+				FF03000100000000000000AA /* Frameworks */,
+				FF03000200000000000000AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UDLauncher;
+			productName = UDLauncher;
+			productReference = FF00050000000000000000AA /* UDLauncher.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -750,6 +800,9 @@
 						CreatedOnToolsVersion = 15.3;
 					};
 					EE04000000000000000000AA = {
+						CreatedOnToolsVersion = 15.3;
+					};
+					FF04000000000000000000AA = {
 						CreatedOnToolsVersion = 15.3;
 					};
 				};
@@ -772,6 +825,7 @@
 				DD04000000000000000000AA /* Decl Browser */,
 				EE04000000000000000000AA /* GuiEd */,
 				AA04000100000000000000AA /* udpaktool */,
+				FF04000000000000000000AA /* UDLauncher */,
 			);
 		};
 /* End PBXProject section */
@@ -812,6 +866,14 @@
 				CEB533512FF7B358003C1587 /* UDBindDefInspector.xib in Resources */,
 				CEF356072FF798B6004089A1 /* UDOutlinePane.xib in Resources */,
 				CEF356082FF798B6004089A1 /* UDInspector.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF03000200000000000000AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF01000200000000000000AA /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1003,6 +1065,15 @@
 				CE2816A12FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorViewModel.m in Sources */,
 				CE503D3C2FFA7BA4004EF5CA /* FormContainerView.m in Sources */,
 				EE01000B00000000000000AA /* UDDeclType.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF03000000000000000000AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF01000000000000000000AA /* main.m in Sources */,
+				FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1502,6 +1573,77 @@
 			};
 			name = Release;
 		};
+		FF05000000000000000000AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
+				PRODUCT_NAME = UDLauncher;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		FF05000100000000000000AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
+				PRODUCT_NAME = UDLauncher;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1555,6 +1697,15 @@
 			buildConfigurations = (
 				EE05000000000000000000AA /* Debug */,
 				EE05000100000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDLauncher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF05000000000000000000AA /* Debug */,
+				FF05000100000000000000AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -74,10 +74,26 @@ jobs:
           cd Tests
           make run-tests
 
+      - name: Cache AppImage runtime
+        uses: actions/cache@v3
+        id: cache-appimage-runtime
+        with:
+          path: /tmp/appimage-runtime
+          key: appimage-runtime-x86_64
+
+      - name: Download AppImage runtime (if not cached)
+        if: steps.cache-appimage-runtime.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/appimage-runtime
+          curl -L -o /tmp/appimage-runtime/runtime-x86_64 \
+            https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64
+
       - name: Prepare AppDir
         run: ./Scripts/prepare-appdir.sh
 
       - name: Package UDQuakeTools AppImage via linuxdeploy
+        env:
+          APPIMAGETOOL_SIGN_ARGS: --runtime-file /tmp/appimage-runtime/runtime-x86_64
         run: ./Scripts/package-appimage.sh
 
       - name: Upload UDQuakeTools AppImage Artifact

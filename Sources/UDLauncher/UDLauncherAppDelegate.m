@@ -10,6 +10,11 @@
 
 @implementation UDLauncherAppDelegate
 
+- (NSArray<NSString *> *)appNames
+{
+    return @[@"PakManager", @"DeclBrowser", @"GuiEd"];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
     NSRect frame = NSMakeRect(0, 0, 340, 220);
@@ -24,7 +29,7 @@
 
     NSView *contentView = [win contentView];
 
-    NSArray<NSString *> *appNames  = @[@"PakManager",  @"DeclBrowser", @"GuiEd"];
+    NSArray<NSString *> *appNames  = [self appNames];
     NSArray<NSString *> *appLabels = @[@"Pak Manager", @"Decl Browser", @"GUI Editor"];
 
     CGFloat buttonWidth  = 220.0;
@@ -52,8 +57,7 @@
 
 - (void)launchApp:(NSButton *)sender
 {
-    NSArray<NSString *> *appNames = @[@"PakManager", @"DeclBrowser", @"GuiEd"];
-    NSString *appName = appNames[(NSUInteger)sender.tag];
+    NSString *appName = [self appNames][(NSUInteger)sender.tag];
 
     /* Sibling apps live in the same Applications directory as UDLauncher. */
     NSString *appsDir = [[[NSBundle mainBundle] bundlePath]
@@ -87,7 +91,15 @@
 
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:appBin];
-    [task launch];
+    NSError *error = nil;
+    if (![task launchAndReturnError:&error]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Failed to launch application"];
+        [alert setInformativeText:
+            [NSString stringWithFormat:@"Could not launch %@: %@",
+             appName, [error localizedDescription]]];
+        [alert runModal];
+    }
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender

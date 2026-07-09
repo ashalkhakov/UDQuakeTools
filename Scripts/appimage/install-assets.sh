@@ -32,6 +32,8 @@ case "$app_id" in
 		;;
 esac
 
+app_id_lower=$(echo "$app_id" | tr '[:upper:]' '[:lower:]')
+
 mkdir -p "$appdir"
 
 cat > "$appdir/${app_id}.desktop" <<EOF
@@ -94,6 +96,9 @@ trap 'rm -rf "$XDG_CACHE_HOME" "$GNUSTEP_CONFIG_FILE"' EXIT
 
 DEFAULTS_TOOL=$(find "$HERE" -name defaults -type f -perm -111 | head -n 1)
 APPRUN_HEADER
+
+# Replace the placeholder app-id in temp file names with the actual lowercase app id.
+sed -i "s/udquaketools/${app_id_lower}/g" "$appdir/AppRun"
 
 # Emit the defaults-writing section and launcher. For UDQuakeTools, write
 # defaults for every bundled app so they all look consistent.

@@ -249,24 +249,15 @@
 		DC02000800000000000000AA /* UDPK4Codec.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00021200000000000000AA /* UDPK4Codec.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC02000900000000000000AA /* UDStagedFileSource.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00020D00000000000000AA /* UDStagedFileSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC03010000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
-		DC03010000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		DC03020000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		CC04010000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC04010000000000000000AA /* UDFormats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; };
-		DC04010100000000000000AA /* UDFormats.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC04020000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC04020000000000000000AA /* UDFormats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; };
-		DC04020100000000000000AA /* UDFormats.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC04030000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04030100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC04040000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		DC04040000000000000000AA /* UDFormats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; };
 		CC04050000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC04050000000000000000AA /* UDFormats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; };
-		DC04050100000000000000AA /* UDFormats.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC00050000000000000000AA /* UDFormats.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -277,7 +268,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */,
-				DC04010100000000000000AA /* UDFormats.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -289,7 +279,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
-				DC04020100000000000000AA /* UDFormats.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,7 +301,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */,
-				DC04050100000000000000AA /* UDFormats.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,26 +315,12 @@
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
 		};
-		DC07010000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC04000000000000000000AA;
-			remoteInfo = UDFormats;
-		};
 		CC07020000000000000000AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
-		};
-		DC07020000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC04000000000000000000AA;
-			remoteInfo = UDFormats;
 		};
 		CC07030000000000000000AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -362,28 +336,7 @@
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
 		};
-		DC07040000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC04000000000000000000AA;
-			remoteInfo = UDFormats;
-		};
 		CC07050000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		DC07050000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC04000000000000000000AA;
-			remoteInfo = UDFormats;
-		};
-		CC07060000000000000000AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
 			proxyType = 1;
@@ -398,20 +351,10 @@
 			target = CC04000000000000000000AA;
 			targetProxy = CC07010000000000000000AA /* PBXContainerItemProxy */;
 		};
-		DC07010100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC04000000000000000000AA;
-			targetProxy = DC07010000000000000000AA /* PBXContainerItemProxy */;
-		};
 		CC07020100000000000000AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA;
 			targetProxy = CC07020000000000000000AA /* PBXContainerItemProxy */;
-		};
-		DC07020100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC04000000000000000000AA;
-			targetProxy = DC07020000000000000000AA /* PBXContainerItemProxy */;
 		};
 		CC07030100000000000000AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -423,25 +366,10 @@
 			target = CC04000000000000000000AA;
 			targetProxy = CC07040000000000000000AA /* PBXContainerItemProxy */;
 		};
-		DC07040100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC04000000000000000000AA;
-			targetProxy = DC07040000000000000000AA /* PBXContainerItemProxy */;
-		};
 		CC07050100000000000000AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA;
 			targetProxy = CC07050000000000000000AA /* PBXContainerItemProxy */;
-		};
-		DC07050100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC04000000000000000000AA;
-			targetProxy = DC07050000000000000000AA /* PBXContainerItemProxy */;
-		};
-		CC07060100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA;
-			targetProxy = CC07060000000000000000AA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -613,7 +541,6 @@
 		FF00010400000000000000AA /* UDLauncher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDLauncher-Info.plist"; sourceTree = "<group>"; };
 		FF00050000000000000000AA /* UDLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UDLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC00050000000000000000AA /* UDCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC00050000000000000000AA /* UDFormats.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDFormats.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -623,7 +550,6 @@
 			files = (
 				AA01003000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04010000000000000000AA /* UDCore.framework in Frameworks */,
-				DC04010000000000000000AA /* UDFormats.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -633,7 +559,6 @@
 			files = (
 				AA02001000000000000000AA /* Foundation.framework in Frameworks */,
 				CC04040000000000000000AA /* UDCore.framework in Frameworks */,
-				DC04040000000000000000AA /* UDFormats.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,7 +569,6 @@
 				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
 				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
 				CC04050000000000000000AA /* UDCore.framework in Frameworks */,
-				DC04050000000000000000AA /* UDFormats.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,7 +578,6 @@
 			files = (
 				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04020000000000000000AA /* UDCore.framework in Frameworks */,
-				DC04020000000000000000AA /* UDFormats.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,15 +603,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC03010000000000000000AA /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC03000200000000000000AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DC03010000000000000000AA /* UDCore.framework in Frameworks */,
-				DC03020000000000000000AA /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -721,7 +635,6 @@
 				AA00050100000000000000AA /* udpaktool */,
 				FF00050000000000000000AA /* UDLauncher.app */,
 				CC00050000000000000000AA /* UDCore.framework */,
-				DC00050000000000000000AA /* UDFormats.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -995,13 +908,6 @@
 				CC02001300000000000000AA /* UDArchiveMutation.h in Headers */,
 				CC02001400000000000000AA /* UDContentSource.h in Headers */,
 				CC02001500000000000000AA /* UDDirectoryNode.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC03000100000000000000AA /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 				DC02000000000000000000AA /* UDArchiveCodec.h in Headers */,
 				DC02000100000000000000AA /* UDCodecRegistry.h in Headers */,
 				DC02000200000000000000AA /* UDDaikatanaPAKCodec.h in Headers */,
@@ -1031,7 +937,6 @@
 			);
 			dependencies = (
 				CC07010100000000000000AA /* PBXTargetDependency */,
-				DC07010100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Pak Manager";
 			productName = "Pak Manager";
@@ -1049,7 +954,6 @@
 			);
 			dependencies = (
 				CC07040100000000000000AA /* PBXTargetDependency */,
-				DC07040100000000000000AA /* PBXTargetDependency */,
 			);
 			name = udpaktool;
 			productName = udpaktool;
@@ -1068,7 +972,6 @@
 			);
 			dependencies = (
 				CC07050100000000000000AA /* PBXTargetDependency */,
-				DC07050100000000000000AA /* PBXTargetDependency */,
 			);
 			name = UDQuakeToolsTests;
 			productName = UDQuakeToolsTests;
@@ -1088,7 +991,6 @@
 			);
 			dependencies = (
 				CC07020100000000000000AA /* PBXTargetDependency */,
-				DC07020100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Decl Browser";
 			productName = DeclBrowser;
@@ -1148,24 +1050,6 @@
 			productReference = CC00050000000000000000AA /* UDCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		DC04000000000000000000AA /* UDFormats */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DC06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDFormats" */;
-			buildPhases = (
-				DC03000000000000000000AA /* Sources */,
-				DC03000100000000000000AA /* Headers */,
-				DC03000200000000000000AA /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				CC07060100000000000000AA /* PBXTargetDependency */,
-			);
-			name = UDFormats;
-			productName = UDFormats;
-			productReference = DC00050000000000000000AA /* UDFormats.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1206,7 +1090,6 @@
 			projectRoot = "";
 			targets = (
 				CC04000000000000000000AA /* UDCore */,
-				DC04000000000000000000AA /* UDFormats */,
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
 				DD04000000000000000000AA /* Decl Browser */,
@@ -1378,13 +1261,6 @@
 				CC01001300000000000000AA /* UDArchiveEntry.m in Sources */,
 				CC01001400000000000000AA /* UDArchiveMutation.m in Sources */,
 				CC01001500000000000000AA /* UDDirectoryNode.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DC03000000000000000000AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 				DC01000000000000000000AA /* UDCodecRegistry.m in Sources */,
 				DC01000100000000000000AA /* UDPAKCodec.m in Sources */,
 				DC01000200000000000000AA /* UDPAKEntrySource.m in Sources */,
@@ -2077,8 +1953,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
+				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
 					/opt/homebrew/include,
 					/usr/local/include,
 				);
@@ -2121,8 +1999,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
+				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
 					/opt/homebrew/include,
 					/usr/local/include,
 				);
@@ -2133,115 +2013,6 @@
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
 				PRODUCT_NAME = UDCore;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-			};
-			name = Release;
-		};
-		DC05000000000000000000AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = YES;
-				FRAMEWORK_VERSION = A;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				ONLY_ACTIVE_ARCH = YES;
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
-					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				OTHER_LDFLAGS = (
-					"-lzip",
-					"-framework",
-					UDCore,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDFormats;
-				PRODUCT_NAME = UDFormats;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-			};
-			name = Debug;
-		};
-		DC05000100000000000000AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_VERSION = A;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
-					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				OTHER_LDFLAGS = (
-					"-lzip",
-					"-framework",
-					UDCore,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDFormats;
-				PRODUCT_NAME = UDFormats;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -2317,15 +2088,6 @@
 			buildConfigurations = (
 				CC05000000000000000000AA /* Debug */,
 				CC05000100000000000000AA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DC06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDFormats" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DC05000000000000000000AA /* Debug */,
-				DC05000100000000000000AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

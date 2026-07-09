@@ -12,7 +12,7 @@ udpaktool_INCLUDE_DIRS = \
     -I../../UDCore \
     -I../../UDFormats
 
-udpaktool_LIBRARIES = UDCore UDFormats
+udpaktool_LIBRARIES = UDCore
 
 ADDITIONAL_LDFLAGS += -lzip
 

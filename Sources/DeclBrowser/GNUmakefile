@@ -17,7 +17,7 @@ DeclBrowser_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-DeclBrowser_LIBRARIES = UDCore UDFormats
+DeclBrowser_LIBRARIES = UDCore
 
 DeclBrowser_RESOURCE_FILES = \
     MainMenu.xib \

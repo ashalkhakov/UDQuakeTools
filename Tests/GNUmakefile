@@ -22,7 +22,7 @@ UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
 
-UDQuakeToolsTests_LIBRARIES = UDCore UDFormats
+UDQuakeToolsTests_LIBRARIES = UDCore
 
 ADDITIONAL_LDFLAGS += -lzip -lXCTest
 

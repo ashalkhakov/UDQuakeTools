@@ -29,7 +29,18 @@ UDCore_OBJC_FILES = \
     UDGuiEventsProcessingService.m \
     UDGuiModel.m \
     UDVFSMount.m \
-    UDVirtualFileSystem.m
+    UDVirtualFileSystem.m \
+    ../UDFormats/UDCodecRegistry.m \
+    ../UDFormats/UDDaikatanaPAKCodec.m \
+    ../UDFormats/UDPAK2Codec.m \
+    ../UDFormats/UDPAKCodec.m \
+    ../UDFormats/UDPAKEntrySource.m \
+    ../UDFormats/UDPK3Codec.m \
+    ../UDFormats/UDPK3ZIPEntrySource.m \
+    ../UDFormats/UDPK4Codec.m \
+    ../UDFormats/UDStagedFileSource.m
+
+UDCore_INCLUDE_DIRS = -I../UDFormats
 
 UDCore_HEADER_FILES_DIR = .
 UDCore_HEADER_FILES = \
@@ -55,6 +66,6 @@ UDCore_HEADER_FILES = \
     UDVFSMount.h \
     UDVirtualFileSystem.h
 
-ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime
+ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 
 include $(GNUSTEP_MAKEFILES)/library.make

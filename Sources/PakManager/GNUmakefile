@@ -19,7 +19,7 @@ PakManager_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-PakManager_LIBRARIES = UDCore UDFormats
+PakManager_LIBRARIES = UDCore
 
 PakManager_RESOURCE_FILES = \
     MainMenu.xib \

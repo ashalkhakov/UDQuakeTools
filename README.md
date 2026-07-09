@@ -1,20 +1,22 @@
 # UDQuakeTools
 
 UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archive formats.
-The main GUI app is Pak Manager, and the repository also includes a small command-line utility and tests.
+It ships as a single AppImage on Linux containing a launcher and all tools.
 
-## Pak Manager
+## Applications
 
-This app helps you manage pak/pk3/pk4 files.
-
-![Mac OS X](Screenshots/pakmanager-mac.png)
-![Linux / GNUstep](Screenshots/pakmanager-gs.png)
+- **UDLauncher** — entry point: a simple window with buttons to launch the other tools
+- **Pak Manager** — manage pak/pk3/pk4 archive files
+- **Decl Browser** — browse and inspect DOOM 3 / Quake 4 declaration files
+- **GUI Editor** — GUI script editor for idTech 4-style GUI definitions
 
 ## Project Layout
 
-- `Sources/PakManager`: GUI app (GNUstep + Cocoa/AppKit)
-- `Sources/UDCore`: Format-agnostic archive domain model and editor logic
-- `Sources/UDFormats`: Archive codecs (PAK, PK3, PK4, etc.)
+- `Sources/UDCore`: Foundation-only domain model, editor logic and archive codecs — PAK, PK3, PK4, … (built as `libUDCore`)
+- `Sources/UDLauncher`: Launcher application linking bundled tools
+- `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
+- `Sources/DeclBrowser`: Decl Browser GUI app
+- `Sources/GuiEd`: GUI Editor app
 - `Sources/Tools/udpaktool`: CLI utility target
 - `Tests`: Unit tests
 - `Scripts`: Build and packaging scripts (GNUstep stack, AppDir, AppImage)
@@ -38,49 +40,47 @@ This app helps you manage pak/pk3/pk4 files.
 
 ### macOS (Xcode)
 
-Open `PakManager.xcodeproj` and build the `Pak Manager` scheme.
+Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
+`Decl Browser`, `GuiEd`, or `UDLauncher`).
 
-### GNUstep stack and app
+### GNUstep stack and apps
 
-From the repository root:
-
-```bash
-./Scripts/build-gnustep.sh
-APP_ID=PakManager APP_SOURCE_DIR=PakManager APP_BUNDLE_NAME=PakManager.app ./Scripts/prepare-appdir.sh
-```
-
-For Decl Browser:
+From the repository root (after running `./Scripts/build-gnustep.sh`):
 
 ```bash
-APP_ID=DeclBrowser APP_SOURCE_DIR=DeclBrowser APP_BUNDLE_NAME=DeclBrowser.app ./Scripts/prepare-appdir.sh
+# 1. Build and install shared libraries
+cd Sources/UDCore   && make && make install && cd -
+
+# 2. Build all apps
+for app in UDLauncher PakManager DeclBrowser GuiEd; do
+    cd "Sources/$app" && make && cd -
+done
+
+# 3. Prepare the combined AppDir
+./Scripts/prepare-appdir.sh
 ```
 
 ## AppImage Packaging
 
-From the repository root:
+From the repository root (after building):
 
 ```bash
-APP_ID=PakManager ./Scripts/package-appimage.sh
+./Scripts/package-appimage.sh
 ```
 
-For Decl Browser:
-
-```bash
-APP_ID=DeclBrowser ./Scripts/package-appimage.sh
-```
+This produces a single `UDQuakeTools-Linux-<version>.AppImage` that launches
+UDLauncher as the entry point. The launcher lets users open any of the
+bundled tools (Pak Manager, Decl Browser, GUI Editor).
 
 AppImage assets are tracked in `Scripts/appimage`.
-Each deliverable is packaged into its own AppImage file:
-
-- `PakManager-Linux-<version>.AppImage`
-- `DeclBrowser-Linux-<version>.AppImage`
 
 ## Tests
 
 Run tests using your active build system/scheme:
 
 - Xcode: run the `UDQuakeToolsTests` target
-- GNUstep: use the test makefile in `Tests/GNUmakefile`
+- GNUstep: `cd Tests && make run-tests`
+  (requires the UDCore library to be installed first)
 
 ## Notes
 
@@ -88,3 +88,4 @@ Run tests using your active build system/scheme:
 - Early interface stubs: `CLASS_STUBS.md`
 - Doom 3 editor roadmap: `EDITOR_TOOLS_ROADMAP.md`
 - License: `LICENSE`
+

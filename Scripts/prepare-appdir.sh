@@ -4,14 +4,6 @@ set -e
 
 WORKSPACE_DIR=$(pwd)
 LOCAL_PREFIX="/opt/gnustep-prefix"
-APP_ID="${APP_ID:-PakManager}"
-APP_SOURCE_DIR="${APP_SOURCE_DIR:-${APP_ID}}"
-APP_BUNDLE_NAME="${APP_BUNDLE_NAME:-${APP_ID}.app}"
-
-if [ ! -d "${WORKSPACE_DIR}/Sources/${APP_SOURCE_DIR}" ]; then
-    echo "Error: missing source directory Sources/${APP_SOURCE_DIR}"
-    exit 1
-fi
 
 # 1. Recreate clean AppDir structural root
 rm -rf AppDir
@@ -20,18 +12,22 @@ mkdir -p AppDir/usr/lib
 mkdir -p AppDir/usr/etc
 mkdir -p AppDir/usr/local/bin
 
-# 2. Install selected app safely letting gnustep-make handle its defaults
-cd "Sources/${APP_SOURCE_DIR}"
+# 2. Source GNUstep environment once
 . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
-make install DESTDIR="${WORKSPACE_DIR}/AppDir"
-cd "${WORKSPACE_DIR}"
+
+# 3. Install each app into AppDir
+for APP_SOURCE_DIR in UDLauncher PakManager DeclBrowser GuiEd; do
+    cd "Sources/${APP_SOURCE_DIR}"
+    make install DESTDIR="${WORKSPACE_DIR}/AppDir"
+    cd "${WORKSPACE_DIR}"
+done
 
 if [ -d "${LOCAL_PREFIX}/System/Library/Themes" ]; then
 mkdir -p AppDir/usr/System/Library/Themes
 cp -Rp "${LOCAL_PREFIX}/System/Library/Themes/"* AppDir/usr/System/Library/Themes/
 fi
 
-# 3. Dynamically locate the background tools
+# 4. Dynamically locate the background tools
 for tool in gdnc gpbs make_services; do
 FOUND_TOOL=$(find "${LOCAL_PREFIX}" -type f -name "$tool" 2>/dev/null | head -n 1 || true)
 if [ -n "$FOUND_TOOL" ]; then
@@ -40,7 +36,7 @@ if [ -n "$FOUND_TOOL" ]; then
 fi
 done
 
-# 4. Pull BOTH System and Local hierarchies into AppDir/usr/
+# 5. Pull BOTH System and Local hierarchies into AppDir/usr/
 if [ -d "${LOCAL_PREFIX}/System" ]; then
 mkdir -p AppDir/usr/System
 cp -Rp "${LOCAL_PREFIX}/System/"* AppDir/usr/System/
@@ -94,7 +90,7 @@ for ssl_lib in libssl.so.3 libcrypto.so.3; do
     fi
 done
 
-# 5. Maintain versioned and unversioned fallback bundle linking
+# 6. Maintain versioned and unversioned fallback bundle linking
 BACKEND_BUNDLE=$(find AppDir/usr -name "libgnustep-back-*.bundle" 2>/dev/null | head -n 1 || true)
 if [ -n "$BACKEND_BUNDLE" ]; then
 BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE")
@@ -103,15 +99,16 @@ ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/libgnustep-back.bundle" || true
 ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle" || true
 fi
 
-# Migrate the nested app bundle safely (immune to grep-v empty return traps)
-DEEP_APP_DIR=$(find AppDir -type d -name "${APP_BUNDLE_NAME}" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
-if [ -n "$DEEP_APP_DIR" ]; then
-mkdir -p AppDir/usr/Local/Applications
-cp -Rp "$DEEP_APP_DIR" AppDir/usr/Local/Applications/
-fi
+# Migrate the nested app bundles safely
+for APP_BUNDLE_NAME in UDLauncher.app PakManager.app DeclBrowser.app GuiEd.app; do
+    DEEP_APP_DIR=$(find AppDir -type d -name "${APP_BUNDLE_NAME}" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
+    if [ -n "$DEEP_APP_DIR" ]; then
+        mkdir -p AppDir/usr/Local/Applications
+        cp -Rp "$DEEP_APP_DIR" AppDir/usr/Local/Applications/
+    fi
+done
 
 # --- BUNDLE FONTS FOR PORTABILITY ---
-# 1. Copy Liberation Sans into the AppDir
 mkdir -p AppDir/usr/share/fonts/truetype/liberation
 cp -Rp /usr/share/fonts/truetype/liberation/* AppDir/usr/share/fonts/truetype/liberation/
 
@@ -124,3 +121,4 @@ if [ -n "$BACKEND_BUNDLE_TWO" ]; then
     BUNDLE_DIR=$(dirname "$BACKEND_BUNDLE_TWO")
     ln -sfv $(basename "$BACKEND_BUNDLE_TWO") "$BUNDLE_DIR/libgnustep-back.bundle" || true
 fi
+

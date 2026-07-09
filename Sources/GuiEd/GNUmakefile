@@ -24,15 +24,6 @@ GuiEd_OBJC_FILES = \
     UDEventsController.m \
     UDVariablesController.m \
     UDOutlinePaneController.m \
-    ../UDCore/UDDeclLexer.m \
-    ../UDCore/UDDeclParser.m \
-    ../UDCore/UDDeclModel.m \
-    ../UDCore/UDDeclType.m \
-    ../UDCore/UDGuiModel.m \
-    ../UDCore/UDGuiDocumentCodec.m \
-    ../UDCore/UDGuiEditorService.m \
-    ../UDCore/UDGuiEventsProcessingService.m \
-    ../UDCore/UDGuiEditorViewModel.m \
     ../UDCore/FormContainerView.m \
     UDInspectorIcons.m
 
@@ -54,6 +45,7 @@ GuiEd_RESOURCE_FILES = \
     UDEvents.xib \
     GuiEd-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

@@ -50,7 +50,7 @@ jobs:
 
           cd Sources/UDCore
           make
-          make install
+          make install GNUSTEP_INSTALLATION_DOMAIN=System
 
 
       - name: Build Apps

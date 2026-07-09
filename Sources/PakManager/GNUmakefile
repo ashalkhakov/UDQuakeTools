@@ -27,6 +27,6 @@ PakManager_RESOURCE_FILES = \
     PakManager.png \
     PakManager-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip
+ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

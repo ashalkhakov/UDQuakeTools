@@ -18,6 +18,7 @@ done
 export OUTPUT="UDQuakeTools-Linux-${APP_VERSION:-dev}.AppImage"
 export APPIMAGE_EXTRACT_AND_RUN=1
 export NO_VALIDATE=1
+export LDAI_RUNTIME_FILE=/tmp/appimage-runtime/runtime-x86_64
 
 LD_LIBRARY_PATH="${LOCAL_PREFIX}/System/Library/Libraries:${LOCAL_PREFIX}/Local/Library/Libraries:${WORKSPACE_DIR}/AppDir/usr/lib:${LD_LIBRARY_PATH:-}" \
-    /usr/local/lib/linuxdeploy/AppRun --appdir AppDir "${ELF_ARGS[@]}" --runtime-file /tmp/appimage-runtime/runtime-x86_64 --output appimage
+    /usr/local/lib/linuxdeploy/AppRun --appdir AppDir "${ELF_ARGS[@]}" --output appimage

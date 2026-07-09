@@ -92,8 +92,6 @@ jobs:
         run: ./Scripts/prepare-appdir.sh
 
       - name: Package UDQuakeTools AppImage via linuxdeploy
-        env:
-          APPIMAGETOOL_SIGN_ARGS: --runtime-file /tmp/appimage-runtime/runtime-x86_64
         run: ./Scripts/package-appimage.sh
 
       - name: Upload UDQuakeTools AppImage Artifact

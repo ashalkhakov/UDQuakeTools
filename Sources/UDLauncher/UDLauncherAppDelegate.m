@@ -43,7 +43,11 @@
                          initWithFrame:NSMakeRect(startX, startY - (CGFloat)i * spacing,
                                                   buttonWidth, buttonHeight)];
         [btn setTitle:appLabels[i]];
+#if GNUSTEP
+        [btn setBezelStyle:NSRoundedBezelStyle];
+#else
         [btn setBezelStyle:NSBezelStyleRounded];
+#endif
         [btn setTag:(NSInteger)i];
         [btn setTarget:self];
         [btn setAction:@selector(launchApp:)];

@@ -57,7 +57,11 @@
 
 - (void)launchApp:(NSButton *)sender
 {
-    NSString *appName = [self appNames][(NSUInteger)sender.tag];
+    NSArray<NSString *> *names = [self appNames];
+    if (sender.tag < 0 || (NSUInteger)sender.tag >= names.count) {
+        return;
+    }
+    NSString *appName = names[(NSUInteger)sender.tag];
 
     /* Sibling apps live in the same Applications directory as UDLauncher. */
     NSString *appsDir = [[[NSBundle mainBundle] bundlePath]
@@ -89,15 +93,17 @@
         return;
     }
 
+    /* Launch the app as an independent child process (fire-and-forget). */
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:appBin];
-    NSError *error = nil;
-    if (![task launchAndReturnError:&error]) {
+    @try {
+        [task launch];
+    } @catch (NSException *e) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Failed to launch application"];
         [alert setInformativeText:
             [NSString stringWithFormat:@"Could not launch %@: %@",
-             appName, [error localizedDescription]]];
+             appName, [e reason]]];
         [alert runModal];
     }
 }

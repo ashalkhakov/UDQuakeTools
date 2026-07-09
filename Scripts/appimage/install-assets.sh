@@ -97,7 +97,10 @@ trap 'rm -rf "$XDG_CACHE_HOME" "$GNUSTEP_CONFIG_FILE"' EXIT
 DEFAULTS_TOOL=$(find "$HERE" -name defaults -type f -perm -111 | head -n 1)
 APPRUN_HEADER
 
-# Replace the placeholder app-id in temp file names with the actual lowercase app id.
+# Replace the placeholder app-id in the generated AppRun temp-file names with
+# the actual lowercase app id (e.g. 'pakmanager' for a PakManager-only image).
+# For the default UDQuakeTools case app_id_lower is already 'udquaketools' so
+# this sed call is a no-op.
 sed -i "s/udquaketools/${app_id_lower}/g" "$appdir/AppRun"
 
 # Emit the defaults-writing section and launcher. For UDQuakeTools, write

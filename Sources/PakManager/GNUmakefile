@@ -19,14 +19,13 @@ PakManager_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-PakManager_LIBRARIES = UDCore
-
 PakManager_RESOURCE_FILES = \
     MainMenu.xib \
     UDArchiveDocument.xib \
     PakManager.png \
     PakManager-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

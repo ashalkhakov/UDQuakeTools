@@ -30,8 +30,6 @@ GuiEd_OBJC_FILES = \
 GuiEd_INCLUDE_DIRS = \
     -I../UDCore
 
-GuiEd_LIBRARIES = UDCore
-
 GuiEd_RESOURCE_FILES = \
     MainMenu.xib \
     UDGuiEdDocument.xib \
@@ -47,6 +45,7 @@ GuiEd_RESOURCE_FILES = \
     UDEvents.xib \
     GuiEd-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

@@ -22,9 +22,8 @@ UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
 
-UDQuakeToolsTests_LIBRARIES = UDCore
-
-ADDITIONAL_LDFLAGS += -lzip -lXCTest
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -lXCTest
 
 XCTEST ?= xctest
 

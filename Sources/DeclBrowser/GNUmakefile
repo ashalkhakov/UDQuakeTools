@@ -17,13 +17,12 @@ DeclBrowser_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-DeclBrowser_LIBRARIES = UDCore
-
 DeclBrowser_RESOURCE_FILES = \
     MainMenu.xib \
     UDDeclBrowserWindow.xib \
     DeclBrowser-Info.plist
 
-ADDITIONAL_LDFLAGS += -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

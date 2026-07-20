@@ -38,7 +38,19 @@ UDCore_OBJC_FILES = \
     ../UDFormats/UDPK3Codec.m \
     ../UDFormats/UDPK3ZIPEntrySource.m \
     ../UDFormats/UDPK4Codec.m \
-    ../UDFormats/UDStagedFileSource.m
+    ../UDFormats/UDStagedFileSource.m \
+    UDToken.m \
+    UDLexer.m \
+    UDParser.m \
+    unzip.c \
+    ioapi.c \
+    compat.m \
+    idStr.m \
+    idFile.m \
+    idFileSystem.m \
+    UDWorkspace.m \
+    UDWorkspaceManager.m \
+    UDFileSystemManager.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -64,7 +76,16 @@ UDCore_HEADER_FILES = \
     UDGuiEventsProcessingService.h \
     UDGuiModel.h \
     UDVFSMount.h \
-    UDVirtualFileSystem.h
+    UDVirtualFileSystem.h \
+    UDToken.h \
+    UDLexer.h \
+    UDParser.h \
+    idStr.h \
+    idFile.h \
+    idFileSystem.h \
+    UDWorkspace.h \
+    UDWorkspaceManager.h \
+    UDFileSystemManager.h
 
 ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 

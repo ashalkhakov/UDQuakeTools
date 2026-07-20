@@ -25,9 +25,6 @@ static BOOL UDDeclLexerIsTokenCharacter(unichar character) {
     }
 }
 
-@implementation UDIdToken
-@end
-
 @interface UDIdLexer ()
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, assign) NSUInteger index;

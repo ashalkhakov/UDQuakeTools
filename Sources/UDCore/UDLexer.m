@@ -281,7 +281,6 @@ static NSString *baseFolder;
         while ((unsigned char)*self->script_p <= ' ') {
 // RAVEN END
             if (!*self->script_p) {
-                [self error:error format:@"unexpected EOF while expecting whitespace"];
                 return NO;
             }
             if (*self->script_p == '\n') {
@@ -301,7 +300,7 @@ static NSString *baseFolder;
                         return NO;
                     }
                 }
-                while( *self->script_p != '\n' );
+                while (*self->script_p != '\n');
                 self->line++;
                 self->script_p++;
                 if (!*self->script_p) {
@@ -872,7 +871,7 @@ static NSString *baseFolder;
         [self error:error format:@"couldn't find expected '%@'", string];
         return NO;
     }
-    if (!strcmp(token.text, [string cString])) {
+    if (strcmp(token.text, [string UTF8String])) {
         [self error:error format:@"expected '%@' but found '%s'", string, token.text];
         return NO;
     }
@@ -947,7 +946,7 @@ static NSString *baseFolder;
     }
 
     // if the token is available
-    if (!strcmp(tok.text, [string cString])) {
+    if (!strcmp(tok.text, [string UTF8String])) {
         return YES;
     }
     // token not available
@@ -978,7 +977,7 @@ static NSString *baseFolder;
     
     idToken_Init(&token);
     while ([self readToken:&token error:error]) {
-        if (!strcmp(token.text, [string cString])) {
+        if (!strcmp(token.text, [string UTF8String])) {
             return YES;
         }
     }
@@ -1450,9 +1449,9 @@ static NSString *baseFolder;
         pathname = filename;
     }
     if ( OSPath ) {
-        fp = [[idFileSystem sharedFileSystem] openExplicitFileRead:pathname];
+        fp = [self.fileSystem openExplicitFileRead:pathname];
     } else {
-        fp = [[idFileSystem sharedFileSystem] openFileRead:pathname allowCopyFiles:YES gamedir:nil error:error];
+        fp = [self.fileSystem openFileRead:pathname allowCopyFiles:YES gamedir:nil error:error];
     }
     if (!fp) {
         return NO;
@@ -1470,7 +1469,7 @@ static NSString *baseFolder;
     [fp read:buf length:length error:error];
     self->fileTime = [fp timestamp];
     self->filename = [fp fullPath];
-    if (![[idFileSystem sharedFileSystem] closeFile:fp error:error]) {
+    if (![self.fileSystem closeFile:fp error:error]) {
         return NO;
     }
 
@@ -1540,7 +1539,7 @@ static NSString *baseFolder;
     self->loaded = NO;
 }
 
--(instancetype)init {
+-(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -1556,11 +1555,12 @@ static NSString *baseFolder;
         idToken_Init(&self->token);
         self->next = NULL;
         self->hadError = NO;
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
--(instancetype)initWithFlags:(int)flags {
+-(instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -1576,28 +1576,16 @@ static NSString *baseFolder;
         idToken_Init(&self->token);
         self->next = NULL;
         self->hadError = NO;
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
-/*
-- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)isOSPath {
-    self = [super init];
-    if (self)
-    {
-        self->loaded = NO;
-        self->flags = flags;
-        [self setPunctuations:NULL];
-        self->allocated = NO;
-        self->token = [[idToken alloc] init];
-        self->next = NULL;
-        self->hadError = NO;
-        [self loadFile:filename isOSPath:OSPath];
-    }
-    return self;
-}*/
-
-- (instancetype)initWithBuffer:(const char *)ptr length:(int)length name:(NSString *)name flags:(int)flags error:(NSError **)error {
+- (instancetype)initWithFileName:(NSString *)filename
+                           flags:(int)flags
+                        isOSPath:(BOOL)isOSPath
+                      fileSystem:(idFileSystem *)fileSystem
+                           error:(NSError **)error {
     self = [super init];
     if (self)
     {
@@ -1608,6 +1596,29 @@ static NSString *baseFolder;
         idToken_Init(&self->token);
         self->next = NULL;
         self->hadError = NO;
+        self.fileSystem = fileSystem;
+        [self loadFile:filename isOSPath:isOSPath error:error];
+    }
+    return self;
+}
+
+- (instancetype)initWithBuffer:(const char *)ptr
+                        length:(int)length
+                          name:(NSString *)name
+                         flags:(int)flags
+                    fileSystem:(idFileSystem *)fileSystem
+                         error:(NSError **)error {
+    self = [super init];
+    if (self)
+    {
+        self->loaded = NO;
+        self->flags = flags;
+        [self setPunctuations:NULL];
+        self->allocated = NO;
+        idToken_Init(&self->token);
+        self->next = NULL;
+        self->hadError = NO;
+        self.fileSystem = fileSystem;
         if (![self loadMemory:ptr length:length name:name startLine:1 error:error]) {
             return nil;
         }
@@ -1645,7 +1656,7 @@ static NSString *baseFolder;
     self->line = self->lastline;
 
     // if the given string is available
-    if (!strcmp(tok.text, [string cString])) {
+    if (!strcmp(tok.text, [string UTF8String])) {
         return YES;
     }
     return NO;

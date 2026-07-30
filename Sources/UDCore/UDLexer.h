@@ -135,6 +135,8 @@ typedef struct punctuation_s
     int n;                            // punctuation id
 } punctuation_t;
 
+@class idFileSystem;
+
 @interface idLexer : NSObject {
     int                loaded;                    // set when a script file is loaded from file or memory
     NSString*          filename;                  // file name of the script
@@ -159,11 +161,18 @@ typedef struct punctuation_s
     bool               hadError;                  // set by idLexer::Error, even if the error is supressed
 }
 
+@property (weak, nonatomic) idFileSystem *fileSystem;
+
 // constructor
-- (instancetype)init;
-- (instancetype)initWithFlags:(int)flags;
-//- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)isOSPath;
-- (instancetype)initWithBuffer:(const char *)ptr length:(int)length name:(NSString *)name flags:(int)flags error:(NSError **)error;
+- (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
+- (instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem;
+- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)isOSPath fileSystem:(idFileSystem *)fileSystem error:(NSError **)error;
+- (instancetype)initWithBuffer:(const char *)ptr
+                        length:(int)length
+                          name:(NSString *)name
+                         flags:(int)flags
+                    fileSystem:(idFileSystem *)fileSystem
+                         error:(NSError **)error;
 
 // load a script from the given file at the given offset with the given length
 - (BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)isOSPath error:(NSError **)error;

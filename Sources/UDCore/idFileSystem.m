@@ -34,10 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 
 extern NSString * const UDFileSystemErrorDomain;
 
-#define MAX_STRING_CHARS        1024        // max length of a string
-#define PATHSEPERATOR_CHAR      '/'
-#define PATHSEPERATOR_STR       "/"
-
 /*
 =============================================================================
 
@@ -657,6 +653,7 @@ typedef UDSearchPath searchpath_t;
 
 @property (strong, nonatomic) NSString *directory;
 @property (strong, nonatomic) NSString *extension;
+@property (strong, nonatomic) NSMutableArray<NSString *> *files;
 
 -(instancetype)initWithDirectory:(NSString *)directory extension:(NSString *)extension list:(NSArray<NSString *> *)list;
 
@@ -673,10 +670,7 @@ typedef UDSearchPath searchpath_t;
     if (self) {
         self.directory = directory;
         self.extension = extension;
-        
-        for (NSUInteger i = 0; i < list.count; i++) {
-            [self addObject:[list objectAtIndex:i]];
-        }
+        self.files = [list mutableCopy];
     }
     return self;
 }
@@ -692,7 +686,7 @@ typedef UDSearchPath searchpath_t;
 -(void)clear {
     self.directory = nil;
     self.extension = nil;
-    [self removeAllObjects];
+    [self.files removeAllObjects];
 }
 
 @end
@@ -863,7 +857,7 @@ static BOOL UDStringHasUppercase(NSString *value) {
     int                       loadStack;            // total files in memory
     NSMutableString           *gameFolder;            // this will be a single name without separators
     
-    UDWorkspace *             _workspace;
+    __weak UDWorkspace *     _workspace;
 
     //idDict                    mapDict;            // for GetMapDecl
 /*
@@ -1009,7 +1003,7 @@ static inline char toLower(char c) {
 -(FILE *)openOSFile:(NSString *)fileName mode:(const char *)mode caseSensitiveName:(NSMutableString *)caseSensitiveName {
     int i;
     FILE *fp;
-    NSArray<NSString *> *list;
+    NSMutableArray<NSString *> *list;
 
     /*
 #ifndef __MWERKS__
@@ -1055,6 +1049,8 @@ static inline char toLower(char c) {
                 [fpath setString:resolvedPath];
             }
         }
+        
+        list = [[NSMutableArray alloc] init];
 
         if ([self listOSFiles:fpath extension:nil list:list] == -1) {
             return NULL;
@@ -1215,10 +1211,6 @@ static int directFileLength(FILE *o) {
     return YES;
 }
 
--(void)copyFileFrom:(NSString *)fromOSPath to:(NSString *)toOSPath {
-    [self copyFileFrom:fromOSPath to:toOSPath error:nil];
-}
-
 -(BOOL)copyFile:(idFile *)src to:(NSString *)toOSPath error:(NSError **)error {
     FILE            *f;
     int             len;
@@ -1271,12 +1263,8 @@ static int directFileLength(FILE *o) {
     return YES;
 }
 
--(void)copyFile:(idFile *)src to:(NSString *)toOSPath {
-    [self copyFile:src to:toOSPath error:nil];
-}
-
 -(BOOL)findCaseInsensitiveOSPathEntry:(NSString *)directory segment:(NSString *)segment directoryOnly:(BOOL)directoryOnly resolvedSegment:(NSMutableString *)resolvedSegment {
-    NSArray *entries;
+    NSMutableArray *entries;
     NSString *listDirectory = directory;
     NSString *extension = directoryOnly ? @"/" : @"";
 
@@ -1288,7 +1276,7 @@ static int directFileLength(FILE *o) {
         return NO;
     }
     
-    entries = [[NSArray alloc] init];
+    entries = [[NSMutableArray alloc] init];
 
     if (Sys_ListFiles(listDirectory, extension, entries) == -1) {
         return NO;
@@ -1365,13 +1353,11 @@ static int directFileLength(FILE *o) {
             [resolvedSegment setString:segment];
         } else if (![self findCaseInsensitiveOSPathEntry:parentDirectory segment:segment directoryOnly:directoryOnly resolvedSegment:resolvedSegment]) {
             if (self.fs_debug) {
-                /*
-                common->Printf( "idFileSystemLocal::ResolveCaseInsensitiveOSPath: could not resolve %s segment '%s' under '%s' while resolving '%s'\n",
-                    directoryOnly ? "directory" : "file",
-                    segment.c_str(),
+                NSLog(@"resolveCaseInsensitiveOSPath:resolvedPath:finalSegmentIsFile: could not resolve %@ segment '%@' under '%@' while resolving '%@'",
+                    directoryOnly ? @"directory" : @"file",
+                    segment,
                     parentDirectory,
-                    path );
-                */
+                    path);
             }
             [resolvedPath setString:normalized];
             [resolvedPath ud_replaceSeparatorsWithString:[NSString stringWithFormat:@"%c", PATHSEPERATOR_CHAR]];
@@ -1591,7 +1577,7 @@ static int directFileLength(FILE *o) {
 
         if (path.length) {
             NSString *OSPath = [self buildOSPath:path game:gameFolder relativePath:relativePath];
-            remove([OSPath cString]);
+            remove([OSPath UTF8String]);
         }
         [self clearDirCache];
         return;
@@ -1601,21 +1587,21 @@ static int directFileLength(FILE *o) {
         NSString *str = [self buildOSPath:self.fs_cdpath
                                      game:self->gameFolder
                              relativePath:relativePath];
-        remove([str cString]);
+        remove([str UTF8String]);
     }
 
     if (self.fs_savepath.length && [self.fs_savepath caseInsensitiveCompare:self.fs_cdpath] != 0) {
         NSString *str = [self buildOSPath:self.fs_savepath
                                      game:self->gameFolder
                              relativePath:relativePath];
-        remove([str cString]);
+        remove([str UTF8String]);
     }
 
     [self clearDirCache];
 }
 
 -(int)removeExplicitFile:(NSString *)OSPath {
-    const int result = remove([OSPath cString]);
+    const int result = remove([OSPath UTF8String]);
     [self clearDirCache];
     return result;
 }
@@ -1884,7 +1870,7 @@ static int directFileLength(FILE *o) {
 
     f = [self openOSFile:zipfile mode:"rb" caseSensitiveName:nil];
     if (!f) {
-        NSLog(@"Could not open pk4 '%@': %s", zipfile, strerror(errno));
+        NSLog(@"Could not open %@ '%@': %s", _workspace.pakFileExtension, zipfile, strerror(errno));
         return nil;
     }
     fseek(f, 0, SEEK_END);
@@ -1895,13 +1881,13 @@ static int directFileLength(FILE *o) {
 
     uf = unzOpen([zipfile UTF8String]);
     if (!uf) {
-        NSLog(@"WARN: could not open pk4 zip '%@'", zipfile);
+        NSLog(@"WARN: could not open %@ zip '%@'", _workspace.pakFileExtension, zipfile);
         return nil;
     }
     err = unzGetGlobalInfo(uf, &gi);
 
     if (err != UNZ_OK) {
-        NSLog(@"WARN: could not read pk4 central directory '%@'", zipfile);
+        NSLog(@"WARN: could not read %@ central directory '%@'", _workspace.pakFileExtension, zipfile);
         unzClose( uf );
         return nil;
     }
@@ -1976,7 +1962,7 @@ static int directFileLength(FILE *o) {
         last = last->next;
     }
     last->next = search;
-    NSLog(@"Appended pk4 %@", pak->pakFilename);
+    NSLog(@"Appended %@ %@", _workspace.pakFileExtension, pak->pakFilename);
     return pak->checksum;
 }
 
@@ -2157,6 +2143,20 @@ static void sortPaths(NSArray<NSString *> *list) {
     }
 
     return fileList;
+}
+
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension error:(NSError **)error {
+    return [self listFiles:relativePath extension:extension sorted:NO fullRelativePath:NO inGameDir:nil error:error];
+}
+
+// fullRelativePath=NO, inGameDir=nil
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sorted error:(NSError **)error {
+    return [self listFiles:relativePath extension:extension sorted:sorted fullRelativePath:NO inGameDir:nil error:error];
+}
+
+// inGameDir=nil
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sorted fullRelativePath:(BOOL)fullRelativePath error:(NSError **)error {
+    return [self listFiles:relativePath extension:extension sorted:sorted fullRelativePath:fullRelativePath inGameDir:nil error:error];
 }
 
 -(int) getFileListTree:(NSString *)relativePath
@@ -3162,7 +3162,7 @@ void idFileSystemLocal::FreeModList( idModList *modList ) {
 }
 #endif
 
--(int)listOSFiles:(NSString *)directory extension:(NSString *)extension list:(NSArray<NSString *> *)list {
+-(int)listOSFiles:(NSString *)directory extension:(NSString *)extension list:(NSMutableArray<NSString *> *)list {
     int i, j, ret;
     NSString *cacheDirectory = directory;
 
@@ -3184,7 +3184,7 @@ void idFileSystemLocal::FreeModList( idModList *modList ) {
             if (self.fs_debug) {
                 NSLog(@"listOSFiles: cache hit: %@\n", directory);
             }
-            list = dir_cache[j];
+            [list setArray:dir_cache[j].files];
             return list.count;
         }
         i--;
@@ -3307,8 +3307,6 @@ void idFileSystemLocal::DirTree_f( const idCmdArgs &args ) {
 
 -(void)path_f {
     searchpath_t *sp;
-    int i;
-    idStr status;
 
     NSLog(@"Current search path:");
     for (sp = self->searchPaths; sp; sp = sp->next) {
@@ -3410,11 +3408,11 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
 #endif
 
 -(void)addGameDirectory:(NSString *)path dir:(NSString *)dir {
-    int                     i;
-    searchpath_t *          search;
-    pack_t *                pak;
-    NSMutableString         *pakfile;
-    NSArray<NSString *> *   pakfiles;
+    int                         i;
+    searchpath_t *              search;
+    pack_t *                    pak;
+    NSMutableString *           pakfile;
+    NSMutableArray<NSString *> *pakfiles;
 
     // check if the search path already exists
     for (search = searchPaths; search; search = search->next) {
@@ -3442,10 +3440,12 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
                     relativePath:@""] mutableCopy];
     [pakfile ud_stripTrailingCharacter:'/'];
     [pakfile ud_stripTrailingCharacter:'\\'];
+    
+    pakfiles = [[NSMutableArray alloc] init];
 
-    [self listOSFiles:pakfile extension:@".pk4" list:pakfiles];
+    [self listOSFiles:pakfile extension:[@"." stringByAppendingString:_workspace.pakFileExtension] list:pakfiles];
     if (self.fs_debug) {
-        NSLog(@"Found %d pk4 file(s) in %@", (int)pakfiles.count, pakfile);
+        NSLog(@"Found %d %@ file(s) in %@", (int)pakfiles.count, _workspace.pakFileExtension, pakfile);
     }
 
     // Sort them so later entries override earlier ones after they are inserted
@@ -3468,7 +3468,7 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
         search->pack = pak;
         search->next = searchPaths->next;
         searchPaths->next = search;
-        NSLog(@"Loaded pk4 %@", pakfile);
+        NSLog(@"Loaded %@ %@", _workspace.pakFileExtension, pakfile);
     }
 }
 
@@ -3793,7 +3793,7 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
          [self.fs_game_base caseInsensitiveCompare:self.gamedir] != NSOrderedSame &&
         ![self validateConfiguredGameDir:self.fs_game_base reason:invalidReason]) {
         NSLog(@"WARN: ignoring fs_game_base '%@': %@", self.fs_game_base, invalidReason);
-        [self.workspace.fs_game_base setString:@""];
+        self.workspace.fs_game_base = @"";
     }
 
     if (self.fs_game.length &&
@@ -3801,7 +3801,7 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
         ![self validateConfiguredGameDir:self.fs_game reason:invalidReason]) {
 
         NSLog(@"WARN: ignoring fs_game '%@': %@", self.fs_game, invalidReason);
-        [self.workspace.fs_game setString:@""];
+        self.workspace.fs_game = @"";
     }
 
     // File writes should use the selected game directory even while search paths
@@ -3844,7 +3844,29 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
 
     NSLog(@"file system initialized.");
     NSLog(@"--------------------------------------");
+    
+    // see if we are going to allow add-ons
+    //SetRestrictions();
+
+    // spawn a thread to handle background file reads
+    //StartBackgroundDownloadThread();
+
+    //currentAssetLog = "assetlogs/default";
+    //currentAssetLogUnfiltered = "assetlogs/default";
+
+    /*
+    // if we can't find default.cfg, assume that the paths are
+    // busted and error out now, rather than getting an unreadable
+    // graphics screen when the font fails to load
+    // Dedicated servers can run with no outside files at all
+    if ( ReadFile( "default.cfg", NULL, NULL ) <= 0 ) {
+        common->FatalError(
+            "openQ4 startup config 'default.cfg' could not be loaded.\n\n"
+            "Rebuild or reinstall openQ4 so '%s/pak0.pk4' contains the runtime config files, and keep retail Quake 4 media PK4s in '%s'.",
+            OPENQ4_GAMEDIR, BASE_GAMEDIR );
+    }*/
 }
+
 #if 0
 /*
 ===================
@@ -4309,23 +4331,24 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
     */
 
     if (self.fs_basepath.length == 0) {
-        [self.workspace.fs_basepath setString:Sys_DefaultBasePath()];
+        self.workspace.fs_basepath = Sys_DefaultBasePath();
     }
 
     // fs_homepath is the user-writable root; fs_savepath follows it when unset.
     if (self.fs_homepath.length == 0) {
         if (self.fs_savepath.length) {
-            [self.workspace.fs_homepath setString:self.fs_savepath];
+            self.workspace.fs_homepath = self.fs_savepath;
         } else {
-            [self.workspace.fs_homepath setString:Sys_DefaultSavePath()];
+            self.workspace.fs_homepath = Sys_DefaultSavePath();
         }
     }
     if (self.fs_savepath.length == 0) {
-        [self.workspace.fs_savepath setString:self.fs_homepath];
+        self.workspace.fs_savepath = self.fs_homepath;
     }
-    // fs_cdpath is locked to the platform default (the bundle-adjacent package
-    // root for a macOS app, otherwise the process current directory).
-    [self.workspace.fs_cdpath setString:Sys_DefaultCDPath()];
+    // allow cd path to be changed
+    if (self.fs_cdpath.length == 0) {
+        self.workspace.fs_cdpath = Sys_DefaultCDPath();
+    }
 
     NSLog(
         @"Filesystem paths: fs_basepath='%@' fs_homepath='%@' fs_savepath='%@' fs_cdpath='%@' fs_game='%@' fs_game_base='%@'",
@@ -4335,30 +4358,6 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
         self.fs_cdpath,
         self.fs_game,
         self.fs_game_base);
-
-    // try to start up normally
-    [self startup];
-
-    // see if we are going to allow add-ons
-    //SetRestrictions();
-
-    // spawn a thread to handle background file reads
-    //StartBackgroundDownloadThread();
-
-    //currentAssetLog = "assetlogs/default";
-    //currentAssetLogUnfiltered = "assetlogs/default";
-
-    /*
-    // if we can't find default.cfg, assume that the paths are
-    // busted and error out now, rather than getting an unreadable
-    // graphics screen when the font fails to load
-    // Dedicated servers can run with no outside files at all
-    if ( ReadFile( "default.cfg", NULL, NULL ) <= 0 ) {
-        common->FatalError(
-            "openQ4 startup config 'default.cfg' could not be loaded.\n\n"
-            "Rebuild or reinstall openQ4 so '%s/pak0.pk4' contains the runtime config files, and keep retail Quake 4 media PK4s in '%s'.",
-            OPENQ4_GAMEDIR, BASE_GAMEDIR );
-    }*/
 
     return self;
 }
@@ -4527,7 +4526,7 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
     }
 
     // Keep the stock Quake 4 base media in the pure list no matter their contents.
-    officialInfo = FindOfficialPk4Info( [name cString] );
+    officialInfo = FindOfficialPk4Info( [name UTF8String] );
     if ( officialInfo && officialInfo->pureBase ) {
         pak->pureStatus = PURE_ALWAYS;
         return PURE_ALWAYS;
@@ -4580,7 +4579,7 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
     voidpf            fp;
     
     // open a new file on the pakfile
-    unzFile *zfi = unzReOpen([pak->pakFilename cString], pak->handle);
+    unzFile *zfi = unzReOpen([pak->pakFilename UTF8String], pak->handle);
     if (zfi == NULL) {
         UDFileSystemAssignError(error,
                                 UDFileSystemPortErrorCodeReadFailed,
@@ -4591,7 +4590,8 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
     }
     idFile_InZip *file = [[idFile_InZip alloc] initWithUnzipInfo:zfi
                                                             name:relativePath
-                                                     pakFilename:pak->pakFilename];
+                                                     pakFilename:pak->pakFilename
+                                                      fileSystem:self];
     // in case the file was new
     fp = unzGetFileStream(zfi);
     // set the file position in the zip file (also sets the current file info)
@@ -4698,10 +4698,11 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
                                                                      fullPath:netpath
                                                                          mode:(1 << FS_READ)
                                                                          sync:NO
-                                                                     fileSize:directFileLength(fp)];
+                                                                     fileSize:directFileLength(fp)
+                                                                   fileSystem:self];
             
             if (self.fs_debug) {
-                //common->Printf( "idFileSystem::OpenFileRead: %s (found in '%s/%s')\n", relativePath, dir->path.c_str(), dir->gamedir.c_str() );
+                NSLog(@"openFileReadFlags:flags:found:copyFiles: %@ (found in '%@/%@')\n", relativePath, dir->path, dir->gamedir);
             }
 
             /*
@@ -4863,20 +4864,20 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
 
 -(idFile *)openFileRead:(NSString *)relativePath allowCopyFiles:(BOOL)allowCopyFiles gamedir:(NSString *)gamedir error:(NSError **)error {
         return [self openFileReadFlags:relativePath
-                                                         flags:FSFLAG_SEARCH_DIRS | FSFLAG_SEARCH_PAKS
-                                                         found:NULL
-                                                 copyFiles:allowCopyFiles
-                                                     gameDir:gamedir
-                                                         error:error];
+                                 flags:FSFLAG_SEARCH_DIRS | FSFLAG_SEARCH_PAKS
+                                 found:NULL
+                             copyFiles:allowCopyFiles
+                               gameDir:gamedir
+                                 error:error];
 }
 
 -(idFile *)openFileReadFromPak:(NSString *)relativePath allowCopyFiles:(BOOL)allowCopyFiles gamedir:(NSString *)gamedir error:(NSError **)error {
         return [self openFileReadFlags:relativePath
-                                                         flags:FSFLAG_SEARCH_PAKS
-                                                         found:NULL
-                                                 copyFiles:allowCopyFiles
-                                                     gameDir:gamedir
-                                                         error:nil];
+                                 flags:FSFLAG_SEARCH_PAKS
+                                 found:NULL
+                             copyFiles:allowCopyFiles
+                               gameDir:gamedir
+                                 error:error];
 }
 
 - (idFile *)openFileWrite:(NSString *)relativePath basePath:(NSString *)basePath error:(NSError **)error {
@@ -4935,7 +4936,8 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
                                                           fullPath:OSpath
                                                               mode:(1 << FS_WRITE)
                                                               sync:NO
-                                                          fileSize:0];
+                                                          fileSize:0
+                                                        fileSystem:self];
 
     return f;
 }
@@ -4948,11 +4950,11 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
     }
 
     if (self.fs_debug) {
-        //common->Printf( "idFileSystem::OpenExplicitFileRead: %s\n", OSPath );
+        NSLog(@"openExplicitFileRead: %@", OSPath);
     }
 
     //common->DPrintf( "idFileSystem::OpenExplicitFileRead - reading from: %s\n", OSPath );
-    
+
     FILE *o = [self openOSFile:OSPath mode:"rb" caseSensitiveName:nil];
     if (!o) {
         return nil;
@@ -4963,7 +4965,8 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
                                         fullPath:OSPath
                                             mode:(1 << FS_READ)
                                             sync:NO
-                                        fileSize:directFileLength(o)];
+                                        fileSize:directFileLength(o)
+                                      fileSystem:self];
 
     return f;
 }
@@ -4992,7 +4995,8 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
                                         fullPath:OSPath
                                             mode:(1 << FS_WRITE)
                                             sync:NO
-                                        fileSize:0];
+                                        fileSize:0
+                                      fileSystem:self];
 
     return f;
 }
@@ -5046,7 +5050,8 @@ pureStatus_t idFileSystemLocal::GetPackStatus( pack_t *pak ) {
                 fullPath:OSpath
                     mode:(1 << FS_WRITE) + (1 << FS_APPEND)
                     sync:sync
-                fileSize:directFileLength(o)];
+                fileSize:directFileLength(o)
+              fileSystem:self];
 
     return f;
 }
@@ -5517,7 +5522,8 @@ void idFileSystemLocal::FindDLL( const char *name, char _dllPath[ MAX_OSPATH ], 
                                                              fullPath:@""
                                                                  mode:(1 << FS_READ) + (1 << FS_WRITE)
                                                                  sync:NO
-                                                             fileSize:0];
+                                                             fileSize:0
+                                                           fileSystem:self];
     return file;
 }
 

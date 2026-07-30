@@ -60,6 +60,17 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
     }
 }
 
+- (UDWorkspace *)openWorkspace:(NSString *)rootDirectory withDictionary:(NSDictionary *)dictionary {
+    UDWorkspace *result = [self workspaceForDirectory:rootDirectory];
+    if (result) {
+        return result;
+    }
+
+    result = [[UDWorkspace alloc] initWithDictionary:dictionary rootDirectory:rootDirectory];
+    
+    return result;
+}
+
 - (void)saveWorkspace:(UDWorkspace *)workspace {
     // 1. Update memory
     _workspaces[workspace.rootDirectory] = workspace;

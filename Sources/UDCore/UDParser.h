@@ -88,10 +88,22 @@ typedef struct indent_s {
     const char*          marker_p;
 }
 
-- (instancetype)init;
-- (instancetype)initWithFlags:(int)flags;
-- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)OSPath;
-- (instancetype)initWithBuffer:(const char *)ptr length:(int)length name:(NSString *)name flags:(int)flags error:(NSError **)error;
+@property (weak, nonatomic) idFileSystem *fileSystem;
+
+- (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
+- (instancetype)initWithFlags:(int)flags
+                   fileSystem:(idFileSystem *)fileSystem;
+- (instancetype)initWithFileName:(NSString *)filename
+                           flags:(int)flags
+                        isOSPath:(BOOL)OSPath
+                      fileSystem:(idFileSystem *)fileSystem
+                           error:(NSError **)error;
+- (instancetype)initWithBuffer:(const char *)ptr
+                        length:(int)length
+                          name:(NSString *)name
+                         flags:(int)flags
+                    fileSystem:(idFileSystem *)fileSystem
+                         error:(NSError **)error;
 
 // load a source file
 - (BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error;

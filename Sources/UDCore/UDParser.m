@@ -249,7 +249,7 @@ ID_INLINE const int idParser::GetLineNum( void ) const {
 +(BOOL)addGlobalDefine:(NSString *)str {
     define_t *define;
 
-    define = defineFromString([str cString]);
+    define = defineFromString([str UTF8String]);
     if (!define) {
         return NO;
     }
@@ -261,16 +261,15 @@ ID_INLINE const int idParser::GetLineNum( void ) const {
 +(BOOL)removeGlobalDefine:(NSString *)name {
     define_t *d, *prev;
 
-    for ( prev = NULL, d = globaldefines; d; prev = d, d = d->next ) {
-        if (!strcmp( d->name, [name cString])) {
+    for (prev = NULL, d = globaldefines; d; prev = d, d = d->next) {
+        if (!strcmp(d->name, [name UTF8String])) {
             break;
         }
     }
-    if ( d ) {
-        if ( prev ) {
+    if (d) {
+        if (prev) {
             prev->next = d->next;
-        }
-        else {
+        } else {
             globaldefines = d->next;
         }
         freeDefine(d);
@@ -282,7 +281,7 @@ ID_INLINE const int idParser::GetLineNum( void ) const {
 +(void)removeAllGlobalDefines {
     define_t *define;
 
-    for ( define = globaldefines; define; define = globaldefines ) {
+    for (define = globaldefines; define; define = globaldefines) {
         globaldefines = globaldefines->next;
         freeDefine(define);
     }
@@ -779,7 +778,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
             break;
         }
         case BUILTIN_FILE: {
-            idToken_BuiltinFile(token, [[self->scriptstack fileName] cString], deftoken);
+            idToken_BuiltinFile(token, [[self->scriptstack fileName] UTF8String], deftoken);
             *firsttoken = token;
             *lasttoken = token;
             break;
@@ -984,7 +983,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
         return NO;
     }
     if (token.type == TT_STRING) {
-        script = [[idLexer alloc] init];
+        script = [[idLexer alloc] initWithFileSystem:self.fileSystem];
         // try relative to the current file
         NSMutableString *basePath = [[scriptstack fileName] mutableCopy];
         [basePath backSlashesToSlashes];
@@ -999,7 +998,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
             NSRange rangeToDelete = NSMakeRange(0, afterPakPos);
             [relBase deleteCharactersInRange:rangeToDelete];
         } else {
-            NSString *rel = [[idFileSystem sharedFileSystem] osPathToRelativePath:relBase];
+            NSString *rel = [self.fileSystem osPathToRelativePath:relBase];
             if ([rel length]) {
                 relBase = [rel mutableCopy];
             }
@@ -1057,7 +1056,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
         if (self->flags & LEXFL_NOBASEINCLUDES) {
             return YES;
         }
-        script = [[idLexer alloc] init];
+        script = [[idLexer alloc] initWithFileSystem:self.fileSystem];
         if (![script loadFile:[includepath stringByAppendingString:path] isOSPath:OSPath error:error]) {
             script = nil; // delete script;
         }
@@ -1235,7 +1234,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
 -(BOOL)addDefine:(NSString *)string {
     define_t *define;
 
-    define = defineFromString([string cString]);
+    define = defineFromString([string UTF8String]);
     if (!define) {
         return NO;
     }
@@ -2340,7 +2339,7 @@ int PC_OperatorPriority(int op) {
         return NO;
     }
 
-    if (strcmp(token.text, [string cString])) {
+    if (strcmp(token.text, [string UTF8String])) {
         [self error:error format:@"expected '%@' but found '%s'", string, token.text];
         return NO;
     }
@@ -2417,7 +2416,7 @@ int PC_OperatorPriority(int op) {
         return NO;
     }
     //if the token is available
-    if (!strcmp(tok.text, [string cString])) {
+    if (!strcmp(tok.text, [string UTF8String])) {
         return YES;
     }
     //
@@ -2448,7 +2447,7 @@ int PC_OperatorPriority(int op) {
     idToken_Init(&token);
 
     while ([self readToken:&token error:error]) {
-        if (!strcmp(token.text, [string cString])) {
+        if (!strcmp(token.text, [string UTF8String])) {
             return YES;
         }
     }
@@ -2800,7 +2799,7 @@ int PC_OperatorPriority(int op) {
 -(int)flags {
     return self->flags;
 }
-/*
+
 -(BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error {
     idLexer *script;
 
@@ -2808,32 +2807,32 @@ int PC_OperatorPriority(int op) {
         [self error:error format:@"loadFile: another source already loaded"];
         return NO;
     }
-    script = [[idLexer alloc] initWithFileName:filename] new idLexer( filename, 0, OSPath );
-    if ( !script->IsLoaded() ) {
-        delete script;
-        return false;
+    script = [[idLexer alloc] initWithFileName:filename flags:0 isOSPath:OSPath fileSystem:self.fileSystem error:error];
+    if (!script.isLoaded) {
+        script = nil; //delete script;
+        return NO;
     }
-    script->SetFlags( idParser::flags );
-    script->SetPunctuations( idParser::punctuations );
-    script->next = NULL;
-    idParser::OSPath = OSPath;
-    idParser::filename = filename;
-    idParser::scriptstack = script;
-    idParser::tokens = NULL;
-    idParser::indentstack = NULL;
-    idParser::skip = 0;
-    idParser::loaded = true;
+    [script setFlags:self->flags];
+    [script setPunctuations:self->punctuations];
+    [script setNext:nil];
+    self->OSPath = OSPath;
+    self->filename = filename;
+    self->scriptstack = script;
+    self->tokens = nil;
+    self->indentstack = nil;
+    self->skip = 0;
+    self->loaded = YES;
 
-    if ( !idParser::definehash ) {
-        idParser::defines = NULL;
+    if (!self->definehash) {
+        self->defines = NULL;
 //RAVEN BEGIN
 //amccarthy: Added memory allocation tag
-        idParser::definehash = (define_t **) Mem_ClearedAlloc( DEFINEHASHSIZE * sizeof(define_t *), MA_PARSER );
+        self->definehash = (define_t **) calloc(1, DEFINEHASHSIZE * sizeof(define_t *));
 //RAVEN END
-        idParser::AddGlobalDefinesToSource();
+        [self addGlobalDefinesToSource];
     }
-    return true;
-}*/
+    return YES;
+}
 
 -(BOOL)loadMemory:(const char *)ptr length:(int)length name:(NSString *)name error:(NSError **)error {
     idLexer *script;
@@ -2842,7 +2841,7 @@ int PC_OperatorPriority(int op) {
         [self error:error format:@"loadMemory: another source already loaded"];
         return NO;
     }
-    script = [[idLexer alloc] initWithBuffer:ptr length:length name:name flags:0 error:error];
+    script = [[idLexer alloc] initWithBuffer:ptr length:length name:name flags:0 fileSystem:self.fileSystem error:error];
     if (![script isLoaded]) {
         script = nil; // delete script;
         return NO;
@@ -2916,7 +2915,7 @@ int PC_OperatorPriority(int op) {
     int i;
 
     if (!self->punctuations) {
-        idLexer *lex = [[idLexer alloc] init];
+        idLexer *lex = [[idLexer alloc] initWithFileSystem:self.fileSystem];
         return [lex punctuationFromId:ident];
     }
 
@@ -2932,19 +2931,19 @@ int PC_OperatorPriority(int op) {
     int i;
 
     if (!self->punctuations) {
-        idLexer *lex = [[idLexer alloc] init];
-        return [lex punctuationId:[p cString]];
+        idLexer *lex = [[idLexer alloc] initWithFileSystem:self.fileSystem];
+        return [lex punctuationId:[p UTF8String]];
     }
 
     for (i = 0; self->punctuations[i].p; i++) {
-        if (!strcmp(self->punctuations[i].p, [p cString])) {
+        if (!strcmp(self->punctuations[i].p, [p UTF8String])) {
             return self->punctuations[i].n;
         }
     }
     return 0;
 }
 
--(instancetype)init {
+-(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -2962,11 +2961,13 @@ int PC_OperatorPriority(int op) {
         // bdube: added members
         marker_p = NULL;
         // RAVEN END
+        
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
--(instancetype)initWithFlags:(int)flags {
+-(instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -2984,23 +2985,37 @@ int PC_OperatorPriority(int op) {
         // bdube: added members
         marker_p = NULL;
         // RAVEN END
+        
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
-/*idParser::idParser( const char *filename, int flags, bool OSPath ) {
-    this->loaded = false;
-    this->OSPath = true;
-    this->punctuations = 0;
-    this->flags = flags;
-    this->scriptstack = NULL;
-    this->indentstack = NULL;
-    this->definehash = NULL;
-    this->defines = NULL;
-    this->tokens = NULL;
-    this->marker_p = NULL;
-    LoadFile( filename, OSPath );
-}*/
+
+- (instancetype)initWithFileName:(NSString *)filename
+                           flags:(int)flags
+                        isOSPath:(BOOL)OSPath
+                      fileSystem:(idFileSystem *)fileSystem
+                           error:(NSError **)error {
+    self = [super init];
+    if (self) {
+        self->loaded = NO;
+        self->OSPath = OSPath;
+        self->punctuations = 0;
+        self->flags = flags;
+        self->scriptstack = NULL;
+        self->indentstack = NULL;
+        self->definehash = NULL;
+        self->defines = NULL;
+        self->tokens = NULL;
+        self->marker_p = NULL;
+        
+        self.fileSystem = fileSystem;
+        
+        [self loadFile:filename isOSPath:OSPath error:error];
+    }
+    return self;
+}
 
 - (instancetype)initWithBuffer:(const char *)ptr length:(int)length name:(NSString *)name flags:(int)flags error:(NSError **)error {
     self = [super init];

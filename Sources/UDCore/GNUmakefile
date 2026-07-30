@@ -50,7 +50,9 @@ UDCore_OBJC_FILES = \
     idFileSystem.m \
     UDWorkspace.m \
     UDWorkspaceManager.m \
-    UDFileSystemManager.m
+    MD5.m \
+    idDeclManager.m \
+    idDeclMaterial.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -85,7 +87,9 @@ UDCore_HEADER_FILES = \
     idFileSystem.h \
     UDWorkspace.h \
     UDWorkspaceManager.h \
-    UDFileSystemManager.h
+    MD5.h \
+    idDeclManager.h \
+    idDeclMaterial.h
 
 ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 

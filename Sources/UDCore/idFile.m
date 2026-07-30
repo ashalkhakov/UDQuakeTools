@@ -253,14 +253,19 @@ idFile
 
     // so notepad formats the lines correctly
     result = [result stringByReplacingOccurrencesOfString:@"\n" withString:@"\r\n"];
+    
+    const char *utf8 = [result UTF8String];
+    int len = (int)strlen(utf8);
 
-    return [self write:[result cString] length:[result cStringLength] error:nil];
+    return [self write:utf8 length:len error:nil];
 }
 
 -(int)vprintf:(NSString *)fmt arg:(va_list)arg {
     NSString *result = [[NSString alloc] initWithFormat:fmt arguments:arg];
+    const char *utf8 = [result UTF8String];
+    int len = (int)strlen(utf8);
 
-    return [self write:[result cString] length:[result cStringLength] error:nil];
+    return [self write:utf8 length:len error:nil];
 }
 
 /*
@@ -415,7 +420,7 @@ idFile_Memory
 
 @implementation idFile_Memory
 
--(instancetype)init {
+-(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->name = @"*unknown*";
@@ -427,11 +432,13 @@ idFile_Memory
         self->mode = ( 1 << FS_WRITE );
         self->filePtr = NULL;
         self->curPtr = NULL;
+        
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
--(instancetype)initWithName:(NSString *)name {
+-(instancetype)initWithName:(NSString *)name fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->name = name;
@@ -443,11 +450,13 @@ idFile_Memory
         self->mode = ( 1 << FS_WRITE );
         self->filePtr = NULL;
         self->curPtr = NULL;
+        
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
--(instancetype)initWithName:(NSString *)name buffer:(char *)data length:(int)length writing:(BOOL)writing {
+-(instancetype)initWithName:(NSString *)name buffer:(char *)data length:(int)length writing:(BOOL)writing fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->name = name ? name : @"";
@@ -474,6 +483,8 @@ idFile_Memory
 
         self->filePtr = data;
         self->curPtr = data;
+        
+        self.fileSystem = fileSystem;
     }
     return self;
 }
@@ -645,6 +656,10 @@ idFile_Memory
     self->curPtr = data;
 }
 
+-(char *)dataPtr {
+    return self->filePtr;
+}
+
 @end
 
 /*
@@ -657,7 +672,7 @@ idFile_Permanent
 
 @implementation idFile_Permanent
 
--(instancetype)init {
+-(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->name = @"invalid";
@@ -665,20 +680,33 @@ idFile_Permanent
         self->mode = 0;
         self->fileSize = 0;
         self->handleSync = NO;
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
--(instancetype)initWithHandle:(FILE *)fp name:(NSString *)relativePath mode:(int)mode sync:(BOOL)sync fileSize:(int)fileSize {
+-(instancetype) initWithHandle:(FILE *)fp
+                          name:(NSString *)relativePath
+                      fullPath:(NSString *)fullPath
+                          mode:(int)mode
+                          sync:(BOOL)sync
+                      fileSize:(int)fileSize
+                    fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->o = fp;
         self->name = relativePath;
+        self->fullPath = fullPath;
         self->mode = mode;
         self->fileSize = fileSize;
         self->handleSync = sync;
+        self.fileSystem = fileSystem;
     }
     return self;
+}
+
+-(FILE *)filePtr {
+    return self->o;
 }
 
 -(void)dealloc {
@@ -737,7 +765,7 @@ idFile_Permanent
 
         remaining -= read;
         buf += read;
-        // [[idFileSystem sharedFileSystem] addToReadCount:read];
+        [self.fileSystem addToReadCount:read];
     }
 
     return len;
@@ -867,7 +895,7 @@ idFile_InZip
 
 @implementation idFile_InZip
 
--(instancetype)initWithUnzipInfo:(void *)z name:(NSString *)name pakFilename:(NSString *)pakFilename {
+-(instancetype)initWithUnzipInfo:(void *)z name:(NSString *)name pakFilename:(NSString *)pakFilename fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
         self->name = name;
@@ -875,6 +903,7 @@ idFile_InZip
         self->z = z;
         self->zipFilePos = 0;
         self->fileSize = 0;
+        self.fileSystem = fileSystem;
     }
     return self;
 }
@@ -912,7 +941,7 @@ idFile_InZip
         }
 
         totalRead += l;
-        //[[idFileSystem sharedFileSystem] addToReadCount:l];
+        [self.fileSystem addToReadCount:l];
 
         if (l < block) {
             break;

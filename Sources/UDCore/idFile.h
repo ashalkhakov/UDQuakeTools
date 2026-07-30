@@ -43,8 +43,11 @@ typedef enum {
     FS_SEEK_SET
 } fsOrigin_t;
 
+@class idFileSystem;
 
 @interface idFile : NSObject
+
+@property (weak, nonatomic) idFileSystem *fileSystem;
 
 // Get the name of the file.
 -(NSString *)name;
@@ -93,9 +96,14 @@ typedef enum {
     char *                    curPtr;            // current read/write pointer
 }
 
--(instancetype)init;    // file for writing without name
--(instancetype)initWithName:(NSString *)name;    // file for writing
--(instancetype)initWithName:(NSString *)name buffer:(char *)data length:(int)length writing:(BOOL)writing;    // file for writing or reading
+-(instancetype)initWithFileSystem:(idFileSystem *)fileSystem;    // file for writing without name
+-(instancetype)initWithName:(NSString *)name
+                 fileSystem:(idFileSystem *)fileSystem;    // file for writing
+-(instancetype)initWithName:(NSString *)name
+                     buffer:(char *)data
+                     length:(int)length
+                    writing:(BOOL)writing
+                 fileSystem:(idFileSystem *)fileSystem;    // file for writing or reading
 
 // changes memory file to read only
 -(void)makeReadOnly;
@@ -119,7 +127,13 @@ typedef enum {
     BOOL                        handleSync;        // true if written data is immediately flushed
 }
 
--(instancetype) initWithHandle:(FILE *)fp name:(NSString *)relativePath fullPath:(NSString *)fullPath mode:(int)mode sync:(BOOL)sync fileSize:(int)fileSize;
+-(instancetype) initWithHandle:(FILE *)fp
+                          name:(NSString *)relativePath
+                      fullPath:(NSString *)fullPath
+                          mode:(int)mode
+                          sync:(BOOL)sync
+                      fileSize:(int)fileSize
+                    fileSystem:(idFileSystem *)fileSystem;
 
 // get file pointer
 -(FILE *)filePtr;
@@ -133,7 +147,7 @@ typedef enum {
     void *                     z;                // unzip info
 }
 
--(instancetype) initWithUnzipInfo:(void*)z name:(NSString *)name pakFilename:(NSString *)pakFilename;
+-(instancetype) initWithUnzipInfo:(void*)z name:(NSString *)name pakFilename:(NSString *)pakFilename fileSystem:(idFileSystem *)fileSystem;
 -(void)openCurrentFileAt:(unsigned long)pos;
 
 @end

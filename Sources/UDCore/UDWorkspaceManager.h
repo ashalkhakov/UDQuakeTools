@@ -25,6 +25,9 @@ extern NSString * const UDWorkspaceDidCloseNotification;
 // Reverse lookup: Given an arbitrary file path, find which workspace owns it
 - (UDWorkspace *)workspaceOwningFilePath:(NSString *)filePath;
 
+// Open the workspace. Pass in the settings if needed.
+- (UDWorkspace *)openWorkspace:(NSString *)rootDirectory withDictionary:(NSDictionary *)dictionary;
+
 // Close the workspace
 - (void)closeWorkspace:(UDWorkspace *)workspace;
 

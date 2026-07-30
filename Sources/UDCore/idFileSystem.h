@@ -28,6 +28,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #import "UDWorkspace.h"
 
+#define MAX_STRING_CHARS        1024        // max length of a string
+#define PATHSEPERATOR_CHAR      '/'
+#define PATHSEPERATOR_STR       "/"
+
 /*
 ===============================================================================
 
@@ -98,7 +102,7 @@ typedef enum {
 @interface idFileSystem : NSObject
 
 // the workspace that owns this file system instance
-@property (nonatomic, strong, readonly) UDWorkspace *workspace;
+@property (nonatomic, weak, readonly) UDWorkspace *workspace;
 
 // variables
 @property (readonly, nonatomic) NSString *gamedir; // the default game dir
@@ -120,6 +124,7 @@ typedef enum {
 // Initializes the file system.
 - (instancetype)initWithWorkspace:(UDWorkspace *)workspace;
 
+-(void)startup;
 // Restarts the file system.
 -(void)restart;
 // Shutdown the file system.
@@ -135,6 +140,16 @@ typedef enum {
 // The extension must include a leading dot and may not contain wildcards.
 // If extension is "/", only subdirectories will be returned.
 -(idFileList *)listFiles:(NSString *)relativePath extension:(NSString*)extension sorted:(BOOL)sort fullRelativePath:(BOOL)fullRelativePath inGameDir:(NSString *)gamedir error:(NSError **)error;
+
+// sorted=NO, fullRelativePath=NO, inGameDir=nil
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension error:(NSError **)error;
+
+// fullRelativePath=NO, inGameDir=nil
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sorted error:(NSError **)error;
+
+// inGameDir=nil
+- (idFileList *)listFiles:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sorted fullRelativePath:(BOOL)fullRelativePath error:(NSError **)error;
+
 // Lists files in the given directory and all subdirectories with the given extension.
 // Directory should not have either a leading or trailing '/'
 // The returned files include a full relative path.
@@ -199,7 +214,5 @@ typedef enum {
 
 // ignore case and seperator char distinctions
 -(BOOL)filenameCompare:(NSString *)s1 to:(NSString *)s2;
-
-+ (idFileSystem *)sharedFileSystem;
 
 @end

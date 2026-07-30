@@ -6,6 +6,8 @@
 //
 
 #import "UDWorkspace.h"
+#import "idFileSystem.h"
+#import "idDeclManager.h"
 
 @implementation UDWorkspace
 
@@ -14,16 +16,15 @@
     if (self) {
         _rootDirectory = [rootDir copy];
         
-        // Strings
+        _pakFileExtension = dict[@"pakFileExtension"] ?: @"pk4";
         _gamedir = dict[@"gamedir"] ?: @"base";
         
-        // Mutable Strings (Ensuring they are actually mutable and never nil)
-        _fs_basepath  = [dict[@"fs_basepath"] mutableCopy] ?: [[NSMutableString alloc] init];
-        _fs_homepath  = [dict[@"fs_homepath"] mutableCopy] ?: [[NSMutableString alloc] init];
-        _fs_savepath  = [dict[@"fs_savepath"] mutableCopy] ?: [[NSMutableString alloc] init];
-        _fs_cdpath    = [dict[@"fs_cdpath"] mutableCopy] ?: [[NSMutableString alloc] init];
-        _fs_game      = [dict[@"fs_game"] mutableCopy] ?: [[NSMutableString alloc] init];
-        _fs_game_base = [dict[@"fs_game_base"] mutableCopy] ?: [[NSMutableString alloc] init];
+        _fs_basepath  = dict[@"fs_basepath"] ?: @"";
+        _fs_homepath  = dict[@"fs_homepath"] ?: @"";
+        _fs_savepath  = dict[@"fs_savepath"] ?: @"";
+        _fs_cdpath    = dict[@"fs_cdpath"] ?: @"";
+        _fs_game      = dict[@"fs_game"] ?: @"";
+        _fs_game_base = dict[@"fs_game_base"] ?: @"";
         
         // Primitives
         _fs_debug           = [dict[@"fs_debug"] boolValue];
@@ -36,12 +37,33 @@
         } else {
             _fs_caseSensitiveOS = YES; // Default value
         }
+        
+        if (dict[@"decl_show"] != nil) {
+            _decl_show = [dict[@"decl_show"] integerValue];
+        } else {
+            _decl_show = NO; // default
+        }
+        
+        if (dict[@"com_SingleDeclFile"] != nil) {
+            _com_SingleDeclFile = [dict[@"com_SingleDeclFile"] boolValue];
+        } else {
+            _com_SingleDeclFile = NO;
+        }
+        
+        _com_singleDeclFileName = dict[@"com_singleDeclFileName"] ?: @"";
+        
+        if (dict[@"com_singleDeclFileWriteMode"] != nil) {
+            _com_singleDeclFileWriteMode = [dict[@"com_singleDeclFileWriteMode"] integerValue];
+        } else {
+            _com_singleDeclFileWriteMode = 1; // default
+        }
     }
     return self;
 }
 
 - (NSDictionary *)dictionaryRepresentation {
     return @{
+        @"pakFileExtension": self.pakFileExtension ?: @"",
         @"gamedir": self.gamedir ?: @"",
         @"fs_basepath": self.fs_basepath ?: @"",
         @"fs_homepath": self.fs_homepath ?: @"",
@@ -52,8 +74,32 @@
         @"fs_debug": @(self.fs_debug),
         @"fs_restrict": @(self.fs_restrict),
         @"fs_copyfiles": @(self.fs_copyfiles),
-        @"fs_caseSensitiveOS": @(self.fs_caseSensitiveOS)
+        @"fs_caseSensitiveOS": @(self.fs_caseSensitiveOS),
+        @"decl_show": @(self.decl_show),
+        @"com_SingleDeclFile": @(self.com_SingleDeclFile),
+        @"com_singleDeclFileName": self.com_singleDeclFileName,
+        @"com_singleDeclFileWriteMode": @(self.com_singleDeclFileWriteMode)
     };
+}
+
+// ---------------------------------------------------------
+// Lifetime Management
+// ---------------------------------------------------------
+
+- (void)startup {
+    // Call this ONCE when you first load a workspace into your app.
+    // They will live in memory until this UDWorkspace is destroyed.
+    if (!self.fileSystem) {
+        self.fileSystem = [[idFileSystem alloc] initWithWorkspace:self];
+    }
+    
+    if (!self.declManager) {
+        self.declManager = [[idDeclManager alloc] initWithWorkspace:self];
+    }
+    
+    
+    [self.fileSystem startup];
+    [self.declManager startup];
 }
 
 @end

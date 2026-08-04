@@ -12,7 +12,6 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
 
 @implementation UDWorkspaceManager {
     NSMutableDictionary<NSString *, UDWorkspace *> *_workspaces; // Keyed by rootDirectory
-    NSString *_registryFilePath;
 }
 
 + (instancetype)sharedManager {
@@ -28,61 +27,15 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
     self = [super init];
     if (self) {
         _workspaces = [[NSMutableDictionary alloc] init];
-        
-        // 1. Resolve Application Support Path
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-        NSString *appSupport = paths.firstObject;
-        NSString *myAppSupport = [appSupport stringByAppendingPathComponent:@"OpenQ4Editor"];
-        
-        // Ensure the directory exists
-        [[NSFileManager defaultManager] createDirectoryAtPath:myAppSupport 
-                                  withIntermediateDirectories:YES 
-                                                   attributes:nil 
-                                                        error:nil];
-        
-        // 2. Define the plist file path
-        _registryFilePath = [myAppSupport stringByAppendingPathComponent:@"Workspaces.plist"];
-        
-        // 3. Load existing workspaces
-        [self loadRegistry];
     }
     return self;
 }
 
-- (void)loadRegistry {
-    NSDictionary *savedData = [NSDictionary dictionaryWithContentsOfFile:_registryFilePath];
-    if (!savedData) return;
-    
-    for (NSString *rootDir in savedData) {
-        NSDictionary *workspaceDict = savedData[rootDir];
-        UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:workspaceDict rootDirectory:rootDir];
-        _workspaces[rootDir] = workspace;
+// Registers an already-created workspace into the active session
+- (void)registerWorkspace:(UDWorkspace *)workspace {
+    if (workspace.rootDirectory) {
+        _workspaces[workspace.rootDirectory] = workspace;
     }
-}
-
-- (UDWorkspace *)openWorkspace:(NSString *)rootDirectory withDictionary:(NSDictionary *)dictionary {
-    UDWorkspace *result = [self workspaceForDirectory:rootDirectory];
-    if (result) {
-        return result;
-    }
-
-    result = [[UDWorkspace alloc] initWithDictionary:dictionary rootDirectory:rootDirectory];
-    
-    return result;
-}
-
-- (void)saveWorkspace:(UDWorkspace *)workspace {
-    // 1. Update memory
-    _workspaces[workspace.rootDirectory] = workspace;
-    
-    // 2. Build a dictionary of all workspaces to write to disk
-    NSMutableDictionary *plistData = [[NSMutableDictionary alloc] init];
-    for (NSString *rootDir in _workspaces) {
-        plistData[rootDir] = [_workspaces[rootDir] dictionaryRepresentation];
-    }
-    
-    // 3. Write to disk
-    [plistData writeToFile:_registryFilePath atomically:YES];
 }
 
 - (UDWorkspace *)workspaceForDirectory:(NSString *)directoryPath {
@@ -94,29 +47,18 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
     NSUInteger longestMatchLength = 0;
     
     for (NSString *rootDir in _workspaces) {
-        // Ensure we match whole directories (add trailing slash for safety)
         NSString *prefix = [rootDir hasSuffix:@"/"] ? rootDir : [rootDir stringByAppendingString:@"/"];
-        
-        if ([filePath hasPrefix:prefix]) {
-            // Find the most specific (longest) registered path
-            if (prefix.length > longestMatchLength) {
-                longestMatchLength = prefix.length;
-                bestMatch = _workspaces[rootDir];
-            }
+        if ([filePath hasPrefix:prefix] && prefix.length > longestMatchLength) {
+            longestMatchLength = prefix.length;
+            bestMatch = _workspaces[rootDir];
         }
     }
-    
     return bestMatch;
 }
 
 - (void)closeWorkspace:(UDWorkspace *)workspace {
     if (!workspace || !workspace.rootDirectory) return;
-    
-    // 1. Remove it from the active workspaces dictionary
     [_workspaces removeObjectForKey:workspace.rootDirectory];
-    
-    // 2. Broadcast that this workspace is closing so the File System Manager
-    // (and your UI, like open document windows) can clean themselves up.
     [[NSNotificationCenter defaultCenter] postNotificationName:UDWorkspaceDidCloseNotification
                                                         object:workspace];
 }

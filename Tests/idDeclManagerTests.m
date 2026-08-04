@@ -57,8 +57,8 @@
     [testDeclContent writeToFile:testDeclPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     // 3. Boot the subsystems
-    self.workspace = [[UDWorkspaceManager sharedManager] openWorkspace:self.rootDir withDictionary:dict];
-    [self.workspace startup];
+    self.workspace = [[UDWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
+    [self.workspace startup:nil];
     
     self.fileSystem = self.workspace.fileSystem;
     

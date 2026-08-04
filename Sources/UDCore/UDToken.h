@@ -179,3 +179,5 @@ const char * idToken_WhiteSpaceEnd(const idToken *token);
 
 int             idToken_Flags(const idToken *token);
 void            idToken_AddToFlags(idToken *token, int flags);
+
+void idToken_StripQuotes(idToken *token);

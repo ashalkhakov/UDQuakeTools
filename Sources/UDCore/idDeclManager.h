@@ -55,8 +55,8 @@ typedef enum {
 // rjohnson: camera is now contained in a def for frame commands
     DECL_CAMERADEF,
 // jscott: don't use these
-//    DECL_FX,
-//    DECL_PARTICLE,
+    DECL_FX,
+    DECL_PARTICLE,
 // RAVEN END
     DECL_AF,
     DECL_PDA,
@@ -312,8 +312,6 @@ static inline void DeclManager_FreeAllocatedDecl(idDecl *decl) {
 }
 
 /*
-
-
 template< class type >
 ID_INLINE idDecl *idDeclAllocator( void ) {
     return new type;
@@ -331,7 +329,7 @@ ID_INLINE SerializableBase *idDeclStreamAllocator( SerialInputStream &stream ) {
 #endif
 */
 
-@class idMaterial, idDeclTable, idDeclSkin, idSoundShader;
+@class idDeclMaterial, idDeclTable, idDeclSkin, idSoundShader;
 
 @class idFile;
 
@@ -350,7 +348,7 @@ typedef idDecl *(*idDeclAllocator_t)(void);
 @property (assign, nonatomic) BOOL insideLoad;
 
 -(instancetype)initWithWorkspace:(UDWorkspace *)workspace;
--(void)startup;
+-(BOOL)startup:(NSError **)error;
 -(void)shutdown;
 -(void)reload:(BOOL)force error:(NSError **)error;
 
@@ -437,11 +435,14 @@ typedef idDecl *(*idDeclAllocator_t)(void);
 -(BOOL)evaluateInlineGuide:(NSMutableString *)name definition:(NSMutableString *)definition error:(NSError **)error;
 // RAVEN END
 
-/*
 // Convenience functions for specific types.
-virtual    const idMaterial *        FindMaterial( const char *name, bool makeDefault = true ) = 0;
-virtual const idDeclTable *        FindTable( const char *name, bool makeDefault = true ) = 0;
-virtual const idDeclSkin *        FindSkin( const char *name, bool makeDefault = true ) = 0;
+-(idDeclMaterial *)findMaterial:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error;
+-(idDeclMaterial *)findMaterial:(NSString *)name error:(NSError **)error; // makeDefault=YES
+-(idDeclTable *)findTable:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error;
+-(idDeclTable *)findTable:(NSString *)name error:(NSError **)error; // makeDefault=YES
+-(idDeclSkin *)findSkin:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error;
+-(idDeclSkin *)findSkin:(NSString *)name error:(NSError **)error; // makeDefault=YES
+/*
 virtual const idSoundShader *    FindSound( const char *name, bool makeDefault = true ) = 0;
 
 // RAVEN BEGIN
@@ -451,10 +452,15 @@ virtual    const rvDeclLipSync *    FindLipSync( const char *name, bool makeDefa
 virtual    const rvDeclPlayback *    FindPlayback( const char *name, bool makeDefault = true ) = 0;
 virtual    const rvDeclEffect *    FindEffect( const char *name, bool makeDefault = true ) = 0;
 // RAVEN END
+*/
+-(idDeclMaterial *)materialByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
+-(idDeclMaterial *)materialByIndex:(int)index error:(NSError **)error; // forceParse=YES
+-(idDeclTable *)tableByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
+-(idDeclTable *)tableByIndex:(int)index error:(NSError **)error; // forceParse=YES
+-(idDeclSkin *)skinByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
+-(idDeclSkin *)skinByIndex:(int)index error:(NSError **)error; // forceParse=YES
 
-virtual const idMaterial *        MaterialByIndex( int index, bool forceParse = true ) = 0;
-virtual const idDeclTable *        TableByIndex( int index, bool forceParse = true ) = 0;
-virtual const idDeclSkin *        SkinByIndex( int index, bool forceParse = true ) = 0;
+/*
 virtual const idSoundShader *    SoundByIndex( int index, bool forceParse = true ) = 0;
 
  // RAVEN BEGIN

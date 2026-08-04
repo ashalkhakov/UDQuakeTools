@@ -124,7 +124,7 @@ typedef enum {
 // Initializes the file system.
 - (instancetype)initWithWorkspace:(UDWorkspace *)workspace;
 
--(void)startup;
+-(BOOL)startup:(NSError **)error;
 // Restarts the file system.
 -(void)restart;
 // Shutdown the file system.

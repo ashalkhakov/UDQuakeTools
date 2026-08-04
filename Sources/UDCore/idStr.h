@@ -311,3 +311,19 @@ static inline void idStr_Insert(idStr *self, const char *text, int index) {
 
 BOOL idStr_HasUpper(const idStr *self);
 void idStr_Copynz(char *dest, const char *src, int destsize);
+
+int idStr_snPrintf(char *dest, int size, const char *fmt, ...);
+int idStr_vsnPrintf(char *dest, int size, const char *fmt, va_list argptr);
+
+/*
+ idStr::Filter
+
+ Returns true if the string conforms the given filter.
+ Several metacharacter may be used in the filter.
+
+ *          match any string of zero or more characters
+ ?          match any single character
+ [abc...]   match any of the enclosed characters; a hyphen can
+            be used to specify a range (e.g. a-z, A-Z, 0-9)
+ */
+BOOL idStr_Filter(const char *filter, const char *name, BOOL casesensitive);

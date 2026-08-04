@@ -86,7 +86,7 @@
 // Lifetime Management
 // ---------------------------------------------------------
 
-- (void)startup {
+- (BOOL)startup:(NSError **)error {
     // Call this ONCE when you first load a workspace into your app.
     // They will live in memory until this UDWorkspace is destroyed.
     if (!self.fileSystem) {
@@ -98,8 +98,19 @@
     }
     
     
-    [self.fileSystem startup];
-    [self.declManager startup];
+    if (![self.fileSystem startup:error]) {
+        return NO;
+    }
+    if (![self.declManager startup:error]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+-(void)shutdown {
+    [self.declManager shutdown];
+    [self.fileSystem shutdown:NO];
 }
 
 @end

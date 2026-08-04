@@ -374,7 +374,7 @@ static officialPk4Info_t officialPk4s[] = {
         return NO;
     }
 
-    NSString *name = [[NSString stringWithCString:pakName] lastPathComponent];
+    NSString *name = [[NSString stringWithUTF8String:pakName] lastPathComponent];
     if ([name caseInsensitiveCompare:@"game000.pk4"] == NSOrderedSame ||
         [name caseInsensitiveCompare:@"game100.pk4"] == NSOrderedSame ||
         [name caseInsensitiveCompare:@"game200.pk4"] == NSOrderedSame ||
@@ -1984,6 +1984,35 @@ static void sortPaths(NSArray<NSString *> *list) {
     [list sortedArrayUsingFunction:sortPathsFunction context:NULL];
 }
 
+static inline int Icmpn(NSString *a, NSString *b, NSUInteger n) {
+    if (n == 0) return 0;
+    
+    NSUInteger lenA = a.length;
+    NSUInteger lenB = b.length;
+    NSUInteger len = MIN(n, MIN(lenA, lenB));
+    
+    for (NSUInteger i = 0; i < len; i++) {
+        unichar ca = [a characterAtIndex:i];
+        unichar cb = [b characterAtIndex:i];
+        
+        // Simple ASCII case fold (enough for Doom paths)
+        if (ca >= 'A' && ca <= 'Z') ca += 32;
+        if (cb >= 'A' && cb <= 'Z') cb += 32;
+        
+        if (ca != cb) {
+            return (int)ca - (int)cb;
+        }
+    }
+    
+    // If we compared fewer than n characters, the shorter string "loses"
+    if (len < n) {
+        if (lenA < lenB) return -1;
+        if (lenA > lenB) return  1;
+    }
+    
+    return 0;
+}
+
 - (int)getFileList:(NSString *)relativePath
         extensions:(NSArray<NSString *> *)extensions
               list:(NSMutableArray<NSString *> *)list
@@ -2004,11 +2033,11 @@ static void sortPaths(NSArray<NSString *> *list) {
     if (extensions.count == 0 || !relativePath) {
         return 0;
     }
+    BOOL findDirectoriesOnly = [extensions containsObject:@"/"];
 
     int pathLength = (int)relativePath.length;
-    NSString *relPrefix = relativePath;
-    if (relPrefix.length > 0 && ![relPrefix hasSuffix:@"/"]) {
-        relPrefix = [relPrefix stringByAppendingString:@"/"]; // for the trailing '/'
+    if (pathLength) {
+        pathLength++; // for the trailing '/'
     }
     
     work = [[NSMutableString alloc] init];
@@ -2048,8 +2077,8 @@ static void sortPaths(NSArray<NSString *> *list) {
                     
                     // unique the match
                     if (![hashIndex containsObject:work]) {
-                        [hashIndex addObject:work];
-                        [list addObject:work];
+                        [hashIndex addObject:[work copy]];
+                        [list addObject:[work copy]];
                     }
                 }
             }
@@ -2068,12 +2097,43 @@ static void sortPaths(NSArray<NSString *> *list) {
                 }
 
                 // check for a path match without the trailing '/'
-                if (pathLength && [name compare:relativePath options:NSCaseInsensitiveSearch range:NSMakeRange(0, pathLength - 1)] != NSOrderedSame) {
+                if (pathLength && Icmpn(name, relativePath, pathLength - 1) != 0) {
                     continue;
                 }
 
                 // ensure we have a path, and not just a filename containing the path
                 if (length == pathLength || [name characterAtIndex:pathLength - 1] != '/') {
+                    continue;
+                }
+                
+                if (findDirectoriesOnly) {
+                    // Find the first slash AFTER pathLength
+                    NSInteger slashIndex = -1;
+                    for (j = pathLength; j < length; j++) {
+                        if ([name characterAtIndex:j] == '/') {
+                            slashIndex = j;
+                            break;
+                        }
+                    }
+                    
+                    // If there's no slash after pathLength, it's a file, not a directory
+                    if (slashIndex == -1) {
+                        continue;
+                    }
+
+                    // Extract the virtual directory name (including or excluding fullRelativePath)
+                    if (fullRelativePath) {
+                        // e.g., "scripts/sub"
+                        [work setString:[name substringToIndex:slashIndex]];
+                    } else {
+                        // e.g., "sub"
+                        [work setString:[name substringWithRange:NSMakeRange(pathLength, slashIndex - pathLength)]];
+                    }
+
+                    if (![hashIndex containsObject:work]) {
+                        [hashIndex addObject:[work copy]];
+                        [list addObject:[work copy]];
+                    }
                     continue;
                 }
 
@@ -2088,10 +2148,11 @@ static void sortPaths(NSArray<NSString *> *list) {
                 }
 
                 // check for extension match
-                for (j = 0; j < extensions.count; j++ ) {
+                for (j = 0; j < extensions.count; j++) {
                     NSString *ext = [extensions objectAtIndex:j];
-                    
-                    if (length >= ext.length && [name compare:ext options:NSCaseInsensitiveSearch range:NSMakeRange(length - ext.length, ext.length)]) {
+                    NSRange targetRange = NSMakeRange(name.length - ext.length, ext.length);
+                    if (name.length >= ext.length &&
+                        [name compare:ext options:NSCaseInsensitiveSearch range:targetRange] == NSOrderedSame) {
                         break;
                     }
                 }
@@ -2111,8 +2172,8 @@ static void sortPaths(NSArray<NSString *> *list) {
                 }
                 
                 if (![hashIndex containsObject:work]) {
-                    [hashIndex addObject:work];
-                    [list addObject:work];
+                    [hashIndex addObject:[work copy]];
+                    [list addObject:[work copy]];
                 }
             }
         }
@@ -3775,7 +3836,7 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
 }
 #endif
 
--(void)startup {
+-(BOOL)startup:(NSError **)error {
     //searchpath_t    **search;
     //int                i;
     //pack_t            *pak;
@@ -3865,6 +3926,8 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
             "Rebuild or reinstall openQ4 so '%s/pak0.pk4' contains the runtime config files, and keep retail Quake 4 media PK4s in '%s'.",
             OPENQ4_GAMEDIR, BASE_GAMEDIR );
     }*/
+    
+    return YES;
 }
 
 #if 0
@@ -4372,7 +4435,7 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
     // free anything we currently have loaded
     [self shutdown:YES];
 
-    [self startup];
+    [self startup:nil];
 
     // see if we are going to allow add-ons
     //SetRestrictions();

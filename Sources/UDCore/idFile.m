@@ -37,32 +37,34 @@ NSString * const UDFileSystemErrorDomain = @"UDFileSystemErrorDomain";
 
 #define    MAX_PRINT_MSG        4096
 
-#if 0
 /*
 =================
 FS_WriteFloatString
 =================
 */
-static void FS_AppendFloatString( char *buf, int bufSize, int &index, const char *fmt, ... ) {
+static BOOL FS_AppendFloatString(char *buf, int bufSize, int *index, const char *fmt, ...) {
     va_list argPtr;
     int written;
 
-    if ( index < 0 || index >= bufSize ) {
-        common->Error( "FS_WriteFloatString: output overflow" );
+    if (*index < 0 || *index >= bufSize) {
+        NSLog(@"FS_WriteFloatString: output overflow" );
+        return NO;
     }
 
     va_start( argPtr, fmt );
-    written = idStr::vsnPrintf( buf + index, bufSize - index, fmt, argPtr );
+    written = idStr_vsnPrintf(buf + *index, bufSize - *index, fmt, argPtr);
     va_end( argPtr );
 
-    if ( written < 0 ) {
-        common->Error( "FS_WriteFloatString: output overflow" );
+    if (written < 0) {
+        NSLog(@"FS_WriteFloatString: output overflow");
+        return NO;
     }
 
-    index += written;
+    *index += written;
+    return YES;
 }
 
-int FS_WriteFloatString( char *buf, int bufSize, const char *fmt, va_list argPtr ) {
+int FS_WriteFloatString(char *buf, int bufSize, const char *fmt, va_list argPtr) {
     int i;
     unsigned int u;
     double f;
@@ -70,26 +72,31 @@ int FS_WriteFloatString( char *buf, int bufSize, const char *fmt, va_list argPtr
     int index;
     idStr tmp, format;
 
-    if ( buf == NULL || bufSize <= 0 ) {
-        common->Error( "FS_WriteFloatString: invalid output buffer" );
+    if (buf == NULL || bufSize <= 0) {
+        NSLog(@"FS_WriteFloatString: invalid output buffer");
+        return -1;
     }
-    if ( fmt == NULL ) {
-        common->Error( "FS_WriteFloatString: invalid format string" );
+    if (fmt == NULL) {
+        NSLog(@"FS_WriteFloatString: invalid format string");
+        return -1;
     }
 
     index = 0;
     buf[0] = '\0';
+    
+    idStr_Init(&tmp);
+    idStr_Init(&format);
 
-    while( *fmt ) {
-        switch( *fmt ) {
+    while (*fmt) {
+        switch (*fmt) {
             case '%':
-                format = "";
-                format += *fmt++;
-                while ( (*fmt >= '0' && *fmt <= '9') ||
+                idStr_Empty(&format);
+                idStr_AppendChar(&format, *fmt++);
+                while ((*fmt >= '0' && *fmt <= '9') ||
                         *fmt == '.' || *fmt == '-' || *fmt == '+' || *fmt == '#') {
-                    format += *fmt++;
+                    idStr_AppendChar(&format, *fmt++);
                 }
-                format += *fmt;
+                idStr_AppendChar(&format, *fmt);
                 switch( *fmt ) {
                     case 'f':
                     case 'e':
@@ -97,54 +104,74 @@ int FS_WriteFloatString( char *buf, int bufSize, const char *fmt, va_list argPtr
                     case 'g':
                     case 'G':
                         f = va_arg( argPtr, double );
-                        if ( format.Length() <= 2 ) {
+                        if (format.len <= 2) {
                             char tmpBuffer[512];
 
                             // high precision floating point number without trailing zeros
-                            idStr::snPrintf( tmpBuffer, sizeof( tmpBuffer ), "%1.10f", f );
-                            tmp = tmpBuffer;
-                            tmp.StripTrailing( '0' );
-                            tmp.StripTrailing( '.' );
-                            FS_AppendFloatString( buf, bufSize, index, "%s", tmp.c_str() );
-                        }
-                        else {
-                            FS_AppendFloatString( buf, bufSize, index, format.c_str(), f );
+                            idStr_snPrintf(tmpBuffer, sizeof(tmpBuffer), "%1.10f", f);
+                            idStr_Empty(&tmp);
+                            idStr_Append(&tmp, tmpBuffer);
+                            idStr_StripTrailingChar(&tmp, '0');
+                            idStr_StripTrailingChar(&tmp, '.');
+                            if (!FS_AppendFloatString(buf, bufSize, &index, "%s", tmp.data)) {
+                                goto cleanup;
+                            }
+                        } else {
+                            if (!FS_AppendFloatString(buf, bufSize, &index, format.data, f)) {
+                                goto cleanup;
+                            }
                         }
                         break;
                     case 'd':
                     case 'i':
-                        i = va_arg( argPtr, int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), i );
+                        i = va_arg(argPtr, int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, i)) {
+                            goto cleanup;
+                        }
                         break;
                     case 'u':
-                        u = va_arg( argPtr, unsigned int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), u );
+                        u = va_arg(argPtr, unsigned int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, u)) {
+                            goto cleanup;
+                        }
                         break;
                     case 'o':
-                        u = va_arg( argPtr, unsigned int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), u );
+                        u = va_arg(argPtr, unsigned int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, u)) {
+                            goto cleanup;
+                        }
                         break;
                     case 'x':
-                        u = va_arg( argPtr, unsigned int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), u );
+                        u = va_arg(argPtr, unsigned int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, u)) {
+                            goto cleanup;
+                        }
                         break;
                     case 'X':
-                        u = va_arg( argPtr, unsigned int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), u );
+                        u = va_arg(argPtr, unsigned int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, u)) {
+                            goto cleanup;
+                        }
                         break;
                     case 'c':
-                        i = va_arg( argPtr, int );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), (char) i );
+                        i = va_arg(argPtr, int);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, (char) i)) {
+                            goto cleanup;
+                        }
                         break;
                     case 's':
-                        str = va_arg( argPtr, char * );
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str(), str ? str : "" );
+                        str = va_arg(argPtr, char *);
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data, str ? str : "")) {
+                            goto cleanup;
+                        }
                         break;
                     case '%':
-                        FS_AppendFloatString( buf, bufSize, index, format.c_str() );
+                        if (!FS_AppendFloatString(buf, bufSize, &index, format.data)) {
+                            goto cleanup;
+                        }
                         break;
                     default:
-                        common->Error( "FS_WriteFloatString: invalid format %s", format.c_str() );
+                        NSLog(@"FS_WriteFloatString: invalid format %s", format.data);
                         break;
                 }
                 fmt++;
@@ -153,33 +180,51 @@ int FS_WriteFloatString( char *buf, int bufSize, const char *fmt, va_list argPtr
                 fmt++;
                 switch( *fmt ) {
                     case 't':
-                        FS_AppendFloatString( buf, bufSize, index, "\t" );
+                        if (!FS_AppendFloatString(buf, bufSize, &index, "\t")) {
+                            goto cleanup;
+                        }
                         break;
                     case 'v':
-                        FS_AppendFloatString( buf, bufSize, index, "\v" );
+                        if (!FS_AppendFloatString(buf, bufSize, &index, "\v")) {
+                            goto cleanup;
+                        }
                         break;
                     case 'n':
-                        FS_AppendFloatString( buf, bufSize, index, "\n" );
+                        if (!FS_AppendFloatString(buf, bufSize, &index, "\n")) {
+                            goto cleanup;
+                        }
                         break;
                     case '\\':
-                        FS_AppendFloatString( buf, bufSize, index, "\\" );
+                        if (!FS_AppendFloatString(buf, bufSize, &index, "\\")) {
+                            goto cleanup;
+                        }
                         break;
                     default:
-                        common->Error( "FS_WriteFloatString: unknown escape character \'%c\'", *fmt );
+                        NSLog(@"FS_WriteFloatString: unknown escape character \'%c\'", *fmt);
                         break;
                 }
                 fmt++;
                 break;
             default:
-                FS_AppendFloatString( buf, bufSize, index, "%c", *fmt );
+                if (!FS_AppendFloatString(buf, bufSize, &index, "%c", *fmt)) {
+                    goto cleanup;
+                }
                 fmt++;
                 break;
         }
     }
 
+    idStr_Free(&tmp);
+    idStr_Free(&format);
+
     return index;
+
+cleanup:
+    idStr_Free(&tmp);
+    idStr_Free(&format);
+
+    return -1;
 }
-#endif
 
 /*
 =================================================================================
@@ -243,8 +288,6 @@ idFile
 }
 
 -(int)printf:(NSString *)fmt, ... {
-    char buf[MAX_PRINT_MSG];
-    int length;
     va_list argptr;
 
     va_start(argptr, fmt);
@@ -268,19 +311,17 @@ idFile
     return [self write:utf8 length:len error:nil];
 }
 
-/*
-int idFile::WriteFloatString( const char *fmt, ... ) {
+-(int)writeFloatString:(NSString *)fmt, ... {
     char buf[MAX_PRINT_MSG];
     int len;
     va_list argPtr;
 
-    va_start( argPtr, fmt );
-    len = FS_WriteFloatString( buf, sizeof( buf ), fmt, argPtr );
-    va_end( argPtr );
+    va_start(argPtr, fmt);
+    len = FS_WriteFloatString(buf, sizeof(buf), fmt.UTF8String, argPtr);
+    va_end(argPtr);
 
-    return Write( buf, len );
+    return [self write:buf length:len error:nil];
 }
-*/
 
 /*
 

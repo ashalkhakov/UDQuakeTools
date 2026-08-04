@@ -42,6 +42,7 @@
 - (NSDictionary *)dictionaryRepresentation;
 
 // Initialization
-- (void)startup;
+- (BOOL)startup:(NSError **)error;
+- (void)shutdown;
 
 @end

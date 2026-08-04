@@ -1671,3 +1671,21 @@ static NSString *baseFolder;
 }
 
 @end
+
+@implementation NSMutableData (CString)
+- (void)appendUTF8StringAndNullTerminate:(const char *)string {
+    if (!string || string[0] == '\0') return;
+    
+    // Strip old terminator
+    if (self.length > 0) {
+        self.length -= 1;
+    }
+    
+    // Append new text
+    [self appendBytes:string length:strlen(string)];
+    
+    // Add new terminator
+    uint8_t nullByte = 0x00;
+    [self appendBytes:&nullByte length:1];
+}
+@end

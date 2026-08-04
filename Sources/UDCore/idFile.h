@@ -83,6 +83,8 @@ typedef enum {
 -(int)printf:(NSString *)fmt, ...;
 // Like fprintf but with argument pointer
 -(int)vprintf:(NSString *)fmt arg:(va_list)arg;
+// Write a string with high precision floating point numbers to the file.
+-(int)writeFloatString:(NSString *)fmt, ...;
 @end
 
 @interface idFile_Memory : idFile {

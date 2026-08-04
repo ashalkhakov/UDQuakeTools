@@ -37,6 +37,10 @@ If you have questions concerning this license or the applicable additional terms
 #import "idDeclManager.h"
 #import "UDLexer.h"
 #import "idDeclMaterial.h"
+#import "idDeclParticle.h"
+#import "idDeclPDA.h"
+#import "idDeclTable.h"
+#import "idDeclSkin.h"
 #import "UDEndian.h"
 #import "MD5.h"
 
@@ -76,28 +80,6 @@ missing reload over a previously explicit definition
 
 #define USE_COMPRESSED_DECLS
 //#define GET_HUFFMAN_FREQUENCIES
-
-@interface NSMutableData (CString)
-- (void)appendUTF8StringAndNullTerminate:(const char *)string;
-@end
-
-@implementation NSMutableData (CString)
-- (void)appendUTF8StringAndNullTerminate:(const char *)string {
-    if (!string || string[0] == '\0') return;
-    
-    // Strip old terminator
-    if (self.length > 0) {
-        self.length -= 1;
-    }
-    
-    // Append new text
-    [self appendBytes:string length:strlen(string)];
-    
-    // Add new terminator
-    uint8_t nullByte = 0x00;
-    [self appendBytes:&nullByte length:1];
-}
-@end
 
 @interface UDBitMsg : NSObject
 
@@ -1194,7 +1176,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 #endif
 }
 
--(void)startup {
+-(BOOL)startup:(NSError **)error {
     NSLog(@"----- Initializing Decls -----");
 
     // jmarshall - template(guide) Support
@@ -1202,10 +1184,10 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     // jmarshall end
 
     // decls used throughout the engine
-    //[self registerDeclType:DECL_TABLE typeName:@"table" allocator:NULL];
+    [self registerDeclType:DECL_TABLE typeName:@"table" allocator:&idDeclTable_Allocator];
     [self registerDeclType:DECL_MATERIAL typeName:@"material" allocator:&idDeclMaterial_Allocator];
+    [self registerDeclType:DECL_SKIN typeName:@"skin" allocator:&idDeclSkin_Allocator];
     /*
-    [self registerDeclType:DECL_SKIN typeName:@"skin" allocator:NULL];
     [self registerDeclType:DECL_SOUND typeName:@"sound" allocator:NULL];
     [self registerDeclType:DECL_ENTITYDEF typeName:@"entityDef" allocator:NULL];
     [self registerDeclType:DECL_MAPDEF typeName:@"mapDef" allocator:NULL];
@@ -1217,30 +1199,37 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
      openQ4_VerifyEffectDeclAllocator();
      RegisterDeclType(    "effect",            DECL_EFFECT,        openQ4_AllocEffectDecl);
      // jmarshall end
-     
+     */
      // jmarshall: Raven Decl Support
      //RegisterDeclType( "fx",                    DECL_FX,            idDeclAllocator<idDeclFX> );
-     //RegisterDeclType( "particle",            DECL_PARTICLE,        idDeclAllocator<idDeclParticle> );
+    [self registerDeclType:DECL_PARTICLE typeName:@"particle" allocator:&idDeclAllocator_idDeclParticle];
      // jmarshall end
-     RegisterDeclType( "articulatedFigure",    DECL_AF,            idDeclAllocator<idDeclAF> );
-     RegisterDeclType( "pda",                DECL_PDA,            idDeclAllocator<idDeclPDA> );
-     RegisterDeclType( "email",                DECL_EMAIL,            idDeclAllocator<idDeclEmail> );
-     RegisterDeclType( "video",                DECL_VIDEO,            idDeclAllocator<idDeclVideo> );
-     RegisterDeclType( "audio",                DECL_AUDIO,            idDeclAllocator<idDeclAudio> );
+     //RegisterDeclType( "articulatedFigure",    DECL_AF,            idDeclAllocator<idDeclAF> );
+    [self registerDeclType:DECL_PDA typeName:@"pda" allocator:&idDeclPDA_Allocator];
+    [self registerDeclType:DECL_EMAIL typeName:@"email" allocator:&idDeclEmail_Allocator];
+    [self registerDeclType:DECL_VIDEO typeName:@"video" allocator:&idDeclVideo_Allocator];
+    [self registerDeclType:DECL_AUDIO typeName:@"audio" allocator:&idDeclAudio_Allocator];
+    /*
      RegisterDeclType( "playerModel",            DECL_PLAYER_MODEL,    idDeclAllocator<rvDeclPlayerModel> );
      */
 
     if (_workspace.com_SingleDeclFile) {
-         [self startLoadingDecls];
-         [self loadDeclsFromFile:nil];
+        [self startLoadingDecls];
+        if (![self loadDeclsFromFile:error]) {
+            return NO;
+        }
          //cmdSystem->AddCommand( "flushDecls", FlushDecls_f, CMD_FL_SYSTEM, "deallocates current decl data" );
          //cmdSystem->AddCommand( "checkDecls", CheckDecls_f, CMD_FL_SYSTEM, "parses every loaded decl" );
     } else {
         //cmdSystem->AddCommand( "writeDeclFile", WriteDeclFile_f, CMD_FL_SYSTEM, "writes parsed decls to a packed .decls file (optional mode: openq4 or retail)" );
         
-        [self registerDeclFolderWrapper:@"materials" extension:@".mtr" defaultType:DECL_MATERIAL error:nil];
-        /*RegisterDeclFolderWrapper( "skins",            ".skin",        DECL_SKIN );
-         RegisterDeclFolderWrapper( "sound",            ".sndshd",        DECL_SOUND, false, true );
+        if (![self registerDeclFolderWrapper:@"materials" extension:@".mtr" defaultType:DECL_MATERIAL error:error]) {
+            return NO;
+        }
+        if (![self registerDeclFolderWrapper:@"skins" extension:@".skin" defaultType:DECL_SKIN error:error]) {
+            return NO;
+        }
+         /*RegisterDeclFolderWrapper( "sound",            ".sndshd",        DECL_SOUND, false, true );
          
          // jmarshall: Raven Decl Support
          RegisterDeclFolderWrapper( "materials/types",    ".mtt",            DECL_MATERIALTYPE );
@@ -1249,6 +1238,9 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
          RegisterDeclFolderWrapper( "effects",            ".fx",            DECL_EFFECT, true );
          // jmarshall end
          */
+        
+        // NOTE: in doom3, these are registered in the game dll
+        [self registerDeclFolder:@"particles" extension:@".prt" declType:DECL_PARTICLE error:error];
     }
     /*
      // add console commands
@@ -1299,6 +1291,8 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
      cmdSystem->AddCommand( "listHuffmanFrequencies", ListHuffmanFrequencies_f, CMD_FL_SYSTEM, "lists decl text character frequencies" );
      */
     NSLog(@"------------------------------");
+
+    return YES;
 }
 
 -(void)shutdown {
@@ -2382,33 +2376,49 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     }
 }
 
-#if 0
 /********************************************************************/
 
-const idMaterial *idDeclManagerLocal::FindMaterial( const char *name, bool makeDefault ) {
-    return static_cast<const idMaterial *>( FindType( DECL_MATERIAL, name, makeDefault ) );
+-(idDeclMaterial *)findMaterial:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
+    return (idDeclMaterial *)[self findType:DECL_MATERIAL name:name makeDefault:makeDefault error:error];
 }
 
-const idMaterial *idDeclManagerLocal::MaterialByIndex( int index, bool forceParse ) {
-    const idMaterial *material = static_cast<const idMaterial *>( DeclByIndex( DECL_MATERIAL, index, forceParse ) );
-    if ( material != NULL && insideLevelLoad ) {
+-(idDeclMaterial *)findMaterial:(NSString *)name error:(NSError **)error {
+    return [self findMaterial:name makeDefault:YES error:error];
+}
+
+-(idDeclMaterial *)materialByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
+    idDeclMaterial *material = (idDeclMaterial *)[self declByIndex:index type:DECL_MATERIAL forceParse:forceParse error:error];
+    /*
+    if (material != nil && insideLevelLoad) {
         const_cast<idMaterial *>( material )->AddLevelLoadReference();
-    }
+    }*/
     return material;
 }
 
-/********************************************************************/
-
-const idDeclSkin *idDeclManagerLocal::FindSkin( const char *name, bool makeDefault ) {
-    return static_cast<const idDeclSkin *>( FindType( DECL_SKIN, name, makeDefault ) );
-}
-
-const idDeclSkin *idDeclManagerLocal::SkinByIndex( int index, bool forceParse ) {
-    return static_cast<const idDeclSkin *>( DeclByIndex( DECL_SKIN, index, forceParse ) );
+-(idDeclMaterial *)materialByIndex:(int)index error:(NSError **)error {
+    return [self materialByIndex:index forceParse:YES error:error];
 }
 
 /********************************************************************/
 
+-(idDeclSkin *)findSkin:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
+    return (idDeclSkin *)[self findType:DECL_SKIN name:name makeDefault:makeDefault error:error];
+}
+
+-(idDeclSkin *)findSkin:(NSString *)name error:(NSError **)error {
+    return [self findSkin:name makeDefault:YES error:error];
+}
+
+-(idDeclSkin *)skinByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
+    return (idDeclSkin *)[self declByIndex:index type:DECL_SKIN forceParse:forceParse error:error];
+}
+
+-(idDeclSkin *)skinByIndex:(int)index error:(NSError **)error {
+    return [self skinByIndex:index forceParse:YES error:error];
+}
+
+/********************************************************************/
+#if 0
 const idSoundShader *idDeclManagerLocal::FindSound( const char *name, bool makeDefault ) {
     return static_cast<const idSoundShader *>( FindType( DECL_SOUND, name, makeDefault ) );
 }
@@ -2435,11 +2445,16 @@ const rvDeclPlayback* idDeclManagerLocal::FindPlayback(const char* name, bool ma
 const rvDeclEffect* idDeclManagerLocal::FindEffect(const char* name, bool makeDefault) {
     return (const rvDeclEffect*)FindType(DECL_EFFECT, name, makeDefault);
 }
-
-const idDeclTable* idDeclManagerLocal::FindTable(const char* name, bool makeDefault) {
-    return static_cast<const idDeclTable*>(FindType(DECL_TABLE, name, makeDefault));
+#endif
+-(idDeclTable *)findTable:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
+    return (idDeclTable *)[self findType:DECL_TABLE name:name makeDefault:makeDefault error:error];
 }
 
+-(idDeclTable *)findTable:(NSString *)name error:(NSError **)error {
+    return [self findTable:name makeDefault:YES error:error];
+}
+
+#if 0
 const rvDeclMatType* idDeclManagerLocal::MaterialTypeByIndex(int index, bool forceParse) {
     return static_cast<const rvDeclMatType*>(DeclByIndex(DECL_MATERIALTYPE, index, forceParse));
 }
@@ -2594,11 +2609,16 @@ byte *idDeclManagerLocal::GetMaterialTypeArray( const char *image, int &width, i
 const rvDeclEffect* idDeclManagerLocal::EffectByIndex(int index, bool forceParse) {
     return (const rvDeclEffect*)DeclByIndex(DECL_EFFECT, index, forceParse);
 }
-const idDeclTable* idDeclManagerLocal::TableByIndex(int index, bool forceParse) {
-    return static_cast<const idDeclTable*>(DeclByIndex(DECL_TABLE, index, forceParse));
+#endif
+-(idDeclTable *)tableByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
+    idDeclTable *table = (idDeclTable *)[self declByIndex:index type:DECL_TABLE forceParse:forceParse error:error];
+    return table;
+}
+
+-(idDeclTable *)tableByIndex:(int)index error:(NSError **)error {
+    return [self tableByIndex:index forceParse:YES error:error];
 }
 // RAVEN END
-#endif
 
 +(NSMutableString *)makeCanonicalName:(NSString *)name {
     if (!name || name.length == 0) {

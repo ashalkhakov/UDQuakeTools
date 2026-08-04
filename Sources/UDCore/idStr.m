@@ -729,3 +729,198 @@ void idStr_Copynz(char *dest, const char *src, int destsize) {
     strncpy(dest, src, destsize-1);
     dest[destsize-1] = 0;
 }
+
+// behaves like C99's vsnprintf() by returning the amount of bytes that
+// *would* have been written into a big enough buffer, even if that's > size
+// unlike idStr::vsnPrintf() which returns -1 in that case
+int D3_vsnprintfC99(char *dst, size_t size, const char *format, va_list ap)
+{
+    // before VS2015, it didn't have a standards-conforming (v)snprintf()-implementation
+    // same might be true for other windows compilers if they use old CRT versions, like MinGW does
+#if defined(_WIN32) && (!defined(_MSC_VER) || _MSC_VER < 1900)
+  #undef _vsnprintf
+    // based on DG_vsnprintf() from https://github.com/DanielGibson/Snippets/blob/master/DG_misc.h
+    int ret = -1;
+    if(dst != NULL && size > 0)
+    {
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+        // I think MSVC2005 introduced _vsnprintf_s().
+        // this shuts up _vsnprintf() security/deprecation warnings.
+        ret = _vsnprintf_s(dst, size, _TRUNCATE, format, ap);
+#else
+        ret = _vsnprintf(dst, size, format, ap);
+        dst[size-1] = '\0'; // ensure '\0'-termination
+#endif
+    }
+
+    if(ret == -1)
+    {
+        // _vsnprintf() returns -1 if the output is truncated
+        // it's also -1 if dst or size were NULL/0, so the user didn't want to write
+        // we want to return the number of characters that would've been
+        // needed, though.. fortunately _vscprintf() calculates that.
+        ret = _vscprintf(format, ap);
+    }
+    return ret;
+  #define _vsnprintf    use_idStr_vsnPrintf
+#else // other operating systems and VisualC++ >= 2015 should have a proper vsnprintf()
+  #undef vsnprintf
+    return vsnprintf(dst, size, format, ap);
+  #define vsnprintf    use_idStr_vsnPrintf
+#endif
+}
+
+// behaves like C99's snprintf() by returning the amount of bytes that
+// *would* have been written into a big enough buffer, even if that's > size
+// unlike idStr::snPrintf() which returns the written bytes in that case
+// and also calls common->Warning() in case of overflows
+int D3_snprintfC99(char *dst, size_t size, const char *format, ...)
+{
+    int ret = 0;
+    va_list argptr;
+    va_start( argptr, format );
+    ret = D3_vsnprintfC99(dst, size, format, argptr);
+    va_end( argptr );
+    return ret;
+}
+
+int idStr_snPrintf(char *dest, int size, const char *fmt, ...) {
+    va_list argptr;
+    int len;
+    va_start( argptr, fmt );
+    len = D3_vsnprintfC99(dest, size, fmt, argptr);
+    va_end( argptr );
+    /*
+    if ( len >= 32000 ) {
+        // TODO: Previously this function used a 32000 byte buffer to write into
+        //       with vsprintf(), and raised this error if that was overflowed
+        //       (more likely that'd have lead to a crash..).
+        //       Technically we don't have that restriction anymore, so I'm unsure
+        //       if this error should really still be raised to preserve
+        //       the old intended behavior, maybe for compat with mod DLLs using
+        //       the old version of the function or something?
+        //idLib::common->Error( "idStr::snPrintf: overflowed buffer" );
+    }*/
+    if ( len >= size ) {
+        NSLog(@"idStr_snPrintf: overflow of %i in %i\n", len, size);
+        len = size;
+    }
+    return len;
+}
+
+int idStr_vsnPrintf( char *dest, int size, const char *fmt, va_list argptr ) {
+    int ret = D3_vsnprintfC99(dest, size, fmt, argptr);
+    if ( ret < 0 || ret >= size ) {
+        return -1;
+    }
+    return ret;
+}
+
+BOOL idStr_Filter(const char *filter, const char *name, BOOL casesensitive) {
+    idStr buf;
+    int i, found, index;
+
+    idStr_Init(&buf);
+
+    while (*filter) {
+        if (*filter == '*') {
+            filter++;
+            idStr_Empty(&buf);
+            for (i = 0; *filter; i++) {
+                if (*filter == '*' || *filter == '?' || (*filter == '[' && *(filter+1) != '[')) {
+                    break;
+                }
+                idStr_AppendChar(&buf, *filter);
+                if (*filter == '[') {
+                    filter++;
+                }
+                filter++;
+            }
+            if (buf.len) {
+                idStr tmp;
+                idStr_Init(&tmp);
+                idStr_Append(&tmp, name);
+                
+                index = idStr_FindString(&tmp, buf.data, casesensitive, 0, -1);
+                if (index == -1) {
+                    idStr_Free(&tmp);
+                    idStr_Free(&buf);
+                    return NO;
+                }
+                name += index + strlen(buf.data);
+                idStr_Free(&tmp);
+            }
+        } else if (*filter == '?') {
+            filter++;
+            name++;
+        } else if (*filter == '[') {
+            if (*(filter+1) == '[') {
+                if (*name != '[') {
+                    idStr_Free(&buf);
+                    return NO;
+                }
+                filter += 2;
+                name++;
+            } else {
+                filter++;
+                found = NO;
+                while (*filter && !found) {
+                    if (*filter == ']' && *(filter+1) != ']') {
+                        break;
+                    }
+                    if (*(filter+1) == '-' && *(filter+2) && (*(filter+2) != ']' || *(filter+3) == ']')) {
+                        if (casesensitive) {
+                            if (*name >= *filter && *name <= *(filter+2)) {
+                                found = YES;
+                            }
+                        } else {
+                            if (toupper(*name) >= toupper(*filter) && toupper(*name) <= toupper(*(filter+2))) {
+                                found = YES;
+                            }
+                        }
+                        filter += 3;
+                    } else {
+                        if (casesensitive) {
+                            if (*filter == *name) {
+                                found = YES;
+                            }
+                        } else {
+                            if (toupper(*filter) == toupper(*name) ) {
+                                found = YES;
+                            }
+                        }
+                        filter++;
+                    }
+                }
+                if (!found) {
+                    idStr_Free(&buf);
+                    return NO;
+                }
+                while (*filter) {
+                    if (*filter == ']' && *(filter+1) != ']') {
+                        break;
+                    }
+                    filter++;
+                }
+                filter++;
+                name++;
+            }
+        } else {
+            if (casesensitive) {
+                if (*filter != *name) {
+                    idStr_Free(&buf);
+                    return NO;
+                }
+            } else {
+                if (toupper(*filter) != toupper(*name)) {
+                    idStr_Free(&buf);
+                    return NO;
+                }
+            }
+            filter++;
+            name++;
+        }
+    }
+    idStr_Free(&buf);
+    return YES;
+}

@@ -52,7 +52,8 @@ UDCore_OBJC_FILES = \
     UDWorkspaceManager.m \
     MD5.m \
     idDeclManager.m \
-    idDeclMaterial.m
+    idDeclMaterial.m \
+    idDeclPDA.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -89,7 +90,8 @@ UDCore_HEADER_FILES = \
     UDWorkspaceManager.h \
     MD5.h \
     idDeclManager.h \
-    idDeclMaterial.h
+    idDeclMaterial.h \
+    idDeclPDA.h
 
 ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 

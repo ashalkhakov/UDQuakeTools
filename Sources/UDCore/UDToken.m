@@ -436,3 +436,22 @@ int idToken_Flags(const idToken *token) {
 void idToken_AddToFlags(idToken *token, int flags) {
     token->flags |= flags;
 }
+
+void idToken_StripQuotes(idToken *token) {
+    if (token->text[0] != '\"')
+    {
+        return;
+    }
+
+    // Remove the trailing quote first
+    if (token->text[token->length-1] == '\"')
+    {
+        token->text[token->length-1] = '\0';
+        token->length--;
+    }
+
+    // Strip the leading quote now
+    token->length--;
+    memmove(&token->text[0], &token->text[1], token->length);
+    token->text[token->length] = '\0';
+}

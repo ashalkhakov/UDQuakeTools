@@ -280,3 +280,7 @@ typedef struct punctuation_s
 -(void)setNext:(idLexer *)lexer;
 
 @end
+
+@interface NSMutableData (CString)
+- (void)appendUTF8StringAndNullTerminate:(const char *)string;
+@end

@@ -44,6 +44,30 @@
     }
     zip_set_file_compression(za, 1, ZIP_CM_STORE, 0);
 
+    // Subdirectory file inside archive
+    const char *payload3 = "nested script data";
+    zip_source_t *s3 = zip_source_buffer(za, payload3, strlen(payload3), 0);
+    if (zip_file_add(za, "scripts/sub/nested.shader", s3, ZIP_FL_OVERWRITE) < 0) {
+        zip_discard(za);
+        return nil;
+    }
+
+    // False prefix match directory (scripts_backup vs scripts)
+    const char *payload4 = "prefix match data";
+    zip_source_t *s4 = zip_source_buffer(za, payload4, strlen(payload4), 0);
+    if (zip_file_add(za, "scripts_backup/old.shader", s4, ZIP_FL_OVERWRITE) < 0) {
+        zip_discard(za);
+        return nil;
+    }
+
+    // False extension match (.shader.bak vs .shader)
+    const char *payload5 = "bak data";
+    zip_source_t *s5 = zip_source_buffer(za, payload5, strlen(payload5), 0);
+    if (zip_file_add(za, "scripts/backup.shader.bak", s5, ZIP_FL_OVERWRITE) < 0) {
+        zip_discard(za);
+        return nil;
+    }
+
     zip_source_keep(src);
     if (zip_close(za) != 0) {
         zip_source_free(src);
@@ -98,8 +122,8 @@
     NSString *pakPath = [fullGameDirPath stringByAppendingPathComponent:@"test_archive.pk4"];
     [pakData writeToFile:pakPath atomically:YES];
     
-    self.workspace = [[UDWorkspaceManager sharedManager] openWorkspace:self.rootDir withDictionary:dict];
-    [self.workspace startup];
+    self.workspace = [[UDWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
+    [self.workspace startup:nil];
     self.fileSystem = self.workspace.fileSystem;
 
     // Use a temporary path for isolated testing
@@ -112,9 +136,10 @@
     
     // Clean up the pak and scripts directory created during tests
     NSString *fullGameDirPath = [self.rootDir stringByAppendingPathComponent:self.gameDir];
-    [[NSFileManager defaultManager] removeItemAtPath:[fullGameDirPath stringByAppendingPathComponent:@"test_archive.pak"] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[fullGameDirPath stringByAppendingPathComponent:@"test_archive.pk4"] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[fullGameDirPath stringByAppendingPathComponent:@"scripts"] error:nil];
-    
+    [[NSFileManager defaultManager] removeItemAtPath:[fullGameDirPath stringByAppendingPathComponent:@"scripts_backup"] error:nil];
+
     self.workspace = nil;
     self.fileSystem = nil;
     [super tearDown];
@@ -222,6 +247,155 @@
     
     NSString *result = [NSString stringWithUTF8String:readBuffer.bytes];
     XCTAssertEqualObjects(result, shadowText, @"FileSystem must prioritize loose files on disk over archived .pak files");
+}
+
+// -----------------------------------------------------------------------------
+// listFiles
+// -----------------------------------------------------------------------------
+
+- (void)testListFilesPathFormattingAndBoundaryChecks {
+    NSError *error = nil;
+
+    // Test with fullRelativePath = NO (expecting bare filenames)
+    idFileList *fileList = [self.fileSystem listFiles:@"scripts"
+                                             extension:@".shader"
+                                                sorted:YES
+                                      fullRelativePath:NO
+                                             inGameDir:nil
+                                                 error:&error];
+    XCTAssertNil(error);
+    XCTAssertNotNil(fileList);
+
+    NSMutableArray<NSString *> *files = [NSMutableArray array];
+    for (int i = 0; i < [fileList numFiles]; i++) {
+        [files addObject:[fileList fileByIndex:i]];
+    }
+
+    // Bare filename check
+    XCTAssertTrue([files containsObject:@"base.shader"], @"Listing with fullRelativePath:NO should return 'base.shader'");
+    XCTAssertFalse([files containsObject:@"scripts/base.shader"], @"Listing with fullRelativePath:NO should NOT include directory prefix");
+    
+    // Extension boundary check (.shader vs .shader.bak)
+    XCTAssertFalse([files containsObject:@"backup.shader.bak"], @"listFiles should ignore files ending in .shader.bak");
+    
+    // Prefix directory boundary check (scripts vs scripts_backup)
+    XCTAssertFalse([files containsObject:@"old.shader"], @"listFiles for 'scripts' must not return files from 'scripts_backup'");
+
+    [self.fileSystem freeFileList:fileList];
+}
+
+- (void)testListFilesFullRelativePath {
+    NSError *error = nil;
+
+    idFileList *fileList = [self.fileSystem listFiles:@"scripts"
+                                             extension:@".shader"
+                                                sorted:YES
+                                      fullRelativePath:YES
+                                             inGameDir:nil
+                                                 error:&error];
+    XCTAssertNil(error);
+
+    NSMutableArray<NSString *> *files = [NSMutableArray array];
+    for (int i = 0; i < [fileList numFiles]; i++) {
+        [files addObject:[fileList fileByIndex:i]];
+    }
+
+    // Full relative path check for shallow directory
+    XCTAssertTrue([files containsObject:@"scripts/base.shader"], @"Listing with fullRelativePath:YES should prepend relative directory path");
+
+    // Non-recursive verification
+    XCTAssertFalse([files containsObject:@"scripts/sub/nested.shader"], @"listFiles is shallow and must NOT return files inside subdirectories");
+    XCTAssertFalse([files containsObject:@"sub/nested.shader"], @"listFiles is shallow and must NOT return files inside subdirectories");
+
+    [self.fileSystem freeFileList:fileList];
+}
+
+- (void)testListFilesTreeRecursive {
+    NSError *error = nil;
+
+    // listFilesTree recurses into subdirectories and returns full relative paths
+    idFileList *fileList = [self.fileSystem listFilesTree:@"scripts"
+                                                 extension:@".shader"
+                                                    sorted:YES
+                                                 inGameDir:nil
+                                                     error:&error];
+    XCTAssertNil(error);
+
+    NSMutableArray<NSString *> *files = [NSMutableArray array];
+    for (int i = 0; i < [fileList numFiles]; i++) {
+        [files addObject:[fileList fileByIndex:i]];
+    }
+
+    // Must contain top-level files
+    XCTAssertTrue([files containsObject:@"scripts/base.shader"], @"listFilesTree should return top-level files with relative path");
+
+    // Must recurse and contain nested files in subdirectories
+    XCTAssertTrue([files containsObject:@"scripts/sub/nested.shader"], @"listFilesTree must recursively traverse subdirectories");
+
+    // Ensure extension boundaries and prefix isolations are still respected during recursive scanning
+    XCTAssertFalse([files containsObject:@"scripts/backup.shader.bak"], @"listFilesTree must ignore non-matching extensions");
+    XCTAssertFalse([files containsObject:@"scripts_backup/old.shader"], @"listFilesTree must not leak across prefix-matched folders");
+
+    [self.fileSystem freeFileList:fileList];
+}
+
+- (void)testListFilesSubdirectoriesOnly {
+    NSError *error = nil;
+
+    // Passing extension:@"/" specifies returning subdirectories only
+    idFileList *fileList = [self.fileSystem listFiles:@"scripts"
+                                             extension:@"/"
+                                                sorted:YES
+                                      fullRelativePath:NO
+                                             inGameDir:nil
+                                                 error:&error];
+    XCTAssertNil(error);
+
+    NSMutableArray<NSString *> *dirs = [NSMutableArray array];
+    for (int i = 0; i < [fileList numFiles]; i++) {
+        [dirs addObject:[fileList fileByIndex:i]];
+    }
+
+    XCTAssertTrue([dirs containsObject:@"sub"], @"extension '/' should enumerate subdirectories like 'sub'");
+    XCTAssertFalse([dirs containsObject:@"base.shader"], @"extension '/' must NOT return files");
+
+    [self.fileSystem freeFileList:fileList];
+}
+
+- (void)testListFilesMergingOSDirectoryAndPakDeduplication {
+    NSError *error = nil;
+
+    // Create OS loose file structure
+    NSString *fullGameDirPath = [self.rootDir stringByAppendingPathComponent:self.gameDir];
+    NSString *scriptsDir = [fullGameDirPath stringByAppendingPathComponent:@"scripts"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:scriptsDir withIntermediateDirectories:YES attributes:nil error:nil];
+
+    // Loose file matching one in PK4
+    [@"shadow" writeToFile:[scriptsDir stringByAppendingPathComponent:@"base.shader"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    // Loose file unique to OS
+    [@"loose" writeToFile:[scriptsDir stringByAppendingPathComponent:@"loose.shader"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
+    idFileList *fileList = [self.fileSystem listFiles:@"scripts"
+                                             extension:@".shader"
+                                                sorted:YES
+                                      fullRelativePath:NO
+                                             inGameDir:nil
+                                                 error:&error];
+    XCTAssertNil(error);
+
+    NSMutableArray<NSString *> *files = [NSMutableArray array];
+    for (int i = 0; i < [fileList numFiles]; i++) {
+        [files addObject:[fileList fileByIndex:i]];
+    }
+
+    // Ensure loose unique file is picked up
+    XCTAssertTrue([files containsObject:@"loose.shader"], @"Merged listing should contain loose OS files");
+
+    // Check deduplication (base.shader should only appear once despite existing in PK4 and OS directory)
+    NSCountedSet *fileCounts = [NSCountedSet setWithArray:files];
+    XCTAssertEqual([fileCounts countForObject:@"base.shader"], 1, @"base.shader should only appear once in deduplicated list");
+
+    [self.fileSystem freeFileList:fileList];
 }
 
 @end

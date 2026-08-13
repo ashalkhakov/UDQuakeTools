@@ -55,37 +55,25 @@ idDeclVideo *idDeclVideo_Allocator(void);
 
 idDeclAudio *idDeclAudio_Allocator(void);
 
-@interface idDeclPDA : idDecl {
-    NSMutableArray<NSString *> *videos;
-    NSMutableArray<NSString *> *audios;
-    NSMutableArray<NSString *> *emails;
-    NSInteger                   originalVideos;
-    NSInteger                   originalAudios;
-    NSInteger                   originalEmails;
-}
+@interface idDeclPDA : idDecl
 
 -(instancetype)init;
 
--(void)addVideo:(NSString *)name unique:(BOOL)unique;
--(void)addAudio:(NSString *)name unique:(BOOL)unique;
--(void)addEmail:(NSString *)name unique:(BOOL)unique;
--(void)removeAddedEmailsAndVideos;
-
--(int)numVideos;
--(int)numAudios;
--(int)numEmails;
--(idDeclVideo *)videoByIndex:(int)index;
--(idDeclAudio *)audioByIndex:(int)index;
--(idDeclEmail *)emailByIndex:(int)index;
-
--(void)setSecurity:(NSString *)security;
-
+@property (nonatomic, strong) NSString *security;
 @property (nonatomic, strong) NSString *pdaName;
 @property (nonatomic, strong) NSString *fullName;
 @property (nonatomic, strong) NSString *icon;
 @property (nonatomic, strong) NSString *post;
 @property (nonatomic, strong) NSString *ident;
 @property (nonatomic, strong) NSString *title;
+
+@property (nonatomic, strong) NSMutableArray<idDeclVideo *> *videos;
+@property (nonatomic, strong) NSMutableArray<idDeclAudio *> *audios;
+@property (nonatomic, strong) NSMutableArray<idDeclEmail *> *emails;
+
+-(void)addVideoByName:(NSString *)name unique:(BOOL)unique;
+-(void)addAudioByName:(NSString *)name unique:(BOOL)unique;
+-(void)addEmailByName:(NSString *)name unique:(BOOL)unique;
 
 @end
 

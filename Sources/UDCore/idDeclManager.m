@@ -26,9 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-
-
-
 // jmarshall - Raven Decl Support
 //#include "../bse/BSE_API.h"
 // jmarshall end
@@ -43,6 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 #import "idDeclSkin.h"
 #import "UDEndian.h"
 #import "MD5.h"
+#import "UDBitMsg.h"
 
 @class idFile;
 
@@ -80,157 +78,6 @@ missing reload over a previously explicit definition
 
 #define USE_COMPRESSED_DECLS
 //#define GET_HUFFMAN_FREQUENCIES
-
-@interface UDBitMsg : NSObject
-
-@property (nonatomic, strong, readonly) NSMutableData *data;
-
-// Bit trackers
-@property (nonatomic, assign) NSInteger readBit;
-@property (nonatomic, assign) NSInteger writeBit;
-
-// Byte trackers (Computed Properties)
-@property (nonatomic, readonly) NSInteger readCount;  // Returns bytes read
-@property (nonatomic, readonly) NSInteger writeCount; // Returns bytes written
-
-// Initializers
-- (instancetype)init;                                // For writing dynamically
-- (instancetype)initWithData:(NSData *)existingData; // For reading from a network packet
-
--(int)size;
-
-// Core API
-- (void)writeBits:(uint32_t)value numBits:(int)numBits;
-- (uint32_t)readBits:(int)numBits;
-
-@end
-
-@implementation UDBitMsg
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        // Start with a small buffer, it will grow automatically
-        _data = [[NSMutableData alloc] initWithCapacity:256];
-        _readBit = 0;
-        _writeBit = 0;
-    }
-    return self;
-}
-
-- (instancetype)initWithData:(NSMutableData *)existingData {
-    self = [super init];
-    if (self) {
-        _data = existingData;
-        _readBit = 0;
-        _writeBit = 0;
-    }
-    return self;
-}
-
--(int)size {
-    return (int)_data.length;
-}
-
-- (NSInteger)readCount {
-    // Calculates the number of bytes read (rounded up)
-    return (_readBit + 7) >> 3;
-}
-
-- (NSInteger)writeCount {
-    // Calculates the number of bytes written (rounded up)
-    return (_writeBit + 7) >> 3;
-}
-
-// -----------------------------------------------------------------------------
-// WRITING
-// -----------------------------------------------------------------------------
-- (void)writeBits:(uint32_t)value numBits:(int)numBits {
-    if (numBits <= 0) return;
-    if (numBits > 32) numBits = 32;
-    
-    // Mask off any garbage data above the requested bit count
-    if (numBits != 32) {
-        value &= ((1 << numBits) - 1);
-    }
-    
-    // 1. Calculate required capacity
-    NSInteger requiredBytes = (_writeBit + numBits + 7) >> 3;
-    
-    // 2. Automatically grow the buffer if needed!
-    // Changing the length automatically zero-fills the new memory in Foundation.
-    if (_data.length < requiredBytes) {
-        _data.length = requiredBytes;
-    }
-    
-    // 3. Get the raw C-pointer
-    uint8_t *dest = (uint8_t *)_data.mutableBytes;
-    
-    // 4. The idTech bit-writing loop
-    while (numBits > 0) {
-        int byteOffset = (int)(_writeBit >> 3);
-        int bitOffset  = (int)(_writeBit & 7);
-        int bitsToWrite = 8 - bitOffset;
-        
-        if (bitsToWrite > numBits) {
-            bitsToWrite = numBits;
-        }
-        
-        int mask = (1 << bitsToWrite) - 1;
-        int fraction = value & mask;
-        
-        // Clear the space, then OR the bits in
-        dest[byteOffset] &= ~(mask << bitOffset);
-        dest[byteOffset] |= (fraction << bitOffset);
-        
-        _writeBit += bitsToWrite;
-        value >>= bitsToWrite;
-        numBits -= bitsToWrite;
-    }
-}
-
-// -----------------------------------------------------------------------------
-// READING
-// -----------------------------------------------------------------------------
-- (uint32_t)readBits:(int)numBits {
-    if (numBits <= 0) return 0;
-    if (numBits > 32) numBits = 32;
-    
-    // Safety check: Don't read past the end of the buffer
-    if (_readBit + numBits > _data.length * 8) {
-        NSLog(@"UDBitMsg Error: Attempted to read past end of data buffer!");
-        return 0;
-    }
-    
-    const uint8_t *src = (const uint8_t *)_data.bytes;
-    uint32_t value = 0;
-    int valueBitOffset = 0;
-    int bitsToRead = numBits;
-    
-    // The idTech bit-reading loop
-    while (bitsToRead > 0) {
-        int byteOffset = (int)(_readBit >> 3);
-        int bitOffset  = (int)(_readBit & 7);
-        int bitsAvailable = 8 - bitOffset;
-        
-        if (bitsAvailable > bitsToRead) {
-            bitsAvailable = bitsToRead;
-        }
-        
-        int mask = (1 << bitsAvailable) - 1;
-        int fraction = (src[byteOffset] >> bitOffset) & mask;
-        
-        value |= (fraction << valueBitOffset);
-        
-        _readBit += bitsAvailable;
-        valueBitOffset += bitsAvailable;
-        bitsToRead -= bitsAvailable;
-    }
-    
-    return value;
-}
-
-@end
 
 /*
 ====================================================================================
@@ -625,7 +472,7 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
 
 @end
 
-@implementation idDecl : NSObject
+@implementation idDecl
 
 -(instancetype)init {
     self = [super init];
@@ -903,8 +750,8 @@ static void DeclManager_ClearGuides( void ) {
 -(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error; // noCaching=NO
 -(idDecl *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error; // makeDefault=YES, noCaching=NO
 
--(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
--(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error; // forceParse=YES
+//-(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
+//-(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error; // forceParse=YES
 
 -(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault;
 -(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name; // makeDefault = YES
@@ -1103,6 +950,87 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     return NO;
 }
 
+@interface idDeclManager (Enumerator)
+
+- (int)numDeclTypes;
+- (idDeclType *)declTypeAtIndex:(int)typeIndex;
+- (NSArray<idDeclLocal *> *)linearListAtTypeIndex:(int)typeIndex;
+
+@end
+
+@implementation UDDeclEnumerator {
+    idDeclManager *_manager;
+    declType_t     _type;
+    BOOL           _forceParse;
+}
+
+- (instancetype)initWithManager:(idDeclManager *)manager
+                           type:(declType_t)type
+                     forceParse:(BOOL)forceParse
+{
+    self = [super init];
+    if (self) {
+        _manager = manager;
+        _type = type;
+        _forceParse = forceParse;
+    }
+    return self;
+}
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
+                                  objects:(id __unsafe_unretained [])buffer
+                                    count:(NSUInteger)len
+{
+    int typeIndex = (int)_type;
+
+    if (typeIndex < 0 ||
+        typeIndex >= [_manager numDeclTypes] ||
+        [_manager declTypeAtIndex:typeIndex] == nil) {
+        return 0;
+    }
+
+    NSArray *list = [_manager linearListAtTypeIndex:typeIndex];
+    // list elements are idDeclLocal *
+
+    if (state->state == 0) {
+        // mutation guard: pointer identity of the list (or a generation counter)
+        state->mutationsPtr = &state->extra[0];
+        state->extra[0] = (unsigned long)list;
+    }
+
+    NSUInteger collected = 0;
+    NSUInteger i = state->state;
+
+    while (i < list.count && collected < len) {
+        idDeclLocal *local = [list objectAtIndex:i++];
+        if (local == nil) {
+            continue; // ready for tombstones later
+        }
+
+        [local allocateSelf];
+
+        if (_forceParse && local->declState == DS_UNPARSED) {
+            NSError *error = nil;
+            if (![local parseLocal:NO error:&error]) {
+                continue; // or still yield; match your declByIndex policy
+            }
+        }
+
+        idDecl *decl = local->selfDecl;
+        if (decl == nil) {
+            continue;
+        }
+
+        buffer[collected++] = decl;
+    }
+
+    state->state = i;
+    state->itemsPtr = buffer;
+    return collected;
+}
+
+@end
+
 @implementation idDeclManager {
     idDeclType *                          declTypes[DECL_MAX_TYPES];
     NSMutableArray<idDeclFolder *> *      declFolders;
@@ -1240,7 +1168,15 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
          */
         
         // NOTE: in doom3, these are registered in the game dll
+        /*
+         declManager->RegisterDeclFolder( "def",                ".def",                DECL_ENTITYDEF );
+         declManager->RegisterDeclFolder( "fx",                ".fx",                DECL_FX );
+        */
         [self registerDeclFolder:@"particles" extension:@".prt" declType:DECL_PARTICLE error:error];
+        /*
+         declManager->RegisterDeclFolder( "af",                ".af",                DECL_AF );
+        */
+        [self registerDeclFolder:@"newpdas" extension:@".pda" declType:DECL_PDA error:error];
     }
     /*
      // add console commands
@@ -1543,6 +1479,36 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         singleDeclFile = nil;
     }
 }
+
+#pragma mark - Enumerator
+
+/**
+ * declTypes[typeIndex] — nil means invalid / unused type slot.
+ * Return type: whatever you already store (id, or your type-info object).
+ */
+- (id)declTypeAtIndex:(int)typeIndex {
+    return declTypes[typeIndex];
+}
+
+/**
+ * linearLists[typeIndex] — NSArray/NSMutableArray of idDeclLocal *.
+ * May later contain nil tombstones; enumerator already skips nil.
+ */
+- (NSArray *)linearListAtTypeIndex:(int)typeIndex {
+    return linearLists[typeIndex];
+}
+
+- (id<NSFastEnumeration>)declsOfType:(declType_t)type {
+    return [self declsOfType:type forceParse:NO];
+}
+
+- (id<NSFastEnumeration>)declsOfType:(declType_t)type forceParse:(BOOL)forceParse {
+    return [[UDDeclEnumerator alloc] initWithManager:self
+                                                 type:type
+                                           forceParse:forceParse];
+}
+
+#pragma mark - Rest
 
 -(BOOL)loadDeclsFromFile:(NSError **)error {
     if (self->singleDeclFile == nil) {
@@ -2072,6 +2038,43 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     return (int)linearLists[typeIndex].count;
 }
 
+-(idDecl *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
+    int typeIndex = (int)type;
+    NSNumber *i = nil;
+    idDeclLocal *decl;
+
+    if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
+        //common->FatalError("idDeclManager::DeclByIndex: bad type: %i", typeIndex);
+        return nil; // TODO: throw
+    }
+    
+    NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
+
+    // make sure it already exists
+    i = self->hashTables[typeIndex][lookupName];
+
+    if(!i)
+        return nil;
+
+    decl = [self->linearLists[typeIndex] objectAtIndex: [i integerValue]];
+    if (!decl)
+        return nil;
+
+    [decl allocateSelf];
+    
+    if (forceParse && decl->declState == DS_UNPARSED) {
+        if (![decl parseLocal:NO error:error]) {
+            return nil;
+        }
+    }
+    
+    return decl->selfDecl;
+}
+
+-(idDecl *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error {
+    return [self declByName:name type:type forceParse:YES error:error];
+}
+
 -(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
     int typeIndex = (int)type;
     
@@ -2089,7 +2092,9 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     [decl allocateSelf];
     
     if (forceParse && decl->declState == DS_UNPARSED) {
-        [decl parseLocal:NO error:nil];
+        if (![decl parseLocal:NO error:error]) {
+            return nil;
+        }
     }
     
     return decl->selfDecl;
@@ -2220,7 +2225,6 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
         //common->FatalError("idDeclManager::CreateNewDecl: bad type: %i", typeIndex);
         return nil; // TODO: throw
-
     }
 
     NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
@@ -2292,18 +2296,14 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
 
 -(BOOL)renameDecl:(declType_t)type fromName:(NSString *)oldName toName:(NSString *)newName {
     
-    char canonicalOldName[MAX_STRING_CHARS];
-    [idDeclManager makeNameCanonical:oldName result:canonicalOldName maxLength:sizeof(canonicalOldName)];
-    
-    char canonicalNewName[MAX_STRING_CHARS];
-    [idDeclManager makeNameCanonical:newName result:canonicalNewName maxLength:sizeof(canonicalNewName)];
+    NSMutableString *lookupOldName = [idDeclManager makeCanonicalName:oldName];
+    NSMutableString *lookupNewName = [idDeclManager makeCanonicalName:newName];
     
     idDeclLocal    *decl = nil;
     NSNumber *i = nil;
     
     // make sure it already exists
     int typeIndex = (int)type;
-    NSMutableString *lookupOldName = [[NSMutableString alloc] initWithCString:canonicalOldName encoding:NSUTF8StringEncoding];
     i = self->hashTables[typeIndex][lookupOldName];
 
     if(!i)
@@ -2319,9 +2319,8 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     //decl = *declPtr;
     
     //Change the name
-    NSMutableString *lookupNewName = [[NSMutableString alloc] initWithCString:canonicalNewName encoding:NSUTF8StringEncoding];
     decl->name = lookupNewName;
-    
+
     // add it to the hash table
     [self->hashTables[typeIndex] setValue:@(decl->index) forKey:lookupNewName];
     
@@ -3856,7 +3855,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     
     [self allocateSelf];
     
-    NSString *defaultDef = [self defaultDefinition];
+    NSString *defaultDef = [selfDecl defaultDefinition];
 
     defaultText = [[NSMutableData alloc] init];
     [defaultText appendUTF8StringAndNullTerminate:defaultDef.UTF8String];
@@ -3874,7 +3873,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     [selfDecl freeData];
     
     // parse
-    BOOL ret = [self parse:defaultText noCaching:NO error:error];
+    BOOL ret = [selfDecl parse:defaultText noCaching:NO error:error];
 
     // we could still eventually hit the recursion if we have enough Error() calls inside Parse...
     --recursionLevel;
@@ -3940,7 +3939,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     
     // if no text source try to generate default text
     if (self->textSource == nil) {
-        generatedDefaultText = [self setDefaultText];
+        generatedDefaultText = [selfDecl setDefaultText];
     }
     
     // indent for DEFAULTED or media file references
@@ -4028,7 +4027,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     }
 #endif
     
-    BOOL parsed = [self parse:parseText noCaching:noCaching error:error];
+    BOOL parsed = [selfDecl parse:parseText noCaching:noCaching error:error];
 
     // free generated text
     if (generatedDefaultText || (declManager.workspace.com_SingleDeclFile && !needsPrecache)) {

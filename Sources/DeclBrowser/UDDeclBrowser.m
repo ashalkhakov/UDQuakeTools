@@ -1,10 +1,3 @@
-//
-//  UDDeclBrowser.m
-//  PakManager
-//
-//  Created by artyom on 8/2/26.
-//
-
 #import <AppKit/AppKit.h>
 
 #import "idDeclManager.h"
@@ -26,7 +19,7 @@
 @property (strong) NSArray<UDDeclSearchFileGroup *> *searchFileGroups;  // the data for the Search outline
 @property (weak)   NSOutlineView *searchOutlineView;                    // the second outline
 
-@property (strong, nonatomic) NSArray<UDDeclTreeNode *> *rootNodes; // = declTree.topLevelNodes
+@property (strong, nonatomic) NSArray<UDWorkspaceItem *> *rootNodes; // = declTree.topLevelNodes
 @property (assign, nonatomic) int numListedDecls;
 @property (strong, nonatomic) NSString *findNameString;
 @property (strong, nonatomic) NSString *findTextString;
@@ -57,16 +50,14 @@
     return _workspace.fileSystem;
 }
 
-// Equivalent of DeclBrowser::AddDeclTypeToTree
 - (void)addDeclTypeToTree:(declType_t)type
                      root:(NSString *)root
                      tree:(UDPathTree *)tree
 {
     NSMutableArray<idDecl *> *decls = [NSMutableArray array];
-    int num = [self.declManager numDecls:type];
-    for (int i = 0; i < num; i++) {
-        idDecl *decl = [self.declManager declByIndex:i type:type forceParse:NO error:nil];
-        if (decl) [decls addObject:decl];
+    
+    for (idDecl *decl in [self.declManager declsOfType:type forceParse:NO]) {
+        [decls addObject:decl];
     }
     
     // same sort as original (idStr::IcmpPath)
@@ -82,12 +73,10 @@
         declName = [declName stringByTrimmingCharactersInSet:
                     [NSCharacterSet whitespaceCharacterSet]];
         
-        NSInteger encodedId = GetIdFromTypeAndIndex(type, [decl index]);
-        [tree addPathToTree:declName encodedId:encodedId];
+        [tree addDeclToTree:declName type:type];
     }
 }
 
-// Equivalent of DeclBrowser::AddScriptsToTree
 - (void)addScriptsToTree:(UDPathTree *)tree {
     idFileList *files = [self.fileSystem listFilesTree:@"script" extension:@".script" sorted:YES inGameDir:nil error:nil];
     
@@ -95,15 +84,14 @@
         NSString *scriptName = [files fileByIndex:i];
         scriptName = [scriptName stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
         scriptName = [scriptName stringByDeletingPathExtension];
+        NSString *fileName = [scriptName stringByAppendingString:@".script"];
         
-        NSInteger encodedId = GetIdFromTypeAndIndex(DECLTYPE_SCRIPT, i);
-        [tree addPathToTree:scriptName encodedId:encodedId];
+        [tree addFileToTree:scriptName];
     }
     
     [self.fileSystem freeFileList:files];
 }
 
-// Equivalent of DeclBrowser::AddGUIsToTree
 - (void)addGUIsToTree:(UDPathTree *)tree {
     idFileList *files = [self.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:nil];
     
@@ -111,15 +99,14 @@
         NSString *guiName = [files fileByIndex:i];
         guiName = [guiName stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
         guiName = [guiName stringByDeletingPathExtension];
+        NSString *fileName = [guiName stringByAppendingString:@".gui"];
         
-        NSInteger encodedId = GetIdFromTypeAndIndex(DECLTYPE_GUI, i);
-        [tree addPathToTree:guiName encodedId:encodedId];
+        [tree addFileToTree:fileName];
     }
     
     [self.fileSystem freeFileList:files];
 }
 
-// Equivalent of DeclBrowser::InitBaseDeclTree
 - (void)initBaseDeclTree {
     self.numListedDecls = 0;
     [self.baseDeclTree deleteAllItems];
@@ -139,76 +126,15 @@
     return idStr_Filter(pattern.UTF8String, string.UTF8String, NO);
 }
 
-- (BOOL)compareDeclName:(UDDeclTreeNode *)item name:(NSString *)name {
+- (BOOL)compareDeclName:(UDWorkspaceItem *)item name:(NSString *)name {
     // Name filter
     if (self.findNameString.length > 0) {
         if (![self filterString:self.findNameString matches:name]) {
             return NO;
         }
     }
-        
+    
     return YES;
-}
-
--(BOOL)compareDeclText:(UDDeclTreeNode *)item name:(NSString *)name {
-    // Text content filter
-    if (self.findTextString.length > 0) {
-        NSString *text = [self textOfNode:item];
-        if ([text rangeOfString:self.findTextString options:NSCaseInsensitiveSearch].location == NSNotFound) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
-- (NSString *)fileNameOfNode:(UDDeclTreeNode *)item {
-    NSInteger encodedId = item.encodedId;
-    declType_t type = GetTypeFromId(encodedId);
-    int index = GetIndexFromId(encodedId);
-
-    if (type == DECLTYPE_SCRIPT || type == DECLTYPE_GUI) {
-        // Search inside the .script / .gui file
-        NSString *ext = (type == DECLTYPE_SCRIPT) ? @".script" : @".gui";
-        NSString *fileName = [item.fullPath stringByAppendingString:ext];
-        return fileName;
-    } else {
-        const idDecl *decl = [_workspace.declManager declByIndex:index type:type forceParse:NO error:nil];
-        if (!decl) return @"";
-        return [decl fileName];
-    }
-}
-
-- (NSString *)textOfNode:(UDDeclTreeNode *)item {
-    NSInteger encodedId = item.encodedId;
-    declType_t type = GetTypeFromId(encodedId);
-    int index = GetIndexFromId(encodedId);
-
-    if (type == DECLTYPE_SCRIPT || type == DECLTYPE_GUI) {
-        // Search inside the .script / .gui file
-        NSString *ext = (type == DECLTYPE_SCRIPT) ? @".script" : @".gui";
-        NSString *fileName = [item.fullPath stringByAppendingString:ext];
-        void *buffer = NULL;
-        int bufferLen = [_workspace.fileSystem readFile:fileName buffer:&buffer timestamp:NULL error:nil];
-        
-        if (!bufferLen) {
-            return @"";
-        }
-        
-        NSString *text = [[NSString alloc] initWithBytes:buffer length:bufferLen encoding:NSUTF8StringEncoding];
-        [_workspace.fileSystem freeFile:buffer error:nil];
-        return text;
-    } else {
-        // Search inside the decl text
-        const idDecl *decl = [_workspace.declManager declByIndex:index type:type forceParse:NO error:nil];
-        if (!decl) return @"";
-
-        NSMutableData *declText = [[NSMutableData alloc] init];
-        [decl text:declText];
-
-        NSString *text = [[NSString alloc] initWithData:declText encoding:NSUTF8StringEncoding];
-        return text;
-    }
 }
 
 - (void)findContaining:(NSString *)query {
@@ -221,16 +147,15 @@
     self.findTextString = query;
     
     NSMutableDictionary<NSString *, UDDeclSearchFileGroup *> *groups = [NSMutableDictionary dictionary];
+    UDWorkspace *workspace = self.workspace;
     
     [UDDeclTreeWalker walkLeavesInTree:self.baseDeclTree
-                            usingBlock:^(UDDeclTreeNode *node, BOOL *stop) {
-        NSString *text = [self textOfNode:node];
-        if (!text) return;
+                            usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
+        if (![node matchesTextSearch:query inWorkspace:workspace]) {
+            return;
+        }
         
-        NSRange range = [text rangeOfString:query options:NSCaseInsensitiveSearch];
-        if (range.location == NSNotFound) return;
-        
-        NSString *filename = [self fileNameOfNode:node];
+        NSString *filename = node.path;
         
         UDDeclSearchFileGroup *group = groups[filename];
         if (!group) {
@@ -242,7 +167,7 @@
         
         UDDeclSearchMatch *match = [[UDDeclSearchMatch alloc] init];
         match.node = node;
-        match.matchRange = range;
+        //match.matchRange = range; // FIXME: reimplement
         [group.matches addObject:match];
     }];
     
@@ -253,7 +178,7 @@
     
     for (UDDeclSearchFileGroup *g in sorted) {
         [g.matches sortUsingComparator:^NSComparisonResult(UDDeclSearchMatch *a, UDDeclSearchMatch *b) {
-            return [a.node.title caseInsensitiveCompare:b.node.title];
+            return [a.node.name caseInsensitiveCompare:b.node.name];
         }];
     }
     
@@ -272,15 +197,15 @@
     
     self.numListedDecls = (int)[UDDeclTreeWalker filterTree:self.baseDeclTree
                                                    intoTree:self.declTree
-                                                  withBlock:^BOOL(UDDeclTreeNode *node) {
-            return [self compareDeclName:node name:node.fullPath];
-        }];
-
+                                                  withBlock:^BOOL(UDWorkspaceItem *node) {
+        return [self compareDeclName:node name:node.path];
+    }];
+    
     self.rootNodes = self.declTree.topLevelNodes;
     [self.outlineView reloadData];
     
     self.searchFileGroups = @[];
-        
+    
     // status
     // self.statusLabel.stringValue = [NSString stringWithFormat:@"%ld decls listed", (long)self.numListedDecls];
 }
@@ -289,9 +214,9 @@
     self.findNameString = name;
     self.numListedDecls = (int)[UDDeclTreeWalker filterTree:self.baseDeclTree
                                                    intoTree:self.declTree
-                                                  withBlock:^BOOL(UDDeclTreeNode *node) {
-            return [self compareDeclName:node name:node.fullPath];
-        }];
+                                                  withBlock:^BOOL(UDWorkspaceItem *node) {
+        return [self compareDeclName:node name:node.path];
+    }];
     
     self.rootNodes = self.declTree.topLevelNodes;
     [self.outlineView reloadData];
@@ -324,12 +249,12 @@
         }
         return 0;
     }
-
+    
     // outlineView == self.outlineView
     if (item == nil) {
         return self.rootNodes.count;
     }
-    return ((UDDeclTreeNode *)item).children.count;
+    return ((UDWorkspaceItem *)item).children.count;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
@@ -337,12 +262,12 @@
         if (item == nil) return self.searchFileGroups[index];
         return ((UDDeclSearchFileGroup *)item).matches[index];
     }
-
+    
     // outlineView == self.outlineView
     if (item == nil) {
         return self.rootNodes[index];
     }
-    return ((UDDeclTreeNode *)item).children[index];
+    return ((UDWorkspaceItem *)item).children[index];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
@@ -350,7 +275,8 @@
         return [item isKindOfClass:[UDDeclSearchFileGroup class]];
     }
 
-    return ((UDDeclTreeNode *)item).children.count > 0;
+    UDWorkspaceItem *node = (UDWorkspaceItem *)item;
+    return node.kind == UDWorkspaceItemKindGroup;
 }
 
 #pragma mark - NSOutlineViewDelegate
@@ -366,14 +292,14 @@
             // optional: make it bold
         } else {
             UDDeclSearchMatch *match = item;
-            cell.textField.stringValue = match.node.title;
+            cell.textField.stringValue = match.node.name;
         }
         return cell;
     }
-
+    
     // outlineView == self.outlineView
     NSTableCellView *cell = [ov makeViewWithIdentifier:@"name" owner:nil];
-    cell.textField.stringValue = ((UDDeclTreeNode *)item).title;
+    cell.textField.stringValue = ((UDWorkspaceItem *)item).name;
     return cell;
 }
 
@@ -381,22 +307,24 @@
     NSOutlineView *ov = notification.object;
     
     if (ov == self.searchOutlineView) {
+        NSInteger row = self.searchOutlineView.selectedRow;
+        /*
+         if (row < 0) {
+         // nothing selected -> clear the text editor
+         if ([self.delegate respondsToSelector:@selector(declBrowserDidClearSelection:)]) {
+         [self.delegate declBrowserDidClearSelection:self];
+         }
+         return;
+         }*/
+        
         id item = [ov itemAtRow:ov.selectedRow];
         if ([item isKindOfClass:[UDDeclSearchMatch class]]) {
             UDDeclSearchMatch *match = item;
-            UDDeclTreeNode *node = match.node;
-            
-            const idDecl *decl = [self declFromTreeItem:node];
-            if (decl) {
-                if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectDecl:)]) {
-                    [self.delegate declBrowser:self didSelectDecl:decl];
-                }
-            } else {
-                if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectGuiOrScript:)]) {
-                    [self.delegate declBrowser:self didSelectGuiOrScript:[self fileNameOfNode:node]];
-                }
+            UDWorkspaceItem *node = match.node;
+
+            if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectResource:)]) {
+                [self.delegate declBrowser:self didSelectResource:node];
             }
-            // later: also highlight match.matchRange in the text view
         }
         return;
     }
@@ -405,40 +333,19 @@
         NSInteger row = self.outlineView.selectedRow;
         if (row < 0) {
             // nothing selected -> clear the text editor
-            [self.delegate declBrowser:self didSelectDecl:nil];
+            if ([self.delegate respondsToSelector:@selector(declBrowserDidClearSelection:)]) {
+                [self.delegate declBrowserDidClearSelection:self];
+            }
             return;
         }
         
-        UDDeclTreeNode *node = [self.outlineView itemAtRow:row];
-        const idDecl *decl = [self declFromTreeItem:node];
-        if (decl) {
-            if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectDecl:)]) {
-                [self.delegate declBrowser:self didSelectDecl:decl];
-            }
-        } else {
-            if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectGuiOrScript:)]) {
-                [self.delegate declBrowser:self didSelectGuiOrScript:node.fullPath];
-            }
+        UDWorkspaceItem *node = [self.outlineView itemAtRow:row];
+        if ([self.delegate respondsToSelector:@selector(declBrowser:didSelectResource:)]) {
+            [self.delegate declBrowser:self didSelectResource:node];
         }
-
+        
         return;
     }
-}
-
-- (idDecl *)declFromTreeItem:(UDDeclTreeNode *)item {
-    if (!item || item.children.count > 0) return nil;   // folder
-
-    idDeclManager *declManager = _workspace.declManager;
-    
-    NSInteger id = item.encodedId;
-    declType_t type = GetTypeFromId(id);
-    int index = GetIndexFromId(id);
-    
-    if (type == DECLTYPE_GUI || type == DECLTYPE_SCRIPT) return nil;
-    
-    if (type < 0 || type >= [declManager numDeclTypes]) return nil;
-
-    return [declManager declByIndex:index type:type forceParse:NO error:nil];
 }
 
 @end

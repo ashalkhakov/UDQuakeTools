@@ -1,34 +1,17 @@
-//
-//  UDPathTree.h
-//  PakManager
-//
-//  Created by artyom on 8/2/26.
-//
-
 #import <Foundation/Foundation.h>
-
-#define DECLTYPE_SHIFT     24
-#define DECLINDEX_MASK     (1 << DECLTYPE_SHIFT) - 1
-#define DECLTYPE_SCRIPT    126
-#define DECLTYPE_GUI       127
-
-#define GetIdFromTypeAndIndex(type, index)  (((int)(type) << DECLTYPE_SHIFT) | (index))
-#define GetTypeFromId(id)                   ((declType_t)((int)(id) >> DECLTYPE_SHIFT))
-#define GetIndexFromId(id)                  ((int)(id) & DECLINDEX_MASK)
-
-@interface UDDeclTreeNode : NSObject
-@property (copy)   NSString *title;
-@property (strong) NSString *fullPath;
-@property (assign) NSInteger encodedId;
-@property (strong) NSMutableArray<UDDeclTreeNode *> *children;
-@property (weak)   UDDeclTreeNode *parent;
-@end
+#import "UDProject.h"
+#import "UDFileItem.h"
+#import "UDDeclItem.h"
 
 @interface UDPathTree : NSObject
-@property (strong) UDDeclTreeNode *root;
+
+@property (strong) UDProject *root;
+
 - (void)deleteAllItems;
-- (void)addPathToTree:(NSString *)path encodedId:(NSInteger)encodedId;
-- (NSArray<UDDeclTreeNode *> *)topLevelNodes;   // the children of root
+- (void)addFileToTree:(NSString *)path;
+- (void)addDeclToTree:(NSString *)path type:(declType_t)type;
+- (NSArray<UDWorkspaceItem *> *)topLevelNodes;   // the children of root
+
 @end
 
 @interface UDDeclTreeWalker : NSObject
@@ -39,13 +22,13 @@
  * Set *stop = YES to abort early.
  */
 + (void)walkTree:(UDPathTree *)tree
-      usingBlock:(void (^)(UDDeclTreeNode *node, BOOL *stop))block;
+      usingBlock:(void (^)(UDWorkspaceItem *node, BOOL *stop))block;
 
 /**
  * Walks only the leaf nodes.
  */
 + (void)walkLeavesInTree:(UDPathTree *)tree
-              usingBlock:(void (^)(UDDeclTreeNode *node, BOOL *stop))block;
+              usingBlock:(void (^)(UDWorkspaceItem *node, BOOL *stop))block;
 
 /**
  * Builds a new filtered tree containing only the nodes that pass the test.
@@ -53,6 +36,6 @@
  */
 + (NSInteger)filterTree:(UDPathTree *)sourceTree
                intoTree:(UDPathTree *)resultTree
-              withBlock:(BOOL (^)(UDDeclTreeNode *node))test;
+              withBlock:(BOOL (^)(UDWorkspaceItem *node))test;
 
 @end

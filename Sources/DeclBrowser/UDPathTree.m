@@ -1,68 +1,85 @@
-//
-//  UDPathTree.m
-//  PakManager
-//
-//  Created by artyom on 8/2/26.
-//
-
 #import "UDPathTree.h"
-
-@implementation UDDeclTreeNode
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _children = [NSMutableArray array];
-        _encodedId = -1;
-    }
-    return self;
-}
-@end
+#import "UDFolder.h"
 
 @implementation UDPathTree
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _root = [[UDDeclTreeNode alloc] init];
-        _root.title = @"";
+        _root = [[UDProject alloc] initWithName:@"" path:nil];
     }
     return self;
 }
 
 - (void)deleteAllItems {
-    [self.root.children removeAllObjects];
+    [self.root removeAllChildren];
 }
 
-- (void)addPathToTree:(NSString *)path encodedId:(NSInteger)encodedId {
-    // Direct equivalent of PathTreeCtrl::AddPathToTree
+- (void)addFileToTree:(NSString *)path {
     NSArray *components = [path componentsSeparatedByString:@"/"];
-    UDDeclTreeNode *current = self.root;
-    
-    for (NSString *comp in components) {
-        if (comp.length == 0) continue;
-        
-        UDDeclTreeNode *child = nil;
-        for (UDDeclTreeNode *c in current.children) {
-            if ([c.title isEqualToString:comp]) {
+    UDWorkspaceItem *current;
+    NSInteger i, n;
+
+    current = self.root;
+    n = components.count;
+    for (i = 0; i < n-1; i++) {
+        NSString *comp = [components objectAtIndex:i];
+        if (comp.length == 0) {
+            continue;
+        }
+
+        UDWorkspaceItem *child = nil;
+        for (UDWorkspaceItem *c in current.children) {
+            if ([c.name isEqualToString:comp]) {
                 child = c;
                 break;
             }
         }
-        
         if (!child) {
-            child = [[UDDeclTreeNode alloc] init];
-            child.fullPath = path;
-            child.title = comp;
-            child.parent = current;
-            [current.children addObject:child];
+            child = [[UDFolder alloc] initWithName:comp path:path];
+            [current addChild:child];
         }
         current = child;
     }
     
-    current.encodedId = encodedId;   // leaf stores the id
+    // Leaf gets the resource
+    UDFileItem *fileItem = [[UDFileItem alloc] initWithPath:path];
+    [current addChild:fileItem];
 }
 
-- (NSArray<UDDeclTreeNode *> *)topLevelNodes {
+- (void)addDeclToTree:(NSString *)path type:(declType_t)type {
+    NSArray *components = [path componentsSeparatedByString:@"/"];
+    UDWorkspaceItem *current;
+    NSInteger i, n;
+
+    current = self.root;
+    n = components.count;
+    for (i = 0; i < n-1; i++) {
+        NSString *comp = [components objectAtIndex:i];
+        if (comp.length == 0) {
+            continue;
+        }
+
+        UDWorkspaceItem *child = nil;
+        for (UDWorkspaceItem *c in current.children) {
+            if ([c.name isEqualToString:comp]) {
+                child = c;
+                break;
+            }
+        }
+        if (!child) {
+            child = [[UDFolder alloc] initWithName:comp path:path];
+            [current addChild:child];
+        }
+        current = child;
+    }
+    
+    // Leaf gets the resource
+    UDDeclItem *declItem = [[UDDeclItem alloc] initWithType:type path:path];
+    [current addChild:declItem];
+}
+
+- (NSArray<UDWorkspaceItem *> *)topLevelNodes {
     return self.root.children;
 }
 
@@ -71,22 +88,22 @@
 @implementation UDDeclTreeWalker
 
 + (void)walkTree:(UDPathTree *)tree
-      usingBlock:(void (^)(UDDeclTreeNode *node, BOOL *stop))block
+      usingBlock:(void (^)(UDWorkspaceItem *node, BOOL *stop))block
 {
     if (!tree || !block) return;
     
     BOOL stop = NO;
-    for (UDDeclTreeNode *top in tree.topLevelNodes) {
+    for (UDWorkspaceItem *top in tree.topLevelNodes) {
         [self walkNode:top block:block stop:&stop];
         if (stop) break;
     }
 }
 
 + (void)walkLeavesInTree:(UDPathTree *)tree
-              usingBlock:(void (^)(UDDeclTreeNode *node, BOOL *stop))block
+              usingBlock:(void (^)(UDWorkspaceItem *node, BOOL *stop))block
 {
-    [self walkTree:tree usingBlock:^(UDDeclTreeNode *node, BOOL *stop) {
-        if (node.children.count == 0) {
+    [self walkTree:tree usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
+        if (node.kind == UDWorkspaceItemKindDecl || node.kind == UDWorkspaceItemKindFile) {
             block(node, stop);
         }
     }];
@@ -94,15 +111,25 @@
 
 + (NSInteger)filterTree:(UDPathTree *)sourceTree
                intoTree:(UDPathTree *)resultTree
-              withBlock:(BOOL (^)(UDDeclTreeNode *node))test
+              withBlock:(BOOL (^)(UDWorkspaceItem *node))test
 {
     [resultTree deleteAllItems];
     __block NSInteger count = 0;
     
-    [self walkLeavesInTree:sourceTree usingBlock:^(UDDeclTreeNode *node, BOOL *stop) {
+    [self walkLeavesInTree:sourceTree usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
         if (test(node)) {
-            [resultTree addPathToTree:node.fullPath encodedId:node.encodedId];
-            count++;
+            switch (node.kind) {
+                case UDWorkspaceItemKindDecl:
+                    [resultTree addDeclToTree:((UDDeclItem *)node).path type:((UDDeclItem *)node).type];
+                    count++;
+                    break;
+                case UDWorkspaceItemKindFile:
+                    [resultTree addFileToTree:((UDFileItem *)node).path];
+                    count++;
+                    break;
+                default:
+                    break; // should never happen
+            }
         }
     }];
     
@@ -111,8 +138,8 @@
 
 #pragma mark - Private recursive method
 
-+ (void)walkNode:(UDDeclTreeNode *)node
-           block:(void (^)(UDDeclTreeNode *node, BOOL *stop))block
++ (void)walkNode:(UDWorkspaceItem *)node
+           block:(void (^)(UDWorkspaceItem *node, BOOL *stop))block
             stop:(BOOL *)stop
 {
     if (*stop || !node) return;
@@ -120,7 +147,7 @@
     block(node, stop);
     if (*stop) return;
     
-    for (UDDeclTreeNode *child in node.children) {
+    for (UDWorkspaceItem *child in node.children) {
         [self walkNode:child block:block stop:stop];
         if (*stop) return;
     }

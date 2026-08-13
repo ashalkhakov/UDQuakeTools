@@ -11,7 +11,7 @@
 @class idDecl;
 
 @interface UDDeclSearchMatch : NSObject
-@property (strong) UDDeclTreeNode *node;       // or store type+index / the idDecl*
+@property (strong) UDWorkspaceItem *node;       // or store type+index / the idDecl*
 @property (assign) NSRange matchRange;         // optional, for later highlighting
 @end
 
@@ -22,8 +22,7 @@
 
 @protocol UDDeclBrowserDelegate <NSObject>
 @optional
-- (void)declBrowser:(UDDeclBrowser *)browser didSelectDecl:(const idDecl *)decl;
-- (void)declBrowser:(UDDeclBrowser *)browser didSelectGuiOrScript:(NSString *)fileName;
+- (void)declBrowser:(UDDeclBrowser *)browser didSelectResource:(UDWorkspaceItem *)resource;
 - (void)declBrowserDidClearSelection:(UDDeclBrowser *)browser;
 @end
 

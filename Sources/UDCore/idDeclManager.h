@@ -340,6 +340,14 @@ typedef idDecl *(*idDeclAllocator_t)(void);
 @class rvDeclMatType, rvDeclLipSync, rvDeclPlayback, rvDeclEffect, rvDeclPlayerModel;
 // RAVEN END
 
+@interface UDDeclEnumerator : NSObject <NSFastEnumeration>
+
+- (instancetype)initWithManager:(idDeclManager *)manager
+                           type:(declType_t)type
+                     forceParse:(BOOL)forceParse;
+
+@end
+
 @interface idDeclManager : NSObject
 
 // the workspace that owns this file system instance
@@ -402,13 +410,18 @@ typedef idDecl *(*idDeclAllocator_t)(void);
 -(void)reloadFile:(NSString *)filename force:(BOOL)force;
 
 // Returns the number of decls of the given type.
--(int)numDecls:(declType_t)type;
+//-(int)numDecls:(declType_t)type;
 
 // The complete lists of decls can be walked to populate editor browsers.
 // If forceParse is set false, you can get the decl to check name / filename / etc.
 // without causing it to parse the source and load media.
--(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
--(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error;
+-(idDecl *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
+-(idDecl *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error; // forceParse = NO
+//-(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
+//-(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error;
+
+- (id<NSFastEnumeration>)declsOfType:(declType_t)type;
+- (id<NSFastEnumeration>)declsOfType:(declType_t)type forceParse:(BOOL)forceParse;
 
 // List and print decls.
 //-(void)listType:(declType_t)type;

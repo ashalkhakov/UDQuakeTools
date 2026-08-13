@@ -53,15 +53,17 @@ static idDecl *DeclPDA_FindReferencedDeclByIndex(idDeclManager *declManager, NSM
     return DeclPDA_FindReferencedDecl(declManager, declType, [list objectAtIndex:index], NO, error);
 }
 
-static void DeclPDA_AddRuntimeReferencedDecl(idDeclManager *declManager, NSMutableArray<NSString *> *list, NSString *name, BOOL unique, declType_t declType, NSString *notFoundFormat, NSError **error) {
-    if (unique && [list containsObject:name] != NO) {
-        return;
-    }
-    if (DeclPDA_FindReferencedDecl(declManager, declType, name, NO, error) == nil) {
+static void DeclPDA_AddRuntimeReferencedDecl(idDeclManager *declManager, NSMutableArray *list, NSString *name, BOOL unique, declType_t declType, NSString *notFoundFormat, NSError **error) {
+    idDecl *decl = DeclPDA_FindReferencedDecl(declManager, declType, name, NO, error);
+
+    if (decl == nil) {
         NSLog(notFoundFormat, name);
         return;
     }
-    [list addObject:name];
+    if (unique && [list containsObject:decl] != NO) {
+        return;
+    }
+    [list addObject:decl];
 }
 
 static void DeclPDA_RemoveAddedStringRefs(NSMutableArray<NSString *> *list, NSInteger originalCount) {
@@ -111,25 +113,6 @@ void idDeclPDA::List( void ) const {
 */
 
 @implementation idDeclPDA
-
--(instancetype)init {
-    self = [super init];
-    if (self) {
-        videos = [[NSMutableArray alloc] init];
-        audios = [[NSMutableArray alloc] init];
-        emails = [[NSMutableArray alloc] init];
-        originalVideos = 0;
-        originalAudios = 0;
-        originalEmails = 0;
-    }
-    return self;
-}
-
--(void)dealloc {
-    videos = nil;
-    audios = nil;
-    emails = nil;
-}
 
 -(BOOL)parse:(NSMutableData *)text error:(NSError **)error {
     return [self parse:text noCaching:NO error:error];
@@ -216,8 +199,11 @@ void idDeclPDA::List( void ) const {
             if (![src readToken:&token error:error]) {
                 break;
             }
-            [emails addObject:[NSString stringWithUTF8String:token.text]];
-            DeclPDA_FindReferencedDecl(self.declManager, DECL_EMAIL, [NSString stringWithUTF8String:token.text], YES, error);
+            idDeclEmail *email = (idDeclEmail *)DeclPDA_FindReferencedDecl(self.declManager, DECL_EMAIL, [NSString stringWithUTF8String:token.text], YES, error);
+            if (!self.emails) {
+                self.emails = [[NSMutableArray alloc] init];
+            }
+            [self.emails addObject:email];
             continue;
         }
 
@@ -225,8 +211,11 @@ void idDeclPDA::List( void ) const {
             if (![src readToken:&token error:error]) {
                 break;
             }
-            [audios addObject:[NSString stringWithUTF8String:token.text]];
-            DeclPDA_FindReferencedDecl(self.declManager, DECL_AUDIO, [NSString stringWithUTF8String:token.text], YES, error);
+            idDeclAudio *audio = (idDeclAudio *)DeclPDA_FindReferencedDecl(self.declManager, DECL_AUDIO, [NSString stringWithUTF8String:token.text], YES, error);
+            if (!self.audios) {
+                self.audios = [[NSMutableArray alloc] init];
+            }
+            [self.audios addObject:audio];
             continue;
         }
 
@@ -234,8 +223,11 @@ void idDeclPDA::List( void ) const {
             if (![src readToken:&token error:error]) {
                 break;
             }
-            [videos addObject:[NSString stringWithUTF8String:token.text]];
-            DeclPDA_FindReferencedDecl(self.declManager, DECL_VIDEO, [NSString stringWithUTF8String:token.text], YES, error);
+            idDeclVideo *video = (idDeclVideo *)DeclPDA_FindReferencedDecl(self.declManager, DECL_VIDEO, [NSString stringWithUTF8String:token.text], YES, error);
+            if (!self.videos) {
+                self.videos = [[NSMutableArray alloc] init];
+            }
+            [self.videos addObject:video];
         }
     }
 
@@ -243,10 +235,7 @@ void idDeclPDA::List( void ) const {
         return NO;
     }
 
-    originalVideos = videos.count;
-    originalAudios = audios.count;
-    originalEmails = emails.count;
-    return true;
+    return YES;
 }
 
 -(NSString *)defaultDefinition {
@@ -254,65 +243,27 @@ void idDeclPDA::List( void ) const {
 }
 
 -(void)freeData {
-    [videos removeAllObjects];
-    [audios removeAllObjects];
-    [emails removeAllObjects];
-    originalEmails = 0;
-    originalAudios = 0;
-    originalVideos = 0;
-}
-
--(void)addVideo:(NSString *)name unique:(BOOL)unique {
-    DeclPDA_AddRuntimeReferencedDecl(self.declManager, videos, name, unique, DECL_VIDEO, @"Video %@ not found\n", nil);
-}
-
--(void)addAudio:(NSString *)name unique:(BOOL)unique {
-    DeclPDA_AddRuntimeReferencedDecl(self.declManager, audios, name, unique, DECL_AUDIO, @"Audio log %@ not found\n", nil);
-}
-
--(void)addEmail:(NSString *)name unique:(BOOL)unique {
-    DeclPDA_AddRuntimeReferencedDecl(self.declManager, emails, name, unique, DECL_EMAIL, @"Email %@ not found\n", nil);
-}
-
--(void)removeAddedEmailsAndVideos {
-    DeclPDA_RemoveAddedStringRefs(emails, originalEmails);
-    DeclPDA_RemoveAddedStringRefs(videos, originalVideos);
-}
-
--(int)numVideos {
-    return (int)videos.count;
-}
-
--(int)numAudios {
-    return (int)audios.count;
-}
-
--(int)numEmails {
-    return (int)emails.count;
-}
-
--(idDeclVideo *)videoByIndex:(int)index {
-    idDecl *decl = DeclPDA_FindReferencedDeclByIndex(self.declManager, videos, DECL_VIDEO, index, nil);
-    if ([decl isKindOfClass:[idDeclVideo class]]) {
-        return (idDeclVideo *)decl;
+    if (self.videos) {
+        [self.videos removeAllObjects];
     }
-    return nil;
+    if (self.audios) {
+        [self.audios removeAllObjects];
+    }
+    if (self.emails) {
+        [self.emails removeAllObjects];
+    }
 }
 
--(idDeclAudio *)audioByIndex:(int)index {
-    idDecl *decl = DeclPDA_FindReferencedDeclByIndex(self.declManager, audios, DECL_AUDIO, index, nil);
-    if ([decl isKindOfClass:[idDeclAudio class]]) {
-        return (idDeclAudio *)decl;
-    }
-    return nil;
+-(void)addVideoByName:(NSString *)name unique:(BOOL)unique {
+    DeclPDA_AddRuntimeReferencedDecl(self.declManager, self.videos, name, unique, DECL_VIDEO, @"Video %@ not found\n", nil);
 }
 
--(idDeclEmail *)emailByIndex:(int)index {
-    idDecl *decl = DeclPDA_FindReferencedDeclByIndex(self.declManager, emails, DECL_EMAIL, index, nil);
-    if ([decl isKindOfClass:[idDeclEmail class]]) {
-        return (idDeclEmail *)decl;
-    }
-    return nil;
+-(void)addAudioByName:(NSString *)name unique:(BOOL)unique {
+    DeclPDA_AddRuntimeReferencedDecl(self.declManager, self.audios, name, unique, DECL_AUDIO, @"Audio log %@ not found\n", nil);
+}
+
+-(void)addEmailByName:(NSString *)name unique:(BOOL)unique {
+    DeclPDA_AddRuntimeReferencedDecl(self.declManager, self.emails, name, unique, DECL_EMAIL, @"Email %@ not found\n", nil);
 }
 
 @end

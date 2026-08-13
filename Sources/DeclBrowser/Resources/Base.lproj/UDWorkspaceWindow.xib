@@ -11,8 +11,8 @@
                 <outlet property="nameFilterField" destination="D99-4e-U2t" id="q4M-DV-AV5"/>
                 <outlet property="outlineView" destination="39P-QL-SWS" id="QGd-n6-efE"/>
                 <outlet property="searchOutlineView" destination="OB6-OY-IgM" id="4d8-jh-U2G"/>
+                <outlet property="tabView" destination="4rW-Hd-hq9" id="RpV-bp-o1c"/>
                 <outlet property="textFilterField" destination="SVv-zu-nIE" id="44t-rI-f5g"/>
-                <outlet property="textView" destination="ssA-MR-1O4" id="yUy-D2-IPs"/>
                 <outlet property="window" destination="xOd-HO-29H" id="xO0-4K-tpX"/>
             </connections>
         </customObject>
@@ -97,7 +97,7 @@
                                                                 </subviews>
                                                             </clipView>
                                                             <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="ya2-yH-Ema">
-                                                                <rect key="frame" x="1" y="397" width="162" height="15"/>
+                                                                <rect key="frame" x="1" y="322" width="140" height="15"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                             <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="rEy-be-eDH">
@@ -155,7 +155,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                             <clipView key="contentView" id="Ttq-s5-Us6">
                                                                 <rect key="frame" x="1" y="1" width="146" height="301"/>
-                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="5et-Jh-dPX" id="OB6-OY-IgM">
                                                                         <rect key="frame" x="0.0" y="0.0" width="146" height="301"/>
@@ -177,7 +177,7 @@
                                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                                 <prototypeCellViews>
                                                                                     <tableCellView id="7PI-09-FYZ">
-                                                                                        <rect key="frame" x="8" y="0.0" width="129" height="24"/>
+                                                                                        <rect key="frame" x="18" y="0.0" width="129" height="24"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                         <subviews>
                                                                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qxo-V7-sxw">
@@ -220,32 +220,19 @@
                                 <rect key="frame" x="165" y="0.0" width="342" height="413"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LOq-5k-VJC">
-                                        <rect key="frame" x="0.0" y="0.0" width="342" height="413"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
-                                        <clipView key="contentView" drawsBackground="NO" id="Ezx-hE-ult">
-                                            <rect key="frame" x="0.0" y="0.0" width="327" height="413"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <subviews>
-                                                <textView wantsLayer="YES" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="ssA-MR-1O4">
-                                                    <rect key="frame" x="0.0" y="0.0" width="327" height="413"/>
+                                    <tabView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4rW-Hd-hq9">
+                                        <rect key="frame" x="-6" y="-10" width="355" height="429"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <tabViewItems>
+                                            <tabViewItem label="Tab" identifier="" id="9cv-OG-39v">
+                                                <view key="view" id="RQv-TK-re6">
+                                                    <rect key="frame" x="10" y="33" width="335" height="383"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <size key="minSize" width="327" height="413"/>
-                                                    <size key="maxSize" width="342" height="10000000"/>
-                                                </textView>
-                                            </subviews>
-                                        </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="5Il-f0-X1F">
-                                            <rect key="frame" x="-100" y="-100" width="225" height="15"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="G74-51-CqH">
-                                            <rect key="frame" x="327" y="0.0" width="15" height="413"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                    </scrollView>
+                                                </view>
+                                            </tabViewItem>
+                                        </tabViewItems>
+                                    </tabView>
                                 </subviews>
                             </customView>
                         </subviews>

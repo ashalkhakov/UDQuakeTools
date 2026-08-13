@@ -1,5 +1,6 @@
 #import "UDWorkspaceSettingsWindowController.h"
 #import "UDWorkspaceDocument.h"
+#import "UDWorkspace.h"
 
 @implementation UDWorkspaceSettingsWindowController
 

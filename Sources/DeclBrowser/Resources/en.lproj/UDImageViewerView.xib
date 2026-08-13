@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDImageViewerViewController">
+            <connections>
+                <outlet property="imageView" destination="2" id="302"/>
+                <outlet property="view" destination="1" id="301"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <view translatesAutoresizingMaskIntoConstraints="NO" id="1">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
+            <subviews>
+                <imageView translatesAutoresizingMaskIntoConstraints="NO" id="2">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
+                </imageView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="2" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="c1"/>
+                <constraint firstItem="2" firstAttribute="trailing" secondItem="1" secondAttribute="trailing" id="c2"/>
+                <constraint firstItem="2" firstAttribute="top" secondItem="1" secondAttribute="top" id="c3"/>
+                <constraint firstItem="2" firstAttribute="bottom" secondItem="1" secondAttribute="bottom" id="c4"/>
+            </constraints>
+            <point key="canvasLocation" x="140" y="154"/>
+        </view>
+    </objects>
+</document>

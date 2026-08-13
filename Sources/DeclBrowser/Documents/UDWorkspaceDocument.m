@@ -1,0 +1,101 @@
+#import "UDWorkspaceDocument.h"
+#import "UDWorkspace.h"
+#import "UDWorkspaceManager.h"
+#import "UDWorkspaceWindowController.h"
+#import "UDWorkspaceSettingsWindowController.h"
+
+@implementation UDWorkspaceDocument
+
+- (void)makeWindowControllers {
+    NSError *error = nil;
+
+    if (self.workspace != nil) {
+        // Already configured (opened from file) — go straight to workspace window
+        BOOL success = [self applySettingsAndCreateWorkspace:&error];
+        if (success) {
+            [self addWorkspaceWindowController];
+        } else {
+            [self presentError:error]; // FIXME: is this correct?
+            [self close];
+        }
+        return;
+    }
+
+    // New document — show settings window modally first
+
+    UDWorkspaceSettingsWindowController *settingsWC =
+        [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
+        
+    NSWindow *settingsWindow = [settingsWC window];
+    settingsWC.document = self;
+        
+    self.workspace = [[UDWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
+        
+    // Optional but nice: hide the main window while configuring
+    NSWindow *mainWindow = self.windowControllers.firstObject.window;
+    [mainWindow orderOut:nil];
+        
+    // Real modal session – always interactable
+    [settingsWindow makeKeyAndOrderFront:nil];
+    NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
+
+    [settingsWindow orderOut:nil];
+    
+    BOOL ret = NO;
+    if (result == NSModalResponseOK) {
+        BOOL success = [self applySettingsAndCreateWorkspace:&error];
+        if (success) {
+            [mainWindow makeKeyAndOrderFront:nil];   // show the real window
+            ret = YES;
+        } else {
+            [self presentError:error]; // FIXME: is this correct?
+            ret = NO;
+        }
+    } else {
+        // user cancelled
+        ret = NO;
+    }
+
+    if (ret == YES) {
+        [self addWorkspaceWindowController];
+        [self showWindows];
+    } else {
+        [self close];
+    }
+}
+
+- (BOOL)applySettingsAndCreateWorkspace:(NSError **)error {
+    if (![self.workspace startup:error]) {
+        // TODO: show this as error message
+        return NO;
+    }
+
+    [[UDWorkspaceManager sharedManager] registerWorkspace:self.workspace];
+
+    return YES;
+}
+
+- (void)addWorkspaceWindowController {
+    UDWorkspaceWindowController *wc =
+        [[UDWorkspaceWindowController alloc] initWithWindowNibName:@"UDWorkspaceWindow"];
+    [self addWindowController:wc];
+}
+
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+    // Deserialize saved settings from data (JSON, plist, etc.)
+    NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:data options:0 error:outError];
+    self.workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:[settings valueForKey:@"fs_basepath"]];
+    return self.workspace != nil;
+}
+
+- (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
+    // Serialize current settings
+    NSDictionary *settings = [self.workspace dictionaryRepresentation];
+    return [NSJSONSerialization dataWithJSONObject:settings options:0 error:outError];
+}
+
++ (BOOL)autosavesInPlace {
+    return YES;
+}
+
+@end

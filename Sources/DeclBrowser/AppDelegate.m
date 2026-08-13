@@ -6,6 +6,7 @@
 //
 
 #import "AppDelegate.h"
+#import "UDAppDocumentController.h"
 
 @interface AppDelegate ()
 
@@ -23,6 +24,9 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
+
+    // Instantiate our custom document controller before AppKit creates the default one.
+    (void)[[UDAppDocumentController alloc] init];
 }
 
 

@@ -4,11 +4,12 @@
 
 @implementation UDDeclItem
 
-- (instancetype)initWithType:(declType_t)type path:(NSString *)path {
+- (instancetype)initWithType:(declType_t)type declName:(NSString *)declName path:(NSString *)path {
     NSString *name = path.lastPathComponent;
     self = [super initWithName:name path:path];
     if (self) {
         _type = type;
+        _declName = declName;
     }
     return self;
 }
@@ -19,7 +20,7 @@
 
 - (NSString *)text:(UDWorkspace *)workspace {
     NSMutableData *declText = [[NSMutableData alloc] init];
-    idDecl *decl = [workspace.declManager declByName:self.path type:_type forceParse:NO error:nil];
+    idDecl *decl = [workspace.declManager declByName:self.declName type:_type forceParse:NO error:nil];
     if (!decl) {
         return @"";
     }

@@ -68,12 +68,12 @@
     NSString *rootStr = [root stringByAppendingString:@"/"];
     
     for (idDecl *decl in decls) {
-        NSString *declName = [rootStr stringByAppendingString:[decl name]];
-        declName = [declName stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-        declName = [declName stringByTrimmingCharactersInSet:
+        NSString *declPath = [rootStr stringByAppendingString:[decl name]];
+        declPath = [declPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
+        declPath = [declPath stringByTrimmingCharactersInSet:
                     [NSCharacterSet whitespaceCharacterSet]];
         
-        [tree addDeclToTree:declName type:type];
+        [tree addDeclToTree:declPath type:type declName:decl.name];
     }
 }
 

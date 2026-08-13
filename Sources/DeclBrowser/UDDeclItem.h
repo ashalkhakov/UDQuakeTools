@@ -9,8 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UDDeclItem : UDWorkspaceItem
 
 @property (nonatomic, readonly) declType_t type;
+@property (nonatomic, readonly) NSString *declName;
 
-- (instancetype)initWithType:(declType_t)type path:(NSString *)path NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(declType_t)type declName:(NSString *)declName path:(NSString *)path NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithName:(NSString *)name path:(nullable NSString *)path NS_UNAVAILABLE;
 
 - (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace;

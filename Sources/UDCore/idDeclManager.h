@@ -102,7 +102,6 @@ typedef enum {
 -(void)invalidate;
 -(void)reload;
 -(void)ensureNotPurged;
--(int)index;
 -(int)lineNum;
 -(NSString *)fileName;
 -(void)text:(NSMutableData *)text;
@@ -200,9 +199,6 @@ public:
 // if a pointer might possible be stale from a previous level,
 // call this to have it re-parsed
 -(void)ensureNotPurged;
-
-// Returns the index in the per-type list.
--(int)index;
 
 // Returns the line number the decl starts.
 -(int)lineNum;
@@ -417,8 +413,6 @@ typedef idDecl *(*idDeclAllocator_t)(void);
 // without causing it to parse the source and load media.
 -(idDecl *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
 -(idDecl *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error; // forceParse = NO
-//-(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
-//-(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error;
 
 - (id<NSFastEnumeration>)declsOfType:(declType_t)type;
 - (id<NSFastEnumeration>)declsOfType:(declType_t)type forceParse:(BOOL)forceParse;
@@ -465,15 +459,7 @@ virtual    const rvDeclLipSync *    FindLipSync( const char *name, bool makeDefa
 virtual    const rvDeclPlayback *    FindPlayback( const char *name, bool makeDefault = true ) = 0;
 virtual    const rvDeclEffect *    FindEffect( const char *name, bool makeDefault = true ) = 0;
 // RAVEN END
-*/
--(idDeclMaterial *)materialByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
--(idDeclMaterial *)materialByIndex:(int)index error:(NSError **)error; // forceParse=YES
--(idDeclTable *)tableByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
--(idDeclTable *)tableByIndex:(int)index error:(NSError **)error; // forceParse=YES
--(idDeclSkin *)skinByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error;
--(idDeclSkin *)skinByIndex:(int)index error:(NSError **)error; // forceParse=YES
 
-/*
 virtual const idSoundShader *    SoundByIndex( int index, bool forceParse = true ) = 0;
 
  // RAVEN BEGIN
@@ -497,7 +483,7 @@ virtual bool                    FinishPlayback( rvDeclPlayback *playback ) = 0;
 // jmarshall end
 
 // scork: Validation call for detailed error-reporting
--(BOOL)validate:(declType_t)type index:(int)iIndex reportTo:(NSMutableString *)strReportTo;
+-(BOOL)validate:(declType_t)type name:(NSString *)name reportTo:(NSMutableString *)strReportTo;
 -(idDecl *)allocateDecl:(declType_t)type;
 
 /*

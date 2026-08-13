@@ -489,7 +489,6 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
 -(BOOL)isValid { return [_base isValid]; }
 -(void)invalidate { [_base invalidate]; }
 -(void)ensureNotPurged { [_base ensureNotPurged]; }
--(int)index { return [_base index]; }
 -(int)lineNum { return [_base lineNum]; }
 -(NSString *)fileName { return [_base fileName]; }
 -(void)text:(NSMutableData *)text { [_base text:text]; }
@@ -550,7 +549,6 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
     int                         checksum;                 // checksum of the decl text
     declType_t                  type;                     // decl type
     declState_t                 declState;                // decl state
-    int                         index;                    // index in the per-type list
 
     BOOL                        parsedOutsideLevelLoad;   // these decls will never be purged
     BOOL                        everReferenced;           // set to true if the decl was ever used
@@ -742,16 +740,12 @@ static void DeclManager_ClearGuides( void ) {
 -(BOOL)registerDeclFolder:(NSString *)folder extension:(NSString *)extension defaultType:(declType_t)defaultType error:(NSError **)error;
 -(int)checksum;
 -(int)numDeclTypes;
--(int)numDecls:(declType_t)type;
 -(NSString *)declNameFromType:(declType_t)type;
 -(declType_t)declTypeFromName:(NSString *)typeName;
 -(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault noCaching:(BOOL)noCaching error:(NSError **)error;
 -(idDecl *)findType:(declType_t)type name:(NSString *)name noCaching:(BOOL)noCaching error:(NSError **)error; // makeDefault=YES
 -(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error; // noCaching=NO
 -(idDecl *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error; // makeDefault=YES, noCaching=NO
-
-//-(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error;
-//-(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error; // forceParse=YES
 
 -(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault;
 -(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name; // makeDefault = YES
@@ -801,14 +795,12 @@ virtual bool                    FinishPlayback( rvDeclPlayback *playback );
 -(NSString *)declTypeName:(declType_t)type;
 -(size_t)listDeclSummary;
 -(void)removeDeclFile:(NSString *)file;
--(BOOL)validate:(declType_t)type index:(int)iIndex reportTo:(NSMutableString *)strReportTo;
+-(BOOL)validate:(declType_t)type name:(NSString *)name reportTo:(NSMutableString *)strReportTo;
 -(idDecl *)allocateDecl:(declType_t)type;
 //virtual byte *                    GetMaterialTypeArray( const char *image, int &width, int &height );
 
 +(void)makeNameCanonical:(NSString *)name result:(char *)result maxLength:(int)maxLength;
--(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault/*true*/ indexToStoreAt:(int)indexToStoreAt;//-1
 -(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault/*true*/;
--(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name indexToStoreAt:(int)indexToStoreAt;//-1
 -(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name;
 
 -(idDeclType *)declType:(int)type; // { return declTypes[type]; }
@@ -954,7 +946,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
 - (int)numDeclTypes;
 - (idDeclType *)declTypeAtIndex:(int)typeIndex;
-- (NSArray<idDeclLocal *> *)linearListAtTypeIndex:(int)typeIndex;
+- (NSMutableOrderedSet<idDeclLocal *> *)linearListAtTypeIndex:(int)typeIndex;
 
 @end
 
@@ -989,7 +981,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         return 0;
     }
 
-    NSArray *list = [_manager linearListAtTypeIndex:typeIndex];
+    NSMutableOrderedSet *list = [_manager linearListAtTypeIndex:typeIndex];
     // list elements are idDeclLocal *
 
     if (state->state == 0) {
@@ -1035,16 +1027,16 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     idDeclType *                          declTypes[DECL_MAX_TYPES];
     NSMutableArray<idDeclFolder *> *      declFolders;
     
-    NSMutableArray<idDeclFile *> *        loadedFiles;
-    NSMutableDictionary *                 hashTables[DECL_MAX_TYPES];
-    NSMutableArray<idDeclLocal *> *       linearLists[DECL_MAX_TYPES];
-    idDeclFile *                          implicitDecls;    // this holds all the decls that were created because explicit
+    NSMutableArray<idDeclFile *> *                  loadedFiles;
+    NSMutableDictionary<NSString *, idDeclLocal *> *hashTables[DECL_MAX_TYPES];
+    NSMutableOrderedSet<idDeclLocal *> *            linearLists[DECL_MAX_TYPES];
+    idDeclFile *                                    implicitDecls;    // this holds all the decls that were created because explicit
     // text definitions were not found. Decls that became default
     // because of a parse error are not in this list.
-    int                                   checksum;         // checksum of all loaded decl text
-    int                                   indent;           // for MediaPrint
-    bool                                  insideLevelLoad;
-    idFile *                              singleDeclFile;
+    int                                             checksum;         // checksum of all loaded decl text
+    int                                             indent;           // for MediaPrint
+    BOOL                                            insideLevelLoad;
+    idFile *                                        singleDeclFile;
 }
 
 /*
@@ -1075,7 +1067,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     
     for (int i = 0; i < DECL_MAX_TYPES; i++) {
         self->hashTables[i] = [[NSMutableDictionary alloc] init];
-        self->linearLists[i] = [[NSMutableArray alloc] init];
+        self->linearLists[i] = [[NSMutableOrderedSet alloc] init];
     }
 
     self->implicitDecls = [[idDeclFile alloc] initWithFileName:@"implicit" defaultType:0 manager:self];
@@ -1233,15 +1225,13 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
 -(void)shutdown {
     int            i, j;
-    idDeclLocal *decl;
     
     [self finishLoadingDecls];
     //[self shutdownGuides];
     
     // free decls
     for (i = 0; i < DECL_MAX_TYPES; i++) {
-        for (j = 0; j < linearLists[i].count; j++) {
-            decl = linearLists[i][j];
+        for (idDeclLocal *decl in linearLists[i]) {
             if (decl->selfDecl != nil) {
                 [decl->selfDecl freeData];
                 decl->selfDecl = nil;
@@ -1250,7 +1240,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
                 //free(decl->textSource);
                 decl->textSource = nil;
             }
-            decl = nil;
         }
         [linearLists[i] removeAllObjects];
         [hashTables[i] removeAllObjects];
@@ -1415,9 +1404,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     // clear all the referencedThisLevel flags and purge all the data
     // so the next reference will cause a reparse
     for (int i = 0; i < DECL_MAX_TYPES; i++) {
-        int    num = self->linearLists[i].count;
-        for (int j = 0 ; j < num ; j++) {
-            idDeclLocal *decl = linearLists[i][j];
+        for (idDeclLocal *decl in linearLists[i]) {
             [decl purge];
         }
     }
@@ -1487,6 +1474,9 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
  * Return type: whatever you already store (id, or your type-info object).
  */
 - (id)declTypeAtIndex:(int)typeIndex {
+    if (typeIndex < 0 || typeIndex > [self numDeclTypes]) {
+        return nil;
+    }
     return declTypes[typeIndex];
 }
 
@@ -1494,7 +1484,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
  * linearLists[typeIndex] — NSArray/NSMutableArray of idDeclLocal *.
  * May later contain nil tombstones; enumerator already skips nil.
  */
-- (NSArray *)linearListAtTypeIndex:(int)typeIndex {
+- (NSMutableOrderedSet *)linearListAtTypeIndex:(int)typeIndex {
     return linearLists[typeIndex];
 }
 
@@ -1761,9 +1751,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
     
     int totalTextMemory = 0;
-    const int numDecls = [self numDecls:type];
-    for (int i = 0; i < numDecls; i++) {
-        const idDecl *decl = [self declByIndex:i type:type forceParse:NO error:nil];
+    for (idDecl *decl in [self declsOfType:type forceParse:NO]) {
         totalTextMemory += [decl compressedLength];
     }
     return totalTextMemory;
@@ -1827,9 +1815,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         
         [self buildPackedDeclText:decl into:declText buffer:buf];
         NSUInteger linearIndex = [linearLists[(int)decl->type] indexOfObject:decl];
-        if (linearIndex == NSNotFound) {
-            linearIndex = decl->index;
-        }
         [file printf:@"%d\n", linearIndex];
         [file printf:@"%d\n", declText.length + 1];
         [file printf:@"%@", declText]; // FIXME: should we just write it out verbatim as bytes?
@@ -1903,11 +1888,8 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         if (type == DECL_PDA || type == DECL_VIDEO || type == DECL_AUDIO || type == DECL_EMAIL) {
             continue;
         }
-        
-        num = (int)linearLists[i].count;
-        for (j = 0; j < num; j++) {
-            idDeclLocal *decl = [linearLists[i] objectAtIndex:j];
-            
+
+        for (idDeclLocal *decl in linearLists[i]) {
             if (decl->sourceFile == self->implicitDecls) {
                 continue;
             }
@@ -2027,20 +2009,8 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
 }
 
--(int)numDecls:(declType_t)type {
-    int typeIndex = (int)type;
-    
-    if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
-        // TODO: throw here
-        //common->FatalError("idDeclManager::GetNumDecls: bad type: %i", typeIndex);
-        return 0;
-    }
-    return (int)linearLists[typeIndex].count;
-}
-
 -(idDecl *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
     int typeIndex = (int)type;
-    NSNumber *i = nil;
     idDeclLocal *decl;
 
     if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
@@ -2051,12 +2021,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
 
     // make sure it already exists
-    i = self->hashTables[typeIndex][lookupName];
-
-    if(!i)
-        return nil;
-
-    decl = [self->linearLists[typeIndex] objectAtIndex: [i integerValue]];
+    decl = self->hashTables[typeIndex][lookupName];
     if (!decl)
         return nil;
 
@@ -2073,35 +2038,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
 -(idDecl *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error {
     return [self declByName:name type:type forceParse:YES error:error];
-}
-
--(idDecl *)declByIndex:(int)index type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
-    int typeIndex = (int)type;
-    
-    if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
-        //common->FatalError("idDeclManager::DeclByIndex: bad type: %i", typeIndex);
-        return nil; // TODO: throw
-    }
-    if (index < 0 || index >= linearLists[typeIndex].count) {
-        //common->Error("idDeclManager::DeclByIndex: out of range for type %d (index desired: %d, max: %d)",
-                      //typeIndex, index, linearLists[typeIndex].Num());
-        return nil; // TODO: throw
-    }
-    idDeclLocal *decl = [linearLists[typeIndex] objectAtIndex:index];
-    
-    [decl allocateSelf];
-    
-    if (forceParse && decl->declState == DS_UNPARSED) {
-        if (![decl parseLocal:NO error:error]) {
-            return nil;
-        }
-    }
-    
-    return decl->selfDecl;
-}
-
--(idDecl *)declByIndex:(int)index type:(declType_t)type error:(NSError **)error {
-    return [self declByIndex:index type:type forceParse:YES error:error];
 }
 
 #if 0
@@ -2287,10 +2223,10 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     sourceFile->decls = decl;
     
     // add it to the hash table and linear list
-    decl->index = (int)linearLists[typeIndex].count;
+    int index = (int)linearLists[typeIndex].count;
     [linearLists[typeIndex] addObject:decl];
-    hashTables[typeIndex][lookupName] = @(decl->index);
-    
+    hashTables[typeIndex][lookupName] = decl;
+
     return decl->selfDecl;
 }
 
@@ -2300,16 +2236,10 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     NSMutableString *lookupNewName = [idDeclManager makeCanonicalName:newName];
     
     idDeclLocal    *decl = nil;
-    NSNumber *i = nil;
     
     // make sure it already exists
     int typeIndex = (int)type;
-    i = self->hashTables[typeIndex][lookupOldName];
-
-    if(!i)
-        return NO;
-
-    decl = [self->linearLists[typeIndex] objectAtIndex: [i integerValue]];
+    decl = self->hashTables[typeIndex][lookupOldName];
     if (!decl)
         return NO;
 
@@ -2322,8 +2252,8 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     decl->name = lookupNewName;
 
     // add it to the hash table
-    [self->hashTables[typeIndex] setValue:@(decl->index) forKey:lookupNewName];
-    
+    [self->hashTables[typeIndex] setValue:decl forKey:lookupNewName];
+
     //Remove the old hash item
     [self->hashTables[typeIndex] removeObjectForKey:lookupOldName];
     
@@ -2385,19 +2315,6 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     return [self findMaterial:name makeDefault:YES error:error];
 }
 
--(idDeclMaterial *)materialByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
-    idDeclMaterial *material = (idDeclMaterial *)[self declByIndex:index type:DECL_MATERIAL forceParse:forceParse error:error];
-    /*
-    if (material != nil && insideLevelLoad) {
-        const_cast<idMaterial *>( material )->AddLevelLoadReference();
-    }*/
-    return material;
-}
-
--(idDeclMaterial *)materialByIndex:(int)index error:(NSError **)error {
-    return [self materialByIndex:index forceParse:YES error:error];
-}
-
 /********************************************************************/
 
 -(idDeclSkin *)findSkin:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
@@ -2406,14 +2323,6 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
 
 -(idDeclSkin *)findSkin:(NSString *)name error:(NSError **)error {
     return [self findSkin:name makeDefault:YES error:error];
-}
-
--(idDeclSkin *)skinByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
-    return (idDeclSkin *)[self declByIndex:index type:DECL_SKIN forceParse:forceParse error:error];
-}
-
--(idDeclSkin *)skinByIndex:(int)index error:(NSError **)error {
-    return [self skinByIndex:index forceParse:YES error:error];
 }
 
 /********************************************************************/
@@ -2545,11 +2454,11 @@ bool idDeclManagerLocal::FinishPlayback(rvDeclPlayback* playback) {
     }
 }
 
--(BOOL)validate:(declType_t)type index:(int)iIndex reportTo:(NSMutableString *)strReportTo {
-    idDecl *decl = [self declByIndex:iIndex type:type forceParse:NO error:nil];
+-(BOOL)validate:(declType_t)type name:(NSString *)name reportTo:(NSMutableString *)strReportTo {
+    idDecl *decl = [self declByName:name type:type forceParse:NO error:nil];
 
     if (decl == nil) {
-        [strReportTo appendFormat:@"Invalid decl index %d for type %@\n", iIndex, [self declNameFromType:type]];
+        [strReportTo appendFormat:@"Invalid decl name %@ for type %@\n", name, [self declNameFromType:type]];
         return false;
     }
     
@@ -2609,14 +2518,6 @@ const rvDeclEffect* idDeclManagerLocal::EffectByIndex(int index, bool forceParse
     return (const rvDeclEffect*)DeclByIndex(DECL_EFFECT, index, forceParse);
 }
 #endif
--(idDeclTable *)tableByIndex:(int)index forceParse:(BOOL)forceParse error:(NSError **)error {
-    idDeclTable *table = (idDeclTable *)[self declByIndex:index type:DECL_TABLE forceParse:forceParse error:error];
-    return table;
-}
-
--(idDeclTable *)tableByIndex:(int)index error:(NSError **)error {
-    return [self tableByIndex:index forceParse:YES error:error];
-}
 // RAVEN END
 
 +(NSMutableString *)makeCanonicalName:(NSString *)name {
@@ -2853,7 +2754,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
 }
 #endif
 
--(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault indexToStoreAt:(int)indexToStoreAt {
+-(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault {
     int typeIndex = (int)type;
     
     if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
@@ -2865,20 +2766,20 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
     
     // see if it already exists
-    NSNumber *declLocalIndex = hashTables[typeIndex][lookupName];
-    if (declLocalIndex) {
+    idDeclLocal *decl = hashTables[typeIndex][lookupName];
+    if (decl) {
         // only print these when decl_show is set to 2, because it can be a lot of clutter
         if (_workspace.decl_show > 1) {
             [self mediaPrint:@"referencing %@ %@\n", [declTypes[type] typeName], name];
         }
-        return linearLists[typeIndex][[declLocalIndex integerValue]];
+        return decl;
     }
     
     if (!makeDefault) {
         return nil;
     }
     
-    idDeclLocal *decl = [[idDeclLocal alloc] init];
+    decl = [[idDeclLocal alloc] init];
     decl->declManager = self;
     decl->selfDecl = nil;
     decl->name = [lookupName mutableCopy];
@@ -2890,52 +2791,16 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     decl->referencedThisLevel = NO;
     decl->everReferenced = NO;
     decl->parsedOutsideLevelLoad = !insideLevelLoad;
-    
-    if (indexToStoreAt >= 0) {
-        while (linearLists[typeIndex].count < indexToStoreAt) {
-            idDeclLocal *placeholder = [[idDeclLocal alloc] init];
-            placeholder->declManager = self;
-            placeholder->name = [@"" mutableCopy];
-            placeholder->type = type;
-            placeholder->sourceFile = implicitDecls;
-            placeholder->parsedOutsideLevelLoad = !insideLevelLoad;
-            placeholder->index = (int)linearLists[typeIndex].count;
-            [linearLists[typeIndex] addObject:placeholder];
-        }
-        
-        decl->index = indexToStoreAt;
-        if (indexToStoreAt < linearLists[typeIndex].count) {
-            idDeclLocal *oldDecl = linearLists[typeIndex][indexToStoreAt];
-            if (oldDecl != nil && oldDecl->name.length > 0) {
-                [hashTables[typeIndex] removeObjectForKey:oldDecl->name];
-            }
-            [self deleteLocalDecl:oldDecl];
-            [linearLists[typeIndex] setObject:decl atIndexedSubscript:indexToStoreAt];
-        } else {
-            [linearLists[typeIndex] addObject:decl];
-        }
-        [hashTables[typeIndex] setObject:@(indexToStoreAt) forKey:lookupName];
-        return decl;
-    }
-    
+
     // add it to the linear list and hash table
-    decl->index = (int)linearLists[typeIndex].count;
     [linearLists[typeIndex] addObject:decl];
-    [hashTables[typeIndex] setObject:@(decl->index) forKey:lookupName];
-    
+    [hashTables[typeIndex] setObject:decl forKey:lookupName];
+
     return decl;
 }
 
--(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault/*true*/ {
-    return [self findTypeWithoutParsing:type name:name makeDefault:makeDefault indexToStoreAt:-1];
-}
-
--(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name indexToStoreAt:(int)indexToStoreAt; {
-    return [self findTypeWithoutParsing:type name:name makeDefault:YES indexToStoreAt:indexToStoreAt];
-}
-
 -(idDeclLocal *)findTypeWithoutParsing:(declType_t)type name:(NSString *)name {
-    return [self findTypeWithoutParsing:type name:name makeDefault:YES indexToStoreAt:-1];
+    return [self findTypeWithoutParsing:type name:name makeDefault:YES];
 }
 
 -(idDeclType *)declType:(int)type { return declTypes[type]; }
@@ -3373,7 +3238,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
                 continue;
             }
         } else {
-            decl = [declManager findTypeWithoutParsing:identifiedType name:name makeDefault:YES indexToStoreAt:indexToStoreAt];
+            decl = [declManager findTypeWithoutParsing:identifiedType name:name makeDefault:YES];
             decl->nextInFile = self->decls;
             self->decls = decl;
         }
@@ -3618,7 +3483,6 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
         sourceLine = 0;
         checksum = 0;
         type = DECL_ENTITYDEF;
-        index = 0;
         declState = DS_UNPARSED;
         parsedOutsideLevelLoad = NO;
         referencedThisLevel = NO;
@@ -3658,10 +3522,6 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     if (declState == DS_UNPARSED) {
         [self parseLocal:NO error:nil];
     }
-}
-
--(int)index {
-    return self->index;
 }
 
 -(int)lineNum {

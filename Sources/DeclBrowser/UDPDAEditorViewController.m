@@ -40,7 +40,7 @@
     UDDeclItem *declItem = (UDDeclItem *)self.item;
     NSError *error = nil;
     
-    self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.name inWorkspace:self.workspace error:&error];
+    self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
     if (error) {
         NSLog(@"UDPDAEditorViewController: failed to open decl of type %@ name %@: %@", [_document.workspace.declManager declTypeName:declItem.type], declItem.name, error);
     }

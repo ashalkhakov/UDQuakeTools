@@ -47,7 +47,7 @@
     [current addChild:fileItem];
 }
 
-- (void)addDeclToTree:(NSString *)path type:(declType_t)type {
+- (void)addDeclToTree:(NSString *)path type:(declType_t)type declName:(NSString *)declName {
     NSArray *components = [path componentsSeparatedByString:@"/"];
     UDWorkspaceItem *current;
     NSInteger i, n;
@@ -75,7 +75,7 @@
     }
     
     // Leaf gets the resource
-    UDDeclItem *declItem = [[UDDeclItem alloc] initWithType:type path:path];
+    UDDeclItem *declItem = [[UDDeclItem alloc] initWithType:type declName:declName path:path];
     [current addChild:declItem];
 }
 
@@ -119,10 +119,12 @@
     [self walkLeavesInTree:sourceTree usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
         if (test(node)) {
             switch (node.kind) {
-                case UDWorkspaceItemKindDecl:
-                    [resultTree addDeclToTree:((UDDeclItem *)node).path type:((UDDeclItem *)node).type];
+                case UDWorkspaceItemKindDecl: {
+                    UDDeclItem *declItem = (UDDeclItem *)node;
+                    [resultTree addDeclToTree:declItem.path type:declItem.type declName:declItem.declName];
                     count++;
                     break;
+                }
                 case UDWorkspaceItemKindFile:
                     [resultTree addFileToTree:((UDFileItem *)node).path];
                     count++;

@@ -9,7 +9,7 @@
 
 - (void)deleteAllItems;
 - (void)addFileToTree:(NSString *)path;
-- (void)addDeclToTree:(NSString *)path type:(declType_t)type;
+- (void)addDeclToTree:(NSString *)path type:(declType_t)type declName:(NSString *)declName;
 - (NSArray<UDWorkspaceItem *> *)topLevelNodes;   // the children of root
 
 @end

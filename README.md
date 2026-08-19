@@ -35,6 +35,22 @@ It ships as a single AppImage on Linux containing a launcher and all tools.
 - git
 - python3
 - GNUstep dependencies required by your distro
+- [FreeCoreData](https://github.com/ashalkhakov/FreeCoreData) — the CoreData
+  implementation for GNUstep. The decl editing layer (UDDeclIncrementalStore
+  and the decl entity classes in UDCore) is built on CoreData, so FreeCoreData
+  **must be installed before building UDCore**:
+
+  ```bash
+  git clone https://github.com/ashalkhakov/FreeCoreData
+  cd FreeCoreData
+  . /usr/share/GNUstep/Makefiles/GNUstep.sh
+  make && sudo make install
+  ```
+
+  The makefiles link it as the `CoreData` framework
+  (`ADDITIONAL_NATIVE_LIBS += CoreData`). Note that there is no `momc` on
+  GNUstep: `DeclModel.xcdatamodeld` is bundled uncompiled with the apps and
+  FreeCoreData reads the model XML directly at runtime.
 
 ## Build
 

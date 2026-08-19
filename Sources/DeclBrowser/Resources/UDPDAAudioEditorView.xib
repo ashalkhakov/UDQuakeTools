@@ -60,7 +60,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.audio" id="Bdp-v6-GDa"/>
+                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.audio" id="Bdp-v6-GDa">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lk2-Vt-beE">
@@ -72,7 +76,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.audioName" id="kaM-Ac-fiS"/>
+                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.audioName" id="kaM-Ac-fiS">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" id="NmC-jJ-ffo">
@@ -84,7 +92,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.preview" id="8fk-1h-4f0"/>
+                            <binding destination="dH5-9c-kgY" name="value" keyPath="selection.preview" id="8fk-1h-4f0">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvF-e0-GQo">
@@ -138,7 +150,11 @@ DQ
                                     <size key="minSize" width="317" height="207"/>
                                     <size key="maxSize" width="319" height="10000000"/>
                                     <connections>
-                                        <binding destination="dH5-9c-kgY" name="value" keyPath="selection.info" id="wrG-3B-xcj"/>
+                                        <binding destination="dH5-9c-kgY" name="value" keyPath="selection.info" id="wrG-3B-xcj">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                                     </connections>
                                 </textView>
                             </subviews>
@@ -156,8 +172,8 @@ DQ
             </view>
             <point key="canvasLocation" x="140" y="210.5"/>
         </window>
-        <objectController objectClassName="idDeclAudio" id="dH5-9c-kgY">
-            <classReference key="objectClass" className="idDeclAudio"/>
+        <objectController objectClassName="UDDeclAudio" id="dH5-9c-kgY">
+            <classReference key="objectClass" className="UDDeclAudio"/>
         </objectController>
     </objects>
 </document>

@@ -1,7 +1,7 @@
 #import "UDBaseEditorViewController.h"
 
-@class idDeclEmail, idDeclVideo, idDeclAudio;
 @class UDDeclDocument;
+@class UDDeclBase, UDDeclPDA, UDDeclEmail, UDDeclVideo, UDDeclAudio;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,6 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** The backing NSDocument (handles undo/save/dirty). Created lazily in viewDidLoad. */
 @property (nonatomic, strong, nullable) UDDeclDocument *document;
+
+/** The managed PDA decl being edited (pulled from the workspace's decl editing context). */
+@property (nonatomic, readonly, nullable) UDDeclPDA *pda;
 
 @property (strong) IBOutlet NSObjectController *objectController;
 @property (strong) IBOutlet NSArrayController *audioArrayController;
@@ -30,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSObjectController *objectController;
 
-@property idDeclAudio *editingAudio;
+@property UDDeclAudio *editingAudio;
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
@@ -42,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSObjectController *objectController;
 
-@property idDeclEmail *editingEmail;
+@property UDDeclEmail *editingEmail;
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
@@ -54,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSObjectController *objectController;
 
-@property idDeclVideo *editingVideo;
+@property UDDeclVideo *editingVideo;
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;

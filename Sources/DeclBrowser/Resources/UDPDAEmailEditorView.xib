@@ -32,7 +32,11 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.to" id="wnT-9x-7FF"/>
+                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.to" id="wnT-9x-7FF">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SBe-ew-vKK">
@@ -44,7 +48,11 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.from" id="aom-BD-n5x"/>
+                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.from" id="aom-BD-n5x">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G1k-WY-aY9">
@@ -57,7 +65,11 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.date" id="hog-AC-Od4"/>
+                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.date" id="hog-AC-Od4">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5fa-r0-x9m">
@@ -69,7 +81,11 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.subject" id="Z6J-FI-9qu"/>
+                            <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.subject" id="Z6J-FI-9qu">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kn5-sz-uYT">
@@ -86,7 +102,11 @@
                                     <size key="minSize" width="450" height="128"/>
                                     <size key="maxSize" width="465" height="10000000"/>
                                     <connections>
-                                        <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.body" id="ZEv-GB-T7O"/>
+                                        <binding destination="uO5-PY-Xjh" name="value" keyPath="selection.body" id="ZEv-GB-T7O">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                                     </connections>
                                 </textView>
                             </subviews>
@@ -177,8 +197,8 @@ DQ
             </view>
             <point key="canvasLocation" x="121" y="531"/>
         </window>
-        <objectController objectClassName="idDeclEmail" id="uO5-PY-Xjh">
-            <classReference key="objectClass" className="idDeclEmail"/>
+        <objectController objectClassName="UDDeclEmail" id="uO5-PY-Xjh">
+            <classReference key="objectClass" className="UDDeclEmail"/>
         </objectController>
     </objects>
 </document>

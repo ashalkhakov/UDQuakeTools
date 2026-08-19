@@ -55,7 +55,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.videoName" id="1C7-99-une"/>
+                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.videoName" id="1C7-99-une">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7A-SV-wdT">
@@ -72,7 +76,11 @@ DQ
                                     <size key="minSize" width="393" height="225"/>
                                     <size key="maxSize" width="408" height="10000000"/>
                                     <connections>
-                                        <binding destination="LGT-8R-oRS" name="value" keyPath="selection.info" id="Ime-l3-IkS"/>
+                                        <binding destination="LGT-8R-oRS" name="value" keyPath="selection.info" id="Ime-l3-IkS">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                                     </connections>
                                 </textView>
                             </subviews>
@@ -113,7 +121,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.video" id="Sko-3U-qtc"/>
+                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.video" id="Sko-3U-qtc">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pZI-mc-32h">
@@ -125,7 +137,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.audio" id="NP5-TH-JQm"/>
+                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.audio" id="NP5-TH-JQm">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jsy-A8-y8k">
@@ -137,7 +153,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.preview" id="K2V-bI-NYP"/>
+                            <binding destination="LGT-8R-oRS" name="value" keyPath="selection.preview" id="K2V-bI-NYP">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wtq-FZ-p6M">
@@ -171,8 +191,8 @@ DQ
             </view>
             <point key="canvasLocation" x="179" y="211.5"/>
         </window>
-        <objectController objectClassName="idDeclVideo" id="LGT-8R-oRS">
-            <classReference key="objectClass" className="idDeclVideo"/>
+        <objectController objectClassName="UDDeclVideo" id="LGT-8R-oRS">
+            <classReference key="objectClass" className="UDDeclVideo"/>
         </objectController>
     </objects>
 </document>

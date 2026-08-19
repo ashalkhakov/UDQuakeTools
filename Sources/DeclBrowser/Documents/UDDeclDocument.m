@@ -2,6 +2,8 @@
 
 @interface UDDeclDocument ()
 @property (nonatomic, weak) NSTextView *textView;
+/** Legacy fallback for decl types without a DeclModel entity. */
+@property (nonatomic, strong) idDeclBase *legacyDecl;
 @end
 
 @implementation UDDeclDocument
@@ -10,12 +12,68 @@
     self = [super initWithType:@"public.plain-text" error:error];
     if (self) {
         self.workspace = workspace;
-        _decl = [workspace.declManager declByName:name type:type error:error];
-        if (!_decl) {
-            return nil;
+
+        NSString *typeName = [workspace.declManager declNameFromType:type];
+        NSManagedObjectContext *context = workspace.declEditingContext;
+
+        BOOL typeHasEntity = context != nil &&
+            [UDDeclBase ud_entityNameForDeclTypeName:typeName
+                                               inModel:context.persistentStoreCoordinator.managedObjectModel] != nil;
+
+        if (typeHasEntity) {
+            _editingContext = context;
+            _declObject = [UDDeclBase ud_declWithTypeName:typeName name:name inContext:context error:error];
+            if (_declObject == nil) {
+                return nil;
+            }
+
+            // Share the context's undo manager so Cmd-Z undoes managed
+            // object edits made through bindings as well as text edits.
+            self.undoManager = context.undoManager;
+
+            // Track dirtiness: any change to our decl (or to a child decl
+            // that belongs to it) marks the document edited.
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(_editingContextObjectsDidChange:)
+                                                         name:NSManagedObjectContextObjectsDidChangeNotification
+                                                       object:context];
+        } else {
+            // No entity for this decl type yet: edit the raw idDecl text
+            // directly against the manager.
+            _legacyDecl = [workspace.declManager declByName:name type:type forceParse:YES error:error];
+            if (_legacyDecl == nil) {
+                return nil;
+            }
         }
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)_editingContextObjectsDidChange:(NSNotification *)notification {
+    NSMutableSet *changed = [NSMutableSet set];
+    for (NSString *key in @[NSInsertedObjectsKey, NSUpdatedObjectsKey, NSDeletedObjectsKey]) {
+        NSSet *objects = notification.userInfo[key];
+        if (objects != nil) {
+            [changed unionSet:objects];
+        }
+    }
+
+    for (NSManagedObject *object in changed) {
+        if (object == self.declObject) {
+            [self updateChangeCount:NSChangeDone];
+            return;
+        }
+        // A child decl (email/audio/video) attached to our decl.
+        if (object.entity.relationshipsByName[@"pda"] != nil &&
+            [object valueForKey:@"pda"] == self.declObject) {
+            [self updateChangeCount:NSChangeDone];
+            return;
+        }
+    }
 }
 
 // Don't create a window; the workspace window controller hosts the view.
@@ -23,24 +81,59 @@
 }
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
-    NSMutableData *declText = [[NSMutableData alloc] init];
-    [_decl text:declText];
+    NSData *sourceText = nil;
 
-    NSString *text = [[NSString alloc] initWithData:declText encoding:NSUTF8StringEncoding];
+    if (self.declObject != nil) {
+        sourceText = self.declObject.sourceText;
+    } else if (self.legacyDecl != nil) {
+        NSMutableData *declText = [[NSMutableData alloc] init];
+        [self.legacyDecl text:declText];
+        sourceText = declText;
+    }
+
+    NSString *text = sourceText != nil ? [[NSString alloc] initWithData:sourceText encoding:NSUTF8StringEncoding] : nil;
     _textContent = text ?: @"";
     return YES;
 }
 
 - (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
     NSString *content = self.textView ? self.textView.string : self.textContent ?: @"";
-    NSMutableData *buffer = [[content dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
 
-    [_decl setText:buffer];
-    if (![_decl replaceSourceFileText:error]) {
+    if (self.declObject != nil) {
+        // Text-based editing: push the text view's current contents into the
+        // decl object. Structured editors (e.g. the PDA editor) edit the
+        // managed object's attributes directly through bindings, so there is
+        // nothing to transfer for them — the context already has their
+        // changes and the store re-derives the source text on save.
+        if (self.textView != nil) {
+            self.textContent = content;
+            self.declObject.sourceText = [content dataUsingEncoding:NSUTF8StringEncoding];
+        }
+
+        if (![self.editingContext save:error]) {
+            return NO;
+        }
+
+        // Re-fault only after raw text edits, where attributes must re-parse
+        // from the new text. For attribute-driven saves (e.g. the PDA
+        // editor) the in-memory values are already authoritative, and
+        // re-faulting an object under live bindings can blank the UI.
+        if (self.textView != nil) {
+            [self.editingContext refreshObject:self.declObject mergeChanges:NO];
+        }
+
+        [self updateChangeCount:NSChangeCleared];
+        return YES;
+    }
+
+    // Legacy path.
+    NSMutableData *buffer = [[content dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    [self.legacyDecl setText:buffer];
+    if (![self.legacyDecl replaceSourceFileText:error]) {
         return NO;
     }
-    [_decl invalidate];
-    
+    [self.legacyDecl invalidate];
+
     return YES;
 }
 

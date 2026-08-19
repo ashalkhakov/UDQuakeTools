@@ -6,10 +6,16 @@
 //
 
 #import "UDWorkspace.h"
+
+#import <CoreData/CoreData.h>
+
 #import "idFileSystem.h"
 #import "idDeclManager.h"
+#import "UDDeclIncrementalStore.h"
 
-@implementation UDWorkspace
+@implementation UDWorkspace {
+    NSManagedObjectContext *_declEditingContext;
+}
 
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir {
     self = [super init];
@@ -109,8 +115,31 @@
 }
 
 -(void)shutdown {
+    _declEditingContext = nil;
     [self.declManager shutdown];
     [self.fileSystem shutdown:NO];
+}
+
+// ---------------------------------------------------------
+// Decl editing (Core Data over idDeclManager)
+// ---------------------------------------------------------
+
+- (NSManagedObjectContext *)declEditingContext {
+    if (_declEditingContext != nil) {
+        return _declEditingContext;
+    }
+
+    if (self.declManager == nil) {
+        NSLog(@"UDWorkspace: workspace has no declManager; no decl editing context");
+        return nil;
+    }
+
+    NSError *error = nil;
+    _declEditingContext = [UDDeclIncrementalStore newEditingContextForDeclManager:self.declManager error:&error];
+    if (_declEditingContext == nil) {
+        NSLog(@"UDWorkspace: could not build decl editing context: %@", error);
+    }
+    return _declEditingContext;
 }
 
 @end

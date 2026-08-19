@@ -94,8 +94,6 @@
 		CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
 		CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
-		CE1CDC94301FAB0E0037DBA5 /* idDeclParticle.h in Headers */ = {isa = PBXBuildFile; fileRef = CE1CDC93301FAB090037DBA5 /* idDeclParticle.h */; };
-		CE1CDC96301FAC1F0037DBA5 /* idDeclParticle.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC95301FAC1D0037DBA5 /* idDeclParticle.m */; };
 		CE1CDC98301FC20C0037DBA5 /* idMath.h in Headers */ = {isa = PBXBuildFile; fileRef = CE1CDC97301FC20A0037DBA5 /* idMath.h */; };
 		CE3FA369300172100048F206 /* UDParser.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA3683001720E0048F206 /* UDParser.h */; };
 		CE3FA36B3001746A0048F206 /* UDParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA36A300174680048F206 /* UDParser.m */; };
@@ -143,14 +141,7 @@
 		CECEB2F63018C04600F88078 /* UDEndian.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB2F53018C04300F88078 /* UDEndian.h */; };
 		CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */; };
 		CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F930190F8400F88078 /* idDeclManagerTests.m */; };
-		CECEB2FC301A073800F88078 /* idDeclMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB2FB301A073100F88078 /* idDeclMaterial.h */; };
-		CECEB2FE301A086B00F88078 /* idDeclMaterial.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2FD301A086600F88078 /* idDeclMaterial.m */; };
-		CECEB300301B8B3700F88078 /* idDeclPDA.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB2FF301B8B3300F88078 /* idDeclPDA.h */; };
-		CECEB302301B8D0400F88078 /* idDeclPDA.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB301301B8D0100F88078 /* idDeclPDA.m */; };
-		CECEB306301CA31E00F88078 /* idDeclTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB305301CA31B00F88078 /* idDeclTable.h */; };
-		CECEB308301CA3F500F88078 /* idDeclTable.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB307301CA3F400F88078 /* idDeclTable.m */; };
-		CECEB30A301CB48F00F88078 /* idDeclSkin.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB309301CB48B00F88078 /* idDeclSkin.h */; };
-		CECEB30C301CB57F00F88078 /* idDeclSkin.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB30B301CB57E00F88078 /* idDeclSkin.m */; };
+		EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */; };
 		CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = CED0148A302DDCA2009517DE /* UDBitMsg.h */; };
 		CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED0148B302DDCA2009517DE /* UDBitMsg.m */; };
 		CEF0C69A2FF66A0D00BC642C /* UDGuiEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */; };
@@ -163,6 +154,12 @@
 		CEF356072FF798B6004089A1 /* UDOutlinePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355FB2FF798B6004089A1 /* UDOutlinePane.xib */; };
 		CEF356082FF798B6004089A1 /* UDInspector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEF355F82FF798B6004089A1 /* UDInspector.xib */; };
 		CEFA65B12FF4309B004B373A /* UDVirtualFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */; };
+		CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		CEFC59D630357317001E2179 /* DeclModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */; };
+		CEFC59D83035994A001E2179 /* UDDeclIncrementalStore.h in Headers */ = {isa = PBXBuildFile; fileRef = CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */; };
+		CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */; };
+		EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = EE01000000000000000001AA /* UDDeclManagedObjects.h */; };
+		EE01000000000000000004AA /* UDDeclManagedObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = EE01000000000000000003AA /* UDDeclManagedObjects.m */; };
 		CEFC6516302790DD00157501 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
 		CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
 		CEFC65313027974B00157501 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
@@ -385,8 +382,6 @@
 		CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPathTree.m; sourceTree = "<group>"; };
 		CE1CDC90301E7EAB0037DBA5 /* UDDeclBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowser.h; sourceTree = "<group>"; };
 		CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowser.m; sourceTree = "<group>"; };
-		CE1CDC93301FAB090037DBA5 /* idDeclParticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclParticle.h; sourceTree = "<group>"; };
-		CE1CDC95301FAC1D0037DBA5 /* idDeclParticle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclParticle.m; sourceTree = "<group>"; };
 		CE1CDC97301FC20A0037DBA5 /* idMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idMath.h; sourceTree = "<group>"; };
 		CE2816962FF5401B00ADCFC5 /* UDGuiEditorService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEditorService.h; sourceTree = "<group>"; };
 		CE2816972FF5401B00ADCFC5 /* Sources/UDCore/UDGuiEditorService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sources/UDCore/UDGuiEditorService.m; sourceTree = SOURCE_ROOT; };
@@ -471,14 +466,7 @@
 		CECEB2F53018C04300F88078 /* UDEndian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEndian.h; sourceTree = "<group>"; };
 		CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFileSystemTests.m; sourceTree = "<group>"; };
 		CECEB2F930190F8400F88078 /* idDeclManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclManagerTests.m; sourceTree = "<group>"; };
-		CECEB2FB301A073100F88078 /* idDeclMaterial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclMaterial.h; sourceTree = "<group>"; };
-		CECEB2FD301A086600F88078 /* idDeclMaterial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclMaterial.m; sourceTree = "<group>"; };
-		CECEB2FF301B8B3300F88078 /* idDeclPDA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclPDA.h; sourceTree = "<group>"; };
-		CECEB301301B8D0100F88078 /* idDeclPDA.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclPDA.m; sourceTree = "<group>"; };
-		CECEB305301CA31B00F88078 /* idDeclTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclTable.h; sourceTree = "<group>"; };
-		CECEB307301CA3F400F88078 /* idDeclTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclTable.m; sourceTree = "<group>"; };
-		CECEB309301CB48B00F88078 /* idDeclSkin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclSkin.h; sourceTree = "<group>"; };
-		CECEB30B301CB57E00F88078 /* idDeclSkin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclSkin.m; sourceTree = "<group>"; };
+		EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclIncrementalStoreTests.m; sourceTree = "<group>"; };
 		CED0148A302DDCA2009517DE /* UDBitMsg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDBitMsg.h; sourceTree = "<group>"; };
 		CED0148B302DDCA2009517DE /* UDBitMsg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBitMsg.m; sourceTree = "<group>"; };
 		CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiEditorTests.m; sourceTree = "<group>"; };
@@ -498,6 +486,12 @@
 		CEF355FF2FF798B6004089A1 /* UDVariablesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDVariablesController.h; sourceTree = "<group>"; };
 		CEF356002FF798B6004089A1 /* UDVariablesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVariablesController.m; sourceTree = "<group>"; };
 		CEFA65B02FF4309B004B373A /* UDVirtualFileSystemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDVirtualFileSystemTests.m; sourceTree = "<group>"; };
+		CEFC59D2303572CE001E2179 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		CEFC59D530357317001E2179 /* DeclModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DeclModel.xcdatamodel; sourceTree = "<group>"; };
+		CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclIncrementalStore.h; sourceTree = "<group>"; };
+		CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclIncrementalStore.m; sourceTree = "<group>"; };
+		EE01000000000000000001AA /* UDDeclManagedObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManagedObjects.h; sourceTree = "<group>"; };
+		EE01000000000000000003AA /* UDDeclManagedObjects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManagedObjects.m; sourceTree = "<group>"; };
 		CEFC6514302790B800157501 /* UDAppDocumentController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAppDocumentController.h; sourceTree = "<group>"; };
 		CEFC6515302790DD00157501 /* UDAppDocumentController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDocumentController.m; sourceTree = "<group>"; };
 		CEFC65173027923700157501 /* UDEditorTabManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEditorTabManager.h; sourceTree = "<group>"; };
@@ -590,6 +584,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */,
 				CC03010000000000000000AA /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -643,6 +638,7 @@
 				AA00000700000000000000AA /* Tools */,
 				AA00000300000000000000AA /* Products */,
 				CE11515D2FEE4D5C005C6DA3 /* Recovered References */,
+				CEFC59D1303572CE001E2179 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -687,19 +683,14 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
+				CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */,
+				CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */,
+				EE01000000000000000003AA /* UDDeclManagedObjects.m */,
+				EE01000000000000000001AA /* UDDeclManagedObjects.h */,
 				CED0148A302DDCA2009517DE /* UDBitMsg.h */,
 				CED0148B302DDCA2009517DE /* UDBitMsg.m */,
 				CE1CDC97301FC20A0037DBA5 /* idMath.h */,
-				CE1CDC95301FAC1D0037DBA5 /* idDeclParticle.m */,
-				CE1CDC93301FAB090037DBA5 /* idDeclParticle.h */,
-				CECEB30B301CB57E00F88078 /* idDeclSkin.m */,
-				CECEB309301CB48B00F88078 /* idDeclSkin.h */,
-				CECEB307301CA3F400F88078 /* idDeclTable.m */,
-				CECEB305301CA31B00F88078 /* idDeclTable.h */,
-				CECEB301301B8D0100F88078 /* idDeclPDA.m */,
-				CECEB2FF301B8B3300F88078 /* idDeclPDA.h */,
-				CECEB2FD301A086600F88078 /* idDeclMaterial.m */,
-				CECEB2FB301A073100F88078 /* idDeclMaterial.h */,
+				CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */,
 				CECEB2F53018C04300F88078 /* UDEndian.h */,
 				CECEB2F33017B97A00F88078 /* MD5.m */,
 				CECEB2F13017B96A00F88078 /* MD5.h */,
@@ -824,6 +815,7 @@
 			isa = PBXGroup;
 			children = (
 				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
+				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
 				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
 				CEF0C6992FF66A0D00BC642C /* UDGuiEditorTests.m */,
 				CEA101062FF5000000A10001 /* UDAssetIndexTests.m */,
@@ -847,6 +839,14 @@
 				BB00060200000000000000AA /* XCTest.framework */,
 			);
 			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		CEFC59D1303572CE001E2179 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CEFC59D2303572CE001E2179 /* CoreData.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		CEFC651A3027933900157501 /* Window */ = {
@@ -1044,7 +1044,6 @@
 				CE3FA36D3004FBF60048F206 /* idFileSystem.h in Headers */,
 				CE3FA3793007ED5D0048F206 /* unzip.h in Headers */,
 				CC02000A00000000000000AA /* UDDeclParser.h in Headers */,
-				CE1CDC94301FAB0E0037DBA5 /* idDeclParticle.h in Headers */,
 				CC02000B00000000000000AA /* UDDeclPersistence.h in Headers */,
 				CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */,
 				CC02000C00000000000000AA /* UDVFSMount.h in Headers */,
@@ -1058,11 +1057,11 @@
 				CC02001300000000000000AA /* UDArchiveMutation.h in Headers */,
 				CE1CDC98301FC20C0037DBA5 /* idMath.h in Headers */,
 				CC02001400000000000000AA /* UDContentSource.h in Headers */,
-				CECEB2FC301A073800F88078 /* idDeclMaterial.h in Headers */,
 				CC02001500000000000000AA /* UDDirectoryNode.h in Headers */,
 				CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */,
+				CEFC59D83035994A001E2179 /* UDDeclIncrementalStore.h in Headers */,
+				EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */,
 				CE07E8873000D984007ED480 /* UDLexer.h in Headers */,
-				CECEB30A301CB48F00F88078 /* idDeclSkin.h in Headers */,
 				CE3FA382300C683E0048F206 /* sys.h in Headers */,
 				CECEB2F23017B96D00F88078 /* MD5.h in Headers */,
 				DC02000000000000000000AA /* UDArchiveCodec.h in Headers */,
@@ -1077,8 +1076,6 @@
 				DC02000800000000000000AA /* UDPK4Codec.h in Headers */,
 				DC02000900000000000000AA /* UDStagedFileSource.h in Headers */,
 				CE3FA386300E43810048F206 /* UDWorkspace.h in Headers */,
-				CECEB306301CA31E00F88078 /* idDeclTable.h in Headers */,
-				CECEB300301B8B3700F88078 /* idDeclPDA.h in Headers */,
 				CE3FA392300E59920048F206 /* idDeclManager.h in Headers */,
 				CE07E8833000D2F6007ED480 /* UDToken.h in Headers */,
 				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
@@ -1385,6 +1382,7 @@
 				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
 				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
 				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
+				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
 				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
 				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
 				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
@@ -1398,7 +1396,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC01000000000000000000AA /* FormContainerView.m in Sources */,
-				CE1CDC96301FAC1F0037DBA5 /* idDeclParticle.m in Sources */,
 				CC01000100000000000000AA /* UDGuiDocumentCodec.m in Sources */,
 				CC01000200000000000000AA /* Sources/UDCore/UDGuiEditorService.m in Sources */,
 				CE3FA36B3001746A0048F206 /* UDParser.m in Sources */,
@@ -1407,6 +1404,8 @@
 				CC01000500000000000000AA /* Sources/UDCore/UDGuiModel.m in Sources */,
 				CE3FA384300C68550048F206 /* compat.m in Sources */,
 				CC01000600000000000000AA /* UDAssetIndex.m in Sources */,
+				CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */,
+				EE01000000000000000004AA /* UDDeclManagedObjects.m in Sources */,
 				CE3FA380300B93A40048F206 /* idFileSystem.m in Sources */,
 				CC01000700000000000000AA /* UDDeclLexer.m in Sources */,
 				CC01000800000000000000AA /* UDDeclParser.m in Sources */,
@@ -1424,24 +1423,21 @@
 				CE3FA37F3007F3410048F206 /* ioapi.c in Sources */,
 				CC01001100000000000000AA /* UDArchive.m in Sources */,
 				CC01001200000000000000AA /* UDArchiveEditor.m in Sources */,
-				CECEB302301B8D0400F88078 /* idDeclPDA.m in Sources */,
 				CC01001300000000000000AA /* UDArchiveEntry.m in Sources */,
 				CC01001400000000000000AA /* UDArchiveMutation.m in Sources */,
 				CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */,
 				CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */,
 				CE3FA37530076E5C0048F206 /* idStr.m in Sources */,
 				CC01001500000000000000AA /* UDDirectoryNode.m in Sources */,
+				CEFC59D630357317001E2179 /* DeclModel.xcdatamodeld in Sources */,
 				DC01000000000000000000AA /* UDCodecRegistry.m in Sources */,
-				CECEB30C301CB57F00F88078 /* idDeclSkin.m in Sources */,
 				DC01000100000000000000AA /* UDPAKCodec.m in Sources */,
 				DC01000200000000000000AA /* UDPAKEntrySource.m in Sources */,
 				DC01000300000000000000AA /* UDStagedFileSource.m in Sources */,
 				DC01000400000000000000AA /* UDPAK2Codec.m in Sources */,
-				CECEB2FE301A086B00F88078 /* idDeclMaterial.m in Sources */,
 				DC01000500000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
 				DC01000600000000000000AA /* UDPK3Codec.m in Sources */,
 				CE3FA394300E68B20048F206 /* idDeclManager.m in Sources */,
-				CECEB308301CA3F500F88078 /* idDeclTable.m in Sources */,
 				CE3FA3773007B81F0048F206 /* idFile.m in Sources */,
 				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
 				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
@@ -2474,6 +2470,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CEFC59D530357317001E2179 /* DeclModel.xcdatamodel */,
+			);
+			currentVersion = CEFC59D530357317001E2179 /* DeclModel.xcdatamodel */;
+			path = DeclModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = AA00000100000000000000AA /* Project object */;
 }

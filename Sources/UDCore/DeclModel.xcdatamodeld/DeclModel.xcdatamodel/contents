@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="24G720" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="DeclAudio" representedClassName="UDDeclAudio" parentEntity="DeclBase" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String"/>
+        <attribute name="audioName" optional="YES" attributeType="String"/>
+        <attribute name="info" optional="YES" attributeType="String"/>
+        <attribute name="preview" optional="YES" attributeType="String"/>
+        <relationship name="pda" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclPDA" inverseName="audios" inverseEntity="DeclPDA"/>
+    </entity>
+    <entity name="DeclBase" representedClassName="UDDeclBase" isAbstract="YES" syncable="YES">
+        <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="sourceText" optional="YES" transient="YES" attributeType="Binary"/>
+        <relationship name="sourceFile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclFile" inverseName="decls" inverseEntity="DeclFile"/>
+        <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclType" inverseName="decls" inverseEntity="DeclType"/>
+    </entity>
+    <entity name="DeclEmail" representedClassName="UDDeclEmail" parentEntity="DeclBase" syncable="YES">
+        <attribute name="body" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="from" optional="YES" attributeType="String"/>
+        <attribute name="image" optional="YES" attributeType="String"/>
+        <attribute name="subject" optional="YES" attributeType="String"/>
+        <attribute name="to" optional="YES" attributeType="String"/>
+        <relationship name="pda" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclPDA" inverseName="emails" inverseEntity="DeclPDA"/>
+    </entity>
+    <entity name="DeclFile" representedClassName="UDDeclFile" syncable="YES">
+        <attribute name="checksum" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fileName" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="decls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclBase" inverseName="sourceFile" inverseEntity="DeclBase"/>
+        <relationship name="defaultType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclType" inverseName="sources" inverseEntity="DeclType"/>
+    </entity>
+    <entity name="DeclMaterial" representedClassName="UDDeclMaterial" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclParticle" representedClassName="UDDeclParticle" parentEntity="DeclBase" syncable="YES">
+        <attribute name="depthHack" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="stages" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
+    <entity name="DeclPDA" representedClassName="UDDeclPDA" parentEntity="DeclBase" syncable="YES">
+        <attribute name="fullName" optional="YES" attributeType="String"/>
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="ident" optional="YES" attributeType="String"/>
+        <attribute name="pdaName" optional="YES" attributeType="String"/>
+        <attribute name="post" optional="YES" attributeType="String"/>
+        <attribute name="security" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="audios" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclAudio" inverseName="pda" inverseEntity="DeclAudio"/>
+        <relationship name="emails" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclEmail" inverseName="pda" inverseEntity="DeclEmail"/>
+        <relationship name="videos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclVideo" inverseName="pda" inverseEntity="DeclVideo"/>
+    </entity>
+    <entity name="DeclSkin" representedClassName="UDDeclSkin" parentEntity="DeclBase" syncable="YES">
+        <attribute name="associatedModels" optional="YES" attributeType="String"/>
+        <attribute name="mappings" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="DeclTable" representedClassName="UDDeclTable" parentEntity="DeclBase" syncable="YES">
+        <attribute name="clamp" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="snap" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="values" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="DeclType" representedClassName="UDDeclType" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="decls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclBase" inverseName="type" inverseEntity="DeclBase"/>
+        <relationship name="sources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclFile" inverseName="defaultType" inverseEntity="DeclFile"/>
+    </entity>
+    <entity name="DeclVideo" representedClassName="UDDeclVideo" parentEntity="DeclBase" syncable="YES">
+        <attribute name="audio" optional="YES" attributeType="String"/>
+        <attribute name="info" optional="YES" attributeType="String"/>
+        <attribute name="preview" optional="YES" attributeType="String"/>
+        <attribute name="video" optional="YES" attributeType="String"/>
+        <attribute name="videoName" optional="YES" attributeType="String"/>
+        <relationship name="pda" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclPDA" inverseName="videos" inverseEntity="DeclPDA"/>
+    </entity>
+</model>

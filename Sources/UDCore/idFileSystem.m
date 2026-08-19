@@ -1844,11 +1844,14 @@ static int directFileLength(FILE *o) {
 }
 
 -(idFile *)newFileMemory {
-    return [[idFile_Memory alloc] init];
+    // Must go through the designated initializer: plain -init leaves the
+    // mode ivar at 0, so the file rejects every write (silently, when the
+    // caller passes no error out-param).
+    return [[idFile_Memory alloc] initWithFileSystem:self];
 }
 
 -(idFile *)newFilePermanent {
-    return [[idFile_Permanent alloc] init];
+    return [[idFile_Permanent alloc] initWithFileSystem:self];
 }
 
 -(pack_t *)loadZipFile:(NSString *)zipfile {

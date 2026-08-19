@@ -52,8 +52,8 @@ UDCore_OBJC_FILES = \
     UDWorkspaceManager.m \
     MD5.m \
     idDeclManager.m \
-    idDeclMaterial.m \
-    idDeclPDA.m
+    UDDeclManagedObjects.m \
+    UDDeclIncrementalStore.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -90,8 +90,12 @@ UDCore_HEADER_FILES = \
     UDWorkspaceManager.h \
     MD5.h \
     idDeclManager.h \
-    idDeclMaterial.h \
-    idDeclPDA.h
+    UDDeclManagedObjects.h \
+    UDDeclIncrementalStore.h
+
+# CoreData is provided by FreeCoreData on GNUstep
+# (https://github.com/ashalkhakov/FreeCoreData — install it before building).
+ADDITIONAL_NATIVE_LIBS += CoreData
 
 ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 

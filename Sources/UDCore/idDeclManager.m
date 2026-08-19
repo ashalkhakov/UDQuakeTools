@@ -33,11 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 #import "idFile.h"
 #import "idDeclManager.h"
 #import "UDLexer.h"
-#import "idDeclMaterial.h"
-#import "idDeclParticle.h"
-#import "idDeclPDA.h"
-#import "idDeclTable.h"
-#import "idDeclSkin.h"
 #import "UDEndian.h"
 #import "MD5.h"
 #import "UDBitMsg.h"
@@ -377,20 +372,18 @@ void ListHuffmanFrequencies_f(void) {
 
 @property (nonatomic, readonly) NSString *typeName;
 @property (nonatomic, readonly) declType_t type;
-@property (nonatomic, readonly) idDeclAllocator_t allocator;
 
--(instancetype)initWithTypeName:(NSString *)typeName type:(declType_t)type allocator:(idDeclAllocator_t)allocator;
+-(instancetype)initWithTypeName:(NSString *)typeName type:(declType_t)type;
 
 @end
 
 @implementation idDeclType
 
--(instancetype)initWithTypeName:(NSString *)typeName type:(declType_t)type allocator:(idDeclAllocator_t)allocator {
+-(instancetype)initWithTypeName:(NSString *)typeName type:(declType_t)type {
     self = [super init];
     if (self) {
         _typeName = typeName;
         _type = type;
-        _allocator = allocator;
     }
     return self;
 }
@@ -465,79 +458,8 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
 
 @end
 
-@interface idDecl()
-
-@property (nonatomic, weak) idDeclBase *base;
-@property (weak, nonatomic, readwrite) idDeclManager *declManager;
-
-@end
-
-@implementation idDecl
-
--(instancetype)init {
-    self = [super init];
-    if (self) {
-        self.base = nil;
-    }
-    return self;
-}
-
--(NSString *)name { return _base.name; }
--(declType_t)declType { return _base.declType; }
--(declState_t)state { return [_base state]; }
--(BOOL)isImplicit { return [_base isImplicit]; }
--(BOOL)isValid { return [_base isValid]; }
--(void)invalidate { [_base invalidate]; }
--(void)ensureNotPurged { [_base ensureNotPurged]; }
--(int)lineNum { return [_base lineNum]; }
--(NSString *)fileName { return [_base fileName]; }
--(void)text:(NSMutableData *)text { [_base text:text]; }
--(int)textLength { return [_base textLength]; }
--(int)compressedLength { return [_base compressedLength]; }
--(void)setText:(NSMutableData *)text { [_base setText:text]; }
--(BOOL)replaceSourceFileText:(NSError **)error { return [_base replaceSourceFileText:error]; }
--(BOOL)sourceFileChanged { return [_base sourceFileChanged]; }
--(BOOL)makeDefault:(NSError **)error { return [_base makeDefault:error]; }
--(BOOL)everReferenced { return [_base everReferenced]; }
-
--(NSString *)defaultDefinition { return _base.defaultDefinition; }
--(void)freeData { [_base freeData]; }
--(size_t)size { return [_base size]; }
--(void)list { [_base list]; }
-
--(BOOL)parse:(NSMutableData *)text error:(NSError **)error {
-    return [_base parse:text noCaching:NO error:error];
-}
-
--(BOOL)parse:(NSMutableData *)text noCaching:(BOOL)noCaching error:(NSError **)error {
-    return [_base parse:text noCaching:noCaching error:error];
-}
-
--(void)print {
-    [_base print];
-}
-
--(BOOL)rebuildTextSource {
-    return [_base rebuildTextSource];
-}
-
--(BOOL)setDefaultText {
-    return [_base setDefaultText];
-}
-
--(void)setReferencedThisLevel {
-    [_base setReferencedThisLevel];
-}
-
--(BOOL)validate:(NSMutableData *)psText reportTo:(NSMutableString *)strReportTo {
-    return [_base validate:psText reportTo:strReportTo];
-}
-
-@end
-
 @interface idDeclLocal : idDeclBase {
 @public
-    idDecl *                    selfDecl;
     BOOL                        insideLevelLoad;
     NSMutableString *           name;                     // name of the decl
     NSMutableData *             textSource;               // decl text definition
@@ -556,11 +478,10 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
     BOOL                        redefinedInReload;        // used during file reloading to make sure a decl that has
                                                           // its source removed will be defaulted
     BOOL                        needsPrecache;            // packed decl stubs expand source text lazily when first parsed
-    idDeclLocal *               nextInFile;              // next decl in the decl file
+    idDeclLocal *               nextInFile;               // next decl in the decl file
+    __weak idDeclLocal *        prevInFile;               // previous decl in the decl file
     __weak idDeclManager *      declManager;
 }
-
--(void)allocateSelf;
 
 // Parses the decl definition.
 // After calling parse, a decl will be guaranteed usable.
@@ -689,6 +610,7 @@ static void DeclManager_ClearGuides( void ) {
     int                              checksum;
     int                              fileSize;
     int                              numLines;
+    BOOL                             dirty;
 
     idDeclLocal *                    decls;
     __weak idDeclManager *           declManager;
@@ -725,7 +647,7 @@ static void DeclManager_ClearGuides( void ) {
 
 -(void)beginLevelLoad;
 -(void)endLevelLoad;
--(void)registerDeclType:(declType_t)type typeName:(NSString *)typeName allocator:(idDeclAllocator_t)allocator;
+-(void)registerDeclType:(declType_t)type typeName:(NSString *)typeName;
 -(void)startLoadingDecls;
 -(void)finishLoadingDecls;
 -(BOOL)loadDeclsFromFile:(NSError **)error;
@@ -742,22 +664,24 @@ static void DeclManager_ClearGuides( void ) {
 -(int)numDeclTypes;
 -(NSString *)declNameFromType:(declType_t)type;
 -(declType_t)declTypeFromName:(NSString *)typeName;
--(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault noCaching:(BOOL)noCaching error:(NSError **)error;
--(idDecl *)findType:(declType_t)type name:(NSString *)name noCaching:(BOOL)noCaching error:(NSError **)error; // makeDefault=YES
--(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error; // noCaching=NO
--(idDecl *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error; // makeDefault=YES, noCaching=NO
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault noCaching:(BOOL)noCaching error:(NSError **)error;
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name noCaching:(BOOL)noCaching error:(NSError **)error; // makeDefault=YES
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error; // noCaching=NO
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error; // makeDefault=YES, noCaching=NO
 
--(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault;
--(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name; // makeDefault = YES
--(void)reloadFile:(NSString *)filename force:(BOOL)force;
+-(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault;
+-(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name; // makeDefault = YES
+//-(void)reloadFile:(NSString *)filename force:(BOOL)force;
 
 //-(void)listType:(declType_t)type;
 //-(void)printType:(declType_t)type;
 
--(idDecl *)createNewDecl:(declType_t)type name:(NSString *)name fileName:(NSString *)fileName;
+-(idDeclBase *)createNewDecl:(declType_t)type name:(NSString *)name fileName:(NSString *)fileName;
 
 //BSM Added for the material editors rename capabilities
 -(BOOL)renameDecl:(declType_t)type fromName:(NSString *)oldName toName:(NSString *)newName;
+
+-(BOOL)removeDecl:(declType_t)type name:(NSString *)name;
 
 -(void)mediaPrint:(NSString *)fmt, ...;
 -(void)writePrecacheCommands:(idFile *)f;
@@ -796,7 +720,6 @@ virtual bool                    FinishPlayback( rvDeclPlayback *playback );
 -(size_t)listDeclSummary;
 -(void)removeDeclFile:(NSString *)file;
 -(BOOL)validate:(declType_t)type name:(NSString *)name reportTo:(NSMutableString *)strReportTo;
--(idDecl *)allocateDecl:(declType_t)type;
 //virtual byte *                    GetMaterialTypeArray( const char *image, int &width, int &height );
 
 +(void)makeNameCanonical:(NSString *)name result:(char *)result maxLength:(int)maxLength;
@@ -999,8 +922,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
             continue; // ready for tombstones later
         }
 
-        [local allocateSelf];
-
         if (_forceParse && local->declState == DS_UNPARSED) {
             NSError *error = nil;
             if (![local parseLocal:NO error:&error]) {
@@ -1008,12 +929,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
             }
         }
 
-        idDecl *decl = local->selfDecl;
-        if (decl == nil) {
-            continue;
-        }
-
-        buffer[collected++] = decl;
+        buffer[collected++] = local;
     }
 
     state->state = i;
@@ -1071,6 +987,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
 
     self->implicitDecls = [[idDeclFile alloc] initWithFileName:@"implicit" defaultType:0 manager:self];
+    self->implicitDecls->dirty = YES;
     self->indent = 0;
     self->insideLevelLoad = NO;
     self->singleDeclFile = nil;
@@ -1104,9 +1021,9 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     // jmarshall end
 
     // decls used throughout the engine
-    [self registerDeclType:DECL_TABLE typeName:@"table" allocator:&idDeclTable_Allocator];
-    [self registerDeclType:DECL_MATERIAL typeName:@"material" allocator:&idDeclMaterial_Allocator];
-    [self registerDeclType:DECL_SKIN typeName:@"skin" allocator:&idDeclSkin_Allocator];
+    [self registerDeclType:DECL_TABLE typeName:@"table"];
+    [self registerDeclType:DECL_MATERIAL typeName:@"material"];
+    [self registerDeclType:DECL_SKIN typeName:@"skin"];
     /*
     [self registerDeclType:DECL_SOUND typeName:@"sound" allocator:NULL];
     [self registerDeclType:DECL_ENTITYDEF typeName:@"entityDef" allocator:NULL];
@@ -1122,13 +1039,13 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
      */
      // jmarshall: Raven Decl Support
      //RegisterDeclType( "fx",                    DECL_FX,            idDeclAllocator<idDeclFX> );
-    [self registerDeclType:DECL_PARTICLE typeName:@"particle" allocator:&idDeclAllocator_idDeclParticle];
+    [self registerDeclType:DECL_PARTICLE typeName:@"particle"];
      // jmarshall end
      //RegisterDeclType( "articulatedFigure",    DECL_AF,            idDeclAllocator<idDeclAF> );
-    [self registerDeclType:DECL_PDA typeName:@"pda" allocator:&idDeclPDA_Allocator];
-    [self registerDeclType:DECL_EMAIL typeName:@"email" allocator:&idDeclEmail_Allocator];
-    [self registerDeclType:DECL_VIDEO typeName:@"video" allocator:&idDeclVideo_Allocator];
-    [self registerDeclType:DECL_AUDIO typeName:@"audio" allocator:&idDeclAudio_Allocator];
+    [self registerDeclType:DECL_PDA typeName:@"pda"];
+    [self registerDeclType:DECL_EMAIL typeName:@"email"];
+    [self registerDeclType:DECL_VIDEO typeName:@"video"];
+    [self registerDeclType:DECL_AUDIO typeName:@"audio"];
     /*
      RegisterDeclType( "playerModel",            DECL_PLAYER_MODEL,    idDeclAllocator<rvDeclPlayerModel> );
      */
@@ -1218,6 +1135,12 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
      
      cmdSystem->AddCommand( "listHuffmanFrequencies", ListHuffmanFrequencies_f, CMD_FL_SYSTEM, "lists decl text character frequencies" );
      */
+    
+    // mark all files as non-dirty
+    for (idDeclFile *file in loadedFiles) {
+        file->dirty = NO;
+    }
+
     NSLog(@"------------------------------");
 
     return YES;
@@ -1232,10 +1155,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     // free decls
     for (i = 0; i < DECL_MAX_TYPES; i++) {
         for (idDeclLocal *decl in linearLists[i]) {
-            if (decl->selfDecl != nil) {
-                [decl->selfDecl freeData];
-                decl->selfDecl = nil;
-            }
             if (decl->textSource) {
                 //free(decl->textSource);
                 decl->textSource = nil;
@@ -1429,16 +1348,16 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }*/
 }
 
--(void)registerDeclType:(declType_t)type typeName:(NSString *)typeName allocator:(idDeclAllocator_t)allocator {
+-(void)registerDeclType:(declType_t)type typeName:(NSString *)typeName {
 
     idDeclType *declType;
     
     if (type < DECL_MAX_TYPES && declTypes[(int)type] != nil) {
-        NSLog(@"registerDeclType:typeName:allocator: type '%@' already exists", typeName);
+        NSLog(@"registerDeclType:typeName: type '%@' already exists", typeName);
         return;
     }
 
-    declType = [[idDeclType alloc] initWithTypeName:typeName type:type allocator:allocator];
+    declType = [[idDeclType alloc] initWithTypeName:typeName type:type];
     
     if ((int)type + 1 > DECL_MAX_TYPES) {
         //declTypes.AssureSize( (int)type + 1, NULL );
@@ -1720,6 +1639,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
     
     declFile = [[idDeclFile alloc] initWithFileName:fileName defaultType:defaultType manager:self];
+    declFile->dirty = YES;
     [loadedFiles addObject:declFile];
     return declFile;
 }
@@ -1751,7 +1671,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
     
     int totalTextMemory = 0;
-    for (idDecl *decl in [self declsOfType:type forceParse:NO]) {
+    for (idDeclBase *decl in [self declsOfType:type forceParse:NO]) {
         totalTextMemory += [decl compressedLength];
     }
     return totalTextMemory;
@@ -1856,10 +1776,6 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     if (decl == nil) {
         return;
     }
-    if (decl->selfDecl != nil) {
-        [decl->selfDecl freeData];
-        decl->selfDecl = nil; //delete decl->self;
-    }
     if (decl->textSource != nil) {
         //Mem_Free( decl->textSource );
         decl->textSource = nil;
@@ -1933,7 +1849,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     return DECL_MAX_TYPES;
 }
 
--(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault noCaching:(BOOL)noCaching error:(NSError **)error {
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault noCaching:(BOOL)noCaching error:(NSError **)error {
     idDeclLocal *decl;
     
     if (!name || !name.length) {
@@ -1946,13 +1862,11 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         return nil;
     }
     
-    [decl allocateSelf];
-    
     // if it hasn't been parsed yet, parse it now
     if (decl->declState == DS_UNPARSED) {
         [decl parseLocal:noCaching error:error];
         if (noCaching) {
-            [decl->selfDecl list];
+            [decl list];
         }
     }
     
@@ -1962,54 +1876,45 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     if (insideLevelLoad) {
         decl->parsedOutsideLevelLoad = NO;
     }
-    /*
-    if (type == DECL_MATERIAL && insideLevelLoad) {
-        idMaterial *material = static_cast<idMaterial *>( decl->self );
-        material->AddLevelLoadReference();
-    }
-    */
     
-    return decl->selfDecl;
+    return decl;
 }
 
--(idDecl *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
     return [self findType:type name:name makeDefault:makeDefault noCaching:NO error:error];
 }
 
--(idDecl *)findType:(declType_t)type name:(NSString *)name noCaching:(BOOL)noCaching error:(NSError **)error {
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name noCaching:(BOOL)noCaching error:(NSError **)error {
     return [self findType:type name:name makeDefault:YES noCaching:noCaching error:error];
 }
 
--(idDecl *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error {
+-(idDeclBase *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error {
     return [self findType:type name:name makeDefault:YES noCaching:NO error:error];
 }
 
--(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault {
-    idDeclLocal* decl;
-    decl = [self findTypeWithoutParsing:type name:name makeDefault:makeDefault];
-    if (decl) {
-        return decl->selfDecl;
-    }
-    return nil;
+-(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault {
+    return [self findTypeWithoutParsing:type name:name makeDefault:makeDefault];
 }
 
--(idDecl *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name {
+-(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name {
     return [self findDeclWithoutParsing:type name:name makeDefault:YES];
 }
 
--(void)reloadFile:(NSString *)filename force:(BOOL)force {
-    for (int i = 0; i < loadedFiles.count; i++) {
-        idDeclFile *declFile = [loadedFiles objectAtIndex:i];
-        
-        if ([declFile->fileName caseInsensitiveCompare:filename] == NSOrderedSame) {
-            checksum ^= declFile->checksum;
-            [loadedFiles[i] reload:force error:nil];
-            checksum ^= declFile->checksum;
-        }
+-(BOOL)reloadFile:(idDeclFile *)file force:(BOOL)force error:(NSError **)error {
+    int oldChecksum = checksum;
+
+    checksum ^= file->checksum;
+    
+    if (![file reload:force error:error]) {
+        checksum = oldChecksum;
+        return NO;
     }
+
+    checksum ^= file->checksum;
+    return YES;
 }
 
--(idDecl *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
+-(idDeclBase *)declByName:(NSString *)name type:(declType_t)type forceParse:(BOOL)forceParse error:(NSError **)error {
     int typeIndex = (int)type;
     idDeclLocal *decl;
 
@@ -2025,18 +1930,16 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     if (!decl)
         return nil;
 
-    [decl allocateSelf];
-    
     if (forceParse && decl->declState == DS_UNPARSED) {
         if (![decl parseLocal:NO error:error]) {
             return nil;
         }
     }
     
-    return decl->selfDecl;
+    return decl;
 }
 
--(idDecl *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error {
+-(idDeclBase *)declByName:(NSString *)name type:(declType_t)type error:(NSError **)error {
     return [self declByName:name type:type forceParse:YES error:error];
 }
 
@@ -2154,7 +2057,7 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
 }
 #endif
 
--(idDecl *)createNewDecl:(declType_t)type name:(NSString *)name fileName:(NSString *)_fileName {
+-(idDeclBase *)createNewDecl:(declType_t)type name:(NSString *)name fileName:(NSString *)_fileName {
     int typeIndex = (int)type;
     int i;
     
@@ -2176,8 +2079,7 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     idDeclLocal *existingDecl = self->hashTables[typeIndex][lookupName];
     
     if (existingDecl) {
-        [existingDecl allocateSelf];
-        return existingDecl->selfDecl;
+        return existingDecl;
     }
 
     idDeclFile *sourceFile;
@@ -2195,22 +2097,21 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
         [loadedFiles addObject:sourceFile];
     }
     
+    sourceFile->dirty = YES;
+    
     idDeclLocal *decl = [[idDeclLocal alloc] init];
     decl->declManager = self;
     decl->name = lookupName;
     decl->type = type;
     decl->declState = DS_UNPARSED;
-    [decl allocateSelf];
-    NSMutableString *header = [[declTypes[typeIndex] typeName] mutableCopy];
-    NSMutableString *defaultText = [[NSMutableString alloc] init];
-    NSString *defaultDefinition = [decl->selfDecl defaultDefinition];
-    if (defaultDefinition != nil) {
-        defaultText = [defaultDefinition mutableCopy];
-    }
-    
-    NSString *declText = [NSString stringWithFormat:@"%@ %@ %@", header, lookupName, defaultText];
-
-    [decl setTextLocal:declText];
+    // A minimal, always-parseable body. Per-type default content is the
+    // Core Data layer's business (UDDecl*MO classes), which typically
+    // overwrites this text immediately after creating the decl.
+    NSString *declText = [NSString stringWithFormat:@"%@ %@ {\n}\n", [declTypes[typeIndex] typeName], lookupName];
+    // FIXME: remove the overhead of converting to NSMutableData
+    NSMutableData *tempData = [[NSMutableData alloc] init];
+    [tempData appendUTF8StringAndNullTerminate:declText.UTF8String];
+    [decl setTextLocal:tempData];
     decl->sourceFile = sourceFile;
     decl->sourceTextOffset = sourceFile->fileSize;
     decl->sourceTextLength = 0;
@@ -2219,15 +2120,42 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     [decl parseLocal:NO error:nil];
     
     // add this decl to the source file list
+    decl->prevInFile = nil;
     decl->nextInFile = sourceFile->decls;
+    if (sourceFile->decls) {
+        sourceFile->decls->prevInFile = decl;
+    }
     sourceFile->decls = decl;
     
     // add it to the hash table and linear list
-    int index = (int)linearLists[typeIndex].count;
     [linearLists[typeIndex] addObject:decl];
     hashTables[typeIndex][lookupName] = decl;
 
-    return decl->selfDecl;
+    return decl;
+}
+
+-(BOOL)updateDecl:(declType_t)type name:(NSString *)name sourceText:(NSMutableData *)text {
+    int typeIndex = (int)type;
+
+    if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
+        //common->FatalError("idDeclManager::updateDecl:name:sourceText: bad type: %i", typeIndex);
+        return NO; // TODO: throw
+    }
+
+    NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
+
+    // see if it already exists
+    idDeclLocal *existingDecl = self->hashTables[typeIndex][lookupName];
+
+    if (existingDecl == nil) {
+        return NO; // does not exist
+    }
+
+    [existingDecl setText:text];
+    
+    existingDecl->sourceFile->dirty = YES;
+
+    return YES;
 }
 
 -(BOOL)renameDecl:(declType_t)type fromName:(NSString *)oldName toName:(NSString *)newName {
@@ -2242,6 +2170,10 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     decl = self->hashTables[typeIndex][lookupOldName];
     if (!decl)
         return NO;
+    
+    idDeclLocal *newDecl = self->hashTables[typeIndex][lookupNewName];
+    if (newDecl)
+        return NO; // cannot rename (the new name already exists)
 
     //if ( !hashTables[(int)type].Get( canonicalOldName, &declPtr ) )
     //    return false;
@@ -2251,6 +2183,9 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     //Change the name
     decl->name = lookupNewName;
 
+    // mark the file as dirty
+    decl->sourceFile->dirty = YES;
+
     // add it to the hash table
     [self->hashTables[typeIndex] setValue:decl forKey:lookupNewName];
 
@@ -2258,6 +2193,224 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     [self->hashTables[typeIndex] removeObjectForKey:lookupOldName];
     
     return YES;
+}
+
+-(BOOL)moveDecl:(declType_t)type name:(NSString *)name toFileName:(NSString *)fileName {
+    NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
+    
+    idDeclLocal    *decl = nil;
+    
+    // make sure it already exists
+    int typeIndex = (int)type;
+    decl = self->hashTables[typeIndex][lookupName];
+    if (!decl)
+        return NO;
+    
+    if ([decl->sourceFile->fileName isEqualToString:fileName]) {
+        return YES; // already in the new file
+    }
+
+    // change the file
+    idDeclFile *newDeclFile = [self findOrCreateLoadedDeclFile:fileName defaultType:type];
+    if (!newDeclFile) {
+        return NO;
+    }
+    
+    // mark both files as dirty
+    idDeclFile *oldDeclFile = decl->sourceFile;
+    newDeclFile->dirty = YES;
+    oldDeclFile->dirty = YES;
+    
+    // TODO: unlink from the old file
+    idDeclLocal *prev = decl->prevInFile;
+    idDeclLocal *next = decl->nextInFile;
+
+    if (prev) {
+        prev->nextInFile = next;
+    } else {
+        // removing head
+        oldDeclFile->decls = next;
+    }
+
+    if (next) {
+        next->prevInFile = prev;
+    }
+
+    // fully detach removed node
+    decl->prevInFile = nil;
+    decl->nextInFile = nil;
+
+    // append to the new file
+    decl->prevInFile = nil;
+    decl->nextInFile = newDeclFile->decls;
+    if (newDeclFile->decls) {
+        newDeclFile->decls->prevInFile = decl;
+    }
+    newDeclFile->decls = decl;
+    
+    // TODO: change the line num
+
+    return YES;
+}
+
+-(BOOL)removeDecl:(declType_t)type name:(NSString *)name {
+    if (type < 0 || type >= [self numDeclTypes]) {
+        return NO;
+    }
+
+    NSMutableString *lookupName = [idDeclManager makeCanonicalName:name];
+    idDeclLocal    *decl = nil;
+    
+    // make sure it exists
+    int typeIndex = (int)type;
+    decl = self->hashTables[typeIndex][lookupName];
+    if (!decl)
+        return NO;
+
+    if (decl->textSource) {
+        //free(decl->textSource);
+        decl->textSource = nil;
+    }
+
+    idDeclFile *file = decl->sourceFile;
+    idDeclLocal *prev = decl->prevInFile;
+    idDeclLocal *next = decl->nextInFile;
+
+    if (prev) {
+        prev->nextInFile = next;
+    } else {
+        // removing head
+        file->decls = next;
+    }
+
+    if (next) {
+        next->prevInFile = prev;
+    }
+
+    // fully detach removed node
+    decl->prevInFile = nil;
+    decl->nextInFile = nil;
+
+    // remove the old hash item
+    [self->hashTables[typeIndex] removeObjectForKey:lookupName];
+    [self->linearLists[typeIndex] removeObject:decl];
+    
+    // mark the file as dirty
+    decl->sourceFile->dirty = YES;
+
+    return YES;
+}
+
+-(BOOL)writeDecls:(NSError **)error {
+    for (idDeclFile *file in loadedFiles) {
+        if (![self replaceSourceFileText:file error:error]) {
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
+-(BOOL)replaceSourceFileText:(idDeclFile *)sourceFile error:(NSError **)error {
+    if (!sourceFile->dirty) {
+        return YES; // nothing to do
+    }
+
+    NSLog(@"Writing to \'%@\'...\n", sourceFile->fileName);
+    
+    if (sourceFile == implicitDecls) {
+        NSLog(@"Can't save implicit declaration file");
+        return YES; // just say: okay, whatever
+    }
+
+    // replace the original file from the stored decl text.
+    // TODO: would be even better to retain comments/whitespace between the
+    // decls, so that we can reconstruct the file closer to the original.
+    NSMutableString *output = [NSMutableString string];
+    for (idDeclLocal *decl = sourceFile->decls; decl; decl = decl->nextInFile) {
+        NSMutableData *declText = [[NSMutableData alloc] init];
+        [decl text:declText];
+
+        NSString *text = [[NSString alloc] initWithBytes:declText.bytes
+                                                  length:(declText.length > 0 ? declText.length - 1 : 0)
+                                                encoding:NSUTF8StringEncoding] ?: @"";
+
+        // Decl text loaded from loose decl files carries only the braced
+        // body; text set through updateDecl (the Core Data layer) includes
+        // the "type name" header. Normalize: emit the header ourselves
+        // whenever the stored text starts at the opening brace.
+        NSString *trimmed = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([trimmed hasPrefix:@"{"]) {
+            [output appendFormat:@"%@ %@ ", [declTypes[(int)decl->type] typeName], [decl name]];
+        }
+        [output appendString:text];
+        [output appendString:@"\n\n"];
+    }
+
+    NSData *data = [output dataUsingEncoding:NSUTF8StringEncoding];
+    const int written = [_workspace.fileSystem writeFile:sourceFile->fileName
+                                                   buffer:(data.bytes ?: "")
+                                                     size:(int)data.length
+                                                 basePath:@"fs_savepath"
+                                                    error:error];
+    // writeFile returns the number of bytes written, or -1 on error — a
+    // plain boolean test would treat -1 as success.
+    if (written != (int)data.length) {
+        if (error != NULL && *error == nil) {
+            *error = [NSError errorWithDomain:@"idDeclManager"
+                                          code:1
+                                      userInfo:@{NSLocalizedDescriptionKey:
+                [NSString stringWithFormat:@"Short write to decl file '%@' (%d of %lu bytes)",
+                 sourceFile->fileName, written, (unsigned long)data.length]}];
+        }
+        return NO;
+    }
+    
+    sourceFile->dirty = NO;
+
+    return YES;
+}
+
+-(NSArray<NSString *> *)loadedDeclFileNames {
+    NSMutableArray<NSString *> *names = [NSMutableArray arrayWithCapacity:loadedFiles.count];
+    for (idDeclFile *file in loadedFiles) {
+        if (file == implicitDecls) {
+            continue;
+        }
+        [names addObject:[file->fileName copy]];
+    }
+    return names;
+}
+
+-(BOOL)declFileInfoForName:(NSString *)fileName checksum:(int *)outChecksum timestamp:(NSUInteger *)outTimestamp {
+    for (idDeclFile *file in loadedFiles) {
+        if (file == implicitDecls) {
+            continue;
+        }
+        if ([file->fileName caseInsensitiveCompare:fileName] == NSOrderedSame) {
+            if (outChecksum != NULL) {
+                *outChecksum = file->checksum;
+            }
+            if (outTimestamp != NULL) {
+                *outTimestamp = file->timestamp;
+            }
+            return YES;
+        }
+    }
+    return NO;
+}
+
+-(NSArray<idDeclBase *> *)declsInFileName:(NSString *)fileName {
+    idDeclFile *file = [self findLoadedDeclFile:fileName];
+    if (file == nil) {
+        return @[];
+    }
+
+    NSMutableArray<idDeclBase *> *result = [NSMutableArray array];
+    for (idDeclLocal *decl = file->decls; decl; decl = decl->nextInFile) {
+        [result addObject:decl];
+    }
+    return result;
 }
 
 -(void)mediaPrint:(NSString *)fmt, ... {
@@ -2305,105 +2458,6 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     }
 }
 
-/********************************************************************/
-
--(idDeclMaterial *)findMaterial:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
-    return (idDeclMaterial *)[self findType:DECL_MATERIAL name:name makeDefault:makeDefault error:error];
-}
-
--(idDeclMaterial *)findMaterial:(NSString *)name error:(NSError **)error {
-    return [self findMaterial:name makeDefault:YES error:error];
-}
-
-/********************************************************************/
-
--(idDeclSkin *)findSkin:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
-    return (idDeclSkin *)[self findType:DECL_SKIN name:name makeDefault:makeDefault error:error];
-}
-
--(idDeclSkin *)findSkin:(NSString *)name error:(NSError **)error {
-    return [self findSkin:name makeDefault:YES error:error];
-}
-
-/********************************************************************/
-#if 0
-const idSoundShader *idDeclManagerLocal::FindSound( const char *name, bool makeDefault ) {
-    return static_cast<const idSoundShader *>( FindType( DECL_SOUND, name, makeDefault ) );
-}
-
-const idSoundShader *idDeclManagerLocal::SoundByIndex( int index, bool forceParse ) {
-    return static_cast<const idSoundShader *>( DeclByIndex( DECL_SOUND, index, forceParse ) );
-}
-
-// RAVEN BEGIN
-// jscott: for new Raven decls
-static const float DECL_MSEC_TO_SEC = 0.001f;
-
-const rvDeclMatType* idDeclManagerLocal::FindMaterialType(const char* name, bool makeDefault) {
-    return static_cast<const rvDeclMatType*>(FindType(DECL_MATERIALTYPE, name, makeDefault));
-}
-
-const rvDeclLipSync* idDeclManagerLocal::FindLipSync(const char* name, bool makeDefault) {
-    return static_cast<const rvDeclLipSync*>(FindType(DECL_LIPSYNC, name, makeDefault));
-}
-
-const rvDeclPlayback* idDeclManagerLocal::FindPlayback(const char* name, bool makeDefault) {
-    return static_cast<const rvDeclPlayback*>(FindType(DECL_PLAYBACK, name, makeDefault));
-}
-const rvDeclEffect* idDeclManagerLocal::FindEffect(const char* name, bool makeDefault) {
-    return (const rvDeclEffect*)FindType(DECL_EFFECT, name, makeDefault);
-}
-#endif
--(idDeclTable *)findTable:(NSString *)name makeDefault:(BOOL)makeDefault error:(NSError **)error {
-    return (idDeclTable *)[self findType:DECL_TABLE name:name makeDefault:makeDefault error:error];
-}
-
--(idDeclTable *)findTable:(NSString *)name error:(NSError **)error {
-    return [self findTable:name makeDefault:YES error:error];
-}
-
-#if 0
-const rvDeclMatType* idDeclManagerLocal::MaterialTypeByIndex(int index, bool forceParse) {
-    return static_cast<const rvDeclMatType*>(DeclByIndex(DECL_MATERIALTYPE, index, forceParse));
-}
-
-const rvDeclLipSync* idDeclManagerLocal::LipSyncByIndex(int index, bool forceParse) {
-    return static_cast<const rvDeclLipSync*>(DeclByIndex(DECL_LIPSYNC, index, forceParse));
-}
-
-const rvDeclPlayback* idDeclManagerLocal::PlaybackByIndex(int index, bool forceParse) {
-    return static_cast<const rvDeclPlayback*>(DeclByIndex(DECL_PLAYBACK, index, forceParse));
-}
-
-void idDeclManagerLocal::StartPlaybackRecord(rvDeclPlayback* playback) {
-    if (playback == NULL) {
-        return;
-    }
-    playback->Start();
-}
-
-bool idDeclManagerLocal::SetPlaybackData(rvDeclPlayback* playback, int now, int control, rvDeclPlaybackData* pbd) {
-    if (playback == NULL) {
-        return false;
-    }
-    return playback->SetCurrentData(now * DECL_MSEC_TO_SEC, control, pbd);
-}
-
-bool idDeclManagerLocal::GetPlaybackData(const rvDeclPlayback* playback, int control, int now, int last, rvDeclPlaybackData* pbd) {
-    if (playback == NULL) {
-        return true;
-    }
-    return playback->GetCurrentData(control, now * DECL_MSEC_TO_SEC, last * DECL_MSEC_TO_SEC, pbd);
-}
-
-bool idDeclManagerLocal::FinishPlayback(rvDeclPlayback* playback) {
-    if (playback == NULL) {
-        return false;
-    }
-    return playback->Finish(-1.0f);
-}
-#endif
-
 -(NSString *)newName:(declType_t)type base:(NSString *)base {
     NSMutableString *name = [[NSMutableString alloc] init];
     for (int suffix = 1; suffix < 1024; suffix++) {
@@ -2434,9 +2488,6 @@ bool idDeclManagerLocal::FinishPlayback(rvDeclPlayback* playback) {
         for (int declIndex = 0; declIndex < linearLists[typeIndex].count; declIndex++) {
             idDeclLocal *decl = linearLists[typeIndex][declIndex];
             totalStructBytes += [decl size];
-            if (decl->selfDecl != nil) {
-                totalStructBytes += [decl->selfDecl size];
-            }
         }
     }
     
@@ -2455,7 +2506,7 @@ bool idDeclManagerLocal::FinishPlayback(rvDeclPlayback* playback) {
 }
 
 -(BOOL)validate:(declType_t)type name:(NSString *)name reportTo:(NSMutableString *)strReportTo {
-    idDecl *decl = [self declByName:name type:type forceParse:NO error:nil];
+    idDeclBase *decl = [self declByName:name type:type forceParse:NO error:nil];
 
     if (decl == nil) {
         [strReportTo appendFormat:@"Invalid decl name %@ for type %@\n", name, [self declNameFromType:type]];
@@ -2478,27 +2529,6 @@ bool idDeclManagerLocal::FinishPlayback(rvDeclPlayback* playback) {
     */
     
     return [decl validate:declText reportTo:strReportTo];
-}
-
--(idDecl *)allocateDecl:(declType_t)type {
-    const int typeIndex = (int)type;
-    if (typeIndex < 0 || typeIndex >= [self numDeclTypes] || declTypes[typeIndex] == nil) {
-        //common->FatalError("idDeclManager::AllocateDecl: bad type: %i", typeIndex);
-        return nil; // TODO: throw
-    }
-    
-    idDeclLocal *declBase = [[idDeclLocal alloc] init];
-    declBase->declManager = self;
-    declBase->selfDecl = nil;
-    declBase->type = type;
-    declBase->sourceFile = self->implicitDecls;
-    declBase->parsedOutsideLevelLoad = !insideLevelLoad;
-    
-    idDecl *decl = [declTypes[typeIndex] allocator]();
-    decl.declManager = self;
-    [decl setBase:declBase];
-    declBase->selfDecl = decl;
-    return decl;
 }
 
 #if 0
@@ -2579,9 +2609,6 @@ const rvDeclEffect* idDeclManagerLocal::EffectByIndex(int index, bool forceParse
         size = 0;
         for (j = 0; j < num; j++) {
             size += linearLists[i][j].size;
-            if (linearLists[i][j]->selfDecl != nil) {
-                size += linearLists[i][j]->selfDecl.size;
-            }
         }
         totalStructs += size;
         
@@ -2619,20 +2646,6 @@ const rvDeclEffect* idDeclManagerLocal::EffectByIndex(int index, bool forceParse
     //[[idFileSystem sharedFileSystem] setIsFileLoadingAllowed:NO];
 }
 
--(void)reloadFile_f:(NSString *)fileName {
-    if (fileName == nil || fileName.length == 0) {
-        //NSLog(@"usage: reloadFile <fileName>\n");
-        return;
-    }
-    
-    //[[idFileSystem sharedFileSystem] setIsFileLoadingAllowed:YES];
-    [self parseGuides];
-    
-    //soundSystem->SetMute( true );
-    [self reloadFile:fileName force:YES];
-    //soundSystem->SetMute( false );
-    //[[idFileSystem sharedFileSystem] setIsFileLoadingAllowed:NO];
-}
 #if 0
 /*
  ===================
@@ -2781,7 +2794,6 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     
     decl = [[idDeclLocal alloc] init];
     decl->declManager = self;
-    decl->selfDecl = nil;
     decl->name = [lookupName mutableCopy];
     decl->type = type;
     decl->declState = DS_UNPARSED;
@@ -2829,6 +2841,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         self->numLines = 0;
         self->decls = nil;
         self->declManager = manager;
+        self->dirty = NO;
     }
     return self;
 }
@@ -2906,6 +2919,8 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     }
     
     [src setFlags:DECL_LEXER_FLAGS];
+    
+    dirty = NO;
 
     checksum = MD5_BlockChecksum(finalPreprocessedBuffer, length);
     fileSize = length;
@@ -3019,7 +3034,12 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         } else {
             // allow it to be created as a default, then add it to the per-file list
             newDecl = [declManager findTypeWithoutParsing:identifiedType name:name makeDefault:YES];
+            
+            newDecl->prevInFile = nil;
             newDecl->nextInFile = self->decls;
+            if (self->decls) {
+                self->decls->prevInFile = newDecl;
+            }
             self->decls = newDecl;
         }
         
@@ -3056,7 +3076,12 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
                 }
             } else {
                 aliasDecl = [declManager findTypeWithoutParsing:identifiedType name:strippedName makeDefault:YES];
+                
+                aliasDecl->prevInFile = nil;
                 aliasDecl->nextInFile = self->decls;
+                if (self->decls) {
+                    self->decls->prevInFile = aliasDecl;
+                }
                 self->decls = aliasDecl;
             }
             
@@ -3239,7 +3264,12 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
             }
         } else {
             decl = [declManager findTypeWithoutParsing:identifiedType name:name makeDefault:YES];
+    
+            decl->prevInFile = nil;
             decl->nextInFile = self->decls;
+            if (self->decls) {
+                self->decls->prevInFile = decl;
+            }
             self->decls = decl;
         }
         
@@ -3472,7 +3502,6 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
 -(instancetype)init {
     self = [super init];
     if (self) {
-        selfDecl = nil;
         insideLevelLoad = NO;
         name = [@"unnamed" mutableCopy];
         textSource = nil;
@@ -3490,6 +3519,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
         redefinedInReload = NO;
         needsPrecache = NO;
         nextInFile = nil;
+        prevInFile = nil;
     }
     return self;
 }
@@ -3608,7 +3638,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     }
     
 #define Max(a,b) ((a) > (b) ? (a) : (b))
-    
+
     // get length and allocate buffer to hold the file
     oldFileLength = sourceFile->fileSize;
     newFileLength = oldFileLength - self->sourceTextLength + self->textLength;
@@ -3707,46 +3737,19 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
 }
 
 -(BOOL)makeDefault:(NSError **)error {
-    static int recursionLevel;
-    NSMutableData *defaultText;
-    
     [declManager mediaPrint:@"DEFAULTED\n"];
     declState = DS_DEFAULTED;
-    
-    [self allocateSelf];
-    
-    NSString *defaultDef = [selfDecl defaultDefinition];
 
-    defaultText = [[NSMutableData alloc] init];
-    [defaultText appendUTF8StringAndNullTerminate:defaultDef.UTF8String];
-
-    // a parse error inside a DefaultDefinition() string could
-    // cause an infinite loop, but normal default definitions could
-    // still reference other default definitions, so we can't
-    // just dump out on the first recursion
-    if (++recursionLevel > 100) {
-        //common->FatalError( "idDecl::MakeDefault: bad DefaultDefinition(): %s", defaultText );
-        return NO;
+    // Only install placeholder text when the decl has none at all; per-type
+    // default content lives with the Core Data entities, not here.
+    if (self->textSource == nil) {
+        NSMutableData *defaultText = [[NSMutableData alloc] init];
+        [defaultText appendUTF8StringAndNullTerminate:"{\n}\n"];
+        [self setTextLocal:defaultText];
+        declState = DS_DEFAULTED;
     }
-    
-    // always free data before parsing
-    [selfDecl freeData];
-    
-    // parse
-    BOOL ret = [selfDecl parse:defaultText noCaching:NO error:error];
 
-    // we could still eventually hit the recursion if we have enough Error() calls inside Parse...
-    --recursionLevel;
-    
-    return ret;
-}
-
--(BOOL)setDefaultText {
-    return NO;
-}
-
--(NSString *)defaultDefinition {
-    return @"{ }";
+    return YES;
 }
 
 -(BOOL)parse:(NSMutableData *)text noCaching:(BOOL)cache error:(NSError **)error {
@@ -3779,29 +3782,11 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     [self->sourceFile reload:NO error:nil];
 }
 
--(void)allocateSelf {
-    if (self->selfDecl == nil) {
-        self->selfDecl = [[declManager declType:(int)self->type] allocator]();
-        self->selfDecl.declManager = self->declManager;
-        [self->selfDecl setBase:self];
-    }
-}
-
 -(BOOL)parseLocal:(BOOL)noCaching error:(NSError **)error {
-    BOOL generatedDefaultText = NO;
-    
-    [self allocateSelf];
-    
-    // always free data before parsing
-    [selfDecl freeData];
-    
+    (void)noCaching;
+
     [declManager mediaPrint:@"parsing %@ %@", [declManager declTypeName:type], name];
-    
-    // if no text source try to generate default text
-    if (self->textSource == nil) {
-        generatedDefaultText = [selfDecl setDefaultText];
-    }
-    
+
     // indent for DEFAULTED or media file references
     [declManager incrIndent]; //    declManagerLocal.indent++;
     
@@ -3881,22 +3866,12 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
         }
     }
 
-#if 0
-    if (/*common->IsInitialized() &&*/ ![self->declManager insideLoad] && !openQ4_IsAnyToolActive()) {
-        NSLog(@"Loading non pre-cached %@ decl %@", [self->declManager declNameFromType:type], name);
-    }
-#endif
-    
-    BOOL parsed = [selfDecl parse:parseText noCaching:noCaching error:error];
-
-    // free generated text
-    if (generatedDefaultText || (declManager.workspace.com_SingleDeclFile && !needsPrecache)) {
-        textSource = nil; //free(textSource);
-        textLength = 0;
-    }
+    // sanity-check that the text is a well-formed braced section; the
+    // manager stores text only and never interprets it further.
+    BOOL parsed = [self parse:parseText noCaching:NO error:error];
 
     [declManager decrIndent]; // declManagerLocal.indent--;
-    
+
     return parsed;
 }
 
@@ -3924,10 +3899,10 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
 }
 
 -(BOOL)validate:(NSMutableData *)psText reportTo:(NSMutableString *)strReportTo {
-    idDecl *decl = [declManager allocateDecl:self->type];
-    const BOOL valid = DeclManager_ValidateParsedDecl(decl, type, decl != NULL && [decl parse:psText noCaching:NO error:nil]);
-    DeclManager_FreeAllocatedDecl(decl);
-    return valid;
+    (void)strReportTo;
+    // Structural check only: the text must contain a well-formed braced
+    // section. Semantic validation lives with the Core Data entity codecs.
+    return [self parse:psText noCaching:NO error:nil];
 }
 
 @end

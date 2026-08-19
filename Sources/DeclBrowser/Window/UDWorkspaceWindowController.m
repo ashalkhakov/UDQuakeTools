@@ -2,6 +2,7 @@
 #import "UDWorkspaceDocument.h"
 #import "UDDeclBrowser.h"
 #import "UDEditorTabManager.h"
+#import "UDWorkspace.h"
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
@@ -28,6 +29,19 @@
 
 -(UDWorkspace *)workspace {
     return ((UDWorkspaceDocument *)self.document).workspace;
+}
+
+#pragma mark - Undo
+
+// The standard Core Data undo wiring: the window hands the decl editing
+// context's undo manager to the responder chain, so Edit > Undo / Redo in
+// the main menu operate on it. Core Data registers every managed object
+// change with this undo manager automatically (grouped per event) — the
+// forms themselves need no undo code at all. (This controller is the
+// window's delegate, wired in UDWorkspaceWindow.xib.)
+- (NSUndoManager *)windowWillReturnUndoManager:(NSWindow *)window {
+    NSUndoManager *undoManager = self.workspace.declEditingContext.undoManager;
+    return undoManager ?: [self.document undoManager];
 }
 
 //

@@ -9,6 +9,7 @@
 #import <AppKit/AppKit.h>
 
 @class idFileSystem, idDeclManager;
+@class NSManagedObjectContext;
 
 @interface UDWorkspace : NSObject
 
@@ -37,6 +38,15 @@
 // Engine Subsystems (Lifetimes are bound to the workspace, not the stack)
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, strong) idDeclManager *declManager;
+
+// The lazily-created managed object context backed by UDDeclIncrementalStore
+// over this workspace's declManager. All decl editors of one workspace share
+// this context, so edits, renames and unsaved changes are visible to each
+// other and a single -save: pushes everything down into idDeclManager (which
+// then writes the decl files out). Returns nil (and logs) if the stack could
+// not be built, e.g. when the workspace has no decl manager yet.
+// (Requires CoreData; on GNUstep this is provided by FreeCoreData.)
+@property (nonatomic, strong, readonly) NSManagedObjectContext *declEditingContext;
 
 // Serialization
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir;

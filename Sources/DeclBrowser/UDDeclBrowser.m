@@ -54,20 +54,20 @@
                      root:(NSString *)root
                      tree:(UDPathTree *)tree
 {
-    NSMutableArray<idDecl *> *decls = [NSMutableArray array];
+    NSMutableArray<idDeclBase *> *decls = [NSMutableArray array];
     
-    for (idDecl *decl in [self.declManager declsOfType:type forceParse:NO]) {
+    for (idDeclBase *decl in [self.declManager declsOfType:type forceParse:NO]) {
         [decls addObject:decl];
     }
     
     // same sort as original (idStr::IcmpPath)
-    [decls sortUsingComparator:^NSComparisonResult(idDecl *a, idDecl *b) {
+    [decls sortUsingComparator:^NSComparisonResult(idDeclBase *a, idDeclBase *b) {
         return [[a name] caseInsensitiveCompare:[b name]];
     }];
     
     NSString *rootStr = [root stringByAppendingString:@"/"];
     
-    for (idDecl *decl in decls) {
+    for (idDeclBase *decl in decls) {
         NSString *declPath = [rootStr stringByAppendingString:[decl name]];
         declPath = [declPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
         declPath = [declPath stringByTrimmingCharactersInSet:

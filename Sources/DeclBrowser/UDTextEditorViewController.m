@@ -48,14 +48,15 @@
         case UDWorkspaceItemKindDecl: {
             UDDeclItem *declItem = (UDDeclItem *)self.item;
             NSError *error = nil;
-            
+
             self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
-            if (error) {
-                NSLog(@"UDTextEditorViewController: failed to open decl of type %@ name %@: %@", [_document.workspace.declManager declTypeName:declItem.type], declItem.name, error);
+            if (self.document == nil) {
+                NSLog(@"UDTextEditorViewController: failed to open decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
+                return;
             }
 
             if (![self.document readFromURL:[NSURL URLWithString:@"http://localhost/unused.txt"] ofType:@"" error:&error]) {
-                NSLog(@"UDTextEditorViewController: failed to open decl of type %@ name %@: %@", [_document.workspace.declManager declTypeName:declItem.type], declItem.name, error);
+                NSLog(@"UDTextEditorViewController: failed to read decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
             }
             break;
         }

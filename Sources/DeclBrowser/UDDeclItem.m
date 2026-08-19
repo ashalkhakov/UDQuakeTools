@@ -20,7 +20,7 @@
 
 - (NSString *)text:(UDWorkspace *)workspace {
     NSMutableData *declText = [[NSMutableData alloc] init];
-    idDecl *decl = [workspace.declManager declByName:self.declName type:_type forceParse:NO error:nil];
+    idDeclBase *decl = [workspace.declManager declByName:self.declName type:_type forceParse:NO error:nil];
     if (!decl) {
         return @"";
     }

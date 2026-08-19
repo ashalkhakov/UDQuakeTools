@@ -1,7 +1,7 @@
 #import "UDPDAEditorViewController.h"
 #import "UDDeclItem.h"
 #import "UDDeclDocument.h"
-#import "idDeclPDA.h"
+#import "UDDeclManagedObjects.h"
 
 @implementation UDPDAEditorViewController
 
@@ -10,103 +10,148 @@
     return self;
 }
 
-
 - (void)setDocument:(UDDeclDocument *)document {
-    idDeclPDA *pda = (idDeclPDA *)document.decl;
-    //self.objectController.content = pda;
-    [self.objectController addObject:pda];
-    // optional, if undo doesn’t attach automatically:
-    // self.objectController.undoManager = document.undoManager;
     _document = document;
+    if (self.viewLoaded && document != nil) {
+        self.objectController.content = document.declObject;
+    }
 }
 
-- (idDeclPDA *)pda {
-    return (idDeclPDA *)((UDDeclDocument *)self.document).decl;
+- (UDDeclPDA *)pda {
+    return (UDDeclPDA *)self.document.declObject;
+}
+
+- (NSManagedObjectContext *)editingContext {
+    return self.document.editingContext;
 }
 
 - (void)viewDidLoad {
-    idDeclPDA *pda;
-
     [super viewDidLoad];
 
     if (self.item == nil) {
         return;
     }
-    
+
     if (self.item.kind != UDWorkspaceItemKindDecl) {
         return;
     }
 
     UDDeclItem *declItem = (UDDeclItem *)self.item;
     NSError *error = nil;
-    
+
     self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
-    if (error) {
-        NSLog(@"UDPDAEditorViewController: failed to open decl of type %@ name %@: %@", [_document.workspace.declManager declTypeName:declItem.type], declItem.name, error);
+    if (self.document == nil) {
+        NSLog(@"UDPDAEditorViewController: failed to open decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
+        return;
     }
 
     if (![self.document readFromURL:[NSURL URLWithString:@"http://localhost/unused.txt"] ofType:@"" error:&error]) {
-        NSLog(@"UDPDAEditorViewController: failed to open decl of type %@ name %@: %@", [_document.workspace.declManager declTypeName:declItem.type], declItem.name, error);
+        NSLog(@"UDPDAEditorViewController: failed to read decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
     }
-    
-    pda = self.pda;
-    self.objectController.content = pda;
+
+    // Child decl relationships are unordered sets; present them sorted by name.
+    NSArray *byName = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(caseInsensitiveCompare:)]];
+    self.audioArrayController.sortDescriptors = byName;
+    self.emailArrayController.sortDescriptors = byName;
+    self.videoArrayController.sortDescriptors = byName;
+
+    self.objectController.content = self.pda;
+}
+
+// Runs a modal child-editor session inside its own named undo group on the
+// context's undo manager:
+//
+//   1. before the modal starts: beginUndoGrouping + setActionName
+//   2. after it ends (OK or Cancel): endUndoGrouping
+//   3. if the user cancelled: a single -undoNestedGroup reverts just that
+//      innermost group — everything the session did (field edits, inserts,
+//      relationship changes) in one step, leaving the rest of the stack
+//      intact.
+//
+// The processPendingChanges calls bracket the group so that (a) changes made
+// before the session are registered outside the group and (b) everything the
+// session did is registered inside it before it closes.
+- (NSModalResponse)runModalEditSession:(NSModalResponse (^)(void))session
+                            actionName:(NSString *)actionName {
+    NSManagedObjectContext *context = self.editingContext;
+    NSUndoManager *undoManager = context.undoManager;
+
+    [context processPendingChanges];
+    [undoManager beginUndoGrouping];
+    [undoManager setActionName:actionName];
+
+    NSModalResponse result = session();
+
+    [context processPendingChanges];
+    [undoManager endUndoGrouping];
+
+    if (result != NSModalResponseOK) {
+        [undoManager undoNestedGroup];
+    }
+    return result;
 }
 
 - (IBAction)generateId:(id)sender {
     self.pda.ident = [NSString stringWithFormat:@"%d-%02X", 1000+(rand()%8999), (rand()%255)];
 }
 
-- (idDecl *)createDeclType:(declType_t)type subname:(NSString *)subname collection:(NSArray *)collection {
-    idDeclPDA *pda = self.pda;
+/**
+ * Inserts a new child decl managed object (email/audio/video) into the shared
+ * editing context. The incremental store turns the insert into an
+ * idDeclManager createNewDecl on save. The child starts out in the same
+ * source file as the PDA itself.
+ */
+- (__kindof UDDeclBase *)createChildDeclWithTypeName:(NSString *)typeName subname:(NSString *)subname {
+    UDDeclPDA *pda = self.pda;
     idDeclManager *declManager = self.workspace.declManager;
-    
+
     if (!pda) {
         return nil;
     }
 
-    // Search for an unused name
-    NSString *name = nil;
-    int newIndex = (int)collection.count;
-    do {
-        name = [NSString stringWithFormat:@"%@_%@_%d", pda.name, subname, newIndex++];
-    } while ([declManager findType:type name:name makeDefault:NO error:nil] != nil);
-    
-    // Create a blank email object
-    idDecl *newDecl = [declManager createNewDecl:type name:name fileName:pda.fileName];
-    
-    return newDecl;
+    NSManagedObjectContext *context = self.editingContext;
+    NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:typeName
+                                                              inModel:context.persistentStoreCoordinator.managedObjectModel];
+    if (entityName == nil) {
+        return nil;
+    }
+
+    // Search for an unused name.
+    declType_t type = [declManager declTypeFromName:typeName];
+    NSString *base = [NSString stringWithFormat:@"%@_%@_", pda.name, subname];
+    NSString *name = [declManager newName:type base:base];
+
+    UDDeclBase *child = [NSEntityDescription insertNewObjectForEntityForName:entityName
+                                                        inManagedObjectContext:context];
+    child.name = name;
+    child.sourceFile = pda.sourceFile;
+    return child;
 }
 
 - (IBAction)addOrRemoveAudioLog:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        idDeclPDA *pda = self.pda;
-
-        idDeclAudio *newAudio = (idDeclAudio *)[self createDeclType:DECL_AUDIO subname:@"audio" collection:pda.audios];
-
-        NSModalResponse result = [self openAudioEditor:newAudio];
-        if (result == NSModalResponseOK) {
-            [self.audioArrayController addObject:newAudio];
-            
-            // TODO: register undo for the whole add operation
-            /*
-             [[undoManager prepareWithInvocationTarget:self]
-             removeEmailFromArrayController:email andDeleteFromDeclManager:YES];
-             */
-        } else {
-            // [self.declManager deleteEmail:email]; // cancel: destroy immediately, no undo needed
-        }
+        // The insert, the modal's edits and the relationship hookup all land
+        // in one "Add Audio Log" undo group; cancelling undoes that group,
+        // which removes the freshly inserted object again.
+        [self runModalEditSession:^NSModalResponse{
+            UDDeclAudio *newAudio = [self createChildDeclWithTypeName:@"audio" subname:@"audio"];
+            if (newAudio == nil) {
+                return NSModalResponseCancel;
+            }
+            NSModalResponse result = [self openAudioEditor:newAudio];
+            if (result == NSModalResponseOK) {
+                [[self.pda mutableSetValueForKey:@"audios"] addObject:newAudio];
+            }
+            return result;
+        } actionName:@"Add Audio Log"];
     } else {
+        // Detaches the selected audio from the PDA; the audio decl itself
+        // stays in its source file.
         [self.audioArrayController remove:sender];
-        /*
-         // Deleting:
-         [[self.undoManager prepareWithInvocationTarget:self.declManager]
-             createEmailWithState:savedState]; // undo = recreate it
-         */
     }
 }
 
-- (NSModalResponse)openAudioEditor:(idDeclAudio *)audio {
+- (NSModalResponse)openAudioEditor:(UDDeclAudio *)audio {
     // Lazily load the NIB each time, or keep the controller around
     UDPDAAudioEditorViewController *editorVC = [[UDPDAAudioEditorViewController alloc] init];
     editorVC.editingAudio = audio;
@@ -120,21 +165,23 @@
 
 - (IBAction)addOrRemoveEmail:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        idDeclPDA *pda = self.pda;
-
-        idDeclEmail *newEmail = (idDeclEmail *)[self createDeclType:DECL_EMAIL subname:@"email" collection:pda.emails];
-
-        // Lazily load the NIB each time, or keep the controller around
-        NSModalResponse result = [self openEmailEditor:newEmail];
-        if (result == NSModalResponseOK) {
-            [self.emailArrayController addObject:newEmail];
-        }
+        [self runModalEditSession:^NSModalResponse{
+            UDDeclEmail *newEmail = [self createChildDeclWithTypeName:@"email" subname:@"email"];
+            if (newEmail == nil) {
+                return NSModalResponseCancel;
+            }
+            NSModalResponse result = [self openEmailEditor:newEmail];
+            if (result == NSModalResponseOK) {
+                [[self.pda mutableSetValueForKey:@"emails"] addObject:newEmail];
+            }
+            return result;
+        } actionName:@"Add Email"];
     } else {
         [self.emailArrayController remove:sender];
     }
 }
 
-- (NSModalResponse)openEmailEditor:(idDeclEmail *)email {
+- (NSModalResponse)openEmailEditor:(UDDeclEmail *)email {
     UDPDAEmailEditorViewController *editorVC = [[UDPDAEmailEditorViewController alloc] init];
     editorVC.editingEmail = email;
     [[NSBundle mainBundle] loadNibNamed:@"UDPDAEmailEditorView"
@@ -147,20 +194,23 @@
 
 - (IBAction)addOrRemoveVideo:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        idDeclPDA *pda = self.pda;
-
-        idDeclVideo *newVideo = (idDeclVideo *)[self createDeclType:DECL_EMAIL subname:@"video" collection:pda.videos];
-        
-        NSModalResponse result = [self openVideoEditor:newVideo];
-        if (result == NSModalResponseOK) {
-            [self.videoArrayController addObject:newVideo];
-        }
+        [self runModalEditSession:^NSModalResponse{
+            UDDeclVideo *newVideo = [self createChildDeclWithTypeName:@"video" subname:@"video"];
+            if (newVideo == nil) {
+                return NSModalResponseCancel;
+            }
+            NSModalResponse result = [self openVideoEditor:newVideo];
+            if (result == NSModalResponseOK) {
+                [[self.pda mutableSetValueForKey:@"videos"] addObject:newVideo];
+            }
+            return result;
+        } actionName:@"Add Video"];
     } else {
         [self.videoArrayController remove:sender];
     }
 }
 
-- (NSModalResponse)openVideoEditor:(idDeclVideo *)video {
+- (NSModalResponse)openVideoEditor:(UDDeclVideo *)video {
     // Lazily load the NIB each time, or keep the controller around
     UDPDAVideoEditorViewController *editorVC = [[UDPDAVideoEditorViewController alloc] init];
     editorVC.editingVideo = video;
@@ -181,13 +231,10 @@
     NSInteger row = tableView.clickedRow;
     if (row < 0) return; // clicked empty area
 
-    idDeclAudio *selectedAudio = self.audioArrayController.arrangedObjects[row];
-    NSModalResponse result = [self openAudioEditor:selectedAudio];
-    if (result == NSModalResponseOK) {
-        // save it
-    } else {
-        // undo it
-    }
+    UDDeclAudio *selectedAudio = self.audioArrayController.arrangedObjects[row];
+    [self runModalEditSession:^NSModalResponse{
+        return [self openAudioEditor:selectedAudio];
+    } actionName:@"Edit Audio Log"];
 }
 
 - (IBAction)emailEdit:(id)sender {
@@ -199,13 +246,10 @@
     NSInteger row = tableView.clickedRow;
     if (row < 0) return; // clicked empty area
 
-    idDeclEmail *selectedEmail = self.emailArrayController.arrangedObjects[row];
-    NSModalResponse result = [self openEmailEditor:selectedEmail];
-    if (result == NSModalResponseOK) {
-        // save it
-    } else {
-        // undo it
-    }
+    UDDeclEmail *selectedEmail = self.emailArrayController.arrangedObjects[row];
+    [self runModalEditSession:^NSModalResponse{
+        return [self openEmailEditor:selectedEmail];
+    } actionName:@"Edit Email"];
 }
 
 - (IBAction)videoEdit:(id)sender {
@@ -217,13 +261,10 @@
     NSInteger row = tableView.clickedRow;
     if (row < 0) return; // clicked empty area
 
-    idDeclVideo *selectedVideo = self.videoArrayController.arrangedObjects[row];
-    NSModalResponse result = [self openVideoEditor:selectedVideo];
-    if (result == NSModalResponseOK) {
-        // save it
-    } else {
-        // undo it
-    }
+    UDDeclVideo *selectedVideo = self.videoArrayController.arrangedObjects[row];
+    [self runModalEditSession:^NSModalResponse{
+        return [self openVideoEditor:selectedVideo];
+    } actionName:@"Edit Video"];
 }
 
 @end
@@ -235,11 +276,23 @@
 }
 
 - (IBAction)ok:(id)sender {
+    // Clicking a button does not resign the first responder, so a text field
+    // still being edited (no Enter yet) — and especially an NSTextView, whose
+    // value binding only commits when editing ends — would otherwise lose its
+    // in-flight value. Force editing to end, then ask the controller's
+    // registered editors to commit, before the modal is torn down.
+    if (![self.window makeFirstResponder:nil]) {
+        [self.window endEditingFor:nil];
+    }
+    [self.objectController commitEditing];
     [NSApp stopModalWithCode:NSModalResponseOK];
     [self.window orderOut:sender];
 }
 
 - (IBAction)cancel:(id)sender {
+    // Throw away any in-flight (uncommitted) field editing so it cannot get
+    // pushed into the object after the session's undo group has closed.
+    [self.objectController discardEditing];
     [NSApp stopModalWithCode:NSModalResponseCancel];
     [self.window orderOut:sender];
 }
@@ -254,11 +307,23 @@
 }
 
 - (IBAction)ok:(id)sender {
+    // Clicking a button does not resign the first responder, so a text field
+    // still being edited (no Enter yet) — and especially an NSTextView, whose
+    // value binding only commits when editing ends — would otherwise lose its
+    // in-flight value. Force editing to end, then ask the controller's
+    // registered editors to commit, before the modal is torn down.
+    if (![self.window makeFirstResponder:nil]) {
+        [self.window endEditingFor:nil];
+    }
+    [self.objectController commitEditing];
     [NSApp stopModalWithCode:NSModalResponseOK];
     [self.window orderOut:sender];
 }
 
 - (IBAction)cancel:(id)sender {
+    // Throw away any in-flight (uncommitted) field editing so it cannot get
+    // pushed into the object after the session's undo group has closed.
+    [self.objectController discardEditing];
     [NSApp stopModalWithCode:NSModalResponseCancel];
     [self.window orderOut:sender];
 }
@@ -272,11 +337,23 @@
 }
 
 - (IBAction)ok:(id)sender {
+    // Clicking a button does not resign the first responder, so a text field
+    // still being edited (no Enter yet) — and especially an NSTextView, whose
+    // value binding only commits when editing ends — would otherwise lose its
+    // in-flight value. Force editing to end, then ask the controller's
+    // registered editors to commit, before the modal is torn down.
+    if (![self.window makeFirstResponder:nil]) {
+        [self.window endEditingFor:nil];
+    }
+    [self.objectController commitEditing];
     [NSApp stopModalWithCode:NSModalResponseOK];
     [self.window orderOut:sender];
 }
 
 - (IBAction)cancel:(id)sender {
+    // Throw away any in-flight (uncommitted) field editing so it cannot get
+    // pushed into the object after the session's undo group has closed.
+    [self.objectController discardEditing];
     [NSApp stopModalWithCode:NSModalResponseCancel];
     [self.window orderOut:sender];
 }

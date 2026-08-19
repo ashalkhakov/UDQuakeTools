@@ -129,6 +129,7 @@ typedef enum {
     BOOL                        handleSync;        // true if written data is immediately flushed
 }
 
+-(instancetype) initWithFileSystem:(idFileSystem *)fileSystem;    // file for writing without name
 -(instancetype) initWithHandle:(FILE *)fp
                           name:(NSString *)relativePath
                       fullPath:(NSString *)fullPath

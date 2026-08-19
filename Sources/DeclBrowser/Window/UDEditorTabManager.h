@@ -22,6 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UDBaseEditorViewController *)openEditorForWorkspaceItem:(UDWorkspaceItem *)item;
 
+/** The editor in the currently selected tab, or nil when no tab is open. */
+- (nullable UDBaseEditorViewController *)selectedEditor;
+
+/** All currently open editors (one per tab), in no particular order. */
+- (NSArray<UDBaseEditorViewController *> *)allEditors;
+
 /** Close the tab for the given file path. */
 - (void)closeTabForPath:(NSString *)path;
 

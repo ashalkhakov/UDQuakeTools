@@ -99,8 +99,8 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     return model;
 }
 
-+ (NSManagedObjectContext *)newEditingContextForDeclManager:(idDeclManager *)declManager
-                                                       error:(NSError **)error {
++ (NSPersistentStoreCoordinator *)newStoreCoordinatorForDeclManager:(idDeclManager *)declManager
+                                                              error:(NSError **)error {
     [self registerStoreType];
 
     NSManagedObjectModel *model = [self managedObjectModel];
@@ -127,12 +127,24 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     if (store == nil) {
         return nil;
     }
+    return coordinator;
+}
 
++ (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator {
     NSManagedObjectContext *context =
         [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     context.persistentStoreCoordinator = coordinator;
     context.undoManager = [[NSUndoManager alloc] init];
     return context;
+}
+
++ (NSManagedObjectContext *)newEditingContextForDeclManager:(idDeclManager *)declManager
+                                                       error:(NSError **)error {
+    NSPersistentStoreCoordinator *coordinator = [self newStoreCoordinatorForDeclManager:declManager error:error];
+    if (coordinator == nil) {
+        return nil;
+    }
+    return [self newEditingContextForCoordinator:coordinator];
 }
 
 #pragma mark - Setup
@@ -463,7 +475,15 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
                 continue;
             }
             id value = parsed[attribute.name] ?: attribute.defaultValue;
-            mutableValues[attribute.name] = value ?: [NSNull null];
+            // A missing attribute is simply OMITTED from the node — Core Data
+            // then treats it as nil. NSNull is only the representation for
+            // empty to-one RELATIONSHIPS; stuffing it into an attribute slot
+            // leaks it into the row cache, and the first validateForUpdate:
+            // on the object crashes with -[NSNull length] (seen with real
+            // game emails that have no "image"/"date" field).
+            if (value != nil && value != [NSNull null]) {
+                mutableValues[attribute.name] = value;
+            }
         }
         values = mutableValues;
     }

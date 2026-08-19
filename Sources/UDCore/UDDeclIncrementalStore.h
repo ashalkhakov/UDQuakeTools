@@ -26,10 +26,22 @@ typedef enum {
 /// bundle that contains this class.
 + (nullable NSManagedObjectModel *)managedObjectModel;
 
-/// Builds a complete, ready-to-use Core Data stack (model + coordinator +
-/// UDDeclIncrementalStore + main-queue context with an undo manager) bound to
-/// the given decl manager. This is the single entry point editors use to pull
-/// decl entities for editing and push their changes back.
+/// Builds the shared half of the stack: model + coordinator with a
+/// UDDeclIncrementalStore bound to the given decl manager. One coordinator is
+/// shared by all editing contexts of a workspace; each editor/document gets
+/// its own context over it (see +newEditingContextForCoordinator:), so every
+/// document can be saved independently of the others.
++ (nullable NSPersistentStoreCoordinator *)newStoreCoordinatorForDeclManager:(idDeclManager *)declManager
+                                                                       error:(NSError * _Nullable * _Nullable)error;
+
+/// A fresh main-queue editing context (with its own NSUndoManager) over the
+/// given coordinator. Contexts are independent: each one only saves its own
+/// changes, and unsaved edits in one are invisible to the others — the
+/// VSCode-style "one dirty buffer per open document" model.
++ (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+
+/// Convenience: coordinator + one context in a single call (used by tests and
+/// one-shot tools).
 + (nullable NSManagedObjectContext *)newEditingContextForDeclManager:(idDeclManager *)declManager
                                                                 error:(NSError * _Nullable * _Nullable)error;
 

@@ -79,6 +79,17 @@
          "\tvideo \"video/test.roq\"\n"
          "\tinfo \"i\"\n"
          "\taudio \"sound/v.wav\"\n"
+         "}\n"
+         "\n"
+         // Real game data routinely omits optional fields (no date, no
+         // image); regression coverage for the NSNull-in-attribute crash.
+         "email test/email_sparse {\n"
+         "\tsubject \"Sparse\"\n"
+         "\tto \"a\"\n"
+         "\tfrom \"b\"\n"
+         "\ttext {\n"
+         "\t\t\"x\"\n"
+         "\t}\n"
          "}\n";
     [self writeGameFile:@"newpdas/test.pda" contents:pdaFixture];
 
@@ -125,8 +136,10 @@
     NSError *error = nil;
     XCTAssertTrue([self.workspace startup:&error], @"workspace startup failed: %@", error);
 
-    self.context = self.workspace.declEditingContext;
-    XCTAssertNotNil(self.context, @"the decl editing context (model, coordinator, store) must come up");
+    // Editing contexts are per-document now: each one comes fresh off the
+    // workspace's shared store coordinator.
+    self.context = [self.workspace newDeclEditingContextWithError:&error];
+    XCTAssertNotNil(self.context, @"the decl editing context (model, coordinator, store) must come up: %@", error);
 }
 
 - (void)tearDown {
@@ -221,6 +234,23 @@
     XCTAssertTrue([onDisk containsString:@"pda_email \"test/email1\""]);
     XCTAssertTrue([onDisk containsString:@"pda_audio \"test/audio1\""]);
     XCTAssertTrue([onDisk containsString:@"pda_video \"test/video1\""]);
+}
+
+// Decls parsed from real game data often lack optional fields entirely. The
+// store must materialize those attributes as nil (omitted from the incremental
+// store node) — NOT as NSNull, which used to sit in the row cache until the
+// first save's validateForUpdate: crashed with -[NSNull length].
+- (void)testUpdateDeclWithMissingOptionalFieldsSaves {
+    UDDeclEmail *email = [self declWithTypeName:@"email" name:@"test/email_sparse"];
+    XCTAssertNotNil(email);
+    XCTAssertNil(email.image, @"a missing field must come back as nil, not NSNull");
+    XCTAssertNil(email.date, @"a missing field must come back as nil, not NSNull");
+
+    email.subject = @"Sparse Edited";
+    [self saveContext]; // must not throw in validation
+
+    NSString *onDisk = [self contentsOfGameFile:@"newpdas/test.pda"];
+    XCTAssertTrue([onDisk containsString:@"subject \"Sparse Edited\""]);
 }
 
 - (void)testUpdateParticleStageWritesToDisk {
@@ -354,6 +384,49 @@
 
     NSString *onDisk = [self contentsOfGameFile:@"particles/test.prt"];
     XCTAssertFalse([onDisk containsString:@"particle testfx {"]);
+}
+
+#pragma mark - Per-document context isolation (Save vs Save All)
+
+// Two contexts over the same coordinator model the VSCode buffers: saving
+// one document must write ONLY its changes to disk, leaving the other
+// document's unsaved edits alone (and invisible on disk) until it is saved
+// itself.
+- (void)testSavingOneContextDoesNotSaveTheOther {
+    NSError *error = nil;
+    NSManagedObjectContext *otherContext = [self.workspace newDeclEditingContextWithError:&error];
+    XCTAssertNotNil(otherContext, @"second editing context must come up: %@", error);
+    XCTAssertNotEqual(otherContext, self.context);
+
+    // Document 1 edits the PDA; document 2 edits the particle.
+    UDDeclPDA *pda = [self declWithTypeName:@"pda" name:@"test/pda1"];
+    pda.post = @"Chief Tester";
+
+    UDDeclParticle *particle = [UDDeclBase ud_declWithTypeName:@"particle" name:@"testfx"
+                                                       inContext:otherContext error:&error];
+    XCTAssertNotNil(particle);
+    UDParticleStage *stage = particle.stages.firstObject;
+    stage.totalParticles = 42;
+    particle.stages = @[stage];
+
+    // Save document 1 only.
+    [self saveContext];
+
+    NSString *pdaOnDisk = [self contentsOfGameFile:@"newpdas/test.pda"];
+    NSString *prtOnDisk = [self contentsOfGameFile:@"particles/test.prt"];
+    XCTAssertTrue([pdaOnDisk containsString:@"post \"Chief Tester\""],
+                  @"the saved document's change must hit the disk");
+    XCTAssertFalse([prtOnDisk containsString:@"count\t\t\t\t42"],
+                   @"the OTHER document's unsaved change must NOT hit the disk");
+    XCTAssertTrue(otherContext.hasChanges, @"the other document must still be dirty");
+
+    // Now save document 2 (this is what Save All does for every dirty tab).
+    XCTAssertTrue([otherContext save:&error], @"second context save failed: %@", error);
+    prtOnDisk = [self contentsOfGameFile:@"particles/test.prt"];
+    XCTAssertTrue([prtOnDisk containsString:@"count\t\t\t\t42"]);
+
+    // And document 1's earlier save must not have been clobbered.
+    XCTAssertTrue([[self contentsOfGameFile:@"newpdas/test.pda"] containsString:@"post \"Chief Tester\""]);
 }
 
 #pragma mark - Undo

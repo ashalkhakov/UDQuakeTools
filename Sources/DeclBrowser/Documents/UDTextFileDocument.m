@@ -53,10 +53,18 @@
         return NO;
     }
 
+    self.textContent = content;
+    [self updateChangeCount:NSChangeCleared];
     return YES;
 }
 
 - (void)setTextView:(NSTextView *)textView {
+    if (_textView != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:NSTextDidChangeNotification
+                                                      object:_textView];
+    }
+
     _textView = textView;
     if (textView && self.textContent) {
         [textView.textStorage beginEditing];
@@ -66,6 +74,21 @@
         [textView.textStorage endEditing];
     }
     textView.undoManager.levelsOfUndo = 50;
+
+    if (textView != nil) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(_textViewTextDidChange:)
+                                                     name:NSTextDidChangeNotification
+                                                   object:textView];
+    }
+}
+
+- (void)_textViewTextDidChange:(NSNotification *)notification {
+    [self updateChangeCount:NSChangeDone];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

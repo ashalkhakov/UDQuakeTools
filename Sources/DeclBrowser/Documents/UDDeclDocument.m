@@ -12,15 +12,22 @@
     self = [super initWithType:@"public.plain-text" error:error];
     if (self) {
         self.workspace = workspace;
+        _declType = type;
 
         NSString *typeName = [workspace.declManager declNameFromType:type];
-        NSManagedObjectContext *context = workspace.declEditingContext;
+        NSPersistentStoreCoordinator *coordinator = workspace.declStoreCoordinator;
 
-        BOOL typeHasEntity = context != nil &&
+        BOOL typeHasEntity = coordinator != nil &&
             [UDDeclBase ud_entityNameForDeclTypeName:typeName
-                                               inModel:context.persistentStoreCoordinator.managedObjectModel] != nil;
+                                               inModel:coordinator.managedObjectModel] != nil;
 
         if (typeHasEntity) {
+            // Each document gets its OWN context over the workspace's shared
+            // coordinator, so saving this document saves only its changes.
+            NSManagedObjectContext *context = [workspace newDeclEditingContextWithError:error];
+            if (context == nil) {
+                return nil;
+            }
             _editingContext = context;
             _declObject = [UDDeclBase ud_declWithTypeName:typeName name:name inContext:context error:error];
             if (_declObject == nil) {
@@ -31,8 +38,8 @@
             // object edits made through bindings as well as text edits.
             self.undoManager = context.undoManager;
 
-            // Track dirtiness: any change to our decl (or to a child decl
-            // that belongs to it) marks the document edited.
+            // Track dirtiness: the context is private to this document, so
+            // any change in it belongs to this document.
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(_editingContextObjectsDidChange:)
                                                          name:NSManagedObjectContextObjectsDidChangeNotification
@@ -54,26 +61,21 @@
 }
 
 - (void)_editingContextObjectsDidChange:(NSNotification *)notification {
-    NSMutableSet *changed = [NSMutableSet set];
+    // The editing context is private to this document, so any insert, update
+    // or delete in it is this document's change.
     for (NSString *key in @[NSInsertedObjectsKey, NSUpdatedObjectsKey, NSDeletedObjectsKey]) {
         NSSet *objects = notification.userInfo[key];
-        if (objects != nil) {
-            [changed unionSet:objects];
+        if (objects.count > 0) {
+            [self updateChangeCount:NSChangeDone];
+            return;
         }
     }
+}
 
-    for (NSManagedObject *object in changed) {
-        if (object == self.declObject) {
-            [self updateChangeCount:NSChangeDone];
-            return;
-        }
-        // A child decl (email/audio/video) attached to our decl.
-        if (object.entity.relationshipsByName[@"pda"] != nil &&
-            [object valueForKey:@"pda"] == self.declObject) {
-            [self updateChangeCount:NSChangeDone];
-            return;
-        }
-    }
+- (void)_textViewTextDidChange:(NSNotification *)notification {
+    // Raw text edits never touch the managed object until save, so the
+    // context can't report them — mark the document edited directly.
+    [self updateChangeCount:NSChangeDone];
 }
 
 // Don't create a window; the workspace window controller hosts the view.
@@ -134,10 +136,109 @@
     }
     [self.legacyDecl invalidate];
 
+    [self updateChangeCount:NSChangeCleared];
     return YES;
 }
 
+#pragma mark - Save As (transfer the buffer to a new decl)
+
+- (__kindof UDDeclBase *)saveAsNewDeclNamed:(NSString *)newName error:(NSError **)error {
+    UDDeclBase *original = self.declObject;
+    NSManagedObjectContext *context = self.editingContext;
+
+    if (original == nil || context == nil || newName.length == 0) {
+        if (error != NULL) {
+            *error = [NSError errorWithDomain:@"UDDeclDocument"
+                                          code:1
+                                      userInfo:@{NSLocalizedDescriptionKey:
+                @"Save As is only available for entity-backed decls"}];
+        }
+        return nil;
+    }
+
+    NSEntityDescription *entity = original.entity;
+
+    // 1. Capture the buffer's current content. When a text view is attached
+    //    its string is the authoritative content (same rule as -writeToURL:);
+    //    otherwise (structured form editors, e.g. the PDA editor) the managed
+    //    object's attribute values are.
+    NSData *bufferText = nil;
+    NSMutableDictionary<NSString *, id> *attributeValues = nil;
+
+    if (self.textView != nil) {
+        bufferText = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
+    } else {
+        attributeValues = [NSMutableDictionary dictionary];
+        for (NSAttributeDescription *attribute in entity.attributesByName.allValues) {
+            if ([attribute.name isEqualToString:@"name"] ||
+                [attribute.name isEqualToString:@"sourceText"]) {
+                // The new decl gets its own name; sourceText is regenerated
+                // by the store's codec from the copied attributes, so the new
+                // decl's text header carries the NEW name.
+                continue;
+            }
+            id value = [original valueForKey:attribute.name];
+            if (value != nil) {
+                attributeValues[attribute.name] = value;
+            }
+        }
+    }
+
+    NSManagedObject *sourceFile = [original valueForKey:@"sourceFile"];
+
+    // 2. Transfer semantics: the original (and anything else in this
+    //    document's private context) reverts to its last saved state...
+    [context processPendingChanges];
+    [context rollback];
+
+    // 3. ...and a new decl is created with the captured content, in the same
+    //    source file as the original.
+    UDDeclBase *newDecl = [NSEntityDescription insertNewObjectForEntityForName:entity.name
+                                                          inManagedObjectContext:context];
+    newDecl.name = newName;
+    if (sourceFile != nil && sourceFile.managedObjectContext == context) {
+        [newDecl setValue:sourceFile forKey:@"sourceFile"];
+    }
+
+    if (bufferText != nil) {
+        // Raw-text transfer: keep only the body (from the first brace on).
+        // The store/manager prepend the "type newname" header themselves, so
+        // stripping the old header here is what gives the new decl a correct
+        // one instead of a stale copy naming the original.
+        NSData *body = bufferText;
+        NSString *asString = [[NSString alloc] initWithData:bufferText encoding:NSUTF8StringEncoding];
+        NSRange brace = [asString rangeOfString:@"{"];
+        if (brace.location != NSNotFound) {
+            body = [[asString substringFromIndex:brace.location] dataUsingEncoding:NSUTF8StringEncoding];
+        }
+        newDecl.sourceText = body;
+    } else {
+        [attributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+            [newDecl setValue:value forKey:key];
+        }];
+    }
+
+    // 4. Persist. Only the new decl is dirty at this point, so this save
+    //    creates exactly one decl and touches nothing else.
+    if (![context save:error]) {
+        [context rollback];
+        return nil;
+    }
+
+    // The buffer's identity has effectively changed; the caller re-opens the
+    // editor on the new decl, so the old undo history no longer applies.
+    [context.undoManager removeAllActions];
+    [self updateChangeCount:NSChangeCleared];
+    return newDecl;
+}
+
 - (void)setTextView:(NSTextView *)textView {
+    if (_textView != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:NSTextDidChangeNotification
+                                                      object:_textView];
+    }
+
     _textView = textView;
     if (textView && self.textContent) {
         [textView.textStorage beginEditing];
@@ -147,6 +248,13 @@
         [textView.textStorage endEditing];
     }
     textView.undoManager.levelsOfUndo = 50;
+
+    if (textView != nil) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(_textViewTextDidChange:)
+                                                     name:NSTextDidChangeNotification
+                                                   object:textView];
+    }
 }
 
 @end

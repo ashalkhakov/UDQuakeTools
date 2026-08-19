@@ -1,4 +1,5 @@
 #import "UDBaseEditorViewController.h"
+#import "UDBaseDocument.h"
 #import "UDFileItem.h"
 #import "UDDeclItem.h"
 #import "UDTextEditorViewController.h"
@@ -7,6 +8,18 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @implementation UDBaseEditorViewController
+
+- (UDBaseDocument *)editorDocument {
+    // Subclasses each declare their own typed `document` property; pick it
+    // up generically via KVC so the base class needs no storage of its own.
+    if ([self respondsToSelector:NSSelectorFromString(@"document")]) {
+        id document = [self valueForKey:@"document"];
+        if ([document isKindOfClass:[UDBaseDocument class]]) {
+            return document;
+        }
+    }
+    return nil;
+}
 
 + (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace {
     

@@ -14,7 +14,7 @@
 #import "UDDeclIncrementalStore.h"
 
 @implementation UDWorkspace {
-    NSManagedObjectContext *_declEditingContext;
+    NSPersistentStoreCoordinator *_declStoreCoordinator;
 }
 
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir {
@@ -115,7 +115,7 @@
 }
 
 -(void)shutdown {
-    _declEditingContext = nil;
+    _declStoreCoordinator = nil;
     [self.declManager shutdown];
     [self.fileSystem shutdown:NO];
 }
@@ -124,22 +124,35 @@
 // Decl editing (Core Data over idDeclManager)
 // ---------------------------------------------------------
 
-- (NSManagedObjectContext *)declEditingContext {
-    if (_declEditingContext != nil) {
-        return _declEditingContext;
+- (NSPersistentStoreCoordinator *)declStoreCoordinator {
+    if (_declStoreCoordinator != nil) {
+        return _declStoreCoordinator;
     }
 
     if (self.declManager == nil) {
-        NSLog(@"UDWorkspace: workspace has no declManager; no decl editing context");
+        NSLog(@"UDWorkspace: workspace has no declManager; no decl store coordinator");
         return nil;
     }
 
     NSError *error = nil;
-    _declEditingContext = [UDDeclIncrementalStore newEditingContextForDeclManager:self.declManager error:&error];
-    if (_declEditingContext == nil) {
-        NSLog(@"UDWorkspace: could not build decl editing context: %@", error);
+    _declStoreCoordinator = [UDDeclIncrementalStore newStoreCoordinatorForDeclManager:self.declManager error:&error];
+    if (_declStoreCoordinator == nil) {
+        NSLog(@"UDWorkspace: could not build decl store coordinator: %@", error);
     }
-    return _declEditingContext;
+    return _declStoreCoordinator;
+}
+
+- (NSManagedObjectContext *)newDeclEditingContextWithError:(NSError **)error {
+    NSPersistentStoreCoordinator *coordinator = self.declStoreCoordinator;
+    if (coordinator == nil) {
+        if (error != NULL) {
+            *error = [NSError errorWithDomain:@"UDWorkspace"
+                                          code:1
+                                      userInfo:@{NSLocalizedDescriptionKey: @"Could not build the decl editing stack"}];
+        }
+        return nil;
+    }
+    return [UDDeclIncrementalStore newEditingContextForCoordinator:coordinator];
 }
 
 @end

@@ -9,7 +9,7 @@
 #import <AppKit/AppKit.h>
 
 @class idFileSystem, idDeclManager;
-@class NSManagedObjectContext;
+@class NSManagedObjectContext, NSPersistentStoreCoordinator;
 
 @interface UDWorkspace : NSObject
 
@@ -39,14 +39,21 @@
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, strong) idDeclManager *declManager;
 
-// The lazily-created managed object context backed by UDDeclIncrementalStore
-// over this workspace's declManager. All decl editors of one workspace share
-// this context, so edits, renames and unsaved changes are visible to each
-// other and a single -save: pushes everything down into idDeclManager (which
-// then writes the decl files out). Returns nil (and logs) if the stack could
-// not be built, e.g. when the workspace has no decl manager yet.
+// The lazily-created shared persistent store coordinator (with a
+// UDDeclIncrementalStore bound to this workspace's declManager). Every decl
+// editing context of this workspace sits on top of this one coordinator.
+// Returns nil (and logs) if the stack could not be built, e.g. when the
+// workspace has no decl manager yet.
 // (Requires CoreData; on GNUstep this is provided by FreeCoreData.)
-@property (nonatomic, strong, readonly) NSManagedObjectContext *declEditingContext;
+@property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *declStoreCoordinator;
+
+// A FRESH editing context over declStoreCoordinator, with its own undo
+// manager. Each open decl document creates one, giving VSCode-style
+// per-document buffers: many decls can be modified at the same time, each
+// document's -save: pushes only ITS changes down into idDeclManager (which
+// then rewrites the affected decl files), and unsaved edits in one document
+// are invisible to the others.
+- (NSManagedObjectContext *)newDeclEditingContextWithError:(NSError **)error;
 
 // Serialization
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir;

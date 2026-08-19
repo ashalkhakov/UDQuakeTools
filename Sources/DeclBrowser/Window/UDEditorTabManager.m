@@ -60,6 +60,18 @@
     return vc;
 }
 
+- (UDBaseEditorViewController *)selectedEditor {
+    id identifier = self.tabView.selectedTabViewItem.identifier;
+    if (![identifier isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    return self.openEditors[(NSString *)identifier];
+}
+
+- (NSArray<UDBaseEditorViewController *> *)allEditors {
+    return self.openEditors.allValues;
+}
+
 - (void)closeTabForPath:(NSString *)path {
     NSTabViewItem *tabItem = [self tabViewItemForPath:path];
     if (tabItem) {

@@ -21,4 +21,10 @@
 
 - (IBAction)nameFilterChanged:(NSSearchField *)sender;
 - (IBAction)textContainsFilterChanged:(NSSearchField *)sender;
+
+// File menu save plumbing (VSCode-style; the window controller intercepts
+// these ahead of the workspace document in the responder chain):
+- (IBAction)saveDocument:(id)sender;     // Save the current tab's document
+- (IBAction)saveAllDocuments:(id)sender; // Save every dirty open tab
+- (IBAction)saveDocumentAs:(id)sender;   // Save the current decl as a new decl
 @end

@@ -27,7 +27,6 @@
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 #import "UDDeclManagedObjects.h"
-#import "UDDeclType.h"
 #import "UDWorkspace.h"
 
 NSString * const UDDeclIncrementalStoreType = @"UDDeclIncrementalStore";

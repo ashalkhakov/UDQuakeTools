@@ -2319,7 +2319,7 @@ int PC_OperatorPriority(int op) {
     return NO;
 }
 
--(BOOL)skipBracedSection:(bool)parseFirstBrace error:(NSError **)error {
+-(BOOL)skipBracedSection:(BOOL)parseFirstBrace error:(NSError **)error {
     idToken token;
     int depth;
     

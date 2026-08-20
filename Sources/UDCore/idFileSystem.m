@@ -579,7 +579,7 @@ typedef UDSearchPath searchpath_t;
 
     self->name = [name mutableCopy];
     if (self->name.length) {
-        CFStringLowercase((CFMutableStringRef)self->name, NULL);
+        CFStringLowercase((__bridge CFMutableStringRef)self->name, NULL);
         [self->name replaceOccurrencesOfString:@"\\" withString:@"/" options:0 range:NSMakeRange(0, name.length)];
     }
     pos = 0;

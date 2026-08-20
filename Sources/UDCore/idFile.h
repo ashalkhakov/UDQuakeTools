@@ -110,7 +110,7 @@ typedef enum {
 // changes memory file to read only
 -(void)makeReadOnly;
 // clear the file
--(void)clear:(bool)freeMemory;
+-(void)clear:(BOOL)freeMemory;
 // set data for reading
 -(void)setData:(char *)data length:(int)length;
 // returns const pointer to the memory buffer

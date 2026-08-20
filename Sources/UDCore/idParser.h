@@ -107,7 +107,7 @@ typedef struct indent_s {
 // returns true and reads the token when a token with the given type is available
 - (BOOL)checkTokenType:(int)type subtype:(int)subtype into:(idToken *)token error:(NSError **)error;
 // skip tokens until the given token string is read
-- (BOOL)skipUntilString:(NSString *)string error:(NSString **)error;
+- (BOOL)skipUntilString:(NSString *)string error:(NSError **)error;
 // skip the rest of the current line
 -(BOOL)skipRestOfLine:(NSError **)error;
 // jmarshall

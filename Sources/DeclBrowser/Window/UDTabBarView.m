@@ -1,9 +1,10 @@
 #import "UDTabBarView.h"
 #import "UDTabItemView.h"
 
-static const CGFloat kUDTabBarItemMinWidth = 110.0;
-static const CGFloat kUDTabBarItemMaxWidth = 220.0;
-static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlays
+static const CGFloat kUDTabBarItemMinWidth   = 110.0;
+static const CGFloat kUDTabBarItemMaxWidth   = 220.0;
+static const CGFloat kUDTabBarItemPadding    = 58.0; // room for close/pin overlays
+static const CGFloat kUDTabBarScrollerHeight = 12.0; // our own hover scroller
 
 #pragma mark - UDTabBarItem
 
@@ -60,6 +61,33 @@ static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlay
 - (BOOL)isFlipped { return YES; }
 @end
 
+#pragma mark - Scroll view (vertical wheel → horizontal strip scrolling)
+
+// A mouse without a horizontal wheel can still scroll the tab strip: plain
+// vertical wheel motion is translated into horizontal scrolling.
+@interface UDTabBarScrollView : NSScrollView
+@end
+
+@implementation UDTabBarScrollView
+
+- (void)scrollWheel:(NSEvent *)event {
+    if (fabs(event.deltaX) < 0.001 && fabs(event.deltaY) > 0.001) {
+        NSClipView *clipView = self.contentView;
+        NSView *documentView = self.documentView;
+        CGFloat maxOffset = NSWidth(documentView.frame) - NSWidth(clipView.bounds);
+        if (maxOffset > 0.5) {
+            CGFloat offset = clipView.bounds.origin.x - event.deltaY * 12.0;
+            offset = MAX(0.0, MIN(offset, maxOffset));
+            [clipView scrollToPoint:NSMakePoint(offset, 0.0)];
+            [self reflectScrolledClipView:clipView];
+            return;
+        }
+    }
+    [super scrollWheel:event];
+}
+
+@end
+
 #pragma mark - UDTabBarView
 
 @interface UDTabBarView () {
@@ -67,7 +95,10 @@ static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlay
     NSMapTable<UDTabBarItem *, UDTabItemView *> *_viewsByItem;
     NSScrollView *_scrollView;
     UDTabBarContainerView *_container;
-    UDTabItemView *_draggedView; // non-nil during a reorder drag
+    UDTabItemView *_draggedView;    // non-nil during a reorder drag
+    NSScroller *_scroller;          // our own hover scroller (bottom half)
+    NSTrackingArea *_hoverArea;
+    BOOL _mouseInLowerHalf;
 }
 @end
 
@@ -95,22 +126,46 @@ static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlay
 
     _container = [[UDTabBarContainerView alloc] initWithFrame:self.bounds];
 
-    _scrollView = [[NSScrollView alloc] initWithFrame:self.bounds];
+    // No AppKit-managed scroller: the system overlay scroller only flashes
+    // after scroll events and fades before it can be grabbed. We overlay our
+    // OWN NSScroller (below) and show it while the cursor is in the lower
+    // half of the bar.
+    _scrollView = [[UDTabBarScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     _scrollView.borderType = NSNoBorder;
     _scrollView.drawsBackground = NO;
     _scrollView.hasVerticalScroller = NO;
-    _scrollView.hasHorizontalScroller = YES;
-    _scrollView.autohidesScrollers = YES;
-    // 10.7+ niceties, absent on (some) GNUstep versions:
+    _scrollView.hasHorizontalScroller = NO;
+    // 10.7+ nicety, absent on (some) GNUstep versions:
     if ([_scrollView respondsToSelector:@selector(setHorizontalScrollElasticity:)]) {
         _scrollView.horizontalScrollElasticity = NSScrollElasticityNone;
     }
-    if ([_scrollView respondsToSelector:@selector(setScrollerStyle:)]) {
-        _scrollView.scrollerStyle = NSScrollerStyleOverlay;
-    }
     _scrollView.documentView = _container;
     [self addSubview:_scrollView];
+
+    // Our own always-interactable scroller, overlaid on the bottom half of
+    // the strip (frame is wider than tall → NSScroller comes up horizontal).
+    _scroller = [[NSScroller alloc] initWithFrame:NSMakeRect(0.0, 0.0, 100.0, kUDTabBarScrollerHeight)];
+    if ([_scroller respondsToSelector:@selector(setScrollerStyle:)]) {
+        _scroller.scrollerStyle = NSScrollerStyleLegacy;
+    }
+    _scroller.controlSize = NSSmallControlSize;
+    _scroller.target = self;
+    _scroller.action = @selector(_scrollerChanged:);
+    _scroller.enabled = YES;
+    _scroller.hidden = YES;
+    [self addSubview:_scroller]; // after the scroll view → stays on top
+
+    // Keep the scroller's knob in sync with every scroll, from any source.
+    _scrollView.contentView.postsBoundsChangedNotifications = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_clipViewBoundsChanged:)
+                                                 name:NSViewBoundsDidChangeNotification
+                                               object:_scrollView.contentView];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)isFlipped {
@@ -129,6 +184,114 @@ static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlay
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize {
     [super resizeSubviewsWithOldSize:oldSize];
     [self _layoutItemViews];
+}
+
+#pragma mark - Hover scroller
+
+// The bar tracks the mouse itself (tracking areas are geometric, so the item
+// views on top don't interfere): while the cursor is in the LOWER half of
+// the bar and the tabs overflow, our scroller appears there, fully
+// interactable — akin to a browser's tab strip scroller.
+
+- (void)updateTrackingAreas {
+    [super updateTrackingAreas];
+    if (_hoverArea != nil) {
+        [self removeTrackingArea:_hoverArea];
+    }
+    _hoverArea = [[NSTrackingArea alloc] initWithRect:self.bounds
+                                              options:(NSTrackingMouseEnteredAndExited |
+                                                       NSTrackingMouseMoved |
+                                                       NSTrackingActiveInActiveApp)
+                                                owner:self
+                                             userInfo:nil];
+    [self addTrackingArea:_hoverArea];
+}
+
+- (void)_updateMouseLocationFromEvent:(NSEvent *)event {
+    NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+    // Flipped view: larger y = lower on screen.
+    BOOL inLowerHalf = point.y > NSHeight(self.bounds) / 2.0;
+    if (inLowerHalf != _mouseInLowerHalf) {
+        _mouseInLowerHalf = inLowerHalf;
+        [self _updateScroller];
+    }
+}
+
+- (void)mouseEntered:(NSEvent *)event {
+    [self _updateMouseLocationFromEvent:event];
+}
+
+- (void)mouseMoved:(NSEvent *)event {
+    [self _updateMouseLocationFromEvent:event];
+}
+
+- (void)mouseExited:(NSEvent *)event {
+    if (_mouseInLowerHalf) {
+        _mouseInLowerHalf = NO;
+        [self _updateScroller];
+    }
+}
+
+- (void)_clipViewBoundsChanged:(NSNotification *)notification {
+    [self _updateScroller];
+}
+
+// Repositions the scroller along the bottom of the bar and syncs its knob
+// with the strip's scroll state; visible only while it is useful (overflow)
+// AND wanted (cursor in the lower half).
+- (void)_updateScroller {
+    CGFloat visibleWidth = NSWidth(_scrollView.contentView.bounds);
+    CGFloat contentWidth = NSWidth(_container.frame);
+    CGFloat maxOffset = contentWidth - visibleWidth;
+    BOOL overflows = maxOffset > 0.5;
+
+    if (overflows) {
+        CGFloat offset = _scrollView.contentView.bounds.origin.x;
+        _scroller.knobProportion = visibleWidth / contentWidth;
+        _scroller.doubleValue = MAX(0.0, MIN(offset / maxOffset, 1.0));
+    }
+
+    // Flipped coords: the bottom edge of the bar is at maxY.
+    _scroller.frame = NSMakeRect(0.0,
+                                 NSHeight(self.bounds) - kUDTabBarScrollerHeight,
+                                 NSWidth(self.bounds),
+                                 kUDTabBarScrollerHeight);
+    _scroller.hidden = !(overflows && _mouseInLowerHalf);
+}
+
+- (void)_scrollerChanged:(NSScroller *)sender {
+    NSClipView *clipView = _scrollView.contentView;
+    CGFloat visibleWidth = NSWidth(clipView.bounds);
+    CGFloat maxOffset = NSWidth(_container.frame) - visibleWidth;
+    if (maxOffset <= 0.0) {
+        return;
+    }
+
+    CGFloat offset = clipView.bounds.origin.x;
+    switch (sender.hitPart) {
+        case NSScrollerDecrementPage:
+            offset -= visibleWidth * 0.8;
+            break;
+        case NSScrollerIncrementPage:
+            offset += visibleWidth * 0.8;
+            break;
+        case NSScrollerDecrementLine:
+            offset -= 30.0;
+            break;
+        case NSScrollerIncrementLine:
+            offset += 30.0;
+            break;
+        case NSScrollerKnob:
+        case NSScrollerKnobSlot:
+        default:
+            offset = sender.doubleValue * maxOffset;
+            break;
+    }
+
+    offset = MAX(0.0, MIN(offset, maxOffset));
+    [clipView scrollToPoint:NSMakePoint(offset, 0.0)];
+    [_scrollView reflectScrolledClipView:clipView];
+    [self _updateScroller];
 }
 
 #pragma mark - Public API
@@ -345,6 +508,7 @@ static const CGFloat kUDTabBarItemPadding  = 58.0; // room for close/pin overlay
     }
 
     [_container setFrameSize:NSMakeSize(MAX(x, NSWidth(self.bounds)), barHeight)];
+    [self _updateScroller];
 
     // NOTE: no z-order games here. The dragged view is raised ONCE in
     // _itemViewBeganDrag:; removing/re-adding it on every relayout used to

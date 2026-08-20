@@ -9,13 +9,16 @@
  *     Left  → NSScrollView > NSOutlineView   (workspace file tree)
  *     Right → NSTabView                      (editor tabs)
  */
+@class UDTabBarView;
+
 @interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate>
 
 @property (weak, nonatomic) IBOutlet NSOutlineView *outlineView;
 @property (weak, nonatomic) IBOutlet NSSearchField *nameFilterField;
 @property (weak, nonatomic) IBOutlet NSOutlineView *searchOutlineView;
 @property (weak, nonatomic) IBOutlet NSSearchField *textFilterField;
-@property (weak, nonatomic) IBOutlet NSTabView *tabView;         // right side of the split
+@property (weak, nonatomic) IBOutlet NSTabView *tabView;         // right side of the split (tabless; content only)
+@property (weak, nonatomic) IBOutlet UDTabBarView *tabBarView;   // the Xcode-like tab strip above it
 
 @property (nonatomic, strong, nonnull) UDDeclBrowser *declBrowser;
 

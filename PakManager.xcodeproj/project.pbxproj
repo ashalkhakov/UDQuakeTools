@@ -103,6 +103,9 @@
 		CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */; };
 		CEFC6516302790DD00157501 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
 		CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
+		DAC0000600000000000000AA /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
+		DAC0000700000000000000AA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
+		DAC0000800000000000000AA /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
 		CEFC65313027974B00157501 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
 		CEFC65323027974B00157501 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
 		CEFC65333027974B00157501 /* UDFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652D3027974B00157501 /* UDFolder.m */; };
@@ -359,6 +362,11 @@
 		CEFC6515302790DD00157501 /* UDAppDocumentController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDocumentController.m; sourceTree = "<group>"; };
 		CEFC65173027923700157501 /* UDEditorTabManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEditorTabManager.h; sourceTree = "<group>"; };
 		CEFC65183027923700157501 /* UDEditorTabManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDEditorTabManager.m; sourceTree = "<group>"; };
+		DAC0000100000000000000AA /* UDTabBarView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabBarView.h; sourceTree = "<group>"; };
+		DAC0000200000000000000AA /* UDTabBarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabBarView.m; sourceTree = "<group>"; };
+		DAC0000300000000000000AA /* UDTabItemView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabItemView.h; sourceTree = "<group>"; };
+		DAC0000400000000000000AA /* UDTabItemView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabItemView.m; sourceTree = "<group>"; };
+		DAC0000500000000000000AA /* UDTabItemView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTabItemView.xib; sourceTree = "<group>"; };
 		CEFC65283027974B00157501 /* UDWorkspaceItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceItem.h; sourceTree = "<group>"; };
 		CEFC65293027974B00157501 /* UDWorkspaceItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceItem.m; sourceTree = "<group>"; };
 		CEFC652A3027974B00157501 /* UDProject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDProject.h; sourceTree = "<group>"; };
@@ -674,6 +682,10 @@
 				CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */,
 				CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */,
 				CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */,
+				DAC0000100000000000000AA /* UDTabBarView.h */,
+				DAC0000200000000000000AA /* UDTabBarView.m */,
+				DAC0000300000000000000AA /* UDTabItemView.h */,
+				DAC0000400000000000000AA /* UDTabItemView.m */,
 				CEFC65173027923700157501 /* UDEditorTabManager.h */,
 				CEFC65183027923700157501 /* UDEditorTabManager.m */,
 			);
@@ -739,6 +751,7 @@
 				CE1CDC77301E41220037DBA5 /* MainMenu.xib */,
 				CEFC6552302A077100157501 /* UDTextEditorView.xib */,
 				CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */,
+				DAC0000500000000000000AA /* UDTabItemView.xib */,
 				CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */,
 				CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */,
 				CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */,
@@ -1054,6 +1067,7 @@
 			files = (
 				CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */,
 				CE56D7A1302355B300099DF4 /* UDPDAEditorView.xib in Resources */,
+				DAC0000800000000000000AA /* UDTabItemView.xib in Resources */,
 				CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */,
 				CE1CDC81301E41500037DBA5 /* Assets.xcassets in Resources */,
 				CEFC6556302A07BC00157501 /* UDImageViewerView.xib in Resources */,
@@ -1178,6 +1192,8 @@
 				CE1CDC85301E43A30037DBA5 /* UDWorkspaceWindowController.m in Sources */,
 				CEFC6559302A203200157501 /* UDBaseDocument.m in Sources */,
 				CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */,
+				DAC0000600000000000000AA /* UDTabBarView.m in Sources */,
+				DAC0000700000000000000AA /* UDTabItemView.m in Sources */,
 				DD01000000000000000000AA /* main.m in Sources */,
 				CEFC65513029F03B00157501 /* UDDeclItem.m in Sources */,
 				CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */,

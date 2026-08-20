@@ -4,6 +4,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Posted (object = the document) whenever the document's change count is
+ * updated, i.e. whenever isDocumentEdited may have flipped. The editor tab
+ * bar listens to this to show/hide the per-tab dirty indicator.
+ */
+extern NSString * const UDBaseDocumentEditedStateDidChangeNotification;
+
 @interface UDBaseDocument : NSDocument
 
 @property (nonatomic, strong) UDWorkspace *workspace;

@@ -1,4 +1,5 @@
 #import <AppKit/AppKit.h>
+#import "UDTabBarView.h"
 
 @class UDBaseEditorViewController, UDWorkspace, UDWorkspaceItem;
 
@@ -7,13 +8,20 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Manages the set of open editor tabs in the workspace window.
  * Prevents duplicate tabs by keying on file path.
- * Wraps an NSTabView (or NSTabViewController) that the workspace window controller owns.
+ *
+ * The visible tab strip is a UDTabBarView (Xcode-like editor tabs, with
+ * per-tab dirty indicator, close and pin buttons, drag-to-reorder and
+ * horizontal scrolling); the actual view swapping is done by a tabless
+ * NSTabView. Both live in UDWorkspaceWindow.xib. Pinned tabs sort to the
+ * front of the bar and cannot be closed until unpinned; closing a dirty tab
+ * asks to save/discard first.
  */
-@interface UDEditorTabManager : NSObject
+@interface UDEditorTabManager : NSObject <UDTabBarViewDelegate>
 
 @property (nonatomic, weak) NSTabView *tabView;
+@property (nonatomic, strong, readonly) UDTabBarView *tabBar;
 
-- (instancetype)initWithTabView:(NSTabView *)tabView workspace:(UDWorkspace *)workspace NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTabView:(NSTabView *)tabView tabBar:(UDTabBarView *)tabBar workspace:(UDWorkspace *)workspace NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
@@ -28,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** All currently open editors (one per tab), in no particular order. */
 - (NSArray<UDBaseEditorViewController *> *)allEditors;
 
-/** Close the tab for the given file path. */
+/** Close the tab for the given file path (unconditionally, no save prompt). */
 - (void)closeTabForPath:(NSString *)path;
 
 /** Close all tabs. */

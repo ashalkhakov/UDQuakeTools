@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="tiv-Ro-ot1" customClass="UDTabItemView">
+            <rect key="frame" x="0.0" y="0.0" width="160" height="28"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <button toolTip="Close tab" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tiv-Cl-os1">
+                    <rect key="frame" x="4" y="6" width="16" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                    <buttonCell key="cell" type="bevel" title="✕" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Cl-os2">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system" size="10"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="closeClicked:" target="tiv-Ro-ot1" id="tiv-Cl-os3"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tiv-La-be1">
+                    <rect key="frame" x="24" y="7" width="112" height="15"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="Tab" id="tiv-La-be2">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button toolTip="Pin tab" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tiv-Pi-in1">
+                    <rect key="frame" x="140" y="6" width="16" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                    <buttonCell key="cell" type="bevel" title="⚐" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Pi-in2">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system" size="10"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pinClicked:" target="tiv-Ro-ot1" id="tiv-Pi-in3"/>
+                    </connections>
+                </button>
+            </subviews>
+            <connections>
+                <outlet property="closeButton" destination="tiv-Cl-os1" id="tiv-Ou-tl1"/>
+                <outlet property="pinButton" destination="tiv-Pi-in1" id="tiv-Ou-tl2"/>
+                <outlet property="titleLabel" destination="tiv-La-be1" id="tiv-Ou-tl3"/>
+            </connections>
+            <point key="canvasLocation" x="120" y="80"/>
+        </customView>
+    </objects>
+</document>

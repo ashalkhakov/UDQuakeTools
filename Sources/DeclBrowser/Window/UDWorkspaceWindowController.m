@@ -8,6 +8,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import "UDTabBarView.h"
 #import "idDeclManager.h"
 
 @interface UDWorkspaceWindowController ()
@@ -30,7 +31,13 @@
     [self.declBrowser attachToOutlineViews:self.outlineView searchOutline:self.searchOutlineView];
     [self.declBrowser reset];          // builds the full tree
 
-    self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView workspace:self.workspace];
+    // Xcode-like editor tabs: both the UDTabBarView strip and the tabless
+    // NSTabView below it live in UDWorkspaceWindow.xib; the tab manager
+    // drives them as one control (dirty dot, close/pin buttons,
+    // drag-to-reorder, horizontal scrolling).
+    self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView
+                                                            tabBar:self.tabBarView
+                                                         workspace:self.workspace];
 }
 
 -(UDWorkspace *)workspace {

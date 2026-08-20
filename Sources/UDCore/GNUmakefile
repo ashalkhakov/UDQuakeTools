@@ -13,23 +13,9 @@ UDCore_OBJC_FILES = \
     UDArchiveEditor.m \
     UDArchiveEntry.m \
     UDArchiveMutation.m \
-    UDAssetIndex.m \
-    UDDeclLexer.m \
-    UDDeclManager.m \
-    UDDeclModel.m \
-    UDDeclParser.m \
-    UDDeclPersistence.m \
-    UDDeclType.m \
     UDDirectoryNode.m \
     UDGame.m \
     UDGameDetectionService.m \
-    UDGuiDocumentCodec.m \
-    UDGuiEditorService.m \
-    UDGuiEditorViewModel.m \
-    UDGuiEventsProcessingService.m \
-    UDGuiModel.m \
-    UDVFSMount.m \
-    UDVirtualFileSystem.m \
     ../UDFormats/UDCodecRegistry.m \
     ../UDFormats/UDDaikatanaPAKCodec.m \
     ../UDFormats/UDPAK2Codec.m \
@@ -39,9 +25,9 @@ UDCore_OBJC_FILES = \
     ../UDFormats/UDPK3ZIPEntrySource.m \
     ../UDFormats/UDPK4Codec.m \
     ../UDFormats/UDStagedFileSource.m \
-    UDToken.m \
-    UDLexer.m \
-    UDParser.m \
+    idToken.m \
+    idLexer.m \
+    idParser.m \
     unzip.c \
     ioapi.c \
     compat.m \
@@ -63,26 +49,13 @@ UDCore_HEADER_FILES = \
     UDArchiveEditor.h \
     UDArchiveEntry.h \
     UDArchiveMutation.h \
-    UDAssetIndex.h \
     UDContentSource.h \
-    UDDeclManager.h \
-    UDDeclModel.h \
-    UDDeclParser.h \
-    UDDeclPersistence.h \
-    UDDeclType.h \
     UDDirectoryNode.h \
     UDGame.h \
     UDGameDetectionService.h \
-    UDGuiDocumentCodec.h \
-    UDGuiEditorService.h \
-    UDGuiEditorViewModel.h \
-    UDGuiEventsProcessingService.h \
-    UDGuiModel.h \
-    UDVFSMount.h \
-    UDVirtualFileSystem.h \
-    UDToken.h \
-    UDLexer.h \
-    UDParser.h \
+    idToken.h \
+    idLexer.h \
+    idParser.h \
     idStr.h \
     idFile.h \
     idFileSystem.h \

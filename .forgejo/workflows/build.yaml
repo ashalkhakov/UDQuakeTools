@@ -59,7 +59,7 @@ jobs:
           . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
           export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
 
-          for app in UDLauncher PakManager DeclBrowser GuiEd; do
+          for app in UDLauncher PakManager DeclBrowser; do
             cd "Sources/${app}"
             make
             cd "${GITHUB_WORKSPACE}"

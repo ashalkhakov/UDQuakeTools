@@ -2775,7 +2775,7 @@ int PC_OperatorPriority(int op) {
             return self->punctuations[i].p;
         }
     }
-    return @"unkown punctuation";
+    return "unknown punctuation";
 }
 
 -(int)punctuationId:(NSString *)p {

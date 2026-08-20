@@ -25,24 +25,32 @@
 
     UDWorkspaceSettingsWindowController *settingsWC =
         [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
-        
+
+    // Create the (default-initialized) workspace BEFORE handing the document
+    // to the settings controller, so its scratch copy starts from the same
+    // defaults the workspace itself would use.
+    self.workspace = [[UDWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
+
     NSWindow *settingsWindow = [settingsWC window];
     settingsWC.document = self;
-        
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
-        
+
     // Optional but nice: hide the main window while configuring
     NSWindow *mainWindow = self.windowControllers.firstObject.window;
     [mainWindow orderOut:nil];
-        
+
     // Real modal session – always interactable
     [settingsWindow makeKeyAndOrderFront:nil];
     NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
 
     [settingsWindow orderOut:nil];
-    
+
     BOOL ret = NO;
     if (result == NSModalResponseOK) {
+        // The settings window edits a scratch copy; apply it to the real
+        // workspace before starting it up.
+        [self.workspace applySettingsFromDictionary:settingsWC.scratchWorkspace.dictionaryRepresentation];
+        [self updateChangeCount:NSChangeDone];
+
         BOOL success = [self applySettingsAndCreateWorkspace:&error];
         if (success) {
             [mainWindow makeKeyAndOrderFront:nil];   // show the real window

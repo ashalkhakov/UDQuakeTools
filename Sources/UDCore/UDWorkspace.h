@@ -59,6 +59,14 @@
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir;
 - (NSDictionary *)dictionaryRepresentation;
 
+// Re-applies a settings dictionary (same keys as dictionaryRepresentation)
+// onto this workspace, filling in the usual defaults for missing keys. Used
+// by the settings window: edits happen on a scratch UDWorkspace copy, and on
+// OK its dictionaryRepresentation is applied back here. Changing paths/game
+// settings on a RUNNING workspace requires a -shutdown / -startup: cycle
+// afterwards to take effect.
+- (void)applySettingsFromDictionary:(NSDictionary *)dict;
+
 // Initialization
 - (BOOL)startup:(NSError **)error;
 - (void)shutdown;

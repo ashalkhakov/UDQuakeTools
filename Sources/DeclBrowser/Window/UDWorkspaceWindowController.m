@@ -7,6 +7,7 @@
 #import "UDBaseDocument.h"
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
+#import "UDWorkspaceSettingsWindowController.h"
 #import "idDeclManager.h"
 
 @interface UDWorkspaceWindowController ()
@@ -170,9 +171,69 @@
     }
 }
 
+#pragma mark - Workspace settings
+
+// File > Workspace Settings…: edit ALL workspace settings (paths, game,
+// file system flags, decl options) in the tabbed settings window. On OK the
+// workspace is restarted in place — the new paths/game invalidate the loaded
+// VFS and decls, so every tab is closed and the browser tree rebuilt.
+- (IBAction)showWorkspaceSettings:(id)sender {
+    UDWorkspaceSettingsWindowController *settingsWC =
+        [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
+    settingsWC.document = self.document;
+
+    NSWindow *settingsWindow = [settingsWC window];
+    [settingsWindow makeKeyAndOrderFront:nil];
+    NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
+    [settingsWindow orderOut:nil];
+
+    if (result != NSModalResponseOK) {
+        return;
+    }
+
+    // Applying settings restarts the workspace, which discards any unsaved
+    // editor changes — get the user's blessing first.
+    BOOL hasDirtyEditors = NO;
+    for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if (editor.editorDocument.isDocumentEdited) {
+            hasDirtyEditors = YES;
+            break;
+        }
+    }
+    if (hasDirtyEditors) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Apply settings and reload the workspace?";
+        alert.informativeText = @"Some open editors have unsaved changes. Applying the new settings reloads the workspace and discards them.";
+        [alert addButtonWithTitle:@"Apply and Discard"];
+        [alert addButtonWithTitle:@"Cancel"];
+        if ([alert runModal] != NSAlertFirstButtonReturn) {
+            return; // nothing applied
+        }
+    }
+
+    // Apply the scratch copy to the real workspace and restart it in place.
+    UDWorkspace *workspace = self.workspace;
+    [workspace applySettingsFromDictionary:settingsWC.scratchWorkspace.dictionaryRepresentation];
+    [self.document updateChangeCount:NSChangeDone];
+
+    [self.tabManager closeAllTabs];
+    [workspace shutdown];
+
+    NSError *error = nil;
+    if (![workspace startup:&error]) {
+        [self presentError:error];
+        return;
+    }
+
+    [self.declBrowser reset];
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     SEL action = menuItem.action;
 
+    if (action == @selector(showWorkspaceSettings:)) {
+        return self.workspace != nil;
+    }
     if (action == @selector(saveDocument:)) {
         UDBaseDocument *document = [self.tabManager selectedEditor].editorDocument;
         return document != nil && document.isDocumentEdited;

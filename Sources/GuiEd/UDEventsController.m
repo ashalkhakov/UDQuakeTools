@@ -6,9 +6,9 @@
 #import "UDEventsController.h"
 #import "UDGuiEdDocument.h"
 
-#import "../UDCore/UDGuiEditorViewModel.h"
-#import "../UDCore/UDGuiModel.h"
-#import "../UDCore/UDGuiEventsProcessingService.h"
+#import "UDGuiEditorViewModel.h"
+#import "UDGuiModel.h"
+#import "UDGuiEventsProcessingService.h"
 
 static NSPasteboardType const UDGuiEventsReorderPasteboardType = @"com.udquake.guied.reorder-row";
 static NSString *const kInvalidConditionPlaceholder = @"<invalid>";

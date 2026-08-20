@@ -706,10 +706,11 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 
     NSString *fileName = [object valueForKeyPath:@"sourceFile.fileName"];
     if (fileName.length == 0) {
-        // Use the manager's canonical type name; the one derived from the
-        // entity name has mangled casing for acronyms ("pDA") and the type
-        // registry lookup is case-sensitive.
-        fileName = [self _defaultFileNameForDeclTypeName:[_declManager declNameFromType:type] declName:name];
+        fileName = [_declManager defaultFileNameForDeclType:type name:name];
+    }
+    if (fileName.length == 0) {
+        *error = [self _errorWithCode:UDDeclIncrementalStoreDeclOperationFailed
+                               message:[NSString stringWithFormat:@"Unable to find a suitable file for decl \"%@\"", name]];
     }
 
     idDeclBase *decl = [_declManager createNewDecl:type name:name fileName:fileName];
@@ -875,20 +876,6 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     }
 
     return values;
-}
-
-- (NSString *)_defaultFileNameForDeclTypeName:(NSString *)declTypeName declName:(NSString *)declName {
-    UDDeclTypeDescriptor *descriptor = [UDDeclTypeRegistry descriptorForIdentifier:declTypeName];
-    if (descriptor == nil) {
-        // email/audio/video decls don't have their own registered file
-        // extension; they conventionally live alongside pda decls.
-        descriptor = [UDDeclTypeRegistry descriptorForIdentifier:@"pda"];
-    }
-    if (descriptor == nil) {
-        return [NSString stringWithFormat:@"generated/%@.decl", declName];
-    }
-    NSString *extension = descriptor.sourceFileExtensions.firstObject ?: @"decl";
-    return [NSString stringWithFormat:@"%@/%@.%@", descriptor.defaultDirectory, declName, extension];
 }
 
 #pragma mark - Errors

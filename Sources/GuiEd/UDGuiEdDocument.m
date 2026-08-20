@@ -5,10 +5,10 @@
 #import "UDGuiEdDocument.h"
 #import "UDGuiEdDocumentWindowController.h"
 
-#import "../UDCore/UDGuiDocumentCodec.h"
-#import "../UDCore/UDGuiEditorService.h"
-#import "../UDCore/UDGuiEditorViewModel.h"
-#import "../UDCore/UDGuiModel.h"
+#import "UDGuiDocumentCodec.h"
+#import "UDGuiEditorService.h"
+#import "UDGuiEditorViewModel.h"
+#import "UDGuiModel.h"
 
 @interface UDGuiEdDocument ()
 @property (nonatomic, copy, readwrite) NSString *sourceText;

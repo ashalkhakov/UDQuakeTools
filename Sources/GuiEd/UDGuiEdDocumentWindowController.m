@@ -15,8 +15,8 @@
 #import "UDInspectorIcons.h"
 #import "UDIconTabBarView.h"
 
-#import "../UDCore/UDGuiEditorViewModel.h"
-#import "../UDCore/UDGuiModel.h"
+#import "UDGuiEditorViewModel.h"
+#import "UDGuiModel.h"
 
 typedef NS_ENUM(NSInteger, UDGuiInspectorSection) {
     UDGuiInspectorSectionIdentity = 0,

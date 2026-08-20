@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #import "idFileSystem.h"
 #import "idFile.h"
 #import "idDeclManager.h"
-#import "UDLexer.h"
+#import "idLexer.h"
 #import "UDEndian.h"
 #import "MD5.h"
 #import "UDBitMsg.h"
@@ -1499,6 +1499,15 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
             [decl purge];
         }
     }
+}
+
+-(NSString *)defaultFileNameForDeclType:(declType_t)type name:(NSString *)name {
+    for (idDeclFolder *folder in declFolders) {
+        if (folder.defaultType == type) {
+            return [NSString stringWithFormat:@"%@/%@%@", folder.folder, name, folder.extension];
+        }
+    }
+    return @"";
 }
 
 -(BOOL)registerDeclFolder:(NSString *)folder extension:(NSString *)extension declType:(declType_t)defaultType error:(NSError **)error {

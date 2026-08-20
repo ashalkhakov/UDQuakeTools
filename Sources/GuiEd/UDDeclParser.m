@@ -3,7 +3,7 @@
  * id-style parser implementation helpers.
  */
 
-#import "UDParser.h"
+#import "UDIdParser.h"
 #import "UDDeclParser.h"
 
 #import "UDDeclType.h"

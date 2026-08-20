@@ -6,8 +6,8 @@
 #import "UDOutlinePaneController.h"
 #import "UDGuiEdDocument.h"
 
-#import "../UDCore/UDGuiEditorViewModel.h"
-#import "../UDCore/UDGuiModel.h"
+#import "UDGuiEditorViewModel.h"
+#import "UDGuiModel.h"
 
 @implementation UDOutlinePaneController
 

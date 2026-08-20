@@ -3,7 +3,7 @@
  * UDToken.h — token type
  */
 
-#import "UDToken.h"
+#import "idToken.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,10 +11,6 @@
 #include <time.h>
 #include <assert.h>
 #include <stdbool.h>
-
-@implementation UDIdToken : NSObject
-
-@end
 
 /*
 ===========================================================================

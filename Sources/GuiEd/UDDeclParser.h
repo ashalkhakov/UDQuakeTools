@@ -7,8 +7,8 @@
 
 #import "UDDeclModel.h"
 #import "UDToken.h"
-#import "UDLexer.h"
-#import "UDParser.h"
+#import "UDIdLexer.h"
+#import "UDIdParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

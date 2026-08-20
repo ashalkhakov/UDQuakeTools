@@ -8,7 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import "UDEditorControllerContext.h"
-#import "../UDCore/UDGuiModel.h"
+#import "UDGuiModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

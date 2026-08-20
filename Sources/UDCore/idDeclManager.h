@@ -2,7 +2,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UDLexer.h"
+#import "idLexer.h"
 
 @class UDWorkspace;
 @class idFile;
@@ -197,6 +197,8 @@ typedef enum {
 -(BOOL)writeDeclFile:(NSError **)error;
 -(void)flushDecls;
 // RAVEN END
+
+-(NSString *)defaultFileNameForDeclType:(declType_t)type name:(NSString *)name;
 
 // RAVEN BEGIN
 // jscott: for timing

@@ -11,7 +11,7 @@
 #import "UDSliderDefInspectorController.h"
 #import "UDRenderDefInspectorController.h"
 
-#import "../UDCore/UDGuiModel.h"
+#import "UDGuiModel.h"
 #import "UDGuiEdDocument.h"
 #import "UDGuiEditorService.h"
 #import "UDGuiEditorViewModel.h"

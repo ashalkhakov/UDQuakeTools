@@ -11,8 +11,8 @@
 #import "UDDeclManagedObjects.h"
 
 #import "UDDeclIncrementalStore.h"
-#import "UDLexer.h"
-#import "UDToken.h"
+#import "idLexer.h"
+#import "idToken.h"
 
 #pragma mark - Entity name convention
 

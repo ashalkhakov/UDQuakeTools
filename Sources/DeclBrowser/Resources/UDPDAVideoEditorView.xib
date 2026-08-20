@@ -6,7 +6,12 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="UDPDAVideoEditorViewController"/>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDPDAVideoEditorViewController">
+            <connections>
+                <outlet property="objectController" destination="LGT-8R-oRS" id="vOC-4f-0a1"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="vWn-4f-0a2"/>
+            </connections>
+        </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">

@@ -6,8 +6,10 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-# All non-GUI UDCore sources (FormContainerView.m requires AppKit and is
-# kept with the GuiEd app that uses it).
+UDCore_C_FILES = \
+    unzip.c \
+    ioapi.c
+
 UDCore_OBJC_FILES = \
     UDArchive.m \
     UDArchiveEditor.m \
@@ -28,8 +30,6 @@ UDCore_OBJC_FILES = \
     idToken.m \
     idLexer.m \
     idParser.m \
-    unzip.c \
-    ioapi.c \
     compat.m \
     idStr.m \
     idFile.m \

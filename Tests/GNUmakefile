@@ -12,14 +12,21 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDArchiveWorkflowTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
-    UDGameDetectionTests.m
+    UDGameDetectionTests.m \
+    idFileSystemTests.m \
+    idDeclManagerTests.m \
+    UDDeclIncrementalStoreTests.m
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
     -I../Sources/UDFormats
 
+# CoreData is provided by FreeCoreData on GNUstep
+# (https://github.com/ashalkhakov/FreeCoreData — install it before building).
+ADDITIONAL_NATIVE_LIBS += CoreData
+
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -lXCTest
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -lXCTest -lBlocksRuntime
 
 XCTEST ?= xctest
 

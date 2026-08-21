@@ -48,7 +48,12 @@ extern UTType *UTTypeImage;
 // covers non-Apple platforms), so these mostly exist to satisfy the
 // compiler — but they are implemented faithfully anyway.
 
-#if !defined(__COREFOUNDATION_CFBASE__) && !defined(_CFBASE_H)
+// If gnustep-corebase is installed, use ITS CFStringRef (guessing at its
+// include-guard macro is fragile — a typedef mismatch is a hard error); only
+// when there is no CoreFoundation at all do we define an opaque stand-in.
+#if defined(__has_include) && __has_include(<CoreFoundation/CFBase.h>)
+#include <CoreFoundation/CFBase.h>
+#else
 typedef const struct UDShimCFString *CFStringRef;
 #endif
 

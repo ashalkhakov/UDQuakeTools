@@ -39,7 +39,8 @@ UDCore_OBJC_FILES = \
     MD5.m \
     idDeclManager.m \
     UDDeclManagedObjects.m \
-    UDDeclIncrementalStore.m
+    UDDeclIncrementalStore.m \
+    UniformTypeIdentifiers/UniformTypeIdentifiers.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -73,3 +74,13 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
 
 include $(GNUSTEP_MAKEFILES)/library.make
+
+# NOTE: UniformTypeIdentifiers/ is the GNUstep compatibility shim for Apple's
+# UniformTypeIdentifiers framework (UTType, UTTypeImage, and the legacy
+# UTTypeConformsTo/UTTypeCreatePreferredIdentifierForTag C calls). The
+# DeclBrowser sources keep their ordinary
+#   #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+# line: on macOS the system framework resolves it, on GNUstep the
+# -I../UDCore include path finds this shim directory instead. The .m
+# compiles to nothing on macOS (guarded by !defined(__APPLE__)), so it is
+# NOT part of the Xcode project on purpose.

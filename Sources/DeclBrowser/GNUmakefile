@@ -30,6 +30,7 @@ DeclBrowser_OBJC_FILES = \
     Window/UDEditorTabManager.m \
     Window/UDTabBarView.m \
     Window/UDTabItemView.m \
+    Window/UDTextPromptPanel.m \
     Window/UDWorkspaceSettingsWindowController.m \
     Window/UDWorkspaceWindowController.m
 

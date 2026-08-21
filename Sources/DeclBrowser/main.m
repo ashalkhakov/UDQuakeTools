@@ -4,7 +4,6 @@
  */
 
 #import <AppKit/AppKit.h>
-#import "UDDeclBrowserAppDelegate.h"
 
 int main(int argc, const char *argv[]) {
     return NSApplicationMain(argc, argv);

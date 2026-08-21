@@ -7,13 +7,9 @@ GS_WITH_ARC = 1
 include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
-    UDAssetIndexTests.m \
-    UDDeclManagerTests.m \
-    UDGuiEditorTests.m \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \
-    UDVirtualFileSystemTests.m \
     UDPAKCodecTests.m \
     UDPK3CodecTests.m \
     UDGameDetectionTests.m

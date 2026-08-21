@@ -12,7 +12,11 @@
 
 - (void)setDocument:(UDDeclDocument *)document {
     _document = document;
-    if (self.viewLoaded && document != nil) {
+    // No `viewLoaded` check: GNUstep's NSViewController doesn't have it, and
+    // none is needed — the objectController outlet is nil until the view nib
+    // has loaded (reading it does NOT trigger loading), so this assignment is
+    // a harmless no-op before then; -viewDidLoad sets the content itself.
+    if (document != nil) {
         self.objectController.content = document.declObject;
     }
 }

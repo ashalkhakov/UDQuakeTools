@@ -22,6 +22,10 @@
  *  - DeclFile and DeclType are read-mostly views over manager bookkeeping.
  */
 
+#ifdef GNUSTEP
+// NSUndefinedAttributeType, NSInteger16AttributeType, etc. are defined in AppKit
+#import <AppKit/AppKit.h>
+#endif
 #import "UDDeclIncrementalStore.h"
 
 #import "idDeclManager.h"
@@ -130,8 +134,7 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 }
 
 + (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator {
-    NSManagedObjectContext *context =
-        [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
     context.persistentStoreCoordinator = coordinator;
     context.undoManager = [[NSUndoManager alloc] init];
     return context;

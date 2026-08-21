@@ -13,7 +13,7 @@
 @end
 
 @interface UDTabItemView () {
-    NSTrackingArea *_hoverArea;
+    NSTrackingRectTag _hoverTag; // classic tracking rect (GNUstep has no NSTrackingArea on NSView)
     BOOL _hovered;
 }
 @end
@@ -93,16 +93,42 @@
 
 #pragma mark - Hover tracking
 
-- (void)updateTrackingAreas {
-    [super updateTrackingAreas];
-    if (_hoverArea != nil) {
-        [self removeTrackingArea:_hoverArea];
+// Classic tracking RECT, not NSTrackingArea: GNUstep's NSView has no
+// tracking-area methods, and the legacy API works on both platforms. The
+// rect must be re-registered whenever the view's geometry or window changes.
+
+- (void)_rebuildHoverTracking {
+    if (_hoverTag != 0) {
+        [self removeTrackingRect:_hoverTag];
+        _hoverTag = 0;
     }
-    _hoverArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-                                              options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp)
-                                                owner:self
-                                             userInfo:nil];
-    [self addTrackingArea:_hoverArea];
+    if (self.window == nil) {
+        return;
+    }
+    _hoverTag = [self addTrackingRect:self.bounds owner:self userData:NULL assumeInside:NO];
+}
+
+- (void)viewDidMoveToWindow {
+    [super viewDidMoveToWindow];
+    [self _rebuildHoverTracking];
+}
+
+// Tracking rects do NOT follow the view around — they are registered in
+// window space at add time — and the bar moves/resizes tabs constantly
+// (layout, drag-to-reorder). Re-register on every geometry change.
+- (void)setFrame:(NSRect)frame {
+    [super setFrame:frame];
+    [self _rebuildHoverTracking];
+}
+
+- (void)setFrameOrigin:(NSPoint)newOrigin {
+    [super setFrameOrigin:newOrigin];
+    [self _rebuildHoverTracking];
+}
+
+- (void)setFrameSize:(NSSize)newSize {
+    [super setFrameSize:newSize];
+    [self _rebuildHoverTracking];
 }
 
 - (void)mouseEntered:(NSEvent *)event {

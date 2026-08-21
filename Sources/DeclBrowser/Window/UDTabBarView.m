@@ -97,7 +97,7 @@ static const CGFloat kUDTabBarScrollerHeight = 12.0; // our own hover scroller
     UDTabBarContainerView *_container;
     UDTabItemView *_draggedView;    // non-nil during a reorder drag
     NSScroller *_scroller;          // our own hover scroller (bottom half)
-    NSTrackingArea *_hoverArea;
+    NSTrackingRectTag _hoverTag;    // classic tracking rect over the LOWER half
     BOOL _mouseInLowerHalf;
 }
 @end
@@ -184,52 +184,51 @@ static const CGFloat kUDTabBarScrollerHeight = 12.0; // our own hover scroller
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize {
     [super resizeSubviewsWithOldSize:oldSize];
     [self _layoutItemViews];
+    [self _rebuildHoverTracking]; // the lower-half rect depends on our size
 }
 
 #pragma mark - Hover scroller
 
-// The bar tracks the mouse itself (tracking areas are geometric, so the item
-// views on top don't interfere): while the cursor is in the LOWER half of
+// The bar tracks the mouse itself: while the cursor is in the LOWER half of
 // the bar and the tabs overflow, our scroller appears there, fully
 // interactable — akin to a browser's tab strip scroller.
+//
+// PORTABILITY: this deliberately uses the classic tracking-RECT API
+// (addTrackingRect:owner:userData:assumeInside:) instead of NSTrackingArea —
+// GNUstep's NSView has no tracking-area methods at all, while the legacy API
+// exists (and still works fine) on both platforms. The rect covers only the
+// lower half of the bar, so plain entered/exited events are all we need —
+// no mouse-moved tracking. Tracking rects are geometric (window-level), so
+// the item views sitting on top don't interfere.
 
-- (void)updateTrackingAreas {
-    [super updateTrackingAreas];
-    if (_hoverArea != nil) {
-        [self removeTrackingArea:_hoverArea];
+- (void)_rebuildHoverTracking {
+    if (_hoverTag != 0) {
+        [self removeTrackingRect:_hoverTag];
+        _hoverTag = 0;
     }
-    _hoverArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-                                              options:(NSTrackingMouseEnteredAndExited |
-                                                       NSTrackingMouseMoved |
-                                                       NSTrackingActiveInActiveApp)
-                                                owner:self
-                                             userInfo:nil];
-    [self addTrackingArea:_hoverArea];
+    if (self.window == nil) {
+        return;
+    }
+    // Flipped view: larger y = lower on screen, so the lower half starts at
+    // the vertical midpoint.
+    NSRect lowerHalf = NSMakeRect(0.0, NSHeight(self.bounds) / 2.0,
+                                  NSWidth(self.bounds), NSHeight(self.bounds) / 2.0);
+    _hoverTag = [self addTrackingRect:lowerHalf owner:self userData:NULL assumeInside:NO];
 }
 
-- (void)_updateMouseLocationFromEvent:(NSEvent *)event {
-    NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
-    // Flipped view: larger y = lower on screen.
-    BOOL inLowerHalf = point.y > NSHeight(self.bounds) / 2.0;
-    if (inLowerHalf != _mouseInLowerHalf) {
-        _mouseInLowerHalf = inLowerHalf;
-        [self _updateScroller];
-    }
+- (void)viewDidMoveToWindow {
+    [super viewDidMoveToWindow];
+    [self _rebuildHoverTracking];
 }
 
 - (void)mouseEntered:(NSEvent *)event {
-    [self _updateMouseLocationFromEvent:event];
-}
-
-- (void)mouseMoved:(NSEvent *)event {
-    [self _updateMouseLocationFromEvent:event];
+    _mouseInLowerHalf = YES;
+    [self _updateScroller];
 }
 
 - (void)mouseExited:(NSEvent *)event {
-    if (_mouseInLowerHalf) {
-        _mouseInLowerHalf = NO;
-        [self _updateScroller];
-    }
+    _mouseInLowerHalf = NO;
+    [self _updateScroller];
 }
 
 - (void)_clipViewBoundsChanged:(NSNotification *)notification {

@@ -281,26 +281,25 @@
 
 #pragma mark - NSOutlineViewDelegate
 
-- (NSView *)outlineView:(NSOutlineView *)ov
-     viewForTableColumn:(NSTableColumn *)tableColumn
-                   item:(id)item {
+// CELL-based, on purpose (the outline views in UDWorkspaceWindow.xib are
+// plain cell-based too). The previous view-based implementation
+// (outlineView:viewForTableColumn:item: + nib prototype cell views) broke on
+// GNUstep: makeViewWithIdentifier: never finds nib prototypes there, so the
+// rows rendered as empty labels and gnustep-gui's incomplete view-based row
+// machinery then crashed the app outright. Classic cell-based outlines work
+// identically on macOS and GNUstep.
+- (id)outlineView:(NSOutlineView *)ov
+    objectValueForTableColumn:(NSTableColumn *)tableColumn
+                       byItem:(id)item {
     if (ov == self.searchOutlineView) {
-        NSTableCellView *cell = [ov makeViewWithIdentifier:@"name" owner:nil];
-        
         if ([item isKindOfClass:[UDDeclSearchFileGroup class]]) {
-            cell.textField.stringValue = ((UDDeclSearchFileGroup *)item).filename;
-            // optional: make it bold
-        } else {
-            UDDeclSearchMatch *match = item;
-            cell.textField.stringValue = match.node.name;
+            return ((UDDeclSearchFileGroup *)item).filename;
         }
-        return cell;
+        return ((UDDeclSearchMatch *)item).node.name;
     }
-    
+
     // outlineView == self.outlineView
-    NSTableCellView *cell = [ov makeViewWithIdentifier:@"name" owner:nil];
-    cell.textField.stringValue = ((UDWorkspaceItem *)item).name;
-    return cell;
+    return ((UDWorkspaceItem *)item).name;
 }
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification {

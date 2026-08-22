@@ -39,6 +39,7 @@ UDCore_OBJC_FILES = \
     MD5.m \
     idDeclManager.m \
     UDBitMsg.m \
+    UDCrashReporter.m \
     UDDeclManagedObjects.m \
     UDDeclIncrementalStore.m \
     UniformTypeIdentifiers/UniformTypeIdentifiers.m
@@ -65,6 +66,7 @@ UDCore_HEADER_FILES = \
     UDWorkspaceManager.h \
     MD5.h \
     idDeclManager.h \
+    UDCrashReporter.h \
     UDDeclManagedObjects.h \
     UDDeclIncrementalStore.h
 

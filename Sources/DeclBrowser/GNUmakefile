@@ -65,6 +65,8 @@ DeclBrowser_RESOURCE_FILES = \
 ADDITIONAL_NATIVE_LIBS += CoreData
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
+# -rdynamic: export the executable's own symbols so UDCrashReporter's
+# backtrace (installed in main.m on Linux) resolves app frames by name.
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime -rdynamic
 
 include $(GNUSTEP_MAKEFILES)/application.make

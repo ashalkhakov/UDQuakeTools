@@ -10,6 +10,9 @@
  */
 
 #import <XCTest/XCTest.h>
+#ifdef GNUSTEP
+#import <AppKit/AppKit.h>
+#endif
 #import <CoreData/CoreData.h>
 
 #import "UDWorkspace.h"

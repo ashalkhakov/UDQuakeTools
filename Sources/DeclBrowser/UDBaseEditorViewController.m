@@ -5,7 +5,7 @@
 #import "UDTextEditorViewController.h"
 #import "UDImageViewerViewController.h"
 #import "UDPDAEditorViewController.h"
-#if GNUSTEP
+#ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
 #else
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>

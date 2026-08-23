@@ -579,8 +579,17 @@ typedef UDSearchPath searchpath_t;
 
     self->name = [name mutableCopy];
     if (self->name.length) {
-        CFStringLowercase((__bridge CFMutableStringRef)self->name, NULL);
-        [self->name replaceOccurrencesOfString:@"\\" withString:@"/" options:0 range:NSMakeRange(0, name.length)];
+        // Plain Foundation, NOT CFStringLowercase: gnustep-corebase's
+        // CFStringLowercase (and Uppercase/Capitalize/Fold) CFRelease the
+        // AUTORELEASED string that -lowercaseString returns — an
+        // over-release that frees the string while it still sits in the
+        // autorelease pool. This runs once per pk4 entry, so with real
+        // game data it poisoned the pool with thousands of dangling
+        // entries and the app segfaulted at the next pool drain (the
+        // long-standing "crashes right after the tree appears" Linux
+        // crash). macOS was immune: Apple's real CF mutates in place.
+        [self->name setString:[self->name lowercaseString]];
+        [self->name replaceOccurrencesOfString:@"\\" withString:@"/" options:0 range:NSMakeRange(0, self->name.length)];
     }
     pos = 0;
     next = nil;

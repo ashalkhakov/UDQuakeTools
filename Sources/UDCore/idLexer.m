@@ -1071,7 +1071,14 @@ static NSString *baseFolder;
 
     }
 
-    CFStringTrimWhitespace((__bridge CFMutableStringRef)str);
+    // Plain Foundation, NOT CFStringTrimWhitespace: gnustep-corebase's
+    // version dispatches bridged NSStrings to a "_cfTrimWhitespace"
+    // selector gnustep-base does not implement, and its sibling case-map
+    // functions over-release autoreleased strings (see UDPackFileEntry).
+    // Avoid the corebase string API on bridged objects entirely.
+    NSString *trimmed = [str stringByTrimmingCharactersInSet:
+                         [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [str setString:trimmed];
 }
 
 -(BOOL)parseInt:(int *)result error:(NSError **)error {

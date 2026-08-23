@@ -9,6 +9,7 @@
  */
 
 #import "UDDeclManagedObjects.h"
+#import <objc/runtime.h>
 
 #import "UDDeclIncrementalStore.h"
 #import "idLexer.h"
@@ -73,6 +74,15 @@ static idLexer *UDDeclCodecLexerWithFlags(NSData *text, NSString *name, NSString
                    error:error]) {
         return nil;
     }
+    // loadMemory BORROWS the pointer (idLexer keeps buffer.bytes without
+    // copying), but `buffer` is a local that ARC releases when this helper
+    // returns — leaving the lexer scanning freed memory. macOS's allocator
+    // left the bytes intact so it appeared to work; glibc recycles the
+    // chunk immediately, so on Linux every codec parse read garbage
+    // ("unknown punctuation") and produced empty values. Tie the buffer's
+    // lifetime to the lexer's.
+    objc_setAssociatedObject(src, (__bridge const void *)src, buffer,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [src setFlags:flags];
     if (![src skipUntilString:@"{" error:error]) {
         return nil;

@@ -1,0 +1,311 @@
+diff --git a/CoreData/NSEntityDescription.m b/CoreData/NSEntityDescription.m
+index 525d5cb..9afd6c8 100644
+--- a/CoreData/NSEntityDescription.m
++++ b/CoreData/NSEntityDescription.m
+@@ -105,12 +105,26 @@ static void appendMethodToList(Class class,NSString *selectorName,IMP imp,const
+     _isAbstract = [coder decodeBoolForKey: @"NSIsAbstract"];
+     
+     _selectorPropertyMap = [[NSMutableDictionary alloc] init];
+-    
++
+     _hasBeenInstantiated = NO;
+-    
++
++    [self _fcd_installDynamicAccessors];
++    return self;
++}
++
++/* Install the @dynamic property accessors (getter/setter and to-many
++   mutators) onto the represented class. Historically this only happened in
++   -initWithCoder:, so entities built programmatically (e.g. parsed from
++   xcdatamodel XML) never got accessors and plain property sends like
++   [object sourceText] raised doesNotRecognizeSelector. Callable for both
++   decoded and programmatic entities; safe to call once per entity. */
++- (void)_fcd_installDynamicAccessors {
++    if(_selectorPropertyMap == nil)
++        _selectorPropertyMap = [[NSMutableDictionary alloc] init];
++
+     if(_className) {
+         Class class=NSClassFromString(_className);
+-        
++
+         for(NSPropertyDescription *property in [_properties allValues]) {
+             NSString *propertyName=[property name];
+             NSString *upperName=[[[propertyName substringToIndex:1] uppercaseString] stringByAppendingString:[propertyName substringFromIndex: 1]];
+@@ -142,7 +156,6 @@ static void appendMethodToList(Class class,NSString *selectorName,IMP imp,const
+             }
+         }
+     }
+-    return self;
+ }
+ 
+ 
+diff --git a/CoreData/NSManagedObjectModel.m b/CoreData/NSManagedObjectModel.m
+index 896468e..8d0413b 100644
+--- a/CoreData/NSManagedObjectModel.m
++++ b/CoreData/NSManagedObjectModel.m
+@@ -13,6 +13,227 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
+ #import <Foundation/Foundation.h>
+ #import "CoreDataUtilities.h"
+ 
++#import <CoreData/NSAttributeDescription.h>
++#import <CoreData/NSRelationshipDescription.h>
++
++/* ------------------------------------------------------------------------
++   Xcode .xcdatamodel loader.
++
++   Xcode data models are stored as plain XML ("contents" inside the
++   .xcdatamodel directory, itself inside the .xcdatamodeld container).
++   Apple compiles them to .mom archives with momc at build time; on
++   platforms without momc the XML itself is all there is, so this parser
++   builds the NSEntityDescription graph straight from it. Supported:
++   entities (name, representedClassName, isAbstract, parentEntity),
++   attributes (type, optional, transient, defaultValueString) and
++   relationships (destination, inverse, toMany/maxCount, deletionRule).
++   ------------------------------------------------------------------------ */
++
++@interface NSEntityDescription (FCDXcdatamodel)
++- (void)_fcd_installDynamicAccessors;
++@end
++
++@interface _FCDXcdatamodelParser : NSObject <NSXMLParserDelegate> {
++@public
++   NSMutableDictionary *_entities;     /* name -> NSEntityDescription */
++   NSMutableDictionary *_properties;   /* name -> NSMutableArray of props */
++   NSMutableDictionary *_parentNames;  /* child name -> parent name */
++   NSMutableDictionary *_relSpecs;     /* name -> NSMutableArray of attr dicts */
++   NSString            *_currentEntity;
++}
++@end
++
++static NSAttributeType _FCDAttributeTypeFromString(NSString *s) {
++   if([s isEqualToString:@"String"])       return NSStringAttributeType;
++   if([s isEqualToString:@"Binary"])       return NSBinaryDataAttributeType;
++   if([s isEqualToString:@"Boolean"])      return NSBooleanAttributeType;
++   if([s isEqualToString:@"Date"])         return NSDateAttributeType;
++   if([s isEqualToString:@"Float"])        return NSFloatAttributeType;
++   if([s isEqualToString:@"Double"])       return NSDoubleAttributeType;
++   if([s isEqualToString:@"Decimal"])      return NSDecimalAttributeType;
++   if([s isEqualToString:@"Integer 16"])   return NSInteger16AttributeType;
++   if([s isEqualToString:@"Integer 32"])   return NSInteger32AttributeType;
++   if([s isEqualToString:@"Integer 64"])   return NSInteger64AttributeType;
++   if([s isEqualToString:@"Transformable"])return NSTransformableAttributeType;
++   return NSUndefinedAttributeType;
++}
++
++static id _FCDDefaultValueForType(NSAttributeType type, NSString *string) {
++   if(string==nil)
++    return nil;
++   switch(type){
++    case NSStringAttributeType:    return string;
++    case NSBooleanAttributeType:   return [NSNumber numberWithBool:[string boolValue]];
++    case NSFloatAttributeType:     return [NSNumber numberWithFloat:[string floatValue]];
++    case NSDoubleAttributeType:    return [NSNumber numberWithDouble:[string doubleValue]];
++    case NSInteger16AttributeType:
++    case NSInteger32AttributeType: return [NSNumber numberWithInt:[string intValue]];
++    case NSInteger64AttributeType: return [NSNumber numberWithLongLong:[string longLongValue]];
++    default:                       return nil;
++   }
++}
++
++@implementation _FCDXcdatamodelParser
++
++-init {
++   _entities=[[NSMutableDictionary alloc] init];
++   _properties=[[NSMutableDictionary alloc] init];
++   _parentNames=[[NSMutableDictionary alloc] init];
++   _relSpecs=[[NSMutableDictionary alloc] init];
++   return self;
++}
++
++-(void)dealloc {
++   [_entities release];
++   [_properties release];
++   [_parentNames release];
++   [_relSpecs release];
++   [_currentEntity release];
++   [super dealloc];
++}
++
++-(void)parser:(NSXMLParser *)parser didStartElement:(NSString *)element
++   namespaceURI:(NSString *)ns qualifiedName:(NSString *)qn
++   attributes:(NSDictionary *)attrs {
++   if([element isEqualToString:@"entity"]){
++    NSString *name=[attrs objectForKey:@"name"];
++    if(name==nil)
++     return;
++    NSEntityDescription *entity=[[NSEntityDescription alloc] init];
++    [entity setName:name];
++    NSString *className=[attrs objectForKey:@"representedClassName"];
++    [entity setManagedObjectClassName:(className!=nil)?className:name];
++    if([[attrs objectForKey:@"isAbstract"] isEqualToString:@"YES"])
++     [entity setAbstract:YES];
++    [_entities setObject:entity forKey:name];
++    [entity release];
++    [_properties setObject:[NSMutableArray array] forKey:name];
++    [_relSpecs setObject:[NSMutableArray array] forKey:name];
++    NSString *parent=[attrs objectForKey:@"parentEntity"];
++    if(parent!=nil)
++     [_parentNames setObject:parent forKey:name];
++    [_currentEntity release];
++    _currentEntity=[name copy];
++   }
++   else if([element isEqualToString:@"attribute"] && _currentEntity!=nil){
++    NSString *name=[attrs objectForKey:@"name"];
++    if(name==nil)
++     return;
++    NSAttributeDescription *attribute=[[NSAttributeDescription alloc] init];
++    [attribute setName:name];
++    NSAttributeType type=_FCDAttributeTypeFromString([attrs objectForKey:@"attributeType"]);
++    [attribute setAttributeType:type];
++    [attribute setOptional:[[attrs objectForKey:@"optional"] isEqualToString:@"YES"]];
++    [attribute setTransient:[[attrs objectForKey:@"transient"] isEqualToString:@"YES"]];
++    id defaultValue=_FCDDefaultValueForType(type,[attrs objectForKey:@"defaultValueString"]);
++    if(defaultValue!=nil)
++     [attribute setDefaultValue:defaultValue];
++    [[_properties objectForKey:_currentEntity] addObject:attribute];
++    [attribute release];
++   }
++   else if([element isEqualToString:@"relationship"] && _currentEntity!=nil){
++    if([attrs objectForKey:@"name"]!=nil)
++     [[_relSpecs objectForKey:_currentEntity] addObject:attrs];
++   }
++}
++
++-(NSManagedObjectModel *)buildModel {
++   /* Pass 2: relationships (all entities must exist first). */
++   for(NSString *entityName in _entities){
++    NSEntityDescription *entity=[_entities objectForKey:entityName];
++    for(NSDictionary *spec in [_relSpecs objectForKey:entityName]){
++     NSRelationshipDescription *rel=[[NSRelationshipDescription alloc] init];
++     [rel setName:[spec objectForKey:@"name"]];
++     [rel setOptional:[[spec objectForKey:@"optional"] isEqualToString:@"YES"]];
++     NSEntityDescription *destination=[_entities objectForKey:[spec objectForKey:@"destinationEntity"]];
++     if(destination!=nil)
++      [rel setDestinationEntity:destination];
++     if([[spec objectForKey:@"toMany"] isEqualToString:@"YES"])
++      [rel setMaxCount:0];                       /* unbounded = to-many */
++     else
++      [rel setMaxCount:[[spec objectForKey:@"maxCount"] intValue]?:1];
++     NSString *deletionRule=[spec objectForKey:@"deletionRule"];
++     if([deletionRule isEqualToString:@"Cascade"])
++      [rel setDeleteRule:NSCascadeDeleteRule];
++     else if([deletionRule isEqualToString:@"Deny"])
++      [rel setDeleteRule:NSDenyDeleteRule];
++     else if([deletionRule isEqualToString:@"No Action"])
++      [rel setDeleteRule:NSNoActionDeleteRule];
++     else
++      [rel setDeleteRule:NSNullifyDeleteRule];
++     [[_properties objectForKey:entityName] addObject:rel];
++     [rel release];
++    }
++   }
++   for(NSString *entityName in _entities){
++    NSEntityDescription *entity=[_entities objectForKey:entityName];
++    [entity setProperties:[_properties objectForKey:entityName]];
++   }
++   /* Pass 3: inverse relationships (property objects must exist first). */
++   for(NSString *entityName in _entities){
++    NSEntityDescription *entity=[_entities objectForKey:entityName];
++    for(NSDictionary *spec in [_relSpecs objectForKey:entityName]){
++     NSString *inverseName=[spec objectForKey:@"inverseName"];
++     NSString *inverseEntityName=[spec objectForKey:@"inverseEntity"];
++     if(inverseName==nil || inverseEntityName==nil)
++      continue;
++     NSRelationshipDescription *rel=(NSRelationshipDescription *)
++       [[entity propertiesByName] objectForKey:[spec objectForKey:@"name"]];
++     NSEntityDescription *inverseEntity=[_entities objectForKey:inverseEntityName];
++     NSRelationshipDescription *inverse=(NSRelationshipDescription *)
++       [[inverseEntity propertiesByName] objectForKey:inverseName];
++     if(rel!=nil && inverse!=nil)
++      [rel setInverseRelationship:inverse];
++    }
++   }
++   /* Pass 4: entity inheritance. */
++   NSMutableDictionary *childrenByParent=[NSMutableDictionary dictionary];
++   for(NSString *childName in _parentNames){
++    NSString *parentName=[_parentNames objectForKey:childName];
++    NSMutableArray *children=[childrenByParent objectForKey:parentName];
++    if(children==nil){
++     children=[NSMutableArray array];
++     [childrenByParent setObject:children forKey:parentName];
++    }
++    NSEntityDescription *child=[_entities objectForKey:childName];
++    if(child!=nil)
++     [children addObject:child];
++   }
++   for(NSString *parentName in childrenByParent){
++    NSEntityDescription *parent=[_entities objectForKey:parentName];
++    [parent setSubentities:[childrenByParent objectForKey:parentName]];
++   }
++
++   NSManagedObjectModel *model=[[NSManagedObjectModel alloc] init];
++   [model setEntities:[_entities allValues]];
++
++   /* Pass 5: install @dynamic accessors on the represented classes. For
++      decoded models this happens in -[NSEntityDescription initWithCoder:];
++      programmatic entities need it done explicitly once the entity graph
++      (properties + inheritance) is complete. */
++   for(NSEntityDescription *entity in [_entities allValues])
++    [entity _fcd_installDynamicAccessors];
++
++   return model;                                  /* +1, caller owns */
++}
++
++@end
++
++static NSManagedObjectModel *_FCDModelFromXcdatamodelData(NSData *data) {
++   if(data==nil)
++    return nil;
++   NSXMLParser *parser=[[NSXMLParser alloc] initWithData:data];
++   _FCDXcdatamodelParser *delegate=[[_FCDXcdatamodelParser alloc] init];
++   [parser setDelegate:delegate];
++   BOOL ok=[parser parse];
++   NSManagedObjectModel *model=nil;
++   if(ok && [delegate->_entities count]>0)
++    model=[delegate buildModel];
++   [parser release];
++   [delegate release];
++   return model;                                  /* +1 or nil */
++}
++
+ @implementation NSManagedObjectModel
+ 
+ +(NSManagedObjectModel *)modelByMergingModels:(NSArray *)models {
+@@ -152,6 +373,36 @@ static NSArray *allModelPathsInBundle(NSBundle *bundle){
+    NSString *path=[url path];
+    BOOL      isDirectory=NO;
+ 
++   /* Uncompiled Xcode models: a .xcdatamodeld container holds versioned
++      .xcdatamodel directories, each with a "contents" XML file. There is
++      no momc on this platform, so parse the XML directly. */
++   NSString *extension=[path pathExtension];
++   if([extension isEqualToString:@"xcdatamodeld"]){
++    NSDictionary *currentVersion=[NSDictionary dictionaryWithContentsOfFile:
++      [path stringByAppendingPathComponent:@".xccurrentversion"]];
++    NSString *versionName=[currentVersion objectForKey:@"_XCCurrentVersionName"];
++    NSString *modelDir=nil;
++    if(versionName!=nil)
++     modelDir=[path stringByAppendingPathComponent:versionName];
++    else {
++     for(NSString *name in [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:NULL] sortedArrayUsingSelector:@selector(compare:)]){
++      if([[name pathExtension] isEqualToString:@"xcdatamodel"]){
++       modelDir=[path stringByAppendingPathComponent:name];
++       break;
++      }
++     }
++    }
++    if(modelDir==nil)
++     return nil;
++    path=modelDir;
++    extension=@"xcdatamodel";
++   }
++   if([extension isEqualToString:@"xcdatamodel"])
++    return _FCDModelFromXcdatamodelData([NSData dataWithContentsOfFile:
++      [path stringByAppendingPathComponent:@"contents"]]);
++   if([[path lastPathComponent] isEqualToString:@"contents"])
++    return _FCDModelFromXcdatamodelData([NSData dataWithContentsOfFile:path]);
++
+    /* A .momd bundle is a directory of versioned models; load the current
+       version as designated by VersionInfo.plist. */
+    if([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory){

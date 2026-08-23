@@ -327,6 +327,14 @@ int HuffmanDecompressText(NSMutableData *text, NSMutableData *compressed) {
     
     msg = [[UDBitMsg alloc] initWithData:compressed];
 
+    // The compressed stream contains textLength+1 symbols — setTextLocal
+    // compresses the trailing NUL along with the payload — and the caller
+    // sizes `text` to exactly textLength+1 bytes. The loop below therefore
+    // already decompresses the NUL into the final byte. The old
+    // `bytes[length] = 0` after the loop wrote ONE BYTE PAST the buffer:
+    // invisible under macOS's allocator slack, but on glibc it corrupted
+    // the next chunk's header on every decl text access ("double free or
+    // corruption" aborts and garbage decl text on Linux).
     for ( i = 0; i < length; i++ ) {
         node = huffmanTree;
         do {
@@ -335,7 +343,9 @@ int HuffmanDecompressText(NSMutableData *text, NSMutableData *compressed) {
         } while (node->symbol == -1);
         bytes[i] = node->symbol;
     }
-    bytes[i] = '\0';
+    if (length > 0) {
+        bytes[length - 1] = '\0'; // defensive: last byte is the terminator
+    }
     return (int)msg.readCount;
 }
 
@@ -3621,7 +3631,8 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
 
 #ifdef USE_COMPRESSED_DECLS
     int maxBytesPerCode = (maxHuffmanBits + 7) >> 3;
-    int maxCompressedSize = length * maxBytesPerCode;
+    // +1: the NUL terminator is compressed along with the payload.
+    int maxCompressedSize = (length + 1) * maxBytesPerCode;
 
     NSMutableData *tempCompressed = [NSMutableData dataWithLength:maxCompressedSize];
 

@@ -68,9 +68,18 @@
     [self.tabView addTabViewItem:tabItem];
     [self.tabView selectTabViewItem:tabItem];
 
-    // Force layout and redisplay
-    [self.tabView setNeedsLayout:YES];
-    [self.tabView layoutSubtreeIfNeeded];
+    // GNUstep only sizes an item's view inside selectTabViewItem:, and the
+    // guard at its top skips everything when the item is already selected —
+    // which it is here, because adding the first item auto-selects it. The
+    // view is then left with a zero frame (blank editor pane). Setting the
+    // frame explicitly after selection is a no-op on macOS and fixes GNUstep;
+    // autoresizing keeps it in sync from then on.
+    vc.view.frame = self.tabView.contentRect;
+
+    // Redisplay. (No setNeedsLayout/layoutSubtreeIfNeeded here: GNUstep's
+    // layout engine has no constraints for these nib views, and a forced
+    // layout pass zeroes the frame that was just set — spring-scaling the
+    // subviews through a 0x0 frame mangles their geometry beyond recovery.)
     [self.tabView setNeedsDisplay:YES];
 
     self.openEditors[path] = vc;

@@ -26,6 +26,10 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     
+    // GNUstep: harden every scroll view in the window against the
+    // scroller-autohide layout recursion (see UDBaseEditorViewController.h).
+    [self.window.contentView ud_disableScrollerAutohideRecursively];
+
     self.declBrowser = [[UDDeclBrowser alloc] initWithWorkspace:self.workspace];
     self.declBrowser.delegate = self;
 
@@ -39,6 +43,7 @@
     self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView
                                                             tabBar:self.tabBarView
                                                          workspace:self.workspace];
+
 }
 
 -(UDWorkspace *)workspace {

@@ -57,6 +57,7 @@
     UDBaseEditorViewController *vc = [UDBaseEditorViewController editorViewControllerForWorkspaceItem:item inWorkspace:_workspace];
 
     vc.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [vc.view ud_disableScrollerAutohideRecursively]; // GNUstep: see UDBaseEditorViewController.h
     vc.view.frame = self.tabView.contentRect; // set initial frame explicitly
 
     // Wrap it in a tab view item.

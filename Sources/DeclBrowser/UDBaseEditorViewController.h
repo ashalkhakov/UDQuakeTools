@@ -33,4 +33,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * GNUstep layout hardening. gnustep-gui's NSScrollView has no re-entrancy
+ * guard around scroller auto-hiding: _autohideScrollers → tile → clip-view
+ * setFrame: → the document view re-wraps (NSTextView height follows width)
+ * → reflectScrolledClipView: → _autohideScrollers flips the scroller back —
+ * an unbounded recursion (stack overflow) whenever content size sits on the
+ * show/hide boundary, which the Eau theme's scroller width makes easy to
+ * hit. Turning auto-hide off removes the oscillation structurally. No-op on
+ * macOS, where auto-hiding is safe.
+ */
+@interface NSView (UDGNUstepLayoutFixes)
+- (void)ud_disableScrollerAutohideRecursively;
+@end
+
 NS_ASSUME_NONNULL_END

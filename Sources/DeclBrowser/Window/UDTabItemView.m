@@ -23,7 +23,13 @@
 + (instancetype)loadFromNib {
     NSArray *topLevelObjects = nil;
     NSNib *nib = [[NSNib alloc] initWithNibNamed:@"UDTabItemView" bundle:[NSBundle bundleForClass:self]];
-    if (![nib instantiateWithOwner:nil topLevelObjects:&topLevelObjects]) {
+    // Owner must be non-nil: GNUstep's NSNib stores the owner into the nib
+    // context dictionary unconditionally, so instantiateWithOwner:nil throws
+    // "Tried to add nil value for key 'NSOwner'" (macOS tolerates nil). The
+    // xib's File's Owner has no outlets or actions, so a throwaway object
+    // serves as the placeholder on both platforms.
+    NSObject *placeholderOwner = [[NSObject alloc] init];
+    if (![nib instantiateWithOwner:placeholderOwner topLevelObjects:&topLevelObjects]) {
         NSLog(@"UDTabItemView: could not load UDTabItemView.xib");
         return nil;
     }

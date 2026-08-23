@@ -42,7 +42,7 @@ UDCore_OBJC_FILES = \
     UDCrashReporter.m \
     UDDeclManagedObjects.m \
     UDDeclIncrementalStore.m \
-    UniformTypeIdentifiers/UniformTypeIdentifiers.m
+    UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -78,7 +78,7 @@ ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip -lgnustep-corebase
 
 include $(GNUSTEP_MAKEFILES)/library.make
 
-# NOTE: UniformTypeIdentifiers/ is the GNUstep compatibility shim for Apple's
+# NOTE: UniformTypeIdentifiersGNUstep/ is the GNUstep compatibility shim for Apple's
 # UniformTypeIdentifiers framework (UTType, UTTypeImage, and the legacy
 # UTTypeConformsTo/UTTypeCreatePreferredIdentifierForTag C calls). The
 # DeclBrowser sources keep their ordinary

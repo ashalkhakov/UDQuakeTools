@@ -172,25 +172,6 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     }
 }
 
-// FreeCoreData's generated @dynamic accessors are object-typed ("@@:"); a
-// scalar property dispatched through them returns garbage (float returns
-// arrive in the wrong register entirely). Handwritten primitive-value
-// accessors - Apple's documented accessor pattern - behave identically on
-// macOS, so every scalar-typed modeled attribute gets explicit ones.
-#define UD_SCALAR_GETTER(Name, Key, CType, FromNumber) \
-- (CType)Name { \
-    [self willAccessValueForKey:Key]; \
-    NSNumber *value = [self primitiveValueForKey:Key]; \
-    [self didAccessValueForKey:Key]; \
-    return (CType)[value FromNumber]; \
-}
-#define UD_SCALAR_SETTER(SetName, Key, CType) \
-- (void)SetName:(CType)newValue { \
-    [self willChangeValueForKey:Key]; \
-    [self setPrimitiveValue:@(newValue) forKey:Key]; \
-    [self didChangeValueForKey:Key]; \
-}
-
 #pragma mark - DeclFile / DeclType
 
 @implementation UDDeclFile
@@ -199,10 +180,6 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic checksum;
 @dynamic timestamp;
 
-UD_SCALAR_GETTER(checksum, @"checksum", int64_t, longLongValue)
-UD_SCALAR_SETTER(setChecksum, @"checksum", int64_t)
-UD_SCALAR_GETTER(timestamp, @"timestamp", int64_t, longLongValue)
-UD_SCALAR_SETTER(setTimestamp, @"timestamp", int64_t)
 
 @end
 
@@ -211,8 +188,6 @@ UD_SCALAR_SETTER(setTimestamp, @"timestamp", int64_t)
 @dynamic name;
 @dynamic type;
 
-UD_SCALAR_GETTER(type, @"type", int32_t, intValue)
-UD_SCALAR_SETTER(setType, @"type", int32_t)
 
 @end
 
@@ -366,10 +341,6 @@ UD_SCALAR_SETTER(setType, @"type", int32_t)
 @dynamic clamp;
 @dynamic snap;
 
-UD_SCALAR_GETTER(clamp, @"clamp", BOOL, boolValue)
-UD_SCALAR_SETTER(setClamp, @"clamp", BOOL)
-UD_SCALAR_GETTER(snap, @"snap", BOOL, boolValue)
-UD_SCALAR_SETTER(setSnap, @"snap", BOOL)
 @dynamic values;
 
 + (NSString *)ud_defaultDefinition {
@@ -1467,8 +1438,6 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
 
 @dynamic depthHack;
 
-UD_SCALAR_GETTER(depthHack, @"depthHack", float, floatValue)
-UD_SCALAR_SETTER(setDepthHack, @"depthHack", float)
 @dynamic stages;
 
 // stages is transient, so the store never faults it in; build it here from

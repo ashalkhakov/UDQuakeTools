@@ -16,7 +16,7 @@
                 <button toolTip="Close tab" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tiv-Cl-os1">
                     <rect key="frame" x="4" y="6" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <buttonCell key="cell" type="bevel" title="✕" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Cl-os2">
+                    <buttonCell key="cell" type="bevel" title="×" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Cl-os2">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system" size="10"/>
                     </buttonCell>
@@ -36,7 +36,7 @@
                 <button toolTip="Pin tab" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tiv-Pi-in1">
                     <rect key="frame" x="140" y="6" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                    <buttonCell key="cell" type="bevel" title="⚐" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Pi-in2">
+                    <buttonCell key="cell" type="bevel" title="□" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="tiv-Pi-in2">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system" size="10"/>
                     </buttonCell>

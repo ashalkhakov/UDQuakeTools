@@ -1,0 +1,28 @@
+diff --git a/CoreData/NSManagedObjectContext.m b/CoreData/NSManagedObjectContext.m
+index 75c1bcc..70a7c25 100644
+--- a/CoreData/NSManagedObjectContext.m
++++ b/CoreData/NSManagedObjectContext.m
+@@ -1166,11 +1166,22 @@ static id CDAggregateValue(NSString *function,NSString *keyPath,NSArray *snapsho
+     if(!_requestedProcessPendingChanges){
+ 
+ 	NSRunLoop *runLoop = [NSRunLoop mainRunLoop];
++	/* Concrete mode names rather than NSRunLoopCommonModes: GNUstep's
++	   run loop performers match mode strings literally, so a performer
++	   filed under the "common modes" pseudo-mode never fires there and
++	   pending-change processing (change notifications, undo
++	   registration) is deferred until the next explicit
++	   -processPendingChanges, typically the save.  The AppKit modes are
++	   spelled as literals to keep CoreData off AppKit. */
+ 	[runLoop performSelector: @selector(_processPendingChangesForRequest)
+ 		 target: self
+ 		 argument: nil
+ 		 order: 0
+-		 modes: [NSArray arrayWithObject:NSRunLoopCommonModes]];
++		 modes: [NSArray arrayWithObjects:
++		            NSDefaultRunLoopMode,
++		            @"NSModalPanelRunLoopMode",
++		            @"NSEventTrackingRunLoopMode",
++		            nil]];
+ 	_requestedProcessPendingChanges = YES;
+    }
+ }

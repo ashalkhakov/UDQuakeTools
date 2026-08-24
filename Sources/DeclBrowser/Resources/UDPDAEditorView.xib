@@ -142,7 +142,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="name" width="449" minWidth="40" maxWidth="1000" id="zfR-fD-Yya">
+                                                        <tableColumn editable="NO" identifier="name" width="449" minWidth="40" maxWidth="1000" id="zfR-fD-Yya">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -215,7 +215,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="from" width="150" minWidth="40" maxWidth="1000" id="OCS-8h-NLH">
+                                                        <tableColumn editable="NO" identifier="from" width="150" minWidth="40" maxWidth="1000" id="OCS-8h-NLH">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="From">
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -230,7 +230,7 @@
                                                                 <binding destination="5iZ-JN-AtM" name="value" keyPath="arrangedObjects.from" id="cb2-em-frm"/>
                                                             </connections>
                                                         </tableColumn>
-                                                        <tableColumn identifier="subject" width="232" minWidth="10" maxWidth="3.4028234663852886e+38" id="zut-lg-C7O">
+                                                        <tableColumn editable="NO" identifier="subject" width="232" minWidth="10" maxWidth="3.4028234663852886e+38" id="zut-lg-C7O">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Subject">
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -303,7 +303,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="name" width="449" minWidth="40" maxWidth="1000" id="LJU-Ej-WBd">
+                                                        <tableColumn editable="NO" identifier="name" width="449" minWidth="40" maxWidth="1000" id="LJU-Ej-WBd">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Video Name">
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>

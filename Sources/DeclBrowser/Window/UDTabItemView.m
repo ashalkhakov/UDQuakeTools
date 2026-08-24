@@ -75,6 +75,20 @@
     }
 }
 
+// The Mac glyphs (U+2715 MULTIPLICATION X, U+2690/2691 flags) are outside
+// the Liberation fonts GNUstep typically ships with, and render as "?"
+// boxes there. The fallbacks below stay within Latin-1 / Geometric Shapes,
+// which Liberation covers.
+#ifdef __APPLE__
+#define UD_GLYPH_CLOSE     @"\u2715"  // ✕
+#define UD_GLYPH_PINNED    @"\u2691"  // ⚑
+#define UD_GLYPH_UNPINNED  @"\u2690"  // ⚐
+#else
+#define UD_GLYPH_CLOSE     @"\u00d7"  // ×
+#define UD_GLYPH_PINNED    @"\u25a0"  // ■
+#define UD_GLYPH_UNPINNED  @"\u25a1"  // □
+#endif
+
 - (void)refresh {
     self.titleLabel.stringValue = self.item.title ?: @"";
     self.toolTip = self.item.toolTip;
@@ -86,12 +100,12 @@
         self.closeButton.enabled = NO;
         self.closeButton.hidden = !self.item.dirty;
     } else {
-        self.closeButton.title = _hovered ? @"✕" : @"●";
+        self.closeButton.title = _hovered ? UD_GLYPH_CLOSE : @"●";
         self.closeButton.enabled = YES;
         self.closeButton.hidden = !(_hovered || self.item.dirty);
     }
 
-    self.pinButton.title = self.item.pinned ? @"⚑" : @"⚐";
+    self.pinButton.title = self.item.pinned ? UD_GLYPH_PINNED : UD_GLYPH_UNPINNED;
     self.pinButton.hidden = !(_hovered || self.item.pinned);
 
     [self setNeedsDisplay:YES];

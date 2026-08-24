@@ -61,13 +61,12 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     static NSManagedObjectModel *model;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        // Xcode builds compile the model to momd/mom. On GNUstep there is no
-        // momc; FreeCoreData's NSManagedObjectModel reads the .xcdatamodel(d)
-        // XML directly, so fall back to the uncompiled model resource (which
-        // the GNUstep app makefiles bundle as-is). bundleForClass: may
-        // resolve to the main bundle for classes living in a plain library,
-        // so both bundles are searched.
-        NSArray<NSString *> *extensions = @[@"momd", @"mom", @"xcdatamodeld", @"xcdatamodel"];
+        // The model ships compiled on both platforms: Xcode compiles it to
+        // DeclModel.momd, and the GNUstep build does the same with
+        // FreeCoreData's momc (see coredata-model.make in the app's
+        // GNUmakefile). bundleForClass: may resolve to the main bundle for
+        // classes living in a plain library, so both bundles are searched.
+        NSArray<NSString *> *extensions = @[@"momd", @"mom"];
         NSMutableArray<NSBundle *> *bundles = [NSMutableArray array];
         NSBundle *classBundle = [NSBundle bundleForClass:[UDDeclIncrementalStore class]];
         if (classBundle != nil) {
@@ -80,10 +79,6 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
         for (NSBundle *bundle in bundles) {
             for (NSString *extension in extensions) {
                 NSURL *modelURL = [bundle URLForResource:@"DeclModel" withExtension:extension];
-                if ([modelURL.pathExtension isEqualToString:@"xcdatamodeld"]) {
-                    // the versioned container holds the actual model
-                    modelURL = [modelURL URLByAppendingPathComponent:@"DeclModel.xcdatamodel"];
-                }
                 if (modelURL != nil) {
                     model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
                 }

@@ -126,7 +126,13 @@ successful `instantiateNibWithOwner:` call, so the ivar owns the array before
 
 ---
 
-## 3. Why FreeCoreData needs `freecoredata-xcdatamodel-loader.patch`
+## 3. Why FreeCoreData needed `freecoredata-xcdatamodel-loader.patch`
+
+> **Obsolete as of FreeCoreData PR #28 (momc-and-ordered-sets).** Upstream now
+> ships `momc` (compiling `.xcdatamodeld` → `.momd` at build time, integrated
+> via `coredata-model.make`), loads `.momd`/`.mom` at runtime, and installs
+> the dynamic accessors, so the patch has been removed from `Scripts/`. The
+> description below is kept as the record of what the patch fixed.
 
 Two related gaps, both hit by Decl Browser on Linux:
 

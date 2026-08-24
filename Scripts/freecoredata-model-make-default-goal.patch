@@ -1,0 +1,34 @@
+diff --git a/coredata-model.make b/coredata-model.make
+index d522ecd..2462a65 100644
+--- a/coredata-model.make
++++ b/coredata-model.make
+@@ -43,6 +43,12 @@ $(foreach _cd_target,$(_CD_MODEL_TARGETS),\
+ # contain spaces ("Model 2.xcdatamodel"), which make cannot carry in a
+ # prerequisite list - while compiling a model takes milliseconds, going
+ # stale silently would cost an afternoon.
++#
++# This file is documented to be included BEFORE the target's
++# {application,tool,...}.make, so the explicit rule below must not
++# become make's default goal - save and restore it around the rule.
++_cd_saved_default_goal := $(.DEFAULT_GOAL)
++
+ .PHONY: _cd-force-model-compile
+ _cd-force-model-compile:
+ 
+@@ -52,6 +58,16 @@ _cd-force-model-compile:
+ %.mom: %.xcdatamodel _cd-force-model-compile
+ 	$(MOMC) $< $@
+ 
++# If nothing had defined a default goal yet (the documented case: this
++# file is included before the target's makefile), fall back to 'all',
++# gnustep-make's canonical entry point, instead of leaving one of the
++# rules above as the accidental default.
++ifeq ($(_cd_saved_default_goal),)
++.DEFAULT_GOAL := all
++else
++.DEFAULT_GOAL := $(_cd_saved_default_goal)
++endif
++
+ # Models compile before any target builds.
+ before-all:: $(_CD_ALL_COMPILED_MODELS)
+ 

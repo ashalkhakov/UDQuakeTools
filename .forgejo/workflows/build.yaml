@@ -41,6 +41,21 @@ jobs:
 
           ls -la /opt/gnustep-prefix/System/Library/Makefiles/GNUstep.sh
 
+      - name: Build and Install FreeCoreData
+        run: |
+          export LOCAL_PREFIX="/opt/gnustep-prefix"
+          . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
+          export LD_LIBRARY_PATH="${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+
+          git clone --depth 1 https://github.com/ashalkhakov/FreeCoreData.git
+          cd FreeCoreData
+          make
+          make install GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
+          # momc compiles .xcdatamodeld -> .momd during the app build; its
+          # install step also installs coredata-model.make into
+          # $(GNUSTEP_MAKEFILES) for the app's GNUmakefile to include.
+          make -C Tools/momc
+          make -C Tools/momc install GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
 
       - name: Build and Install UDCore Library
         run: |
@@ -51,7 +66,6 @@ jobs:
           cd Sources/UDCore
           make
           make install GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
-
 
       - name: Build Apps
         run: |

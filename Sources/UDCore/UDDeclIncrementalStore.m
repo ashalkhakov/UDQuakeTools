@@ -75,6 +75,15 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
         if (![bundles containsObject:[NSBundle mainBundle]] && [NSBundle mainBundle] != nil) {
             [bundles addObject:[NSBundle mainBundle]];
         }
+        // Last resort: every loaded bundle. Under GNUstep's xctest runner,
+        // neither bundleForClass: (the class lives in libUDCore.so, which
+        // has no bundle) nor mainBundle (the xctest tool) is the test
+        // bundle that actually carries DeclModel.momd; allBundles is.
+        for (NSBundle *bundle in [NSBundle allBundles]) {
+            if (![bundles containsObject:bundle]) {
+                [bundles addObject:bundle];
+            }
+        }
 
         for (NSBundle *bundle in bundles) {
             for (NSString *extension in extensions) {
@@ -764,10 +773,17 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     // If the raw sourceText itself was edited (text editor), it wins over the
     // structured attributes — otherwise a text edit of a structured decl
     // (table/skin/particle) would be silently regenerated from stale
-    // attribute values and discarded.
-    id editedText = [object changedValues][@"sourceText"];
-    if ([editedText isKindOfClass:[NSData class]]) {
-        newSourceText = editedText;
+    // attribute values and discarded. The explicit flag (set by UDDeclBase's
+    // sourceText setter) is used rather than -changedValues: FreeCoreData
+    // also records -awakeFromFetch's setPrimitiveValue: population of this
+    // transient there, and treating that stale snapshot as an edit would
+    // write the ORIGINAL text over every structured attribute change.
+    if ([object isKindOfClass:[UDDeclBase class]]
+        && ((UDDeclBase *)object).ud_sourceTextEdited) {
+        id editedText = [object valueForKey:@"sourceText"];
+        if ([editedText isKindOfClass:[NSData class]]) {
+            newSourceText = editedText;
+        }
     }
 
     if (newSourceText == nil && [cls isSubclassOfClass:[UDDeclBase class]]) {

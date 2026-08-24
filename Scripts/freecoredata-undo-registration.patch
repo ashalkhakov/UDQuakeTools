@@ -1,0 +1,44 @@
+diff --git a/CoreData/NSManagedObjectContext.m b/CoreData/NSManagedObjectContext.m
+index 0924a9f..e98d9cc 100644
+--- a/CoreData/NSManagedObjectContext.m
++++ b/CoreData/NSManagedObjectContext.m
+@@ -1174,8 +1174,39 @@ static id CDAggregateValue(NSString *function,NSString *keyPath,NSArray *snapsho
+     [self _processPendingChanges];
+ }
+ 
++/* Undo trampoline: re-applies a recorded old value to the object. */
++-(void)_undoApplyValueChange:(NSDictionary *)info {
++   NSManagedObject *object=[info objectForKey:@"object"];
++   NSString        *key=[info objectForKey:@"key"];
++   id               value=[info objectForKey:@"value"];
++
++   if(value==[NSNull null])
++    value=nil;
++
++   [object setValue:value forKey:key];
++}
++
+ -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if(NSMapGet(_objectIdToObject,[object objectID])==object){
++    /* Register the inverse operation with the undo manager. Undoing runs
++       through -setValue:forKey: and thus back through this observer, which
++       registers the redo - exactly NSUndoManager's expected pattern.
++       (registerUndoWithTarget:selector:object: rather than the invocation
++       proxy: -setValue:forKey: is a real method on NSUndoManager itself,
++       so prepareWithInvocationTarget: cannot record it.) */
++    if(_undoManager!=nil){
++     id oldValue=[change objectForKey:NSKeyValueChangeOldKey];
++     NSMutableDictionary *undoInfo=[NSMutableDictionary dictionary];
++
++     [undoInfo setObject:object forKey:@"object"];
++     [undoInfo setObject:keyPath forKey:@"key"];
++     [undoInfo setObject:(oldValue!=nil)?oldValue:(id)[NSNull null] forKey:@"value"];
++
++     [_undoManager registerUndoWithTarget:self
++                                 selector:@selector(_undoApplyValueChange:)
++                                   object:undoInfo];
++    }
++
+     [_updatedObjects addObject:object];
+ 
+     if(![_pendingInsertedObjects containsObject:object] && ![_pendingDeletedObjects containsObject:object])

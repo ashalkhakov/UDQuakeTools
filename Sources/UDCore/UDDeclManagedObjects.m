@@ -172,6 +172,25 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     }
 }
 
+// FreeCoreData's generated @dynamic accessors are object-typed ("@@:"); a
+// scalar property dispatched through them returns garbage (float returns
+// arrive in the wrong register entirely). Handwritten primitive-value
+// accessors - Apple's documented accessor pattern - behave identically on
+// macOS, so every scalar-typed modeled attribute gets explicit ones.
+#define UD_SCALAR_GETTER(Name, Key, CType, FromNumber) \
+- (CType)Name { \
+    [self willAccessValueForKey:Key]; \
+    NSNumber *value = [self primitiveValueForKey:Key]; \
+    [self didAccessValueForKey:Key]; \
+    return (CType)[value FromNumber]; \
+}
+#define UD_SCALAR_SETTER(SetName, Key, CType) \
+- (void)SetName:(CType)newValue { \
+    [self willChangeValueForKey:Key]; \
+    [self setPrimitiveValue:@(newValue) forKey:Key]; \
+    [self didChangeValueForKey:Key]; \
+}
+
 #pragma mark - DeclFile / DeclType
 
 @implementation UDDeclFile
@@ -180,6 +199,11 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic checksum;
 @dynamic timestamp;
 
+UD_SCALAR_GETTER(checksum, @"checksum", int64_t, longLongValue)
+UD_SCALAR_SETTER(setChecksum, @"checksum", int64_t)
+UD_SCALAR_GETTER(timestamp, @"timestamp", int64_t, longLongValue)
+UD_SCALAR_SETTER(setTimestamp, @"timestamp", int64_t)
+
 @end
 
 @implementation UDDeclType
@@ -187,7 +211,11 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic name;
 @dynamic type;
 
+UD_SCALAR_GETTER(type, @"type", int32_t, intValue)
+UD_SCALAR_SETTER(setType, @"type", int32_t)
+
 @end
+
 
 #pragma mark - DeclBase
 
@@ -197,6 +225,24 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic sourceText;
 @dynamic sourceFile;
 @dynamic type;
+
+@synthesize ud_sourceTextEdited = _ud_sourceTextEdited;
+
+// Handwritten so a public assignment (the text editor's save path) can be
+// told apart from -awakeFromFetch's setPrimitiveValue: population, which
+// FreeCoreData also surfaces in -changedValues. Equivalent to the
+// generated setter otherwise (Apple's documented accessor pattern).
+- (void)setSourceText:(NSData *)sourceText {
+    [self willChangeValueForKey:@"sourceText"];
+    [self setPrimitiveValue:[sourceText copy] forKey:@"sourceText"];
+    [self didChangeValueForKey:@"sourceText"];
+    self.ud_sourceTextEdited = YES;
+}
+
+- (void)didSave {
+    [super didSave];
+    self.ud_sourceTextEdited = NO;
+}
 
 + (NSString *)ud_defaultDefinition {
     return @"{\n}\n";
@@ -292,6 +338,7 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (text != nil) {
         [self setPrimitiveValue:text forKey:@"sourceText"];
     }
+    self.ud_sourceTextEdited = NO;
 }
 
 @end
@@ -318,6 +365,11 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 
 @dynamic clamp;
 @dynamic snap;
+
+UD_SCALAR_GETTER(clamp, @"clamp", BOOL, boolValue)
+UD_SCALAR_SETTER(setClamp, @"clamp", BOOL)
+UD_SCALAR_GETTER(snap, @"snap", BOOL, boolValue)
+UD_SCALAR_SETTER(setSnap, @"snap", BOOL)
 @dynamic values;
 
 + (NSString *)ud_defaultDefinition {
@@ -1414,6 +1466,9 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
 @implementation UDDeclParticle
 
 @dynamic depthHack;
+
+UD_SCALAR_GETTER(depthHack, @"depthHack", float, floatValue)
+UD_SCALAR_SETTER(setDepthHack, @"depthHack", float)
 @dynamic stages;
 
 // stages is transient, so the store never faults it in; build it here from

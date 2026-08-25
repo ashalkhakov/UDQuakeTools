@@ -185,6 +185,64 @@
     XCTAssertEqualObjects(result, @"material textures/test { map _default }", @"Read text should perfectly match written text");
 }
 
+// Regression test for the inverted chunk clamp in -[idFile read:length:]:
+// `block = remaining < readChunkBytes ? readChunkBytes : remaining` asked
+// fread for the full 64KB chunk whenever FEWER bytes were requested, so a
+// partial read of a larger file (a) overflowed the caller's buffer with
+// whatever the file still held (heap corruption — the Linux
+// "corrupted double-linked list" crash) and (b) advanced the file position
+// by up to 64KB, so the NEXT sequential read returned the wrong bytes.
+// Sequential partial reads returning exactly the right bytes proves the
+// clamp is correct without needing a memory checker.
+- (void)testSequentialPartialReadsReturnCorrectBytes {
+    NSError *error = nil;
+
+    // A file comfortably larger than any small read, with predictable
+    // contents: byte i == i % 251 (prime, so no short repeating window).
+    const int total = 200 * 1024;
+    NSMutableData *payload = [NSMutableData dataWithLength:total];
+    unsigned char *p = payload.mutableBytes;
+    for (int i = 0; i < total; i++) {
+        p[i] = (unsigned char)(i % 251);
+    }
+
+    idFile *writeFile = [self.fileSystem openFileWrite:self.testFilePath basePath:@"fs_basepath" error:&error];
+    XCTAssertNotNil(writeFile);
+    XCTAssertEqual([writeFile write:payload.bytes length:total error:&error], total);
+    XCTAssertTrue([self.fileSystem closeFile:writeFile error:&error]);
+    writeFile = nil;
+
+    idFile *readFile = [self.fileSystem openFileRead:self.testFilePath allowCopyFiles:YES gamedir:nil error:&error];
+    XCTAssertNotNil(readFile);
+
+    // Read the file in small, uneven slices — mimicking structured reads
+    // (ints, strings) against a file with plenty of data still ahead.
+    const int sliceSizes[] = { 4, 1, 16, 3, 4096, 7, 64, 1024 };
+    const int sliceCount = (int)(sizeof(sliceSizes) / sizeof(sliceSizes[0]));
+    int offset = 0;
+    for (int round = 0; offset < 16 * 1024; round++) {
+        int want = sliceSizes[round % sliceCount];
+        unsigned char buf[4096 + 1];
+        memset(buf, 0xAB, sizeof(buf));
+
+        int got = [readFile read:buf length:want error:&error];
+        XCTAssertNil(error);
+        XCTAssertEqual(got, want, @"slice at offset %d should read fully", offset);
+
+        for (int i = 0; i < want; i++) {
+            XCTAssertEqual(buf[i], (unsigned char)((offset + i) % 251),
+                           @"byte %d of slice at offset %d is wrong — the read over-advanced the file position",
+                           i, offset);
+        }
+        // The byte just past the requested length must be untouched.
+        XCTAssertEqual(buf[want], 0xAB,
+                       @"read wrote past the requested length at offset %d", offset);
+        offset += want;
+    }
+
+    XCTAssertTrue([self.fileSystem closeFile:readFile error:&error]);
+}
+
 - (void)testFileNotFound {
     NSError *error = nil;
     idFile *readFile = [self.fileSystem openFileRead:@"/path/to/absolute/garbage.decl" allowCopyFiles:YES gamedir:nil error:&error];

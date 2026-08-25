@@ -22,6 +22,10 @@
  *  - DeclFile and DeclType are read-mostly views over manager bookkeeping.
  */
 
+#ifdef GNUSTEP
+// NSUndefinedAttributeType, NSInteger16AttributeType, etc. are defined in AppKit
+#import <AppKit/AppKit.h>
+#endif
 #import "UDDeclIncrementalStore.h"
 
 #import "idDeclManager.h"
@@ -57,13 +61,12 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     static NSManagedObjectModel *model;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        // Xcode builds compile the model to momd/mom. On GNUstep there is no
-        // momc; FreeCoreData's NSManagedObjectModel reads the .xcdatamodel(d)
-        // XML directly, so fall back to the uncompiled model resource (which
-        // the GNUstep app makefiles bundle as-is). bundleForClass: may
-        // resolve to the main bundle for classes living in a plain library,
-        // so both bundles are searched.
-        NSArray<NSString *> *extensions = @[@"momd", @"mom", @"xcdatamodeld", @"xcdatamodel"];
+        // The model ships compiled on both platforms: Xcode compiles it to
+        // DeclModel.momd, and the GNUstep build does the same with
+        // FreeCoreData's momc (see coredata-model.make in the app's
+        // GNUmakefile). bundleForClass: may resolve to the main bundle for
+        // classes living in a plain library, so both bundles are searched.
+        NSArray<NSString *> *extensions = @[@"momd", @"mom"];
         NSMutableArray<NSBundle *> *bundles = [NSMutableArray array];
         NSBundle *classBundle = [NSBundle bundleForClass:[UDDeclIncrementalStore class]];
         if (classBundle != nil) {
@@ -72,14 +75,19 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
         if (![bundles containsObject:[NSBundle mainBundle]] && [NSBundle mainBundle] != nil) {
             [bundles addObject:[NSBundle mainBundle]];
         }
+        // Last resort: every loaded bundle. Under GNUstep's xctest runner,
+        // neither bundleForClass: (the class lives in libUDCore.so, which
+        // has no bundle) nor mainBundle (the xctest tool) is the test
+        // bundle that actually carries DeclModel.momd; allBundles is.
+        for (NSBundle *bundle in [NSBundle allBundles]) {
+            if (![bundles containsObject:bundle]) {
+                [bundles addObject:bundle];
+            }
+        }
 
         for (NSBundle *bundle in bundles) {
             for (NSString *extension in extensions) {
                 NSURL *modelURL = [bundle URLForResource:@"DeclModel" withExtension:extension];
-                if ([modelURL.pathExtension isEqualToString:@"xcdatamodeld"]) {
-                    // the versioned container holds the actual model
-                    modelURL = [modelURL URLByAppendingPathComponent:@"DeclModel.xcdatamodel"];
-                }
                 if (modelURL != nil) {
                     model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
                 }
@@ -130,8 +138,7 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 }
 
 + (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator {
-    NSManagedObjectContext *context =
-        [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
     context.persistentStoreCoordinator = coordinator;
     context.undoManager = [[NSUndoManager alloc] init];
     return context;
@@ -766,10 +773,17 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     // If the raw sourceText itself was edited (text editor), it wins over the
     // structured attributes — otherwise a text edit of a structured decl
     // (table/skin/particle) would be silently regenerated from stale
-    // attribute values and discarded.
-    id editedText = [object changedValues][@"sourceText"];
-    if ([editedText isKindOfClass:[NSData class]]) {
-        newSourceText = editedText;
+    // attribute values and discarded. The explicit flag (set by UDDeclBase's
+    // sourceText setter) is used rather than -changedValues: FreeCoreData
+    // also records -awakeFromFetch's setPrimitiveValue: population of this
+    // transient there, and treating that stale snapshot as an edit would
+    // write the ORIGINAL text over every structured attribute change.
+    if ([object isKindOfClass:[UDDeclBase class]]
+        && ((UDDeclBase *)object).ud_sourceTextEdited) {
+        id editedText = [object valueForKey:@"sourceText"];
+        if ([editedText isKindOfClass:[NSData class]]) {
+            newSourceText = editedText;
+        }
     }
 
     if (newSourceText == nil && [cls isSubclassOfClass:[UDDeclBase class]]) {

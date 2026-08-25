@@ -12,7 +12,11 @@
 
 - (void)setDocument:(UDDeclDocument *)document {
     _document = document;
-    if (self.viewLoaded && document != nil) {
+    // No `viewLoaded` check: GNUstep's NSViewController doesn't have it, and
+    // none is needed — the objectController outlet is nil until the view nib
+    // has loaded (reading it does NOT trigger loading), so this assignment is
+    // a harmless no-op before then; -viewDidLoad sets the content itself.
+    if (document != nil) {
         self.objectController.content = document.declObject;
     }
 }
@@ -128,6 +132,28 @@
     return child;
 }
 
+
+/**
+ * Detaches the array controller's selected child decls from one of the
+ * PDA's to-many relationships. Used instead of -[NSArrayController remove:]:
+ * Apple's contentSet binding routes that removal through the model, but
+ * GNUstep's array controller mutates its content collection in place — and
+ * the content here is the relationship's (immutable) set, which raises and
+ * leaves the app wedged mid-event. Editing the model directly behaves
+ * identically on both platforms (and the decl itself stays in its source
+ * file either way).
+ */
+- (void)detachSelectedFrom:(NSArrayController *)controller relationship:(NSString *)key {
+    NSArray *selected = controller.selectedObjects;
+    if (selected.count == 0) {
+        return;
+    }
+    NSMutableSet *set = [self.pda mutableSetValueForKey:key];
+    for (id object in selected) {
+        [set removeObject:object];
+    }
+}
+
 - (IBAction)addOrRemoveAudioLog:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
         // The insert, the modal's edits and the relationship hookup all land
@@ -145,9 +171,7 @@
             return result;
         } actionName:@"Add Audio Log"];
     } else {
-        // Detaches the selected audio from the PDA; the audio decl itself
-        // stays in its source file.
-        [self.audioArrayController remove:sender];
+        [self detachSelectedFrom:self.audioArrayController relationship:@"audios"];
     }
 }
 
@@ -177,7 +201,7 @@
             return result;
         } actionName:@"Add Email"];
     } else {
-        [self.emailArrayController remove:sender];
+        [self detachSelectedFrom:self.emailArrayController relationship:@"emails"];
     }
 }
 
@@ -206,7 +230,7 @@
             return result;
         } actionName:@"Add Video"];
     } else {
-        [self.videoArrayController remove:sender];
+        [self detachSelectedFrom:self.videoArrayController relationship:@"videos"];
     }
 }
 

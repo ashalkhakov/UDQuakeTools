@@ -9,6 +9,7 @@
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
 #import "UDTabBarView.h"
+#import "UDTextPromptPanel.h"
 #import "idDeclManager.h"
 
 @interface UDWorkspaceWindowController ()
@@ -25,6 +26,10 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     
+    // GNUstep: harden every scroll view in the window against the
+    // scroller-autohide layout recursion (see UDBaseEditorViewController.h).
+    [self.window.contentView ud_disableScrollerAutohideRecursively];
+
     self.declBrowser = [[UDDeclBrowser alloc] initWithWorkspace:self.workspace];
     self.declBrowser.delegate = self;
 
@@ -38,6 +43,7 @@
     self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView
                                                             tabBar:self.tabBarView
                                                          workspace:self.workspace];
+
 }
 
 -(UDWorkspace *)workspace {
@@ -145,23 +151,21 @@
 - (NSString *)_runSaveAsPromptForTypeName:(NSString *)typeName
                                       type:(declType_t)type
                               originalName:(NSString *)originalName {
-    NSTextField *nameField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 280, 24)];
-    nameField.stringValue = originalName ?: @"";
+    NSString *title = [NSString stringWithFormat:@"Save %@ “%@” As", typeName, originalName];
+    NSString *message = @"The current content is saved as a new decl with this name, in the same file. The original decl keeps its last saved state.";
+    NSString *value = originalName ?: @"";
 
     while (YES) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        alert.messageText = [NSString stringWithFormat:@"Save %@ “%@” As", typeName, originalName];
-        alert.informativeText = @"The current content is saved as a new decl with this name, in the same file. The original decl keeps its last saved state.";
-        [alert addButtonWithTitle:@"Save"];
-        [alert addButtonWithTitle:@"Cancel"];
-        alert.accessoryView = nameField;
-        alert.window.initialFirstResponder = nameField;
-
-        if ([alert runModal] != NSAlertFirstButtonReturn) {
-            return nil;
+        NSString *entered = [UDTextPromptPanel runModalPromptWithTitle:title
+                                                               message:message
+                                                          initialValue:value
+                                                         okButtonTitle:@"Save"];
+        if (entered == nil) {
+            return nil; // cancelled
         }
+        value = entered; // re-show what the user typed if we loop
 
-        NSString *candidate = [nameField.stringValue stringByTrimmingCharactersInSet:
+        NSString *candidate = [entered stringByTrimmingCharactersInSet:
                                [NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if (candidate.length == 0) {
             continue;

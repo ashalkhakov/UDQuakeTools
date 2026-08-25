@@ -72,6 +72,32 @@
     }
 }
 
+- (void)_reclearChangeCountIfSaved {
+    if (self.editingContext != nil && !self.editingContext.hasChanges) {
+        [self updateChangeCount:NSChangeCleared];
+    }
+}
+
+- (void)_scheduleDeferredChangeClear {
+    // GNUstep's NSDocument marks itself dirty whenever an undo group closes
+    // (it observes NSUndoManagerWillCloseUndoGroupNotification). Saving
+    // flushes the context's pending changes, which registers undo actions
+    // *during* -save:, auto-opening an undo group that only closes at the
+    // end of the current event via a runloop performer at
+    // NSUndoCloseGroupingRunLoopOrdering (350000). That close fires after
+    // writeToURL:'s NSChangeCleared, so the document ends the event dirty
+    // again and needs a second Save. Schedule a re-clear at a later runloop
+    // ordering so it runs after the group closes, and only clear when the
+    // context truly has nothing left to save.
+    [[NSRunLoop currentRunLoop] performSelector:@selector(_reclearChangeCountIfSaved)
+                                         target:self
+                                       argument:nil
+                                          order:500000
+                                          modes:@[NSDefaultRunLoopMode,
+                                                  NSModalPanelRunLoopMode,
+                                                  NSEventTrackingRunLoopMode]];
+}
+
 - (void)_textViewTextDidChange:(NSNotification *)notification {
     // Raw text edits never touch the managed object until save, so the
     // context can't report them — mark the document edited directly.
@@ -125,6 +151,7 @@
         }
 
         [self updateChangeCount:NSChangeCleared];
+        [self _scheduleDeferredChangeClear];
         return YES;
     }
 

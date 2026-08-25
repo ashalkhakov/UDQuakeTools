@@ -67,6 +67,15 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 @property (nonatomic, strong, nullable) UDDeclFile *sourceFile;
 @property (nonatomic, strong, nullable) UDDeclType *type;
 
+/// YES when sourceText was assigned through the public setter (a raw text
+/// edit, e.g. from the text editor) since the last fetch/save. The store
+/// uses this to decide whether the raw text wins over the structured
+/// attributes on save. It cannot rely on -changedValues for that:
+/// FreeCoreData records -awakeFromFetch's setPrimitiveValue: population of
+/// this transient there, so "sourceText present in changedValues" does not
+/// imply "edited". Not a modeled attribute.
+@property (nonatomic) BOOL ud_sourceTextEdited;
+
 /// The default decl body for a freshly created decl of this type (starts
 /// with an open brace, ends with a close brace). Subclasses override.
 /// These will eventually be replaced by the entities setting up default

@@ -9,6 +9,7 @@
  */
 
 #import "UDDeclManagedObjects.h"
+#import <objc/runtime.h>
 
 #import "UDDeclIncrementalStore.h"
 #import "idLexer.h"
@@ -73,6 +74,15 @@ static idLexer *UDDeclCodecLexerWithFlags(NSData *text, NSString *name, NSString
                    error:error]) {
         return nil;
     }
+    // loadMemory BORROWS the pointer (idLexer keeps buffer.bytes without
+    // copying), but `buffer` is a local that ARC releases when this helper
+    // returns — leaving the lexer scanning freed memory. macOS's allocator
+    // left the bytes intact so it appeared to work; glibc recycles the
+    // chunk immediately, so on Linux every codec parse read garbage
+    // ("unknown punctuation") and produced empty values. Tie the buffer's
+    // lifetime to the lexer's.
+    objc_setAssociatedObject(src, (__bridge const void *)src, buffer,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [src setFlags:flags];
     if (![src skipUntilString:@"{" error:error]) {
         return nil;
@@ -170,6 +180,7 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic checksum;
 @dynamic timestamp;
 
+
 @end
 
 @implementation UDDeclType
@@ -177,7 +188,9 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic name;
 @dynamic type;
 
+
 @end
+
 
 #pragma mark - DeclBase
 
@@ -187,6 +200,24 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic sourceText;
 @dynamic sourceFile;
 @dynamic type;
+
+@synthesize ud_sourceTextEdited = _ud_sourceTextEdited;
+
+// Handwritten so a public assignment (the text editor's save path) can be
+// told apart from -awakeFromFetch's setPrimitiveValue: population, which
+// FreeCoreData also surfaces in -changedValues. Equivalent to the
+// generated setter otherwise (Apple's documented accessor pattern).
+- (void)setSourceText:(NSData *)sourceText {
+    [self willChangeValueForKey:@"sourceText"];
+    [self setPrimitiveValue:[sourceText copy] forKey:@"sourceText"];
+    [self didChangeValueForKey:@"sourceText"];
+    self.ud_sourceTextEdited = YES;
+}
+
+- (void)didSave {
+    [super didSave];
+    self.ud_sourceTextEdited = NO;
+}
 
 + (NSString *)ud_defaultDefinition {
     return @"{\n}\n";
@@ -282,6 +313,7 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (text != nil) {
         [self setPrimitiveValue:text forKey:@"sourceText"];
     }
+    self.ud_sourceTextEdited = NO;
 }
 
 @end
@@ -308,6 +340,7 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 
 @dynamic clamp;
 @dynamic snap;
+
 @dynamic values;
 
 + (NSString *)ud_defaultDefinition {
@@ -1404,6 +1437,7 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
 @implementation UDDeclParticle
 
 @dynamic depthHack;
+
 @dynamic stages;
 
 // stages is transient, so the store never faults it in; build it here from

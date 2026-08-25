@@ -100,4 +100,14 @@ make ADDITIONAL_LDFLAGS="-ldispatch -lBlocksRuntime" -j$(nproc)
 make install
 cd ..
 
+# build FreeCoreData
+echo "=== Building FreeCoreData ==="
+git clone --depth 1 https://github.com/ashalkhakov/FreeCoreData.git
+cd FreeCoreData
+# source the environment to let gnustep-make install it inside the local prefix
+. "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
+make
+make install
+cd ..
+
 echo "=== GNUstep Local Stack Compilation Complete ==="

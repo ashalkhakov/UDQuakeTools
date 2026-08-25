@@ -30,6 +30,7 @@ DeclBrowser_OBJC_FILES = \
     Window/UDEditorTabManager.m \
     Window/UDTabBarView.m \
     Window/UDTabItemView.m \
+    Window/UDTextPromptPanel.m \
     Window/UDWorkspaceSettingsWindowController.m \
     Window/UDWorkspaceWindowController.m
 
@@ -40,9 +41,11 @@ DeclBrowser_INCLUDE_DIRS = \
     -I../UDCore \
     -I../UDFormats
 
-# DeclModel.xcdatamodeld is bundled uncompiled: FreeCoreData's
-# NSManagedObjectModel reads the .xcdatamodel XML directly (there is no momc
-# on GNUstep), and UDDeclIncrementalStore falls back to it at runtime.
+# The data model is compiled to DeclModel.momd by FreeCoreData's momc via
+# coredata-model.make (included below), which adds the .momd to the app's
+# resources automatically.
+DeclBrowser_XCDATAMODELD_FILES = ../UDCore/DeclModel.xcdatamodeld
+
 DeclBrowser_RESOURCE_FILES = \
     Resources/Base.lproj/MainMenu.xib \
     Resources/Base.lproj/UDWorkspaceWindow.xib \
@@ -56,14 +59,19 @@ DeclBrowser_RESOURCE_FILES = \
     en.lproj/UDTextEditorView.xib \
     UDWorkspaceDocumentWindow.xib \
     UDDeclBrowserWindow.xib \
-    DeclBrowser-Info.plist \
-    ../UDCore/DeclModel.xcdatamodeld
+    DeclBrowser-Info.plist
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
+# -rdynamic: export the executable's own symbols so UDCrashReporter's
+# backtrace (installed in main.m on Linux) resolves app frames by name.
+ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime -rdynamic
+
+# Compiles $(DeclBrowser_XCDATAMODELD_FILES) with momc and bundles the
+# resulting .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData.
+include $(GNUSTEP_MAKEFILES)/coredata-model.make
 
 include $(GNUSTEP_MAKEFILES)/application.make

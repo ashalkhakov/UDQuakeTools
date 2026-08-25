@@ -7,6 +7,10 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>qworkspace</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Workspace Configuration</string>
 			<key>CFBundleTypeRole</key>

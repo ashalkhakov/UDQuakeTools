@@ -34,8 +34,12 @@
     NSWindow *settingsWindow = [settingsWC window];
     settingsWC.document = self;
 
-    // Optional but nice: hide the main window while configuring
-    NSWindow *mainWindow = self.windowControllers.firstObject.window;
+    // Optional but nice: hide the main window while configuring.
+    // (Typed intermediate: GNUstep's -windowControllers returns a plain
+    // NSArray, so firstObject is `id` there and dot-syntax property access
+    // would not compile.)
+    NSWindowController *mainWindowController = self.windowControllers.firstObject;
+    NSWindow *mainWindow = mainWindowController.window;
     [mainWindow orderOut:nil];
 
     // Real modal session – always interactable

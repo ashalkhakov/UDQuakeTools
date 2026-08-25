@@ -16,7 +16,7 @@ mkdir -p AppDir/usr/local/bin
 . "${LOCAL_PREFIX}/System/Library/Makefiles/GNUstep.sh"
 
 # 3. Install each app into AppDir
-for APP_SOURCE_DIR in UDLauncher PakManager DeclBrowser GuiEd; do
+for APP_SOURCE_DIR in UDLauncher DeclBrowser; do
     cd "Sources/${APP_SOURCE_DIR}"
     make install DESTDIR="${WORKSPACE_DIR}/AppDir"
     cd "${WORKSPACE_DIR}"
@@ -100,7 +100,7 @@ ln -sfv "$BUNDLE_NAME" "$BUNDLE_DIR/back.bundle" || true
 fi
 
 # Migrate the nested app bundles safely
-for APP_BUNDLE_NAME in UDLauncher.app PakManager.app DeclBrowser.app GuiEd.app; do
+for APP_BUNDLE_NAME in UDLauncher.app DeclBrowser.app; do
     DEEP_APP_DIR=$(find AppDir -type d -name "${APP_BUNDLE_NAME}" 2>/dev/null | grep -v "usr/" | head -n 1 || true)
     if [ -n "$DEEP_APP_DIR" ]; then
         mkdir -p AppDir/usr/Local/Applications

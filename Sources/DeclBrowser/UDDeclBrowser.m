@@ -28,6 +28,60 @@
 
 @implementation UDDeclBrowser
 
+// Size the outline's single column to its widest row (indentation + cell
+// text), never narrower than the visible area. macOS handles this itself via
+// columnAutoresizingStyle + horizontal scrolling, but GNUstep neither applies
+// the autoresizing style on load nor widens the column for indented rows, so
+// deeply nested items render clipped at the column edge. Content-fitting the
+// column is harmless on macOS and fixes GNUstep; the enclosing scroll view
+// provides horizontal scrolling when content outgrows the pane.
+- (void)ud_fitColumnOfOutline:(NSOutlineView *)ov {
+    NSTableColumn *column = ov.tableColumns.firstObject;
+    if (column == nil) {
+        return;
+    }
+
+    CGFloat width = NSWidth(ov.superview.bounds); // clip view width baseline
+    NSCell *cell = [column.dataCell isKindOfClass:[NSCell class]] ? column.dataCell : nil;
+    NSInteger rows = ov.numberOfRows;
+    for (NSInteger row = 0; row < rows; row++) {
+        id item = [ov itemAtRow:row];
+        id value = [self outlineView:ov objectValueForTableColumn:column byItem:item];
+        CGFloat textWidth = 0;
+        if (cell != nil) {
+            [cell setObjectValue:value];
+            textWidth = [cell cellSize].width;
+        } else if ([value isKindOfClass:[NSString class]]) {
+            textWidth = [(NSString *)value sizeWithAttributes:
+                @{NSFontAttributeName: [NSFont systemFontOfSize:[NSFont systemFontSize]]}].width;
+        }
+        // GNUstep offsets the cell text by indentation + 5px + the width of
+        // the disclosure-arrow image; 40 covers arrow + padding comfortably.
+        CGFloat rowWidth = [ov levelForRow:row] * ov.indentationPerLevel
+                         + 40.0 + textWidth;
+        if (rowWidth > width) {
+            width = rowWidth;
+        }
+    }
+
+    column.minWidth = 0;
+    column.maxWidth = MAX(width, column.maxWidth);
+    [column setWidth:width];
+    // Column resize does not re-tile the table frame on GNUstep; without
+    // this the outline view keeps its old width and still clips the rows.
+    [ov tile];
+    [ov setNeedsDisplay:YES];
+}
+
+// Re-fit whenever expanding/collapsing changes the widest visible row.
+- (void)outlineViewItemDidExpand:(NSNotification *)notification {
+    [self ud_fitColumnOfOutline:notification.object];
+}
+
+- (void)outlineViewItemDidCollapse:(NSNotification *)notification {
+    [self ud_fitColumnOfOutline:notification.object];
+}
+
 -(instancetype)initWithWorkspace:(UDWorkspace *)workspace {
     self = [super init];
     if (self) {
@@ -141,6 +195,7 @@
     if (query.length == 0) {
         self.searchFileGroups = @[];
         [self.searchOutlineView reloadData];
+        [self ud_fitColumnOfOutline:self.searchOutlineView];
         return;
     }
     
@@ -184,6 +239,7 @@
     
     self.searchFileGroups = sorted;
     [self.searchOutlineView reloadData];
+    [self ud_fitColumnOfOutline:self.searchOutlineView];
 }
 
 - (void)reset {
@@ -203,6 +259,7 @@
     
     self.rootNodes = self.declTree.topLevelNodes;
     [self.outlineView reloadData];
+    [self ud_fitColumnOfOutline:self.outlineView];
     
     self.searchFileGroups = @[];
     
@@ -220,23 +277,52 @@
     
     self.rootNodes = self.declTree.topLevelNodes;
     [self.outlineView reloadData];
+    [self ud_fitColumnOfOutline:self.outlineView];
 }
 
 - (void)attachToOutlineViews:(NSOutlineView *)outlineView searchOutline:(NSOutlineView *)searchOutlineView {
     self.outlineView = outlineView;
     outlineView.dataSource = self;
     outlineView.delegate = self;
-    
+
     // Optional but nice
     outlineView.allowsMultipleSelection = NO;
     outlineView.allowsEmptySelection = YES;
-    
+
     self.searchOutlineView = searchOutlineView;
     searchOutlineView.dataSource = self;
     searchOutlineView.delegate = self;
-    
+
     searchOutlineView.allowsMultipleSelection = NO;
     searchOutlineView.allowsEmptySelection = YES;
+
+    // Re-fit (and thereby fully redraw) whenever the enclosing scroll views
+    // change size: on GNUstep a pane resize neither re-fits the column nor
+    // invalidates the previously drawn rows, leaving stale, clipped text.
+    for (NSOutlineView *ov in @[outlineView, searchOutlineView]) {
+        NSScrollView *sv = ov.enclosingScrollView;
+        if (sv == nil) {
+            continue;
+        }
+        sv.postsFrameChangedNotifications = YES;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(ud_outlineScrollViewDidResize:)
+                                                     name:NSViewFrameDidChangeNotification
+                                                   object:sv];
+    }
+}
+
+- (void)ud_outlineScrollViewDidResize:(NSNotification *)notification {
+    NSScrollView *sv = notification.object;
+    if (sv == self.outlineView.enclosingScrollView) {
+        [self ud_fitColumnOfOutline:self.outlineView];
+    } else if (sv == self.searchOutlineView.enclosingScrollView) {
+        [self ud_fitColumnOfOutline:self.searchOutlineView];
+    }
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - NSOutlineViewDataSource
@@ -281,26 +367,25 @@
 
 #pragma mark - NSOutlineViewDelegate
 
-- (NSView *)outlineView:(NSOutlineView *)ov
-     viewForTableColumn:(NSTableColumn *)tableColumn
-                   item:(id)item {
+// CELL-based, on purpose (the outline views in UDWorkspaceWindow.xib are
+// plain cell-based too). The previous view-based implementation
+// (outlineView:viewForTableColumn:item: + nib prototype cell views) broke on
+// GNUstep: makeViewWithIdentifier: never finds nib prototypes there, so the
+// rows rendered as empty labels and gnustep-gui's incomplete view-based row
+// machinery then crashed the app outright. Classic cell-based outlines work
+// identically on macOS and GNUstep.
+- (id)outlineView:(NSOutlineView *)ov
+    objectValueForTableColumn:(NSTableColumn *)tableColumn
+                       byItem:(id)item {
     if (ov == self.searchOutlineView) {
-        NSTableCellView *cell = [ov makeViewWithIdentifier:@"name" owner:nil];
-        
         if ([item isKindOfClass:[UDDeclSearchFileGroup class]]) {
-            cell.textField.stringValue = ((UDDeclSearchFileGroup *)item).filename;
-            // optional: make it bold
-        } else {
-            UDDeclSearchMatch *match = item;
-            cell.textField.stringValue = match.node.name;
+            return ((UDDeclSearchFileGroup *)item).filename;
         }
-        return cell;
+        return ((UDDeclSearchMatch *)item).node.name;
     }
-    
+
     // outlineView == self.outlineView
-    NSTableCellView *cell = [ov makeViewWithIdentifier:@"name" owner:nil];
-    cell.textField.stringValue = ((UDWorkspaceItem *)item).name;
-    return cell;
+    return ((UDWorkspaceItem *)item).name;
 }
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification {

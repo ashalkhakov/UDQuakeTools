@@ -13,7 +13,7 @@
 @end
 
 @interface UDTabItemView () {
-    NSTrackingArea *_hoverArea;
+    NSTrackingRectTag _hoverTag; // classic tracking rect (GNUstep has no NSTrackingArea on NSView)
     BOOL _hovered;
 }
 @end
@@ -23,7 +23,13 @@
 + (instancetype)loadFromNib {
     NSArray *topLevelObjects = nil;
     NSNib *nib = [[NSNib alloc] initWithNibNamed:@"UDTabItemView" bundle:[NSBundle bundleForClass:self]];
-    if (![nib instantiateWithOwner:nil topLevelObjects:&topLevelObjects]) {
+    // Owner must be non-nil: GNUstep's NSNib stores the owner into the nib
+    // context dictionary unconditionally, so instantiateWithOwner:nil throws
+    // "Tried to add nil value for key 'NSOwner'" (macOS tolerates nil). The
+    // xib's File's Owner has no outlets or actions, so a throwaway object
+    // serves as the placeholder on both platforms.
+    NSObject *placeholderOwner = [[NSObject alloc] init];
+    if (![nib instantiateWithOwner:placeholderOwner topLevelObjects:&topLevelObjects]) {
         NSLog(@"UDTabItemView: could not load UDTabItemView.xib");
         return nil;
     }
@@ -69,6 +75,20 @@
     }
 }
 
+// The Mac glyphs (U+2715 MULTIPLICATION X, U+2690/2691 flags) are outside
+// the Liberation fonts GNUstep typically ships with, and render as "?"
+// boxes there. The fallbacks below stay within Latin-1 / Geometric Shapes,
+// which Liberation covers.
+#ifdef __APPLE__
+#define UD_GLYPH_CLOSE     @"\u2715"  // ✕
+#define UD_GLYPH_PINNED    @"\u2691"  // ⚑
+#define UD_GLYPH_UNPINNED  @"\u2690"  // ⚐
+#else
+#define UD_GLYPH_CLOSE     @"\u00d7"  // ×
+#define UD_GLYPH_PINNED    @"\u25a0"  // ■
+#define UD_GLYPH_UNPINNED  @"\u25a1"  // □
+#endif
+
 - (void)refresh {
     self.titleLabel.stringValue = self.item.title ?: @"";
     self.toolTip = self.item.toolTip;
@@ -80,12 +100,12 @@
         self.closeButton.enabled = NO;
         self.closeButton.hidden = !self.item.dirty;
     } else {
-        self.closeButton.title = _hovered ? @"✕" : @"●";
+        self.closeButton.title = _hovered ? UD_GLYPH_CLOSE : @"●";
         self.closeButton.enabled = YES;
         self.closeButton.hidden = !(_hovered || self.item.dirty);
     }
 
-    self.pinButton.title = self.item.pinned ? @"⚑" : @"⚐";
+    self.pinButton.title = self.item.pinned ? UD_GLYPH_PINNED : UD_GLYPH_UNPINNED;
     self.pinButton.hidden = !(_hovered || self.item.pinned);
 
     [self setNeedsDisplay:YES];
@@ -93,16 +113,42 @@
 
 #pragma mark - Hover tracking
 
-- (void)updateTrackingAreas {
-    [super updateTrackingAreas];
-    if (_hoverArea != nil) {
-        [self removeTrackingArea:_hoverArea];
+// Classic tracking RECT, not NSTrackingArea: GNUstep's NSView has no
+// tracking-area methods, and the legacy API works on both platforms. The
+// rect must be re-registered whenever the view's geometry or window changes.
+
+- (void)_rebuildHoverTracking {
+    if (_hoverTag != 0) {
+        [self removeTrackingRect:_hoverTag];
+        _hoverTag = 0;
     }
-    _hoverArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-                                              options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp)
-                                                owner:self
-                                             userInfo:nil];
-    [self addTrackingArea:_hoverArea];
+    if (self.window == nil) {
+        return;
+    }
+    _hoverTag = [self addTrackingRect:self.bounds owner:self userData:NULL assumeInside:NO];
+}
+
+- (void)viewDidMoveToWindow {
+    [super viewDidMoveToWindow];
+    [self _rebuildHoverTracking];
+}
+
+// Tracking rects do NOT follow the view around — they are registered in
+// window space at add time — and the bar moves/resizes tabs constantly
+// (layout, drag-to-reorder). Re-register on every geometry change.
+- (void)setFrame:(NSRect)frame {
+    [super setFrame:frame];
+    [self _rebuildHoverTracking];
+}
+
+- (void)setFrameOrigin:(NSPoint)newOrigin {
+    [super setFrameOrigin:newOrigin];
+    [self _rebuildHoverTracking];
+}
+
+- (void)setFrameSize:(NSSize)newSize {
+    [super setFrameSize:newSize];
+    [self _rebuildHoverTracking];
 }
 
 - (void)mouseEntered:(NSEvent *)event {

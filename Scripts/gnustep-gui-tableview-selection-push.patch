@@ -1,8 +1,29 @@
+NSTableView: push row selection through the table view's own
+selectionIndexes binding.
+
+The selectionIndexes binding is bidirectional on Apple: when the user
+clicks a row, the bound NSArrayController's selection must follow.
+GSKeyValueBinding keys bindings by the object that called -bind:, which
+for a nib-established binding is the table view itself - but
+-_postSelectionDidChangeNotification only looked for a selectionIndexes
+binding registered with the observed controller as the source object
+(found via the first column's value binding), so the reverse push never
+fired for nib-loaded tables. The controller's selection then stays
+stale, and anything driven by controller.selectedObjects (remove
+buttons, detail views) operates on the wrong objects.
+
+Check the table view's own binding first; keep the previous
+controller-as-source lookup as a fallback, now guarded against an empty
+column array.
+
+Repro: Scripts/gnustep-patch-repros/tableview-selection-push-test.m
+(pristine master: RESULT: FAIL, patched: RESULT: PASS).
+
 diff --git a/Source/NSTableView.m b/Source/NSTableView.m
-index 31791f9..719bb46 100644
+index 31791f9..81ab11c 100644
 --- a/Source/NSTableView.m
 +++ b/Source/NSTableView.m
-@@ -6804,23 +6804,41 @@ For a more detailed explanation, -setSortDescriptors:. */
+@@ -6804,23 +6804,33 @@ For a more detailed explanation, -setSortDescriptors:. */
  
  - (void) _postSelectionDidChangeNotification
  {
@@ -13,11 +34,6 @@ index 31791f9..719bb46 100644
 -				   forObject: tb];
  
 -  // If there is a binding, send the indexes back
-+  /* The table view's own selectionIndexes binding (established by
-+     [tableView bind: NSSelectionIndexesBinding toObject: controller ...],
-+     e.g. from a nib) is registered with the table view as the source
-+     object - push the new selection back through it so the bound
-+     controller's selection follows user clicks. */
 +  theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
 +				   forObject: self];
    if (theBinding != nil)
@@ -27,9 +43,6 @@ index 31791f9..719bb46 100644
 +    }
 +  else if ([_tableColumns count] > 0)
 +    {
-+      /* Fallback: a selectionIndexes binding established with the observed
-+	 controller itself as source, found via the first column's value
-+	 binding. */
 +      NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
  
 -      // Set the selection indexes on the controller...

@@ -3546,9 +3546,9 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
 }
 
 -(void)setupGameDirectories:(NSString *)gameName {
-    // setup savepath
-    if (self.fs_savepath.length) {
-        [self addGameDirectory:self.fs_savepath dir:gameName];
+    // setup cdpath
+    if (self.fs_cdpath.length) {
+        [self addGameDirectory:self.fs_cdpath dir:gameName];
     }
 
     // setup basepath
@@ -3556,9 +3556,9 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
         [self addGameDirectory:self.fs_basepath dir:gameName];
     }
 
-    // setup cdpath last so it has highest search priority
-    if (self.fs_cdpath.length) {
-        [self addGameDirectory:self.fs_cdpath dir:gameName];
+    // setup savepath
+    if (self.fs_savepath.length) {
+        [self addGameDirectory:self.fs_savepath dir:gameName];
     }
 }
 

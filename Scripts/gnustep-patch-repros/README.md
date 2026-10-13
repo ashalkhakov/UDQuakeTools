@@ -17,8 +17,8 @@ clang <sample>.m -o <sample> \
   -Wl,--no-as-needed -lgnustep-gui -lgnustep-base -lobjc
 ```
 
-## tableview-selection-push-test.m — PENDING
-Patch: `Scripts/gnustep-gui-tableview-selection-push.patch`
+## tableview-selection-push-test.m — UPSTREAMED
+Merged into gnustep-gui master; sample kept for regression testing.
 
 A window with an `NSTableView` bound to an `NSArrayController` exactly the
 way nib/xib loading does it (the table view / table column are the binding

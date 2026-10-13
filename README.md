@@ -61,34 +61,27 @@ Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
 
 ### GNUstep stack and apps
 
-From the repository root (after running `./Scripts/build-gnustep.sh`):
+The stack is the patched GNUstep every app here builds on:
+[gnustep-patches](https://github.com/ashalkhakov/gnustep-patches)'
+`Scripts/build-gnustep.sh`, at the commit `.github/pins.env` names
+(`GNUSTEP_PATCHES_REF`), with `libs-corebase` and `tools-xctest`. FreeCoreData,
+checked out beside this repository at `FREECOREDATA_REF`, comes next. Then,
+with `PREFIX` the stack's prefix:
 
 ```bash
-# 1. Build and install shared libraries
-cd Sources/UDCore   && make && make install && cd -
-
-# 2. Build all apps
-for app in UDLauncher PakManager DeclBrowser GuiEd; do
-    cd "Sources/$app" && make && cd -
-done
-
-# 3. Prepare the combined AppDir
-./Scripts/prepare-appdir.sh
+./.github/release/linux-build.sh     # FreeCoreData, UDCore, the apps, the tests
 ```
 
 ## AppImage Packaging
 
-From the repository root (after building):
-
-```bash
-./Scripts/package-appimage.sh
-```
-
-This produces a single `UDQuakeTools-Linux-<version>.AppImage` that launches
-UDLauncher as the entry point. The launcher lets users open any of the
-bundled tools (Pak Manager, Decl Browser, GUI Editor).
-
-AppImage assets are tracked in `Scripts/appimage`.
+`UDQuakeTools-Linux-<version>-x86_64.AppImage` is made by
+[gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
+`appimage`, the same as every app's image: the launcher (UDLauncher) as the
+entry point, Decl Browser, UDCore, FreeCoreData and the GNUstep runtime. What
+is UDQuakeTools' own is `.github/release/appimage.conf` and
+`linux-install.sh`; the desktop entry is in `Scripts/appimage`. CI makes and
+smoke-tests it on every push (`.github/workflows/ci.yml`); a `v*` tag
+releases it, with update information (`release.yml`).
 
 ## Tests
 

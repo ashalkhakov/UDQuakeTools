@@ -1,0 +1,26 @@
+name: CI
+
+# Every push and pull request: the same Linux build as a release
+# (gnustep-release-actions' appimage-release.yml with no tag): the patched
+# GNUstep stack, FreeCoreData, UDCore and the apps with their tests, the
+# AppImage, and its smoke test on a clean Ubuntu, uploaded as an artifact.
+on:
+  push:
+    branches-ignore: ['copilot/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    uses: ashalkhakov/gnustep-release-actions/.github/workflows/appimage-release.yml@v1
+    with:
+      dependencies: FreeCoreData
+      components: libobjc2 libdispatch tools-make libs-base libs-corebase libs-gui libs-back eau tools-xctest
+      extra-packages: libsqlite3-dev libzip-dev xvfb

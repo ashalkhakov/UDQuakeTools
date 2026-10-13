@@ -1,18 +1,17 @@
 name: Build
 
 # UDQuakeTools for Linux (an AppImage: the launcher and Decl Browser), by
-# gnustep-release-actions' workflow, the same as every app's: every push and
-# pull request is built, tested (UDCore's tests, the apps started on a clean
-# Ubuntu) and uploaded as an artifact; a v* tag (or a run started by hand
-# with one) is also released, the AppImage with its update information,
-# attached to the tag's release (a pre-release when the tag has a '-').
-# What is UDQuakeTools' own is in .github/release/ (build, test, the image's
+# gnustep-release-actions' workflow, the same as every app's: every push is
+# built, tested (UDCore's tests, the apps started on a clean Ubuntu) and
+# uploaded as an artifact; a v* tag (or a run started by hand with one) is
+# also released, the AppImage with its update information, attached to the
+# tag's release (a pre-release when the tag has a '-'). What is
+# UDQuakeTools' own is in .github/release/ (build, test, the image's
 # configuration); the commits it builds on in .github/pins.env.
 on:
   push:
     branches-ignore: ['copilot/**']
     tags: ['v*']
-  pull_request:
   workflow_dispatch:
     inputs:
       tag:
@@ -20,10 +19,12 @@ on:
         required: false
         default: ''
 
-# A push and the pull request for the same branch share one run; a release
-# is never cancelled.
+# Pushes only, not pull requests too: a push to a branch of this repository
+# already shows its checks on the branch's pull request, and both would run
+# every commit twice. A newer push to a branch supersedes the run before it;
+# a release is never cancelled.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 permissions:

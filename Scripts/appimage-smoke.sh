@@ -1,4 +1,7 @@
 #!/bin/bash
+# The AppImage on a clean Ubuntu, as gnustep-release-actions' appimage-test
+# runs it (.github/release/appimage.conf, SMOKE_SCRIPT)
+#   Scripts/appimage-smoke.sh <UDQuakeTools AppImage>
 # Proof each app in the image starts and stays up, with its interface: the
 # launcher and Decl Browser, against a virtual display. An app whose nib
 # failed to load stays up too, as an icon with no window; GNUstep says so on

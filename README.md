@@ -61,15 +61,16 @@ Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
 
 ### GNUstep stack and apps
 
-The stack is the patched GNUstep every app here builds on, the image
+The stack is the patched GNUstep every app here builds on, the release
 [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches) publishes
-(`ghcr.io/ashalkhakov/gnustep:latest`, `/opt/gnustep`; its
-`Scripts/build-gnustep.sh` builds the same on a machine of your own).
-FreeCoreData, checked out beside this repository at `.github/pins.env`'s
-`FREECOREDATA_REF`, comes next. Then, with `PREFIX` the stack's prefix:
+and `.github/pins.env` names (an archive that unpacks into `/opt/gnustep`; its
+`Scripts/build-gnustep.sh` builds the same on a machine of your own), with
+FreeCoreData's release on it (gnustep-release-actions' `scripts/deps.sh
+linux` unpacks both). Then:
 
 ```bash
-./.github/release/linux-build.sh     # FreeCoreData, UDCore, the apps, the tests
+. /opt/gnustep/System/Library/Makefiles/GNUstep.sh
+make && make check && make install   # UDCore, the launcher, Decl Browser; the tests
 ```
 
 ## AppImage Packaging
@@ -78,8 +79,9 @@ FreeCoreData, checked out beside this repository at `.github/pins.env`'s
 [gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
 `appimage`, the same as every app's image: the launcher (UDLauncher) as the
 entry point, Decl Browser, UDCore, FreeCoreData and the GNUstep runtime. What
-is UDQuakeTools' own is `.github/release/appimage.conf` and
-`linux-install.sh`; the desktop entry is in `Scripts/appimage`. CI makes and
+is UDQuakeTools' own is `.github/release/appimage.conf` (what `make install`
+put in the prefix goes in it) and its smoke test, `Scripts/appimage-smoke.sh`;
+the desktop entry is in `Scripts/appimage`. CI makes and
 smoke-tests it on every push (`.github/workflows/build.yml`); a `v*` tag
 releases it, with update information.
 

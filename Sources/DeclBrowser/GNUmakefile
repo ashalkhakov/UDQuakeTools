@@ -65,7 +65,8 @@ DeclBrowser_RESOURCE_FILES = \
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+# UDCore from the tree beside this one, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 # -rdynamic: export the executable's own symbols so UDCrashReporter's
 # backtrace (installed in main.m on Linux) resolves app frames by name.
 ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime -rdynamic

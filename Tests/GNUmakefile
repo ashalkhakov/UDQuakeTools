@@ -1,4 +1,6 @@
 BUNDLE_NAME = UDQuakeToolsTests
+# Built and run, never installed.
+UDQuakeToolsTests_STANDARD_INSTALL = no
 
 OBJC_RUNTIME_LIB = ng
 RUNTIME_VERSION = gnustep-2.0
@@ -29,7 +31,8 @@ UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/UDCore/DeclModel.xcdatamodeld
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
+# UDCore from the tree, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += -L../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 ADDITIONAL_LDFLAGS += -lUDCore -lzip -lXCTest -lBlocksRuntime
 
 XCTEST ?= xctest
@@ -38,6 +41,7 @@ XCTEST ?= xctest
 run-tests: all $(BUNDLE_NAME).bundle
 	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
+	LD_LIBRARY_PATH="$(CURDIR)/../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 	$(XCTEST) "$(BUNDLE_NAME).bundle"
 
 # Compiles $(UDQuakeToolsTests_XCDATAMODELD_FILES) with momc and bundles

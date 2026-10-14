@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDDeclIncrementalStore.m
  *
  * Bridges Core Data to idDeclManager. The manager is a dumb text repository;

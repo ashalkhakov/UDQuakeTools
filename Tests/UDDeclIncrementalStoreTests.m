@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDDeclIncrementalStoreTests.m
  *
  * Exercises the Core Data decl editing stack end to end: managed objects are

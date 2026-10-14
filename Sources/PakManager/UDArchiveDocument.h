@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDArchiveDocument — NSDocument subclass for idTech archive files.
  *
  * On open: selects the appropriate UDArchiveCodec from UDCodecRegistry,

@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDDeclManagedObjects.m
  *
  * The decl entity classes and their text codecs. The parse/unparse logic in

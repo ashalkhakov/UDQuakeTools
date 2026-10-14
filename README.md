@@ -131,5 +131,7 @@ Running them:
 - Architecture notes: `ARCHITECTURE.md`
 - Early interface stubs: `CLASS_STUBS.md`
 - Roadmap and todo list: `ROADMAP.md`
-- License: `LICENSE`
+- License: GPL-3.0-or-later (`LICENSE`). UDCore's idFileSystem, idDeclManager,
+  lexer and parser are ported from the Doom 3 GPL source (via openQ4), which
+  is GPLv3 with id Software's additional terms; see the headers of those files.
 

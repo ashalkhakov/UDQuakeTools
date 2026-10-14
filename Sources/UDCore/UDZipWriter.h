@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDZipWriter — builds a ZIP archive (PK3/PK4) in memory on top of zlib.
  *
  * Reading ZIPs goes through the minizip unzip.c ported with the Doom 3 file

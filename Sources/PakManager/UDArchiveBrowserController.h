@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDArchiveBrowserController — NSWindowController + NSBrowserDelegate.
  *
  * Manages the archive browser window. Uses the editor's live UDDirectoryNode

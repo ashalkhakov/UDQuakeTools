@@ -4,6 +4,10 @@ A GNUstep/macOS toolkit for browsing and editing idTech archive and decl
 formats. On Linux it ships as one AppImage (the launcher and Decl Browser);
 on macOS as UDLauncher. Archives need nothing beyond zlib: the minizip that
 came with the Doom 3 file system port reads them, `UDZipWriter` writes them.
+Decl Browser's text editor and tab bar are UDCodeKit's (`../UDPieceTable`,
+github.com/ashalkhakov/UDCodeKit), with its grammar bundles (idScript for
+`.script`) in the app's PlugIns; the release `.github/pins.env` names is
+unpacked into the prefix on GNUstep and into `.deps/` on macOS.
 
 ## GNUstep patches live elsewhere
 

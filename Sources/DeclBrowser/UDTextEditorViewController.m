@@ -3,10 +3,12 @@
 #import "UDDeclItem.h"
 #import "UDTextFileDocument.h"
 #import "UDDeclDocument.h"
+#import <UDCodeKit/UDCodeKit.h>
 
 @interface UDTextEditorViewController ()
-@property (nonatomic, weak) IBOutlet NSScrollView *scrollView;
-@property (nonatomic, weak) IBOutlet NSTextView   *textView;
+@property (nonatomic, weak) IBOutlet NSView *editorHost;
+@property (nonatomic, strong) UDEditorSession *session;
+@property (nonatomic, strong) UDCodeEditorViewController *editor;
 @end
 
 @implementation UDTextEditorViewController
@@ -16,6 +18,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [_session close];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -23,12 +29,15 @@
         return;
     }
 
+    // The language a file's extension names; a decl's text is plain.
+    NSURL *languageURL = nil;
     switch (self.item.kind) {
         case UDWorkspaceItemKindFile: {
             UDFileItem *fileItem = (UDFileItem *)self.item;
             if (!fileItem || !fileItem.path) {
                 return;
             }
+            languageURL = [NSURL fileURLWithPath:fileItem.path];
             
             NSError *error = nil;
             
@@ -64,8 +73,34 @@
             return; // should never happen
     }
 
-    // Give the document a reference to our text view so it can manage undo.
-    [self.document setTextView:self.textView];
+    [self _embedEditorForLanguageOfURL:languageURL];
+
+    // The document fills the editor's text view, saves from it, and counts
+    // its changes; the editor's edits are undone through its undo manager.
+    [self.document setTextView:self.editor.textView];
+}
+
+- (void)_embedEditorForLanguageOfURL:(nullable NSURL *)url {
+    UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"" fileURL:url];
+    text.textModel.undoManager = self.document.undoManager;
+    self.session = [[UDEditorSession alloc] initWithDocument:text];
+
+    // The editor's view first, so its layout manager is attached before the
+    // session's first parse.
+    self.editor = [[UDCodeEditorViewController alloc] initWithTextStorage:self.session.textStorage];
+    [self.editor configureForLanguageMode:text.languageMode];
+    self.editor.view.frame = self.editorHost.bounds;
+    self.editor.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.editorHost addSubview:self.editor.view];
+
+#ifdef __APPLE__
+    NSAppearanceName appearance = [NSApp.effectiveAppearance
+        bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+    BOOL dark = [appearance isEqualToString:NSAppearanceNameDarkAqua];
+#else
+    BOOL dark = NO;          // GNUstep: no appearances; the light theme
+#endif
+    [self.session activateWithTheme:[[TreeSitterTheme alloc] initWithMode:dark]];
 }
 
 @end

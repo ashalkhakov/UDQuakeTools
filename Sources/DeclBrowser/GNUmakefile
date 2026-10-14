@@ -29,8 +29,6 @@ DeclBrowser_OBJC_FILES = \
     Documents/UDTextFileDocument.m \
     Documents/UDWorkspaceDocument.m \
     Window/UDEditorTabManager.m \
-    Window/UDTabBarView.m \
-    Window/UDTabItemView.m \
     Window/UDTextPromptPanel.m \
     Window/UDWorkspaceSettingsWindowController.m \
     Window/UDWorkspaceWindowController.m
@@ -56,7 +54,6 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDPDAEmailEditorView.xib \
     Resources/UDPDAVideoEditorView.xib \
     Resources/UDWorkspaceSettings.xib \
-    Resources/UDTabItemView.xib \
     Resources/en.lproj/UDImageViewerView.xib \
     en.lproj/UDTextEditorView.xib \
     DeclBrowser-Info.plist
@@ -69,10 +66,20 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 # -rdynamic: export the executable's own symbols so UDCrashReporter's
 # backtrace (installed in main.m on Linux) resolves app frames by name.
-ADDITIONAL_LDFLAGS += -lUDCore -ldispatch -lBlocksRuntime -rdynamic
+# UDCodeKit (the editor, its tab bar) from the prefix, where its release
+# archive is unpacked (.github/pins.env).
+ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic
 
 # Compiles $(DeclBrowser_XCDATAMODELD_FILES) with momc and bundles the
 # resulting .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData.
 include $(GNUSTEP_MAKEFILES)/coredata-model.make
 
 include $(GNUSTEP_MAKEFILES)/application.make
+
+# UDCodeKit's grammar bundles (idScript among them) in the app's PlugIns,
+# where its language mode registry looks.
+UD_GRAMMARS = $(wildcard $(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit/*.bundle)
+after-all::
+	@mkdir -p $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns
+	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/`basename $$b`; \
+	    cp -R $$b $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/; done

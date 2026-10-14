@@ -8,7 +8,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
-#import "UDTabBarView.h"
+#import <UDCodeKit/UDTabBarView.h>
 #import "UDTextPromptPanel.h"
 #import "idDeclManager.h"
 

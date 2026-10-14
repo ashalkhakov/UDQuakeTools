@@ -100,10 +100,7 @@
 		CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */; };
 		CEFC6516302790DD00157501 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
 		CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
-		DAC0000600000000000000AA /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
-		DAC0000700000000000000AA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
 		DAD0000300000000000000AA /* UDTextPromptPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD0000200000000000000AA /* UDTextPromptPanel.m */; };
-		DAC0000800000000000000AA /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
 		CEFC65313027974B00157501 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
 		CEFC65323027974B00157501 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
 		CEFC65333027974B00157501 /* UDFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652D3027974B00157501 /* UDFolder.m */; };
@@ -168,8 +165,6 @@
 		C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */; };
 		C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6558302A203100157501 /* UDBaseDocument.m */; };
 		39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
-		9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
-		24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
 		4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD0000200000000000000AA /* UDTextPromptPanel.m */; };
 		312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65503029F03A00157501 /* UDDeclItem.m */; };
 		29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
@@ -186,7 +181,6 @@
 		6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
 		399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
 		D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
-		B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
 		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
 		30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6555302A07BC00157501 /* UDImageViewerView.xib */; };
 		67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
@@ -205,6 +199,18 @@
 		D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */; };
 		93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */; };
+		EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; };
+		EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; };
+		EC0D00000000000000000007 /* UDPieceTable.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC0D00000000000000000008 /* LSPKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; };
+		EC0D00000000000000000009 /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC0D0000000000000000000A /* UDCodeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; };
+		EC0D0000000000000000000B /* UDCodeKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC0D0000000000000000000C /* UDPieceTable.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; };
+		EC0D0000000000000000000D /* UDPieceTable.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; };
+		EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -275,6 +281,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */,
+				EC0D00000000000000000007 /* UDPieceTable.xcframework in Embed Frameworks */,
+				EC0D00000000000000000009 /* LSPKit.xcframework in Embed Frameworks */,
 				91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */,
 				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
 			);
@@ -298,6 +307,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EC0D0000000000000000000B /* UDCodeKit.xcframework in Embed Frameworks */,
+				EC0D0000000000000000000D /* UDPieceTable.xcframework in Embed Frameworks */,
+				EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */,
 				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -427,13 +439,8 @@
 		CEFC6515302790DD00157501 /* UDAppDocumentController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAppDocumentController.m; sourceTree = "<group>"; };
 		CEFC65173027923700157501 /* UDEditorTabManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEditorTabManager.h; sourceTree = "<group>"; };
 		CEFC65183027923700157501 /* UDEditorTabManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDEditorTabManager.m; sourceTree = "<group>"; };
-		DAC0000100000000000000AA /* UDTabBarView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabBarView.h; sourceTree = "<group>"; };
-		DAC0000200000000000000AA /* UDTabBarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabBarView.m; sourceTree = "<group>"; };
-		DAC0000300000000000000AA /* UDTabItemView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabItemView.h; sourceTree = "<group>"; };
-		DAC0000400000000000000AA /* UDTabItemView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabItemView.m; sourceTree = "<group>"; };
 		DAD0000100000000000000AA /* UDTextPromptPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPromptPanel.h; sourceTree = "<group>"; };
 		DAD0000200000000000000AA /* UDTextPromptPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPromptPanel.m; sourceTree = "<group>"; };
-		DAC0000500000000000000AA /* UDTabItemView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTabItemView.xib; sourceTree = "<group>"; };
 		CEFC65283027974B00157501 /* UDWorkspaceItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceItem.h; sourceTree = "<group>"; };
 		CEFC65293027974B00157501 /* UDWorkspaceItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceItem.m; sourceTree = "<group>"; };
 		CEFC652A3027974B00157501 /* UDProject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDProject.h; sourceTree = "<group>"; };
@@ -493,6 +500,9 @@
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextChecker.m; sourceTree = "<group>"; };
 		013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextCheckerTests.m; sourceTree = "<group>"; };
+		EC0D00000000000000000001 /* UDCodeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDCodeKit.xcframework; path = .deps/UDCodeKit.xcframework; sourceTree = SOURCE_ROOT; };
+		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
+		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -538,6 +548,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */,
+				EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */,
+				EC0D00000000000000000008 /* LSPKit.xcframework in Frameworks */,
 				32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */,
 				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04020000000000000000AA /* UDCore.framework in Frameworks */,
@@ -557,6 +570,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC0D0000000000000000000A /* UDCodeKit.xcframework in Frameworks */,
+				EC0D0000000000000000000C /* UDPieceTable.xcframework in Frameworks */,
+				EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */,
 				F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */,
 				478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */,
 				224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */,
@@ -771,10 +787,6 @@
 				CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */,
 				CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */,
 				CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */,
-				DAC0000100000000000000AA /* UDTabBarView.h */,
-				DAC0000200000000000000AA /* UDTabBarView.m */,
-				DAC0000300000000000000AA /* UDTabItemView.h */,
-				DAC0000400000000000000AA /* UDTabItemView.m */,
 				DAD0000100000000000000AA /* UDTextPromptPanel.h */,
 				DAD0000200000000000000AA /* UDTextPromptPanel.m */,
 				CEFC65173027923700157501 /* UDEditorTabManager.h */,
@@ -842,7 +854,6 @@
 				CE1CDC77301E41220037DBA5 /* MainMenu.xib */,
 				CEFC6552302A077100157501 /* UDTextEditorView.xib */,
 				CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */,
-				DAC0000500000000000000AA /* UDTabItemView.xib */,
 				CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */,
 				CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */,
 				CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */,
@@ -892,6 +903,9 @@
 				AA34039EE147137D2F2DAC9B /* UDUpdater.h */,
 				B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */,
 				F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */,
+				EC0D00000000000000000001 /* UDCodeKit.xcframework */,
+				EC0D00000000000000000002 /* UDPieceTable.xcframework */,
+				EC0D00000000000000000003 /* LSPKit.xcframework */,
 			);
 			name = UDUpdater;
 			sourceTree = "<group>";
@@ -1036,6 +1050,7 @@
 				DD03000000000000000000AA /* Sources */,
 				DD03000100000000000000AA /* Frameworks */,
 				DD03000200000000000000AA /* Resources */,
+				EC0D00000000000000000010 /* Copy UDCodeKit's grammars into PlugIns */,
 				DD09000000000000000000AA /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -1149,7 +1164,6 @@
 			files = (
 				CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */,
 				CE56D7A1302355B300099DF4 /* UDPDAEditorView.xib in Resources */,
-				DAC0000800000000000000AA /* UDTabItemView.xib in Resources */,
 				CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */,
 				CE1CDC81301E41500037DBA5 /* Assets.xcassets in Resources */,
 				CEFC6556302A07BC00157501 /* UDImageViewerView.xib in Resources */,
@@ -1175,7 +1189,6 @@
 			files = (
 				399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */,
 				D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */,
-				B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */,
 				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
 				30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */,
 				67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */,
@@ -1186,6 +1199,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		EC0D00000000000000000010 /* Copy UDCodeKit's grammars into PlugIns */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy UDCodeKit's grammars into PlugIns";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# UDCodeKit's grammar bundles (idScript among them), from its release in .deps/ (.github/pins.env)\nset -e\nmkdir -p \"$TARGET_BUILD_DIR/$PLUGINS_FOLDER_PATH\"\nfor b in \"$SRCROOT\"/.deps/PlugIns/*.bundle; do\n  rm -rf \"$TARGET_BUILD_DIR/$PLUGINS_FOLDER_PATH/$(basename \"$b\")\"\n  ditto \"$b\" \"$TARGET_BUILD_DIR/$PLUGINS_FOLDER_PATH/$(basename \"$b\")\"\ndone\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AA03000000000000000000AA /* Sources */ = {
@@ -1284,8 +1315,6 @@
 				CE1CDC85301E43A30037DBA5 /* UDWorkspaceWindowController.m in Sources */,
 				CEFC6559302A203200157501 /* UDBaseDocument.m in Sources */,
 				CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */,
-				DAC0000600000000000000AA /* UDTabBarView.m in Sources */,
-				DAC0000700000000000000AA /* UDTabItemView.m in Sources */,
 				DAD0000300000000000000AA /* UDTextPromptPanel.m in Sources */,
 				DD01000000000000000000AA /* main.m in Sources */,
 				CEFC65513029F03B00157501 /* UDDeclItem.m in Sources */,
@@ -1329,8 +1358,6 @@
 				C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */,
 				C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */,
 				39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */,
-				9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */,
-				24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */,
 				4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */,
 				312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */,
 				29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */,

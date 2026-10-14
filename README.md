@@ -130,6 +130,6 @@ Running them:
 
 - Architecture notes: `ARCHITECTURE.md`
 - Early interface stubs: `CLASS_STUBS.md`
-- Doom 3 editor roadmap: `EDITOR_TOOLS_ROADMAP.md`
+- Roadmap and todo list: `ROADMAP.md`
 - License: `LICENSE`
 

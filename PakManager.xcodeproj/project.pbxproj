@@ -202,6 +202,7 @@
 		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
+		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -506,6 +507,7 @@
 		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
 		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
+		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -769,6 +771,7 @@
 				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
 				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
 				37E65B3E596BA91969F42366 /* DeclBrowser */,
+				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1311,6 +1314,7 @@
 				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
 				663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */,
 				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
+				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

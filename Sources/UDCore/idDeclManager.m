@@ -488,6 +488,8 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
     BOOL                        redefinedInReload;        // used during file reloading to make sure a decl that has
                                                           // its source removed will be defaulted
     BOOL                        needsPrecache;            // packed decl stubs expand source text lazily when first parsed
+    BOOL                        textModified;             // text set since the file was last read or written
+    BOOL                        nameModified;             // renamed since the file was last read or written
     idDeclLocal *               nextInFile;               // next decl in the decl file
     __weak idDeclLocal *        prevInFile;               // previous decl in the decl file
     __weak idDeclManager *      declManager;
@@ -621,6 +623,7 @@ static void DeclManager_ClearGuides( void ) {
     int                              fileSize;
     int                              numLines;
     BOOL                             dirty;
+    NSMutableArray<NSValue *> *      removedSpans;            // spans of decls removed or moved out since the last read or write
 
     idDeclLocal *                    decls;
     __weak idDeclManager *           declManager;
@@ -2171,6 +2174,7 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     }
 
     [existingDecl setText:text];
+    existingDecl->textModified = YES;
     
     existingDecl->sourceFile->dirty = YES;
 
@@ -2201,6 +2205,7 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     
     //Change the name
     decl->name = lookupNewName;
+    decl->nameModified = YES;
 
     // mark the file as dirty
     decl->sourceFile->dirty = YES;
@@ -2240,7 +2245,16 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     newDeclFile->dirty = YES;
     oldDeclFile->dirty = YES;
     
-    // TODO: unlink from the old file
+    // its text leaves the old file, and is appended to the new one
+    if (decl->sourceTextLength > 0) {
+        [oldDeclFile->removedSpans addObject:[NSValue valueWithRange:NSMakeRange((NSUInteger)decl->sourceTextOffset,
+                                                                                 (NSUInteger)decl->sourceTextLength)]];
+    }
+    decl->sourceFile = newDeclFile;
+    decl->sourceTextOffset = newDeclFile->fileSize;
+    decl->sourceTextLength = 0;
+    decl->sourceLine = newDeclFile->numLines;
+
     idDeclLocal *prev = decl->prevInFile;
     idDeclLocal *next = decl->nextInFile;
 
@@ -2266,8 +2280,6 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
         newDeclFile->decls->prevInFile = decl;
     }
     newDeclFile->decls = decl;
-    
-    // TODO: change the line num
 
     return YES;
 }
@@ -2292,6 +2304,10 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     }
 
     idDeclFile *file = decl->sourceFile;
+    if (decl->sourceTextLength > 0) {
+        [file->removedSpans addObject:[NSValue valueWithRange:NSMakeRange((NSUInteger)decl->sourceTextOffset,
+                                                                          (NSUInteger)decl->sourceTextLength)]];
+    }
     idDeclLocal *prev = decl->prevInFile;
     idDeclLocal *next = decl->nextInFile;
 
@@ -2330,61 +2346,300 @@ void idDeclManagerLocal::PrintType( const idCmdArgs &args, declType_t type ) {
     return YES;
 }
 
+// --- Writing decl files ------------------------------------------------
+//
+// A decl file is always written whole: a mod's copy of a file replaces the
+// game's. But it is written the way Doom 3 did it
+// (idDeclLocal::ReplaceSourceFileText): the file as it was last read is
+// copied through, and only the decls that changed are spliced in, so the
+// other decls, their order, comments and blank lines come out byte for byte.
+// On top of Doom 3's single-decl replace this handles everything the editors
+// batch up between saves: changed text, renames, removals, moves between
+// files and new decls (appended, in the order they were made).
+//
+// A decl's source span runs from the end of the decl before it to its own
+// closing brace, so it starts with the whitespace and comments in front of
+// it ("trivia").
+
+static BOOL DeclText_IsSpace(char c) {
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+// The offset of the first token in [start, end), past whitespace and comments.
+static int DeclText_SkipTrivia(const char *text, int start, int end) {
+    int i = start;
+    while (i < end) {
+        if (DeclText_IsSpace(text[i])) {
+            i++;
+        } else if (text[i] == '/' && i + 1 < end && text[i + 1] == '/') {
+            while (i < end && text[i] != '\n') i++;
+        } else if (text[i] == '/' && i + 1 < end && text[i + 1] == '*') {
+            i += 2;
+            while (i + 1 < end && !(text[i] == '*' && text[i + 1] == '/')) i++;
+            i = MIN(i + 2, end);
+        } else {
+            break;
+        }
+    }
+    return i;
+}
+
+// Where a removed decl's comment starts: the comment lines directly above
+// its first token (no blank line between) go with it; anything above a blank
+// line — a file header, say — stays. Returns the offset of the first of those
+// lines, or of the token's own line.
+static int DeclText_AttachedCommentStart(const char *text, int spanStart, int tokenStart) {
+    int lineStart = tokenStart;
+    while (lineStart > spanStart && text[lineStart - 1] != '\n') lineStart--;
+    while (lineStart > spanStart) {
+        int prevEnd = lineStart - 1;                       // the '\n' ending the line above
+        int prevStart = prevEnd;
+        while (prevStart > spanStart && text[prevStart - 1] != '\n') prevStart--;
+        int first = prevStart;
+        while (first < prevEnd && (text[first] == ' ' || text[first] == '\t' || text[first] == '\r')) first++;
+        if (first >= prevEnd) {
+            break;                                         // a blank line: stop
+        }
+        BOOL comment = (text[first] == '/' && first + 1 < prevEnd && (text[first + 1] == '/' || text[first + 1] == '*'))
+                    || text[first] == '*';
+        if (!comment) {
+            break;
+        }
+        lineStart = prevStart;
+    }
+    return lineStart;
+}
+
+// A decl's stored text as a string, without the NUL.
+static NSString *DeclText_StoredText(idDeclLocal *decl) {
+    NSMutableData *declText = [[NSMutableData alloc] init];
+    [decl text:declText];
+    NSString *text = [[NSString alloc] initWithBytes:declText.bytes
+                                              length:(declText.length > 0 ? declText.length - 1 : 0)
+                                            encoding:NSUTF8StringEncoding] ?: @"";
+    return [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+-(BOOL)declFileError:(NSError **)error format:(NSString *)format, ... NS_FORMAT_FUNCTION(2,3) {
+    if (error != NULL) {
+        va_list args;
+        va_start(args, format);
+        NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+        va_end(args);
+        *error = [NSError errorWithDomain:@"idDeclManager" code:1
+                                 userInfo:@{NSLocalizedDescriptionKey: message}];
+    }
+    return NO;
+}
+
 -(BOOL)replaceSourceFileText:(idDeclFile *)sourceFile error:(NSError **)error {
     if (!sourceFile->dirty) {
         return YES; // nothing to do
     }
 
-    NSLog(@"Writing to \'%@\'...\n", sourceFile->fileName);
-    
     if (sourceFile == implicitDecls) {
         NSLog(@"Can't save implicit declaration file");
         return YES; // just say: okay, whatever
     }
 
-    // replace the original file from the stored decl text.
-    // TODO: would be even better to retain comments/whitespace between the
-    // decls, so that we can reconstruct the file closer to the original.
-    NSMutableString *output = [NSMutableString string];
-    for (idDeclLocal *decl = sourceFile->decls; decl; decl = decl->nextInFile) {
-        NSMutableData *declText = [[NSMutableData alloc] init];
-        [decl text:declText];
+    NSLog(@"Writing to \'%@\'...\n", sourceFile->fileName);
 
-        NSString *text = [[NSString alloc] initWithBytes:declText.bytes
-                                                  length:(declText.length > 0 ? declText.length - 1 : 0)
-                                                encoding:NSUTF8StringEncoding] ?: @"";
-
-        // Decl text loaded from loose decl files carries only the braced
-        // body; text set through updateDecl (the Core Data layer) includes
-        // the "type name" header. Normalize: emit the header ourselves
-        // whenever the stored text starts at the opening brace.
-        NSString *trimmed = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([trimmed hasPrefix:@"{"]) {
-            [output appendFormat:@"%@ %@ ", [declTypes[(int)decl->type] typeName], [decl name]];
+    // 1. The file as it was last read or written — from wherever the search
+    // path finds it, a pak included — and only if nothing changed it since.
+    NSData *original = [NSData data];
+    if (sourceFile->fileSize > 0) {
+        void *buffer = NULL;
+        unsigned int timestamp = 0;
+        int length = [_workspace.fileSystem readFile:sourceFile->fileName buffer:&buffer timestamp:&timestamp error:NULL];
+        if (length < 0 || buffer == NULL) {
+            return [self declFileError:error format:@"Couldn't read '%@' to save it.", sourceFile->fileName];
         }
-        [output appendString:text];
-        [output appendString:@"\n\n"];
+        original = [NSData dataWithBytes:buffer length:(NSUInteger)length];
+        [_workspace.fileSystem freeFile:buffer error:NULL];
+        // (int): checksums are stored as int, MD5_BlockChecksum returns an
+        // unsigned long, which is 64 bits outside Windows.
+        if (length != sourceFile->fileSize ||
+            (int)MD5_BlockChecksum(original.bytes, length) != sourceFile->checksum) {
+            return [self declFileError:error format:
+                    @"'%@' has been changed outside the editor since it was loaded; reload it before saving.",
+                    sourceFile->fileName];
+        }
+    }
+    const char *text = original.bytes;
+    const int textLength = (int)original.length;
+
+    // 2. The spans to rewrite: every decl still in the file that came from
+    // it (several alias decls can share one span), and the spans of decls
+    // removed from it or moved out.
+    NSMutableArray<NSArray *> *segments = [NSMutableArray array];   // @[@(start), @(end), decl or NSNull]
+    NSMutableArray<idDeclLocal *> *appended = [NSMutableArray array];
+    for (idDeclLocal *decl = sourceFile->decls; decl; decl = decl->nextInFile) {
+        if (decl->sourceTextLength > 0) {
+            [segments addObject:@[@(decl->sourceTextOffset), @(decl->sourceTextOffset + decl->sourceTextLength), decl]];
+        } else {
+            [appended insertObject:decl atIndex:0];        // the list is newest-first
+        }
+    }
+    for (NSValue *span in sourceFile->removedSpans) {
+        NSRange range = span.rangeValue;
+        [segments addObject:@[@(range.location), @(NSMaxRange(range)), [NSNull null]]];
+    }
+    [segments sortUsingComparator:^NSComparisonResult(NSArray *x, NSArray *y) {
+        return [x[0] compare:y[0]];
+    }];
+
+    // 3. Copy the file through, splicing each span.
+    NSMutableData *output = [NSMutableData dataWithCapacity:(NSUInteger)textLength + 256];
+    NSMapTable<idDeclLocal *, NSArray<NSNumber *> *> *placed = [NSMapTable strongToStrongObjectsMapTable];  // decl -> @[start, tokenStart, end]
+    int cursor = 0;
+    NSUInteger next = 0;
+    for (NSUInteger i = 0; i < segments.count; i = next) {
+        int start = [segments[i][0] intValue];
+        int end = [segments[i][1] intValue];
+
+        // Every decl sharing this span (aliases): the first one that changed
+        // decides its text.
+        NSMutableArray<idDeclLocal *> *sharing = [NSMutableArray array];
+        BOOL removed = NO;
+        for (next = i; next < segments.count && [segments[next][0] intValue] == start && [segments[next][1] intValue] == end; next++) {
+            if (segments[next][2] == [NSNull null]) {
+                removed = YES;
+            } else {
+                [sharing addObject:segments[next][2]];
+            }
+        }
+        if (start < cursor || end > textLength) {
+            return [self declFileError:error format:@"Decl spans in '%@' overlap; reload it before saving.",
+                    sourceFile->fileName];
+        }
+
+        [output appendBytes:text + cursor length:(NSUInteger)(start - cursor)];
+        int tokenStart = DeclText_SkipTrivia(text, start, end);
+
+        if (sharing.count == 0 && removed) {
+            // Keep the trivia above a blank line; drop the decl and the
+            // comment attached to it, and the whitespace before them.
+            int cut = DeclText_AttachedCommentStart(text, start, tokenStart);
+            while (cut > start && DeclText_IsSpace(text[cut - 1])) cut--;
+            [output appendBytes:text + start length:(NSUInteger)(cut - start)];
+            cursor = end;
+            continue;
+        }
+
+        idDeclLocal *changed = nil;
+        for (idDeclLocal *decl in sharing) {
+            if (decl->textModified || decl->nameModified) {
+                changed = decl;
+                break;
+            }
+        }
+
+        int newStart = (int)output.length;
+        [output appendBytes:text + start length:(NSUInteger)(tokenStart - start)];
+        int newTokenStart = (int)output.length;
+        if (changed == nil) {
+            [output appendBytes:text + tokenStart length:(NSUInteger)(end - tokenStart)];
+        } else {
+            NSString *stored = DeclText_StoredText(changed);
+            NSString *declText;
+            if ([stored hasPrefix:@"{"]) {
+                // The stored text is the braced body: keep the decl's header
+                // as written ("material name", or just "name"; its line
+                // breaks), with the name replaced if it was renamed.
+                int braceStart = tokenStart;
+                while (braceStart < end && text[braceStart] != '{') braceStart++;
+                NSString *header = [[NSString alloc] initWithBytes:text + tokenStart length:(NSUInteger)(braceStart - tokenStart)
+                                                          encoding:NSUTF8StringEncoding] ?: @"";
+                if (changed->nameModified) {
+                    NSRange trimmed = [header rangeOfCharacterFromSet:[[NSCharacterSet whitespaceAndNewlineCharacterSet] invertedSet]
+                                                              options:NSBackwardsSearch];
+                    if (trimmed.location != NSNotFound) {
+                        NSUInteger nameEnd = NSMaxRange(trimmed);
+                        NSRange space = [header rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]
+                                                                options:NSBackwardsSearch
+                                                                  range:NSMakeRange(0, nameEnd)];
+                        NSUInteger nameStart = space.location == NSNotFound ? 0 : NSMaxRange(space);
+                        header = [header stringByReplacingCharactersInRange:NSMakeRange(nameStart, nameEnd - nameStart)
+                                                                 withString:[changed name]];
+                    }
+                }
+                declText = [header stringByAppendingString:stored];
+            } else {
+                declText = stored;                         // it carries its own "type name" header
+            }
+            [output appendData:[declText dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        NSArray<NSNumber *> *where = @[@(newStart), @(newTokenStart), @((int)output.length)];
+        for (idDeclLocal *decl in sharing) {
+            [placed setObject:where forKey:decl];
+        }
+        cursor = end;
+    }
+    [output appendBytes:text + cursor length:(NSUInteger)(textLength - cursor)];
+
+    // 4. New decls and decls moved in: appended, a blank line apart.
+    for (idDeclLocal *decl in appended) {
+        int newStart = (int)output.length;
+        if (output.length > 0) {
+            if (((const char *)output.bytes)[output.length - 1] != '\n') {
+                [output appendBytes:"\n" length:1];
+            }
+            [output appendBytes:"\n" length:1];
+        }
+        int newTokenStart = (int)output.length;
+        NSString *stored = DeclText_StoredText(decl);
+        if ([stored hasPrefix:@"{"]) {
+            stored = [NSString stringWithFormat:@"%@ %@ %@", [declTypes[(int)decl->type] typeName], [decl name], stored];
+        }
+        [output appendData:[stored dataUsingEncoding:NSUTF8StringEncoding]];
+        [placed setObject:@[@(newStart), @(newTokenStart), @((int)output.length)] forKey:decl];
+    }
+    if (appended.count > 0) {
+        [output appendBytes:"\n" length:1];
     }
 
-    NSData *data = [output dataUsingEncoding:NSUTF8StringEncoding];
+    // 5. Write the whole file (to fs_savepath, where an override belongs).
     const int written = [_workspace.fileSystem writeFile:sourceFile->fileName
-                                                   buffer:(data.bytes ?: "")
-                                                     size:(int)data.length
+                                                   buffer:(output.bytes ?: "")
+                                                     size:(int)output.length
                                                  basePath:@"fs_savepath"
                                                     error:error];
     // writeFile returns the number of bytes written, or -1 on error — a
     // plain boolean test would treat -1 as success.
-    if (written != (int)data.length) {
+    if (written != (int)output.length) {
         if (error != NULL && *error == nil) {
-            *error = [NSError errorWithDomain:@"idDeclManager"
-                                          code:1
-                                      userInfo:@{NSLocalizedDescriptionKey:
-                [NSString stringWithFormat:@"Short write to decl file '%@' (%d of %lu bytes)",
-                 sourceFile->fileName, written, (unsigned long)data.length]}];
+            [self declFileError:error format:@"Short write to decl file '%@' (%d of %lu bytes)",
+             sourceFile->fileName, written, (unsigned long)output.length];
         }
         return NO;
     }
-    
+
+    // 6. The file and its decls now describe what was written.
+    const char *bytes = output.bytes;
+    int lines = 1;
+    for (NSUInteger i = 0; i < output.length; i++) {
+        if (bytes[i] == '\n') lines++;
+    }
+    for (idDeclLocal *decl = sourceFile->decls; decl; decl = decl->nextInFile) {
+        NSArray<NSNumber *> *where = [placed objectForKey:decl];
+        if (where == nil) {
+            continue;
+        }
+        decl->sourceTextOffset = [where[0] intValue];
+        decl->sourceTextLength = [where[2] intValue] - [where[0] intValue];
+        int line = 1;
+        for (int i = 0; i < [where[1] intValue]; i++) {
+            if (bytes[i] == '\n') line++;
+        }
+        decl->sourceLine = line;
+        decl->textModified = NO;
+        decl->nameModified = NO;
+    }
+    sourceFile->fileSize = (int)output.length;
+    sourceFile->checksum = MD5_BlockChecksum(output.bytes, (int)output.length);
+    sourceFile->numLines = lines;
+    [_workspace.fileSystem readFile:sourceFile->fileName buffer:NULL timestamp:&sourceFile->timestamp error:NULL];
+    [sourceFile->removedSpans removeAllObjects];
     sourceFile->dirty = NO;
 
     return YES;
@@ -2858,6 +3113,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         self->checksum = 0;
         self->fileSize = 0;
         self->numLines = 0;
+        self->removedSpans = [NSMutableArray array];
         self->decls = nil;
         self->declManager = manager;
         self->dirty = NO;
@@ -2876,6 +3132,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         self->checksum = 0;
         self->fileSize = 0;
         self->numLines = 0;
+        self->removedSpans = [NSMutableArray array];
         self->decls = nil;
     }
     return self;
@@ -2940,6 +3197,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     [src setFlags:DECL_LEXER_FLAGS];
     
     dirty = NO;
+    [removedSpans removeAllObjects];
 
     checksum = MD5_BlockChecksum(finalPreprocessedBuffer, length);
     fileSize = length;
@@ -3075,6 +3333,8 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         newDecl->sourceFile = self;
         newDecl->sourceTextOffset = startMarker;
         newDecl->sourceTextLength = size;
+        newDecl->textModified = NO;
+        newDecl->nameModified = NO;
         newDecl->sourceLine = sourceLine;
         newDecl->declState = DS_UNPARSED;
         
@@ -3119,6 +3379,8 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
                 aliasDecl->sourceFile = self;
                 aliasDecl->sourceTextOffset = startMarker;
                 aliasDecl->sourceTextLength = size;
+        aliasDecl->textModified = NO;
+        aliasDecl->nameModified = NO;
                 aliasDecl->sourceLine = sourceLine;
                 aliasDecl->declState = DS_UNPARSED;
                 
@@ -3310,6 +3572,8 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
             decl->sourceFile = self;
             decl->sourceTextOffset = startMarker;
             decl->sourceTextLength = sourceTextLength;
+            decl->textModified = NO;
+            decl->nameModified = NO;
             decl->sourceLine = sourceLine;
         }
     }
@@ -3688,7 +3952,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
             return NO;
         }
 
-        if (MD5_BlockChecksum(buffer.bytes, oldFileLength) != sourceFile->checksum) {
+        if ((int)MD5_BlockChecksum(buffer.bytes, oldFileLength) != sourceFile->checksum) {
             NSLog(@"The file %@ has been modified outside of the engine.", [self fileName]);
             return NO;
         }

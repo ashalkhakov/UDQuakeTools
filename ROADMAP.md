@@ -72,8 +72,7 @@ These shape everything after them; each has a recommendation.
       blocks it): `Makefile.apple` `all`/`install`, the macos.yml `apps`.
 - [x] `addScriptsToTree` drops the `.script` extension that `addGUIsToTree`
       keeps; check which one opening the item expects.
-- [ ] dhewm3 fork, uncommitted debugger work: `Common.cpp` tests
-      `IMGUI_DISABLED`, the macro is `IMGUI_DISABLE`.
+
 
 ## 1. Blockers
 
@@ -156,16 +155,19 @@ In order of value against cost; LOC is the MFC original's size.
 
 ## 3. Script debugger
 
-- [ ] Native client for dhewm3's debugger protocol (UDP 27980/27981,
+The debugger speaks the Debug Adapter Protocol, so VS Code (and any DAP
+client) debugs idScript; this toolkit's own script editor can drive the same
+adapter later.
+
+- [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
       `idBitMsg`, `DBMSG_*` — documented only by the source:
       `neo/tools/debugger/DebuggerMessages.h`, `DebuggerClient.cpp`):
-      breakpoints from the script editor's gutter, break/resume/step,
-      call stack, threads, watches, console mirror. `UDBitMsg` is already
-      ported.
-- [ ] Launch the game for debugging from the workspace (`+set fs_game …
-      +set com_enableDebuggerServer 1`).
-- [ ] Optional: a Debug Adapter Protocol server over the same client, so
-      VS Code can debug idScript too (none exists).
+      breakpoints, break/resume/step, call stack, threads, variables and
+      watches, the console mirrored as output. `UDBitMsg` is already ported.
+- [ ] Launch and attach configurations: start the game for debugging from
+      the workspace (`+set fs_game … +set com_enableDebuggerServer 1`), or
+      attach to one running.
+- [ ] A VS Code extension packaging the adapter, with idScript syntax.
 
 ## 4. Live edit bridge (needs the dhewm3 fork)
 

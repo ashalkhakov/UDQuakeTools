@@ -18,6 +18,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     idFileSystemTests.m \
     idDeclManagerTests.m \
     idDeclFileWriteTests.m \
+    UDDeclTextCheckerTests.m \
     UDDeclIncrementalStoreTests.m \
     UDZipWriterTests.m \
     UDZipFixture.m

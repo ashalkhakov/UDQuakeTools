@@ -43,6 +43,7 @@ UDCore_OBJC_FILES = \
     UDDeclManagedObjects.m \
     UDDeclIncrementalStore.m \
     UDZipWriter.m \
+    UDDeclTextChecker.m \
     UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
@@ -70,7 +71,8 @@ UDCore_HEADER_FILES = \
     UDCrashReporter.h \
     UDDeclManagedObjects.h \
     UDDeclIncrementalStore.h \
-    UDZipWriter.h
+    UDZipWriter.h \
+    UDDeclTextChecker.h
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).

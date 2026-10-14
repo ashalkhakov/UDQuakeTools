@@ -219,13 +219,15 @@ static NSString *baseFolder;
 
     self->hadError = YES;
 
-    if ( self->flags & LEXFL_NOERRORS ) {
-        return YES;
-    }
-
     va_start(ap, format);
     NSString *result = [[NSString alloc] initWithFormat:format arguments:ap];
     va_end(ap);
+
+    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @YES}];
+
+    if ( self->flags & LEXFL_NOERRORS ) {
+        return YES;
+    }
     
     if (self->flags & LEXFL_NOFATALERRORS) {
         NSLog(@"file %@, line %d: %@", self->filename, self->line, result);
@@ -248,13 +250,15 @@ static NSString *baseFolder;
 - (void)warning:(NSString *)format, ... {
     va_list ap;
 
-    if (self->flags & LEXFL_NOWARNINGS ) {
-        return;
-    }
-
     va_start(ap, format);
     NSString *result = [[NSString alloc] initWithFormat:format arguments:ap];
     va_end(ap);
+
+    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @NO}];
+
+    if (self->flags & LEXFL_NOWARNINGS ) {
+        return;
+    }
 
     NSLog(@"file %@, line %d: %@", self->filename, self->line, result);
 }

@@ -30,13 +30,17 @@ static BOOL UDTokenIs(const idToken *token, const char *text) {
 
 + (NSArray<UDDeclTextProblem *> *)problemsInDeclText:(NSString *)text fileSystem:(idFileSystem *)fileSystem {
     NSMutableArray<UDDeclTextProblem *> *problems = [NSMutableArray array];
-    NSData *bytes = [text dataUsingEncoding:NSUTF8StringEncoding] ?: [NSData data];
+    // NUL-terminated, as idLexer expects (its whitespace and comment loops
+    // stop at the '\0', as Doom 3's did), like the decl manager's buffers.
+    NSMutableData *bytes = [[text dataUsingEncoding:NSUTF8StringEncoding] mutableCopy] ?: [NSMutableData data];
+    NSUInteger length = bytes.length;
+    [bytes appendBytes:"" length:1];
 
     // The decl manager's flags, kept quiet: what it would say is collected.
     idLexer *lexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS | LEXFL_NOERRORS | LEXFL_NOWARNINGS
                                          fileSystem:fileSystem];
     lexer.diagnostics = [NSMutableArray array];
-    if (![lexer loadMemory:bytes.bytes ?: "" length:(int)bytes.length name:@"decl" startLine:1 error:NULL]) {
+    if (![lexer loadMemory:bytes.bytes length:(int)length name:@"decl" startLine:1 error:NULL]) {
         return problems;
     }
 

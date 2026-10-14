@@ -59,8 +59,6 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDTabItemView.xib \
     Resources/en.lproj/UDImageViewerView.xib \
     en.lproj/UDTextEditorView.xib \
-    UDWorkspaceDocumentWindow.xib \
-    UDDeclBrowserWindow.xib \
     DeclBrowser-Info.plist
 
 # CoreData is provided by FreeCoreData on GNUstep

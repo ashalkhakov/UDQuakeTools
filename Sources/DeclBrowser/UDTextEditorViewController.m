@@ -12,7 +12,7 @@
 @implementation UDTextEditorViewController
 
 - (instancetype)init {
-    self = [super initWithNibName:@"UDTextEditorView" bundle:nil];
+    self = [super initWithNibName:@"UDTextEditorView" bundle:[NSBundle bundleForClass:[UDTextEditorViewController class]]];
     return self;
 }
 

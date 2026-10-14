@@ -6,7 +6,7 @@
 @implementation UDPDAEditorViewController
 
 - (instancetype)init {
-    self = [super initWithNibName:@"UDPDAEditorView" bundle:nil];
+    self = [super initWithNibName:@"UDPDAEditorView" bundle:[NSBundle bundleForClass:[UDPDAEditorViewController class]]];
     return self;
 }
 
@@ -179,7 +179,7 @@
     // Lazily load the NIB each time, or keep the controller around
     UDPDAAudioEditorViewController *editorVC = [[UDPDAAudioEditorViewController alloc] init];
     editorVC.editingAudio = audio;
-    [[NSBundle mainBundle] loadNibNamed:@"UDPDAAudioEditorView"
+    [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAAudioEditorView"
                                  owner:editorVC
                        topLevelObjects:nil];
 
@@ -208,7 +208,7 @@
 - (NSModalResponse)openEmailEditor:(UDDeclEmail *)email {
     UDPDAEmailEditorViewController *editorVC = [[UDPDAEmailEditorViewController alloc] init];
     editorVC.editingEmail = email;
-    [[NSBundle mainBundle] loadNibNamed:@"UDPDAEmailEditorView"
+    [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAEmailEditorView"
                                  owner:editorVC
                        topLevelObjects:nil];
 
@@ -238,7 +238,7 @@
     // Lazily load the NIB each time, or keep the controller around
     UDPDAVideoEditorViewController *editorVC = [[UDPDAVideoEditorViewController alloc] init];
     editorVC.editingVideo = video;
-    [[NSBundle mainBundle] loadNibNamed:@"UDPDAVideoEditorView"
+    [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAVideoEditorView"
                                  owner:editorVC
                        topLevelObjects:nil];
 

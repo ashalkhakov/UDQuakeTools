@@ -162,6 +162,45 @@
 		F11B76E69140841478600956 /* UDZipWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */; };
 		53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */; };
+		6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */; };
+		919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */; };
+		BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */; };
+		840A133AC766210687236006 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
+		BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
+		CC358F6D994B45EE98A5C63A /* UDFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652D3027974B00157501 /* UDFolder.m */; };
+		CEE7FEBF8D1935F0977016BB /* UDFileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652F3027974B00157501 /* UDFileItem.m */; };
+		C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */; };
+		C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6558302A203100157501 /* UDBaseDocument.m */; };
+		39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
+		9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
+		24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
+		4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD0000200000000000000AA /* UDTextPromptPanel.m */; };
+		312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65503029F03A00157501 /* UDDeclItem.m */; };
+		29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
+		FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */; };
+		52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
+		7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
+		070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
+		398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
+		F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC654B3029E5FC00157501 /* UDDeclDocument.m */; };
+		A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65413027994F00157501 /* UDWorkspaceDocument.m */; };
+		D5715A18F74F4A37F5CEB1DD /* UDImageFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65453027994F00157501 /* UDImageFileDocument.m */; };
+		ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65373027987300157501 /* UDBaseEditorViewController.m */; };
+		6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
+		399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
+		D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
+		B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
+		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6555302A07BC00157501 /* UDImageViewerView.xib */; };
+		67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
+		67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6552302A077100157501 /* UDTextEditorView.xib */; };
+		B07DB34369ACF2681E8E1029 /* UDPDAVideoEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */; };
+		104EEEE72E01A8DF60557FED /* UDPDAAudioEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */; };
+		F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
+		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,6 +233,13 @@
 			remoteInfo = UDCore;
 		};
 		CC07050000000000000000AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CC04000000000000000000AA;
+			remoteInfo = UDCore;
+		};
+		EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
 			proxyType = 1;
@@ -255,6 +301,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				6518CC5863010F102A56FC54 /* Sparkle.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8BA630C87453D8DF901690F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -442,6 +499,11 @@
 		C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriterTests.m; sourceTree = "<group>"; };
 		DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipFixture.h; sourceTree = "<group>"; };
 		EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipFixture.m; sourceTree = "<group>"; };
+		E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserTestCase.h; sourceTree = "<group>"; };
+		20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserTestCase.m; sourceTree = "<group>"; };
+		368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorTests.m; sourceTree = "<group>"; };
+		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
+		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -517,6 +579,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6EB93F75D308A90BE7FE30B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */,
+				478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */,
+				224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -547,6 +619,7 @@
 				FF00050000000000000000AA /* UDLauncher.app */,
 				CC00050000000000000000AA /* UDCore.framework */,
 				CE1CDC56301E0A750037DBA5 /* QuakeEditor.app */,
+				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -693,6 +766,7 @@
 				C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */,
 				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
 				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
+				37E65B3E596BA91969F42366 /* DeclBrowser */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -845,6 +919,17 @@
 				F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */,
 			);
 			name = UDUpdater;
+			sourceTree = "<group>";
+		};
+		37E65B3E596BA91969F42366 /* DeclBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */,
+				20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */,
+				368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */,
+				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
+			);
+			path = DeclBrowser;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1043,6 +1128,25 @@
 			productReference = FF00050000000000000000AA /* UDLauncher.app */;
 			productType = "com.apple.product-type.application";
 		};
+		9D5D57CB7DB90240B958F42D /* DeclBrowserTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */;
+			buildPhases = (
+				BA11F7945378D123ABFAC6A1 /* Sources */,
+				6EB93F75D308A90BE7FE30B3 /* Frameworks */,
+				3CFED1D092CCEE513BA5AE61 /* Resources */,
+				F8BA630C87453D8DF901690F /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
+			);
+			name = DeclBrowserTests;
+			productName = DeclBrowserTests;
+			productReference = 395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1093,6 +1197,7 @@
 				AA04000100000000000000AA /* udpaktool */,
 				FF04000000000000000000AA /* UDLauncher */,
 				CE1CDC55301E0A750037DBA5 /* QuakeEditor */,
+				9D5D57CB7DB90240B958F42D /* DeclBrowserTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1145,6 +1250,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF01000200000000000000AA /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3CFED1D092CCEE513BA5AE61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */,
+				D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */,
+				B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */,
+				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
+				30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */,
+				67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */,
+				67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */,
+				B07DB34369ACF2681E8E1029 /* UDPDAVideoEditorView.xib in Resources */,
+				104EEEE72E01A8DF60557FED /* UDPDAAudioEditorView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1288,6 +1409,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA11F7945378D123ABFAC6A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */,
+				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
+				BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */,
+				840A133AC766210687236006 /* UDProject.m in Sources */,
+				BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */,
+				CC358F6D994B45EE98A5C63A /* UDFolder.m in Sources */,
+				CEE7FEBF8D1935F0977016BB /* UDFileItem.m in Sources */,
+				C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */,
+				C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */,
+				39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */,
+				9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */,
+				24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */,
+				4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */,
+				312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */,
+				29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */,
+				FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */,
+				52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */,
+				6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */,
+				7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */,
+				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
+				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,
+				F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */,
+				A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */,
+				D5715A18F74F4A37F5CEB1DD /* UDImageFileDocument.m in Sources */,
+				ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */,
+				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1315,6 +1469,11 @@
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA /* UDCore */;
 			targetProxy = CC07050000000000000000AA /* PBXContainerItemProxy */;
+		};
+		18EAAA5C20CA24F3294E116C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CC04000000000000000000AA /* UDCore */;
+			targetProxy = EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2084,6 +2243,83 @@
 			};
 			name = Release;
 		};
+		A21877E3719F70D33F863672 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/DeclBrowser/Documents",
+					"$(SRCROOT)/Sources/DeclBrowser/Window",
+					"$(SRCROOT)/Tests/DeclBrowser",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
+				PRODUCT_NAME = DeclBrowserTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		EF44BC6BA9E8B20DCEAAA1C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/DeclBrowser/Documents",
+					"$(SRCROOT)/Sources/DeclBrowser/Window",
+					"$(SRCROOT)/Tests/DeclBrowser",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
+				PRODUCT_NAME = DeclBrowserTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2164,6 +2400,15 @@
 			buildConfigurations = (
 				FF05000000000000000000AA /* Debug */,
 				FF05000100000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A21877E3719F70D33F863672 /* Debug */,
+				EF44BC6BA9E8B20DCEAAA1C4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

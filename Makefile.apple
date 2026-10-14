@@ -2,7 +2,9 @@
 # runs the same):
 #
 #   make -f Makefile.apple            UDLauncher.app, universal (Release)
-#   make -f Makefile.apple check      its Debug build
+#   make -f Makefile.apple check      its Debug build, and the tests: UDCore's
+#                                     and Decl Browser's (which drive the app's
+#                                     own windows)
 #   make -f Makefile.apple install DESTDIR=<dir>       UDLauncher.app
 #   make -f Makefile.apple installcheck DESTDIR=<dir>  its signature holds, and
 #                                     it starts and stays up, in a fresh home
@@ -24,8 +26,11 @@ all:
 	  || { echo "no Sparkle in .deps: gnustep-release-actions' scripts/deps.sh apple fetches what .github/pins.env names"; exit 1; }
 	$(XCODEBUILD) -scheme UDLauncher -configuration Release -destination 'generic/platform=macOS' build
 
+# The test bundles are not signed: nothing ships from them.
 check:
 	$(XCODEBUILD) -scheme UDLauncher -configuration Debug -destination 'platform=macOS' build
+	$(XCODEBUILD) -scheme UDCore -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
+	$(XCODEBUILD) -scheme DeclBrowserTests -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 
 install: all
 	@test -n "$(DESTDIR)" || { echo "install: give DESTDIR"; exit 1; }

@@ -94,11 +94,33 @@ releases it, with update information.
 
 ## Tests
 
-Run tests using your active build system/scheme:
+Two suites, on both systems:
 
-- Xcode: run the `UDQuakeToolsTests` target
-- GNUstep: `cd Tests && make run-tests`
-  (requires the UDCore library to be installed first)
+- `Tests` — UDCore: the archive codecs (and `UDZipWriter` against the Doom 3
+  reader), the ported file system and decl manager, the decl incremental
+  store.
+- `Tests/DeclBrowser` — Decl Browser, driven through its own windows: a
+  workspace opens, the outline is expanded and a row selected, fields are
+  typed into, the PDA editor's email sheet is filled in and OKed, File ▸
+  Save is sent; then the decl file written and a freshly opened workspace
+  are checked. The PDA cases run on a small loose fixture. The Doom 3 cases
+  browse a retail install and edit `admin_moses` out of `pak000.pk4`; they
+  read `$UD_DOOM3_PATH` (default `/Volumes/ExtraSSD/games/DOOM 3`), check
+  that its `base/` comes out unchanged (saves go to a scratch `fs_savepath`),
+  and check nothing when there is no install, as on CI.
+
+Running them:
+
+- macOS: `make -f Makefile.apple check`, or the `UDCore` (unit) and
+  `DeclBrowserTests` schemes in Xcode.
+- GNUstep: `make check` (under `xvfb-run` when there is no display), after
+  `make`. To include the Doom 3 cases in docker, mount the install read-only
+  and point at it:
+
+  ```bash
+  docker run --rm -v "$PWD:/src" -v "/path/to/DOOM 3:/doom3:ro" -e UD_DOOM3_PATH=/doom3 <image> \
+    sh -c '. /opt/gnustep/System/Library/Makefiles/GNUstep.sh && cd /src && make && make check'
+  ```
 
 ## Notes
 

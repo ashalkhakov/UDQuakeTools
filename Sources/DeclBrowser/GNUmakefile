@@ -8,6 +8,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 # Source list synced with the Xcode DeclBrowser target (2026-08-20).
 DeclBrowser_OBJC_FILES = \
+    ../UDUpdater/UDUpdater.m \
     main.m \
     AppDelegate.m \
     UDAppDocumentController.m \
@@ -36,6 +37,7 @@ DeclBrowser_OBJC_FILES = \
 
 DeclBrowser_INCLUDE_DIRS = \
     -I. \
+    -I../UDUpdater \
     -IDocuments \
     -IWindow \
     -I../UDCore \

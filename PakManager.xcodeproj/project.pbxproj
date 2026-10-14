@@ -152,6 +152,12 @@
 		FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010100000000000000AA /* UDLauncherAppDelegate.m */; };
 		FF01000200000000000000AA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF00010300000000000000AA /* MainMenu.xib */; };
 		FF01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		E9076863CF86AD655C2F5932 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
+		4EDA68FFA5D0252CE28DCD50 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
+		6518CC5863010F102A56FC54 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2AFD3CDF8A5F188D64CB99BE /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
+		32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
+		91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,6 +227,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */,
 				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -233,6 +240,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04030100000000000000AA /* UDCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		31946E44C7F06C8061D08B48 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6518CC5863010F102A56FC54 /* Sparkle.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -412,6 +430,9 @@
 		FF00010300000000000000AA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		FF00010400000000000000AA /* UDLauncher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDLauncher-Info.plist"; sourceTree = "<group>"; };
 		FF00050000000000000000AA /* UDLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UDLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA34039EE147137D2F2DAC9B /* UDUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UDUpdater.h"; path = "Sources/UDUpdater/UDUpdater.h"; sourceTree = SOURCE_ROOT; };
+		B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UDUpdater-Apple.m"; path = "Sources/UDUpdater/UDUpdater-Apple.m"; sourceTree = SOURCE_ROOT; };
+		F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sparkle.xcframework; path = .deps/Sparkle.xcframework; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -463,6 +484,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */,
 				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04020000000000000000AA /* UDCore.framework in Frameworks */,
 			);
@@ -481,6 +503,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EDA68FFA5D0252CE28DCD50 /* Sparkle.xcframework in Frameworks */,
 				FF01001000000000000000AA /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -800,6 +823,16 @@
 			path = Sources/UDLauncher;
 			sourceTree = "<group>";
 		};
+		84A64E858D7309C1DA581B24 /* UDUpdater */ = {
+			isa = PBXGroup;
+			children = (
+				AA34039EE147137D2F2DAC9B /* UDUpdater.h */,
+				B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */,
+				F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */,
+			);
+			name = UDUpdater;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -981,6 +1014,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FF06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDLauncher" */;
 			buildPhases = (
+				31946E44C7F06C8061D08B48 /* Embed Frameworks */,
 				FF03000000000000000000AA /* Sources */,
 				FF03000100000000000000AA /* Frameworks */,
 				FF03000200000000000000AA /* Resources */,
@@ -1190,6 +1224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AFD3CDF8A5F188D64CB99BE /* UDUpdater-Apple.m in Sources */,
 				CEFC65313027974B00157501 /* UDProject.m in Sources */,
 				CEFC65323027974B00157501 /* UDWorkspaceItem.m in Sources */,
 				CEFC65333027974B00157501 /* UDFolder.m in Sources */,
@@ -1229,6 +1264,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9076863CF86AD655C2F5932 /* UDUpdater-Apple.m in Sources */,
 				FF01000000000000000000AA /* main.m in Sources */,
 				FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */,
 			);
@@ -1322,7 +1358,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				SDKROOT = macosx;
 			};
@@ -1366,7 +1402,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -1378,10 +1414,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
@@ -1420,7 +1456,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
@@ -1436,10 +1472,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1475,7 +1511,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
 				PRODUCT_NAME = PakManager;
@@ -1512,7 +1548,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;
 			};
@@ -1544,7 +1580,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;
 			};
@@ -1556,9 +1592,9 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1584,7 +1620,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
 					"-lzip",
 					"-framework",
@@ -1602,9 +1638,9 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1627,7 +1663,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
 					"-lzip",
 					"-framework",
@@ -1645,12 +1681,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1678,7 +1714,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
@@ -1696,12 +1732,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1725,7 +1761,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
 				PRODUCT_NAME = UDCore;
@@ -1744,14 +1780,13 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1795,14 +1830,13 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1836,10 +1870,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1852,6 +1886,7 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
 					/opt/homebrew/include,
@@ -1868,7 +1903,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
@@ -1884,10 +1919,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1896,6 +1931,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
 					/opt/homebrew/include,
@@ -1912,7 +1948,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
 				PRODUCT_NAME = DeclBrowser;
@@ -1926,10 +1962,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
@@ -1968,7 +2004,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
@@ -1984,10 +2020,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -2023,7 +2059,7 @@
 					/opt/homebrew/lib,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
 				PRODUCT_NAME = GuiEd;
@@ -2034,13 +2070,18 @@
 		FF05000000000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDUpdater";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
@@ -2060,7 +2101,7 @@
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
 				PRODUCT_NAME = UDLauncher;
@@ -2071,14 +2112,19 @@
 		FF05000100000000000000AA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDUpdater";
 				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -2095,7 +2141,7 @@
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
 				PRODUCT_NAME = UDLauncher;
 				PROVISIONING_PROFILE_SPECIFIER = "";

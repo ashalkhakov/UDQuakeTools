@@ -1,7 +1,10 @@
 # UDQuakeTools
 
 UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archive formats.
-It ships as a single AppImage on Linux containing a launcher and all tools.
+It ships as a single AppImage on Linux containing the launcher and Decl Browser,
+and for macOS as UDLauncher, which updates itself (UDLauncher ▸ Check for
+Updates…). Decl Browser joins it on the Mac once libzip, which its archive
+codecs use, has a universal build to ship (on Linux it is Ubuntu's).
 
 ## Applications
 
@@ -57,7 +60,10 @@ It ships as a single AppImage on Linux containing a launcher and all tools.
 ### macOS (Xcode)
 
 Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
-`Decl Browser`, `GuiEd`, or `UDLauncher`).
+`Decl Browser`, `GuiEd`, or `UDLauncher`), with Sparkle's XCFramework in
+`.deps/` (gnustep-release-actions' `scripts/deps.sh apple` fetches the version
+`.github/pins.env` names). What CI builds and checks there is
+`Makefile.apple`: `make -f Makefile.apple`, `check`, `install`.
 
 ### GNUstep stack and apps
 

@@ -8,7 +8,11 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 UDLauncher_OBJC_FILES = \
     main.m \
-    UDLauncherAppDelegate.m
+    UDLauncherAppDelegate.m \
+    ../UDUpdater/UDUpdater.m
+
+# The app's updates (none on GNUstep: UDUpdater.h).
+UDLauncher_INCLUDE_DIRS = -I../UDUpdater
 
 UDLauncher_RESOURCE_FILES = \
     MainMenu.xib \

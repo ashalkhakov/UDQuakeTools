@@ -25,6 +25,12 @@
                                     <action selector="orderFrontStandardAboutPanel:" target="-1" id="UDL-act-about"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Check for Updates…" tag="7100" id="UDu-mi-100">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="checkForUpdates:" target="-1" id="UDu-ac-100"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="UDL-sep-1"/>
                             <menuItem title="Services" id="UDL-menu-services">
                                 <modifierMask key="keyEquivalentModifierMask"/>

@@ -64,5 +64,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>SUFeedURL</key>
+	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast-DeclBrowser.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>9cBO16YcwJZy7uzpT8tSbD/UnYF9HNTekubfnW8WlUE=</string>
 </dict>
 </plist>

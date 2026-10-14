@@ -21,7 +21,7 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 	<key>SUFeedURL</key>
-	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast.xml</string>
+	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast-UDLauncher.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>9cBO16YcwJZy7uzpT8tSbD/UnYF9HNTekubfnW8WlUE=</string>
 </dict>

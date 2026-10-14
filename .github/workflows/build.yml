@@ -4,11 +4,11 @@ name: Build
 # check, make install; Makefile.apple on macOS) by gnustep-release-actions'
 # workflows, the same as every repository's: every push is built, tested (the
 # tests; the apps started on a clean Ubuntu) and uploaded as artifacts, the
-# AppImage (the launcher and Decl Browser) and UDLauncher for macOS; a v* tag
-# (or a run started by hand with one) is also released: the AppImage with
-# its update information, UDLauncher signed and notarized with its Sparkle
-# appcast, attached to the tag's release (a pre-release when the tag has a
-# '-'). What it builds on is in .github/pins.env.
+# AppImage (the launcher, Decl Browser and Pak Manager) and the same three
+# apps for macOS; a v* tag (or a run started by hand with one) is also
+# released: the AppImage with its update information, the Mac apps signed
+# and notarized, each with its Sparkle appcast (appcast-<App>.xml), attached
+# to the tag's release (a pre-release when the tag has a '-'). What it builds on is in .github/pins.env.
 on:
   push:
     branches-ignore: ['copilot/**']
@@ -41,5 +41,5 @@ jobs:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1
     with:
       tag: ${{ inputs.tag }}
-      apps: UDLauncher=UDLauncher
+      apps: UDLauncher=UDLauncher DeclBrowser=DeclBrowser PakManager=PakManager
     secrets: inherit

@@ -1,50 +1,60 @@
 # UDQuakeTools on macOS, the familiar way (gnustep-release-actions' macos.yml
 # runs the same):
 #
-#   make -f Makefile.apple            UDLauncher.app, universal (Release)
-#   make -f Makefile.apple check      its Debug build, and the tests: UDCore's
+#   make -f Makefile.apple            the apps, universal (Release): UDLauncher,
+#                                     Decl Browser, Pak Manager
+#   make -f Makefile.apple check      their Debug builds, and the tests: UDCore's
 #                                     and Decl Browser's (which drive the app's
 #                                     own windows)
-#   make -f Makefile.apple install DESTDIR=<dir>       UDLauncher.app
-#   make -f Makefile.apple installcheck DESTDIR=<dir>  its signature holds, and
-#                                     it starts and stays up, in a fresh home
+#   make -f Makefile.apple install DESTDIR=<dir>       the three .apps
+#   make -f Makefile.apple installcheck DESTDIR=<dir>  their signatures hold, and
+#                                     each starts and stays up, in a fresh home
 #
-# UDLauncher alone is shipped for now. UDCore and Decl Browser need nothing
-# beyond the system's zlib (archives are read by the minizip that came with
-# the Doom 3 file system and written by UDZipWriter), so they build and are
-# tested here as on GNUstep. Sparkle's XCFramework is in .deps/, by the
-# version .github/pins.env names (gnustep-release-actions' scripts/deps.sh
-# apple).
+# UDCore and the apps need nothing beyond the system's zlib (archives are
+# read by the minizip that came with the Doom 3 file system and written by
+# UDZipWriter). Each app embeds Sparkle and has its own appcast
+# (appcast-<App>.xml): its XCFramework is in .deps/, by the version
+# .github/pins.env names (gnustep-release-actions' scripts/deps.sh apple).
 
 BUILD = build
 DERIVED = $(BUILD)/DerivedData
 RELEASE = $(DERIVED)/Build/Products/Release
 XCODEBUILD = xcodebuild -project PakManager.xcodeproj -derivedDataPath $(DERIVED)
 
+# The apps by bundle name (what .github/workflows/build.yml's apps: names);
+# their Xcode schemes are UDLauncher, "Decl Browser" and "Pak Manager".
 all:
 	@test -d .deps/Sparkle.xcframework \
 	  || { echo "no Sparkle in .deps: gnustep-release-actions' scripts/deps.sh apple fetches what .github/pins.env names"; exit 1; }
 	$(XCODEBUILD) -scheme UDLauncher -configuration Release -destination 'generic/platform=macOS' build
+	$(XCODEBUILD) -scheme "Decl Browser" -configuration Release -destination 'generic/platform=macOS' build
+	$(XCODEBUILD) -scheme "Pak Manager" -configuration Release -destination 'generic/platform=macOS' build
 
 # The test bundles are not signed: nothing ships from them.
 check:
 	$(XCODEBUILD) -scheme UDLauncher -configuration Debug -destination 'platform=macOS' build
+	$(XCODEBUILD) -scheme "Decl Browser" -configuration Debug -destination 'platform=macOS' build
+	$(XCODEBUILD) -scheme "Pak Manager" -configuration Debug -destination 'platform=macOS' build
 	$(XCODEBUILD) -scheme UDCore -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 	$(XCODEBUILD) -scheme DeclBrowserTests -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 
 install: all
 	@test -n "$(DESTDIR)" || { echo "install: give DESTDIR"; exit 1; }
 	mkdir -p $(DESTDIR)
-	rm -rf $(DESTDIR)/UDLauncher.app
-	ditto $(RELEASE)/UDLauncher.app $(DESTDIR)/UDLauncher.app
+	for app in UDLauncher DeclBrowser PakManager; do \
+	  rm -rf $(DESTDIR)/$$app.app; \
+	  ditto $(RELEASE)/$$app.app $(DESTDIR)/$$app.app || exit 1; \
+	done
 
 installcheck:
-	codesign --verify --deep --strict $(DESTDIR)/UDLauncher.app
-	@home=$$(mktemp -d); log=$$(mktemp); \
-	  HOME=$$home CFFIXED_USER_HOME=$$home $(DESTDIR)/UDLauncher.app/Contents/MacOS/UDLauncher > $$log 2>&1 & pid=$$!; \
+	for app in UDLauncher DeclBrowser PakManager; do \
+	  codesign --verify --deep --strict $(DESTDIR)/$$app.app || exit 1; \
+	  home=$$(mktemp -d); log=$$(mktemp); \
+	  HOME=$$home CFFIXED_USER_HOME=$$home $(DESTDIR)/$$app.app/Contents/MacOS/$$app > $$log 2>&1 & pid=$$!; \
 	  sleep 10; \
-	  if kill -0 $$pid 2>/dev/null; then kill $$pid; echo "UDLauncher: up after 10s"; \
-	  else cat $$log; echo "UDLauncher exited on its own"; exit 1; fi
+	  if kill -0 $$pid 2>/dev/null; then kill $$pid; echo "$$app: up after 10s"; \
+	  else cat $$log; echo "$$app exited on its own"; exit 1; fi; \
+	done
 
 clean:
 	rm -rf $(BUILD)

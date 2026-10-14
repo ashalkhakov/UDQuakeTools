@@ -3,13 +3,13 @@
 # runs it (.github/release/appimage.conf, SMOKE_SCRIPT)
 #   Scripts/appimage-smoke.sh <UDQuakeTools AppImage>
 # Proof each app in the image starts and stays up, with its interface: the
-# launcher and Decl Browser, against a virtual display. An app whose nib
+# launcher, Decl Browser and Pak Manager, against a virtual display. An app whose nib
 # failed to load stays up too, as an icon with no window; GNUstep says so on
 # stderr, which is read back.
 set -euo pipefail
 image=$1
 log=$(mktemp)
-for app in "" declbrowser; do
+for app in "" declbrowser pakmanager; do
   timeout 90 xvfb-run -a "$image" $app > "$log" 2>&1 &
   pid=$!
   sleep 25

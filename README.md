@@ -1,6 +1,7 @@
 # UDQuakeTools
 
-UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archive formats.
+UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archives and
+idTech 4 (Doom 3) decls, on the way to authoring whole mods (`ROADMAP.md`).
 It ships as a single AppImage on Linux containing the launcher and Decl Browser,
 and for macOS as UDLauncher, which updates itself (UDLauncher ▸ Check for
 Updates…). Decl Browser builds and is tested on the Mac as well; archives
@@ -11,19 +12,21 @@ the Doom 3 file system reads them, UDZipWriter writes them).
 
 - **UDLauncher** — entry point: a simple window with buttons to launch the other tools
 - **Pak Manager** — manage pak/pk3/pk4 archive files
-- **Decl Browser** — browse and inspect DOOM 3 / Quake 4 declaration files
-- **GUI Editor** — GUI script editor for idTech 4-style GUI definitions
+- **Decl Browser** — browse, search and edit the decls of a Doom 3 install or mod
+  (a structured PDA editor; the other decl types as text), saving overrides
+- **udpaktool** — command-line listing and extraction of archives
 
 ## Project Layout
 
-- `Sources/UDCore`: Foundation-only domain model, editor logic and archive codecs — PAK, PK3, PK4, … (built as `libUDCore`)
+- `Sources/UDCore`: the Doom 3 file system and decl manager (ported), a Core Data layer over the decls, the workspace, and the archive model (built as `libUDCore`; `UDCore.framework` in Xcode)
+- `Sources/UDFormats`: archive codecs — PAK, PAK2, Daikatana PAK, PK3, PK4 (compiled into UDCore)
 - `Sources/UDLauncher`: Launcher application linking bundled tools
 - `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
 - `Sources/DeclBrowser`: Decl Browser GUI app
-- `Sources/GuiEd`: GUI Editor app
 - `Sources/Tools/udpaktool`: CLI utility target
-- `Tests`: Unit tests
-- `Scripts`: Build and packaging scripts (GNUstep stack, AppDir, AppImage)
+- `Tests`: UDCore unit tests; `Tests/DeclBrowser`: tests driving the Decl Browser app
+- `Scripts`: the AppImage desktop entry and smoke test (the build and packaging
+  themselves are gnustep-release-actions')
 
 ## Prerequisites
 
@@ -52,16 +55,16 @@ the Doom 3 file system reads them, UDZipWriter writes them).
   ```
 
   The makefiles link it as the `CoreData` framework
-  (`ADDITIONAL_NATIVE_LIBS += CoreData`). Note that there is no `momc` on
-  GNUstep: `DeclModel.xcdatamodeld` is bundled uncompiled with the apps and
-  FreeCoreData reads the model XML directly at runtime.
+  (`ADDITIONAL_NATIVE_LIBS += CoreData`). FreeCoreData also provides `momc` and
+  `coredata-model.make`, which compile `DeclModel.xcdatamodeld` into the
+  apps' and test bundles' resources as Xcode does.
 
 ## Build
 
 ### macOS (Xcode)
 
 Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
-`Decl Browser`, `GuiEd`, or `UDLauncher`), with Sparkle's XCFramework in
+`Decl Browser`, `udpaktool` or `UDLauncher`), with Sparkle's XCFramework in
 `.deps/` (gnustep-release-actions' `scripts/deps.sh apple` fetches the version
 `.github/pins.env` names). What CI builds and checks there is
 `Makefile.apple`: `make -f Makefile.apple`, `check`, `install`.
@@ -128,8 +131,6 @@ Running them:
 
 ## Notes
 
-- Architecture notes: `ARCHITECTURE.md`
-- Early interface stubs: `CLASS_STUBS.md`
 - Roadmap and todo list: `ROADMAP.md`
 - License: GPL-3.0-or-later (`LICENSE`). UDCore's idFileSystem, idDeclManager,
   lexer and parser are ported from the Doom 3 GPL source (via openQ4), which

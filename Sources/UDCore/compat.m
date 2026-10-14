@@ -10,7 +10,7 @@
 
 // Define your app's save folder name.
 // Change this to whatever your editor or openQ4 project uses.
-static NSString * const kAppName = @"GuiEd";
+static NSString * const kAppName = @"UDQuakeTools";
 
 NSString *Sys_DefaultCDPath(void) {
     return [[NSBundle mainBundle] resourcePath];

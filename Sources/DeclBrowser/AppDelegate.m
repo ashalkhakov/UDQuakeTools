@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  QuakeEditor
+//  DeclBrowser
 //
 //  Created by artyom on 8/1/26.
 //

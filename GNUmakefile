@@ -1,6 +1,6 @@
 #
 # UDQuakeTools on GNUstep: UDCore, the launcher and Decl Browser, and their
-# tests (PakManager, GuiEd and udpaktool build on their own: make -C there).
+# tests (PakManager and udpaktool build on their own: make -C there).
 #
 #   make            UDCore, UDLauncher, DeclBrowser and the test bundles
 #   make check      the tests (under Xvfb when there is no display): UDCore's,

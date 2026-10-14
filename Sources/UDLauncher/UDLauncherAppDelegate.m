@@ -46,12 +46,12 @@ static const NSInteger UDCheckForUpdatesTag = 7100;
 
 - (NSArray<NSString *> *)appNames
 {
-    return @[@"PakManager", @"DeclBrowser", @"GuiEd"];
+    return @[@"PakManager", @"DeclBrowser"];
 }
 
 - (NSDictionary<NSString *, NSString *> *)appLabels
 {
-    return @{@"PakManager": @"Pak Manager", @"DeclBrowser": @"Decl Browser", @"GuiEd": @"GUI Editor"};
+    return @{@"PakManager": @"Pak Manager", @"DeclBrowser": @"Decl Browser"};
 }
 
 /* A tool's executable, beside UDLauncher (in the same Applications

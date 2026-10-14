@@ -42,6 +42,7 @@ UDCore_OBJC_FILES = \
     UDCrashReporter.m \
     UDDeclManagedObjects.m \
     UDDeclIncrementalStore.m \
+    UDZipWriter.m \
     UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
@@ -68,13 +69,14 @@ UDCore_HEADER_FILES = \
     idDeclManager.h \
     UDCrashReporter.h \
     UDDeclManagedObjects.h \
-    UDDeclIncrementalStore.h
+    UDDeclIncrementalStore.h \
+    UDZipWriter.h
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip -lgnustep-corebase
+ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lz -lgnustep-corebase
 
 include $(GNUSTEP_MAKEFILES)/library.make
 
@@ -87,6 +89,9 @@ include $(GNUSTEP_MAKEFILES)/library.make
 # -I../UDCore include path finds this shim directory instead. The .m
 # compiles to nothing on macOS (guarded by !defined(__APPLE__)), so it is
 # NOT part of the Xcode project on purpose.
+#
+# ZIP archives need only zlib (-lz): unzip.c/ioapi.c (the minizip reader
+# ported with the Doom 3 file system) read them and UDZipWriter writes them.
 #
 # -lgnustep-corebase is required because idFileSystem.m/idLexer.m call
 # CFStringLowercase/CFStringTrimWhitespace (fine at library link, surfaces as

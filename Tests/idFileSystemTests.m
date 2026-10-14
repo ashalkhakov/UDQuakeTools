@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
-#import <zip.h> // Required for libzip
+#import "UDZipFixture.h"
 #import "idFileSystem.h"
 #import "idFile.h"
 #import "UDWorkspaceManager.h"
@@ -18,77 +18,13 @@
 // Helper: Dynamically generate a valid ZIP archive in memory
 // -----------------------------------------------------------------------------
 - (NSData *)makeZIPData {
-    zip_source_t *src = zip_source_buffer_create(NULL, 0, 0, NULL);
-    if (!src) {
-        return nil;
-    }
-    zip_t *za = zip_open_from_source(src, ZIP_TRUNCATE, NULL);
-    if (!za) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    const char *payload1 = "hello zip";
-    zip_source_t *s1 = zip_source_buffer(za, payload1, strlen(payload1), 0);
-    if (zip_file_add(za, "maps/q3dm1.bsp", s1, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 0, ZIP_CM_DEFLATE, 0);
-
-    const char *payload2 = "script data";
-    zip_source_t *s2 = zip_source_buffer(za, payload2, strlen(payload2), 0);
-    if (zip_file_add(za, "scripts/base.shader", s2, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 1, ZIP_CM_STORE, 0);
-
-    // Subdirectory file inside archive
-    const char *payload3 = "nested script data";
-    zip_source_t *s3 = zip_source_buffer(za, payload3, strlen(payload3), 0);
-    if (zip_file_add(za, "scripts/sub/nested.shader", s3, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-
-    // False prefix match directory (scripts_backup vs scripts)
-    const char *payload4 = "prefix match data";
-    zip_source_t *s4 = zip_source_buffer(za, payload4, strlen(payload4), 0);
-    if (zip_file_add(za, "scripts_backup/old.shader", s4, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-
-    // False extension match (.shader.bak vs .shader)
-    const char *payload5 = "bak data";
-    zip_source_t *s5 = zip_source_buffer(za, payload5, strlen(payload5), 0);
-    if (zip_file_add(za, "scripts/backup.shader.bak", s5, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-
-    zip_source_keep(src);
-    if (zip_close(za) != 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    zip_source_open(src);
-    zip_source_seek(src, 0, SEEK_END);
-    zip_int64_t size = zip_source_tell(src);
-    zip_source_seek(src, 0, SEEK_SET);
-    if (size <= 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    NSMutableData *data = [NSMutableData dataWithLength:(NSUInteger)size];
-    zip_source_read(src, data.mutableBytes, (zip_uint64_t)size);
-    zip_source_close(src);
-    zip_source_free(src);
-    
-    return data;
+    return UDZipFixtureData(@[
+        @[@"maps/q3dm1.bsp", @"hello zip", @(UDZipCompressionMethodDeflated)],
+        @[@"scripts/base.shader", @"script data", @(UDZipCompressionMethodStored)],
+        @[@"scripts/sub/nested.shader", @"nested script data", @(UDZipCompressionMethodDeflated)],
+        @[@"scripts_backup/old.shader", @"prefix match data", @(UDZipCompressionMethodDeflated)],
+        @[@"scripts/backup.shader.bak", @"bak data", @(UDZipCompressionMethodDeflated)],
+    ]);
 }
 
 // -----------------------------------------------------------------------------
@@ -273,7 +209,7 @@
     
     [self.fileSystem closeFile:readFile error:nil];
     
-    // 3. Verify contents match the libzip payload
+    // 3. Verify contents match the fixture payload
     NSString *result = [NSString stringWithUTF8String:readBuffer.bytes];
     XCTAssertEqualObjects(result, @"script data", @"The decompressed text must perfectly match the payload in makeZIPData");
 }

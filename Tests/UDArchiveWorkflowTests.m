@@ -1,6 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
-#include <zip.h>
+#import "UDZipFixture.h"
 #include <stdint.h>
 
 #import "UDArchive.h"
@@ -134,52 +134,10 @@
 }
 
 - (NSData *)makeZIPData {
-    zip_source_t *src = zip_source_buffer_create(NULL, 0, 0, NULL);
-    if (!src) {
-        return nil;
-    }
-    zip_t *za = zip_open_from_source(src, ZIP_TRUNCATE, NULL);
-    if (!za) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    const char *payload1 = "hello zip";
-    zip_source_t *s1 = zip_source_buffer(za, payload1, strlen(payload1), 0);
-    if (zip_file_add(za, "maps/q3dm1.bsp", s1, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 0, ZIP_CM_DEFLATE, 0);
-
-    const char *payload2 = "script data";
-    zip_source_t *s2 = zip_source_buffer(za, payload2, strlen(payload2), 0);
-    if (zip_file_add(za, "scripts/base.shader", s2, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 1, ZIP_CM_STORE, 0);
-
-    zip_source_keep(src);
-    if (zip_close(za) != 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    zip_source_open(src);
-    zip_source_seek(src, 0, SEEK_END);
-    zip_int64_t size = zip_source_tell(src);
-    zip_source_seek(src, 0, SEEK_SET);
-    if (size <= 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    NSMutableData *data = [NSMutableData dataWithLength:(NSUInteger)size];
-    zip_source_read(src, data.mutableBytes, (zip_uint64_t)size);
-    zip_source_close(src);
-    zip_source_free(src);
-    return data;
+    return UDZipFixtureData(@[
+        @[@"maps/q3dm1.bsp", @"hello zip", @(UDZipCompressionMethodDeflated)],
+        @[@"scripts/base.shader", @"script data", @(UDZipCompressionMethodStored)],
+    ]);
 }
 
 - (NSDictionary<NSString *, NSData *> *)payloadMapForArchive:(UDArchive *)archive {

@@ -1,6 +1,6 @@
 #import "UDPK3ZIPEntrySource.h"
 
-#include <zip.h>
+#include "unzip.h"
 
 static NSString *const UDPK3ZIPEntrySourceErrorDomain = @"com.udquake.error.pk3-zip-entry-source";
 
@@ -12,18 +12,18 @@ typedef NS_ENUM(NSInteger, UDPK3ZIPEntrySourceErrorCode) {
 
 @interface UDPK3ZIPEntrySource ()
 @property (nonatomic, strong, readonly) NSURL *fileURL;
-@property (nonatomic, readonly) uint64_t entryIndex;
+@property (nonatomic, readonly) unsigned long centralDirectoryPosition;
 @property (nonatomic, readonly) uint64_t uncompressedSize;
 @end
 
 @implementation UDPK3ZIPEntrySource
 
 @synthesize fileURL = _fileURL;
-@synthesize entryIndex = _entryIndex;
+@synthesize centralDirectoryPosition = _centralDirectoryPosition;
 @synthesize uncompressedSize = _uncompressedSize;
 
 - (instancetype)initWithFileURL:(NSURL *)fileURL
-                     entryIndex:(uint64_t)entryIndex
+       centralDirectoryPosition:(unsigned long)centralDirectoryPosition
                uncompressedSize:(uint64_t)uncompressedSize {
     NSParameterAssert(fileURL != nil);
     self = [super init];
@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, UDPK3ZIPEntrySourceErrorCode) {
         return nil;
     }
     _fileURL = fileURL;
-    _entryIndex = entryIndex;
+    _centralDirectoryPosition = centralDirectoryPosition;
     _uncompressedSize = uncompressedSize;
     return self;
 }
@@ -41,15 +41,10 @@ typedef NS_ENUM(NSInteger, UDPK3ZIPEntrySourceErrorCode) {
 }
 
 - (nullable NSData *)readAll:(NSError **)error {
-    int zerr = ZIP_ER_OK;
-    zip_t *za = zip_open(self.fileURL.path.fileSystemRepresentation, ZIP_RDONLY, &zerr);
-    if (!za) {
+    unzFile uf = unzOpen(self.fileURL.path.fileSystemRepresentation);
+    if (!uf) {
         if (error) {
-            zip_error_t ze;
-            zip_error_init_with_code(&ze, zerr);
-            NSString *desc = [NSString stringWithFormat:@"Could not open ZIP archive: %s",
-                              zip_error_strerror(&ze)];
-            zip_error_fini(&ze);
+            NSString *desc = [NSString stringWithFormat:@"Could not open ZIP archive: %@", self.fileURL.path];
             *error = [NSError errorWithDomain:UDPK3ZIPEntrySourceErrorDomain
                                          code:UDPK3ZIPEntrySourceErrorCodeOpenFailed
                                      userInfo:@{NSLocalizedDescriptionKey: desc}];
@@ -57,31 +52,40 @@ typedef NS_ENUM(NSInteger, UDPK3ZIPEntrySourceErrorCode) {
         return nil;
     }
 
-    zip_file_t *zf = zip_fopen_index(za, (zip_uint64_t)self.entryIndex, 0);
-    if (!zf) {
+    unzSetCurrentFileInfoPosition(uf, self.centralDirectoryPosition);
+    if (unzOpenCurrentFile(uf) != UNZ_OK) {
         if (error) {
-            NSString *desc = [NSString stringWithFormat:@"Could not open ZIP entry %llu: %s",
-                              (unsigned long long)self.entryIndex,
-                              zip_strerror(za)];
+            NSString *desc = [NSString stringWithFormat:@"Could not open the ZIP entry at central directory offset %lu of %@",
+                              self.centralDirectoryPosition, self.fileURL.path];
             *error = [NSError errorWithDomain:UDPK3ZIPEntrySourceErrorDomain
                                          code:UDPK3ZIPEntrySourceErrorCodeOpenFailed
                                      userInfo:@{NSLocalizedDescriptionKey: desc}];
         }
-        zip_close(za);
+        unzClose(uf);
         return nil;
     }
 
     NSUInteger totalSize = (NSUInteger)self.uncompressedSize;
     NSMutableData *data = [NSMutableData dataWithLength:totalSize];
-    zip_int64_t nread = zip_fread(zf, data.mutableBytes, (zip_uint64_t)totalSize);
-    zip_fclose(zf);
-    zip_close(za);
+    NSUInteger filled = 0;
+    int nread = 0;
+    while (filled < totalSize) {
+        unsigned chunk = (unsigned)MIN(totalSize - filled, (NSUInteger)(1u << 30));
+        nread = unzReadCurrentFile(uf, (uint8_t *)data.mutableBytes + filled, chunk);
+        if (nread <= 0) {
+            break;
+        }
+        filled += (NSUInteger)nread;
+    }
+    /* unzCloseCurrentFile reports a CRC mismatch once the entry is fully read. */
+    int closeStatus = unzCloseCurrentFile(uf);
+    unzClose(uf);
 
-    if (nread < 0 || (zip_uint64_t)nread != (zip_uint64_t)totalSize) {
+    if (nread < 0 || filled != totalSize || closeStatus != UNZ_OK) {
         if (error) {
             *error = [NSError errorWithDomain:UDPK3ZIPEntrySourceErrorDomain
                                          code:UDPK3ZIPEntrySourceErrorCodeReadFailed
-                                     userInfo:@{NSLocalizedDescriptionKey: @"ZIP entry read returned unexpected byte count."}];
+                                     userInfo:@{NSLocalizedDescriptionKey: @"ZIP entry is truncated or fails its CRC check."}];
         }
         return nil;
     }

@@ -26,6 +26,6 @@ PakManager_RESOURCE_FILES = \
     PakManager-Info.plist
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LDFLAGS += -lUDCore -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

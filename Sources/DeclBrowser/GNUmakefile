@@ -69,7 +69,7 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 # -rdynamic: export the executable's own symbols so UDCrashReporter's
 # backtrace (installed in main.m on Linux) resolves app frames by name.
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime -rdynamic
+ADDITIONAL_LDFLAGS += -lUDCore -ldispatch -lBlocksRuntime -rdynamic
 
 # Compiles $(DeclBrowser_XCDATAMODELD_FILES) with momc and bundles the
 # resulting .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData.

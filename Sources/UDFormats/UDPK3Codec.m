@@ -4,8 +4,10 @@
 #import "UDArchiveEditor.h"
 #import "UDArchiveEntry.h"
 #import "UDPK3ZIPEntrySource.h"
+#import "UDZipWriter.h"
 
-#include <zip.h>
+#include <time.h>
+#include "unzip.h"
 
 static NSString *const UDPK3CodecErrorDomain = @"com.udquake.error.pk3-codec";
 
@@ -32,6 +34,21 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
         return nil;
     }
     return [source readRange:NSMakeRange(0, (NSUInteger)len) error:error];
+}
+
+/* ZIP stores MS-DOS local time; unzip.c hands it over already split up. */
+static NSDate *UDDateFromZIPDate(tm_unz date) {
+    struct tm local;
+    memset(&local, 0, sizeof(local));
+    local.tm_year = (int)date.tm_year - 1900;
+    local.tm_mon = (int)date.tm_mon;
+    local.tm_mday = (int)date.tm_mday;
+    local.tm_hour = (int)date.tm_hour;
+    local.tm_min = (int)date.tm_min;
+    local.tm_sec = (int)date.tm_sec;
+    local.tm_isdst = -1;
+    time_t seconds = mktime(&local);
+    return [NSDate dateWithTimeIntervalSince1970:seconds == (time_t)-1 ? 0 : (NSTimeInterval)seconds];
 }
 
 @interface UDPK3Codec ()
@@ -93,15 +110,14 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
 }
 
 - (nullable UDArchive *)readArchiveFromURL:(NSURL *)url error:(NSError **)error {
-    int zerr = ZIP_ER_OK;
-    zip_t *za = zip_open(url.path.fileSystemRepresentation, ZIP_RDONLY, &zerr);
-    if (!za) {
+    unzFile uf = unzOpen(url.path.fileSystemRepresentation);
+    unz_global_info globalInfo;
+    if (!uf || unzGetGlobalInfo(uf, &globalInfo) != UNZ_OK) {
+        if (uf) {
+            unzClose(uf);
+        }
         if (error) {
-            zip_error_t ze;
-            zip_error_init_with_code(&ze, zerr);
-            NSString *desc = [NSString stringWithFormat:@"Could not open ZIP archive: %s",
-                              zip_error_strerror(&ze)];
-            zip_error_fini(&ze);
+            NSString *desc = [NSString stringWithFormat:@"Could not open ZIP archive: %@", url.path];
             *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
                                          code:UDPK3CodecErrorCodeOpenFailed
                                      userInfo:@{NSLocalizedDescriptionKey: desc}];
@@ -109,23 +125,23 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
         return nil;
     }
 
-    zip_int64_t numEntries = zip_get_num_entries(za, 0);
     NSMutableArray *entries = [NSMutableArray array];
-    NSDate *defaultModifiedAt = [NSDate dateWithTimeIntervalSince1970:0];
 
-    for (zip_int64_t i = 0; i < numEntries; i++) {
-        zip_stat_t st;
-        if (zip_stat_index(za, (zip_uint64_t)i, 0, &st) != 0) {
+    int status = unzGoToFirstFile(uf);
+    for (uLong i = 0; i < globalInfo.number_entry && status == UNZ_OK; i++, status = unzGoToNextFile(uf)) {
+        unz_file_info info;
+        char nameBuffer[1024];
+        if (unzGetCurrentFileInfo(uf, &info, nameBuffer, sizeof(nameBuffer), NULL, 0, NULL, 0) != UNZ_OK) {
             continue;
         }
 
-        /* Skip entries whose stat does not include name or size. */
-        if (!(st.valid & ZIP_STAT_NAME) || !(st.valid & ZIP_STAT_SIZE)) {
-            continue;
+        /* Names are UTF-8 in practice (and by flag bit 11); anything that
+         * is not valid UTF-8 is read as Latin-1 rather than dropped. */
+        NSString *entryName = [NSString stringWithUTF8String:nameBuffer];
+        if (!entryName) {
+            entryName = [NSString stringWithCString:nameBuffer encoding:NSISOLatin1StringEncoding];
         }
-
-        NSString *entryName = [NSString stringWithUTF8String:st.name];
-        if (!entryName || entryName.length == 0) {
+        if (entryName.length == 0) {
             continue;
         }
 
@@ -137,28 +153,26 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
         /* Normalise backslashes (rare but possible). */
         entryName = [entryName stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
 
-        uint64_t uncompressedSize = (uint64_t)st.size;
+        unsigned long centralDirectoryPosition = 0;
+        unzGetCurrentFileInfoPosition(uf, &centralDirectoryPosition);
+
+        uint64_t uncompressedSize = (uint64_t)info.uncompressed_size;
 
         UDPK3ZIPEntrySource *source = [[UDPK3ZIPEntrySource alloc]
                                         initWithFileURL:url
-                                             entryIndex:(uint64_t)i
+                               centralDirectoryPosition:centralDirectoryPosition
                                        uncompressedSize:uncompressedSize];
-
-        NSDate *modifiedAt = defaultModifiedAt;
-        if (st.valid & ZIP_STAT_MTIME) {
-            modifiedAt = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)st.mtime];
-        }
 
         UDArchiveEntry *entry = [[UDArchiveEntry alloc]
                                   initWithPath:entryName
                                           size:uncompressedSize
                                    contentType:@"application/octet-stream"
-                                    modifiedAt:modifiedAt
+                                    modifiedAt:UDDateFromZIPDate(info.tmu_date)
                                         source:source];
         [entries addObject:entry];
     }
 
-    zip_close(za);
+    unzClose(uf);
 
     NSDictionary *metadata = @{
         @"formatIdentifier": self.formatIdentifier,
@@ -185,24 +199,10 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
 }
 
 - (BOOL)_writeEntries:(NSArray<UDArchiveEntry *> *)entries toURL:(NSURL *)url error:(NSError **)error {
-    int zerr = ZIP_ER_OK;
-    zip_t *za = zip_open(url.path.fileSystemRepresentation, ZIP_TRUNCATE | ZIP_CREATE, &zerr);
-    if (!za) {
-        if (error) {
-            zip_error_t ze;
-            zip_error_init_with_code(&ze, zerr);
-            NSString *desc = [NSString stringWithFormat:@"Could not create ZIP archive: %s",
-                              zip_error_strerror(&ze)];
-            zip_error_fini(&ze);
-            *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                         code:UDPK3CodecErrorCodeOpenFailed
-                                     userInfo:@{NSLocalizedDescriptionKey: desc}];
-        }
-        return NO;
-    }
-
-    /* Keep payload buffers alive until zip_close() has consumed all sources. */
-    NSMutableArray<NSData *> *payloadRetention = [NSMutableArray arrayWithCapacity:entries.count];
+    /* Every payload is read and the archive assembled in memory before url
+     * is touched, and the file is then replaced atomically — so saving over
+     * the archive the entries are still being read from is safe. */
+    UDZipWriter *writer = [[UDZipWriter alloc] init];
 
     for (UDArchiveEntry *entry in entries) {
         id<UDContentSource> source = entry.contentSource;
@@ -213,7 +213,6 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
                                          userInfo:@{NSLocalizedDescriptionKey:
                                                         [NSString stringWithFormat:@"Entry has no content source: %@", entry.path]}];
             }
-            zip_discard(za);
             return NO;
         }
 
@@ -223,56 +222,19 @@ static NSData *UDReadAllZIPContent(id<UDContentSource> source, NSError **error) 
             if (error) {
                 *error = readError;
             }
-            zip_discard(za);
             return NO;
         }
 
-        [payloadRetention addObject:payload];
-
-        zip_source_t *src = zip_source_buffer(za, payload.bytes, payload.length, 0);
-        if (!src) {
-            if (error) {
-                NSString *desc = [NSString stringWithFormat:@"Could not create ZIP source for %@: %s",
-                                  entry.path, zip_strerror(za)];
-                *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                             code:UDPK3CodecErrorCodeWriteFailed
-                                         userInfo:@{NSLocalizedDescriptionKey: desc}];
-            }
-            zip_discard(za);
+        if (![writer addEntryWithPath:entry.path
+                                 data:payload
+                               method:UDZipCompressionMethodAutomatic
+                     modificationDate:entry.modifiedAt
+                                error:error]) {
             return NO;
         }
-
-        zip_int64_t idx = zip_file_add(za,
-                                       entry.path.fileSystemRepresentation,
-                                       src,
-                                       ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
-        if (idx < 0) {
-            zip_source_free(src);
-            if (error) {
-                NSString *desc = [NSString stringWithFormat:@"Could not add ZIP entry %@: %s",
-                                  entry.path, zip_strerror(za)];
-                *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                             code:UDPK3CodecErrorCodeWriteFailed
-                                         userInfo:@{NSLocalizedDescriptionKey: desc}];
-            }
-            zip_discard(za);
-            return NO;
-        }
-
-        zip_set_file_compression(za, (zip_uint64_t)idx, ZIP_CM_DEFLATE, 0);
     }
 
-    if (zip_close(za) != 0) {
-        if (error) {
-            *error = [NSError errorWithDomain:UDPK3CodecErrorDomain
-                                         code:UDPK3CodecErrorCodeWriteFailed
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Failed to finalize ZIP archive."}];
-        }
-        zip_discard(za);
-        return NO;
-    }
-
-    return YES;
+    return [writer writeToURL:url error:error];
 }
 
 @end

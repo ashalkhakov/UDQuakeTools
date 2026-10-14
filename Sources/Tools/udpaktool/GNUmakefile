@@ -13,6 +13,6 @@ udpaktool_INCLUDE_DIRS = \
     -I../../UDFormats
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip
+ADDITIONAL_LDFLAGS += -lUDCore
 
 include $(GNUSTEP_MAKEFILES)/tool.make

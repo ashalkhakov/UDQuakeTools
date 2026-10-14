@@ -46,6 +46,6 @@ GuiEd_RESOURCE_FILES = \
     GuiEd-Info.plist
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -ldispatch -lBlocksRuntime
+ADDITIONAL_LDFLAGS += -lUDCore -ldispatch -lBlocksRuntime
 
 include $(GNUSTEP_MAKEFILES)/application.make

@@ -7,11 +7,12 @@
 #   make -f Makefile.apple installcheck DESTDIR=<dir>  its signature holds, and
 #                                     it starts and stays up, in a fresh home
 #
-# UDLauncher alone for now: UDCore, Decl Browser and the tests link libzip,
-# which has no universal build to ship on the Mac yet (on GNUstep it is
-# Ubuntu's libzip-dev, and all of them build and are tested there:
-# GNUmakefile). Sparkle's XCFramework is in .deps/, by the version
-# .github/pins.env names (gnustep-release-actions' scripts/deps.sh apple).
+# UDLauncher alone is shipped for now. UDCore and Decl Browser need nothing
+# beyond the system's zlib (archives are read by the minizip that came with
+# the Doom 3 file system and written by UDZipWriter), so they build and are
+# tested here as on GNUstep. Sparkle's XCFramework is in .deps/, by the
+# version .github/pins.env names (gnustep-release-actions' scripts/deps.sh
+# apple).
 
 BUILD = build
 DERIVED = $(BUILD)/DerivedData

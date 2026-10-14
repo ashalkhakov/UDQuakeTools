@@ -3,8 +3,9 @@
 UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archive formats.
 It ships as a single AppImage on Linux containing the launcher and Decl Browser,
 and for macOS as UDLauncher, which updates itself (UDLauncher ▸ Check for
-Updates…). Decl Browser joins it on the Mac once libzip, which its archive
-codecs use, has a universal build to ship (on Linux it is Ubuntu's).
+Updates…). Decl Browser builds and is tested on the Mac as well; archives
+need nothing beyond zlib on either system (the minizip reader that came with
+the Doom 3 file system reads them, UDZipWriter writes them).
 
 ## Applications
 

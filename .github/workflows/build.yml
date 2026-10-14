@@ -35,7 +35,7 @@ jobs:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/linux.yml@v1
     with:
       tag: ${{ inputs.tag }}
-      extra-packages: libsqlite3-dev libzip-dev
+      extra-packages: libsqlite3-dev zlib1g-dev
 
   macos:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1

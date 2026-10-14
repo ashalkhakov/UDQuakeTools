@@ -17,7 +17,9 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDGameDetectionTests.m \
     idFileSystemTests.m \
     idDeclManagerTests.m \
-    UDDeclIncrementalStoreTests.m
+    UDDeclIncrementalStoreTests.m \
+    UDZipWriterTests.m \
+    UDZipFixture.m
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
@@ -33,7 +35,7 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # UDCore from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += -L../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip -lXCTest -lBlocksRuntime
+ADDITIONAL_LDFLAGS += -lUDCore -lXCTest -lBlocksRuntime
 
 XCTEST ?= xctest
 

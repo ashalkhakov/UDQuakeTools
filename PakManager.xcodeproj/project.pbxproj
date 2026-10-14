@@ -158,6 +158,10 @@
 		2AFD3CDF8A5F188D64CB99BE /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
 		32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
 		91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 14BDF382F6383E15016B4EAA /* UDZipWriter.m */; };
+		F11B76E69140841478600956 /* UDZipWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */; };
+		53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -433,6 +437,11 @@
 		AA34039EE147137D2F2DAC9B /* UDUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UDUpdater.h"; path = "Sources/UDUpdater/UDUpdater.h"; sourceTree = SOURCE_ROOT; };
 		B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UDUpdater-Apple.m"; path = "Sources/UDUpdater/UDUpdater-Apple.m"; sourceTree = SOURCE_ROOT; };
 		F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sparkle.xcframework; path = .deps/Sparkle.xcframework; sourceTree = SOURCE_ROOT; };
+		F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipWriter.h; sourceTree = "<group>"; };
+		14BDF382F6383E15016B4EAA /* UDZipWriter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriter.m; sourceTree = "<group>"; };
+		C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriterTests.m; sourceTree = "<group>"; };
+		DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipFixture.h; sourceTree = "<group>"; };
+		EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipFixture.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -618,6 +627,8 @@
 				AA00020800000000000000AA /* UDContentSource.h */,
 				AA00020700000000000000AA /* UDDirectoryNode.h */,
 				AA00010800000000000000AA /* UDDirectoryNode.m */,
+				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
+				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
 			);
 			name = UDCore;
 			path = Sources/UDCore;
@@ -679,6 +690,9 @@
 				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
 				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
 				CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */,
+				C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */,
+				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
+				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -876,6 +890,7 @@
 				CE07E8833000D2F6007ED480 /* idToken.h in Headers */,
 				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
 				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
+				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1170,6 +1185,8 @@
 				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
 				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
 				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
+				663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */,
+				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1210,6 +1227,7 @@
 				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
 				CE07E8853000D33B007ED480 /* idToken.m in Sources */,
 				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
+				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1442,8 +1460,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
@@ -1452,13 +1468,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
 				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1497,8 +1508,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
@@ -1507,12 +1516,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
 				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1536,20 +1540,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;
 			};
 			name = Debug;
@@ -1568,20 +1565,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_NAME = udpaktool;
 			};
 			name = Release;
@@ -1609,20 +1599,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
-					"-lzip",
 					"-framework",
 					XCTest,
 				);
@@ -1652,20 +1635,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
-					"-lzip",
 					"-framework",
 					XCTest,
 				);
@@ -1701,8 +1677,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1710,14 +1684,10 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = UDCore;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1748,8 +1718,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1757,13 +1725,9 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = UDCore;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1889,8 +1853,6 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
@@ -1899,13 +1861,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
 				PRODUCT_NAME = DeclBrowser;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1934,8 +1891,6 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
@@ -1944,12 +1899,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
 				PRODUCT_NAME = DeclBrowser;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1990,8 +1940,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/GuiEd/GuiEd-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GuiEd;
@@ -2000,13 +1948,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
 				PRODUCT_NAME = GuiEd;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2045,8 +1988,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/GuiEd/GuiEd-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GuiEd;
@@ -2055,12 +1996,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
 				PRODUCT_NAME = GuiEd;
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -54,23 +54,23 @@ These shape everything after them; each has a recommendation.
 
 ## 0. Housekeeping (from the October audit)
 
-- [ ] SPDX headers say `GPL-2.0-or-later` in 37 files, but `LICENSE` is GPLv3
+- [x] SPDX headers say `GPL-2.0-or-later` in 37 files, but `LICENSE` is GPLv3
       and the ported Doom 3 code is GPLv3 with id's additional terms: switch
       them to `GPL-3.0-or-later` and say so in the README.
-- [ ] Delete dead code: `UDDeclManager.{h,m}` and `UDDeclPersistence.{h,m}`
+- [x] Delete dead code: `UDDeclManager.{h,m}` and `UDDeclPersistence.{h,m}`
       (import the deleted VFS), `ObjectiveC2/blocks_runtime.h`, `idMath.h`,
       `Sources/GuiEd/GNUmakefile`, the empty GuiEd and QuakeEditor Xcode
-      targets, `.forgejo/`.
-- [ ] UDLauncher still offers "GUI Editor"; Decl Browser's menu still says
+      targets. (`.forgejo/` was never tracked.)
+- [x] UDLauncher still offers "GUI Editor"; Decl Browser's menu still says
       "QuakeEditor" (bundle id `org.underivable.QuakeEditor`).
-- [ ] README: drop `ARCHITECTURE.md` / `CLASS_STUBS.md` links (missing), the
+- [x] README: drop `ARCHITECTURE.md` / `CLASS_STUBS.md` links (missing), the
       GUI Editor entry, and the list of shared schemes that are not shared.
-- [ ] Bring Pak Manager and udpaktool into the root build and CI (they build
+- [x] Bring Pak Manager and udpaktool into the root build and CI (they build
       against an installed UDCore today), and ship Pak Manager in the
       AppImage and on the Mac.
-- [ ] Ship Decl Browser on the Mac next to UDLauncher (libzip no longer
+- [x] Ship Decl Browser on the Mac next to UDLauncher (libzip no longer
       blocks it): `Makefile.apple` `all`/`install`, the macos.yml `apps`.
-- [ ] `addScriptsToTree` drops the `.script` extension that `addGUIsToTree`
+- [x] `addScriptsToTree` drops the `.script` extension that `addGUIsToTree`
       keeps; check which one opening the item expects.
 - [ ] dhewm3 fork, uncommitted debugger work: `Common.cpp` tests
       `IMGUI_DISABLED`, the macro is `IMGUI_DISABLE`.

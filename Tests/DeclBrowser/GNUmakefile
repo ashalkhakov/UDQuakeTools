@@ -26,6 +26,7 @@ DeclBrowserTests_OBJC_FILES = \
     UDDeclBrowserTestCase.m \
     UDPDAEditorTests.m \
     UDDoom3WorkspaceTests.m \
+    UDPakInstallTests.m \
     $(APP_DIR)/UDAppDocumentController.m \
     $(APP_DIR)/UDBaseEditorViewController.m \
     $(APP_DIR)/UDDeclBrowser.m \

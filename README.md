@@ -103,7 +103,11 @@ Two suites, on both systems:
   workspace opens, the outline is expanded and a row selected, fields are
   typed into, the PDA editor's email sheet is filled in and OKed, File ▸
   Save is sent; then the decl file written and a freshly opened workspace
-  are checked. The PDA cases run on a small loose fixture. The Doom 3 cases
+  are checked. The PDA cases run on a small loose fixture; the pak cases on
+  a made-up install the tests write themselves (two pk4s holding PDAs,
+  emails, materials, a table, a skin, a GUI and a script), covering the same
+  ground as the Doom 3 cases on every machine, plus a later pak overriding an
+  earlier one. The Doom 3 cases
   browse a retail install and edit `admin_moses` out of `pak000.pk4`; they
   read `$UD_DOOM3_PATH` (default `/Volumes/ExtraSSD/games/DOOM 3`), check
   that its `base/` comes out unchanged (saves go to a scratch `fs_savepath`),

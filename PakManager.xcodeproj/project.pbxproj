@@ -201,6 +201,7 @@
 		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -504,6 +505,7 @@
 		368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorTests.m; sourceTree = "<group>"; };
 		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
 		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -928,6 +930,7 @@
 				20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */,
 				368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */,
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
+				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 			);
 			path = DeclBrowser;
 			sourceTree = "<group>";
@@ -1439,6 +1442,7 @@
 				D5715A18F74F4A37F5CEB1DD /* UDImageFileDocument.m in Sources */,
 				ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */,
 				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
+				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -490,8 +490,8 @@ static NSInteger FS_ComparePk4LoadOrder(NSString *aName, NSString *bName, void *
     return [aName caseInsensitiveCompare:bName];
 }
 
-static void FS_SortPk4FilesForLoadOrder(NSArray<NSString *> *pakfiles) {
-    [pakfiles sortedArrayUsingFunction:FS_ComparePk4LoadOrder context:NULL];
+static void FS_SortPk4FilesForLoadOrder(NSMutableArray<NSString *> *pakfiles) {
+    [pakfiles sortUsingFunction:FS_ComparePk4LoadOrder context:NULL];
 }
 
 #define MAX_ZIPPED_FILE_NAME    2048

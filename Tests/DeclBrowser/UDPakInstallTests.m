@@ -331,6 +331,31 @@ static NSString *const UDMainScript =
     XCTAssertEqualObjects([self textFieldBoundTo:@"fullName" inView:other.view].stringValue, @"Luis M. Ortega");
 }
 
+- (void)testScriptsAndGUIsInsideThePaksOpenAndSave {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+
+    UDBaseEditorViewController *gui = [self openOutlinePath:@"guis/udfix_terminal.gui" inController:controller];
+    XCTAssertTrue([gui isKindOfClass:[UDTextEditorViewController class]], @"a GUI opens in the text editor, not %@", gui);
+    XCTAssertTrue([[[self firstSubviewOfClass:[NSTextView class] inView:gui.view] string] containsString:@"windowDef Desktop"],
+                  @"the GUI's text should be shown");
+
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    XCTAssertTrue([script isKindOfClass:[UDTextEditorViewController class]], @"a script opens in the text editor, not %@", script);
+    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertTrue([textView.string containsString:@"void udfix_main()"], @"the script's text should be shown:\n%@", textView.string);
+
+    [self typeText:@"void udfix_main() {\n\tsys.println( \"edited\" );\n}\n" intoTextView:textView];
+    [self finishEvent];
+    XCTAssertTrue(script.editorDocument.isDocumentEdited, @"typing should dirty the tab");
+    [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.1];
+
+    NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_main.script"]
+                                                encoding:NSUTF8StringEncoding error:NULL];
+    XCTAssertTrue([saved containsString:@"\"edited\""], @"saving should write the script under fs_savepath: %@", saved);
+}
+
 #pragma mark - Editing
 
 - (void)testEditingAPDAInsideAPakSavesAnOverrideOutsideThePaks {

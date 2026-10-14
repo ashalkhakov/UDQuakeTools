@@ -140,7 +140,8 @@
         scriptName = [scriptName stringByDeletingPathExtension];
         NSString *fileName = [scriptName stringByAppendingString:@".script"];
         
-        [tree addFileToTree:scriptName];
+        // The item's path is what opening it reads, so it keeps the extension.
+        [tree addFileToTree:fileName];
     }
     
     [self.fileSystem freeFileList:files];

@@ -1,6 +1,7 @@
 #
-# UDQuakeTools on GNUstep: UDCore, the launcher, Decl Browser, Pak Manager
-# and udpaktool, and their tests.
+# UDQuakeTools on GNUstep: UDCore, the launcher, Decl Browser (with the
+# scripts' language server, udscript-lsp), Pak Manager and udpaktool, and
+# their tests.
 #
 #   make            UDCore, the apps, udpaktool and the test bundles
 #   make check      the tests (under Xvfb when there is no display): UDCore's,
@@ -17,8 +18,8 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = UDQuakeTools
-SUBPROJECTS = Sources/UDCore tree-sitter-idscript Sources/UDLauncher Sources/DeclBrowser Sources/PakManager \
-              Sources/Tools/udpaktool Tests Tests/DeclBrowser
+SUBPROJECTS = Sources/UDCore tree-sitter-idscript Sources/Tools/udscript-lsp Sources/UDLauncher Sources/DeclBrowser \
+              Sources/PakManager Sources/Tools/udpaktool Tests Tests/DeclBrowser
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 

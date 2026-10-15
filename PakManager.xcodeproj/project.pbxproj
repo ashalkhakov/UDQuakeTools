@@ -5,6 +5,145 @@
 	};
 	objectVersion = 56;
 	objects = {
+		EC1E00000000000000000001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EC1E00000000000000000002 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1E00000000000000000001 /* main.m */; };
+		EC1E00000000000000000003 /* udscript-lsp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "udscript-lsp"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC1E00000000000000000004 /* udscript-lsp */ = {
+			isa = PBXGroup;
+			children = (
+				EC1E00000000000000000001 /* main.m */,
+			);
+			path = "udscript-lsp";
+			sourceTree = "<group>";
+		};
+		EC1E00000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC1E00000000000000000002 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1E00000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC1E00000000000000000007 /* Foundation.framework in Frameworks */,
+				EC1E00000000000000000008 /* UDCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1E00000000000000000007 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		EC1E00000000000000000008 /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
+		EC1E00000000000000000009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CC04000000000000000000AA;
+			remoteInfo = UDCore;
+		};
+		EC1E0000000000000000000A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CC04000000000000000000AA /* UDCore */;
+			targetProxy = EC1E00000000000000000009 /* PBXContainerItemProxy */;
+		};
+		EC1E0000000000000000000B /* udscript-lsp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC1E0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-lsp" */;
+			buildPhases = (
+				EC1E00000000000000000005 /* Sources */,
+				EC1E00000000000000000006 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC1E0000000000000000000A /* PBXTargetDependency */,
+			);
+			name = "udscript-lsp";
+			productName = "udscript-lsp";
+			productReference = EC1E00000000000000000003 /* udscript-lsp */;
+			productType = "com.apple.product-type.tool";
+		};
+		EC1E0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-lsp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC1E0000000000000000000D /* Debug */,
+				EC1E0000000000000000000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC1E0000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDCore";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-lsp";
+			};
+			name = Debug;
+		};
+		EC1E0000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDCore";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-lsp";
+			};
+			name = Release;
+		};
+		EC1E0000000000000000000F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC1E0000000000000000000B;
+			remoteInfo = "udscript-lsp";
+		};
+		EC1E00000000000000000010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC1E0000000000000000000B /* udscript-lsp */;
+			targetProxy = EC1E0000000000000000000F /* PBXContainerItemProxy */;
+		};
+		EC1E00000000000000000011 /* udscript-lsp in Embed udscript-lsp */ = {isa = PBXBuildFile; fileRef = EC1E00000000000000000003 /* udscript-lsp */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		EC1E00000000000000000012 /* Embed udscript-lsp */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				EC1E00000000000000000011 /* udscript-lsp in Embed udscript-lsp */,
+			);
+			name = "Embed udscript-lsp";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 
 /* Begin PBXBuildFile section */
 		AA01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010000000000000000AA /* main.m */; };
@@ -658,6 +797,7 @@
 				AA00050000000000000000AA /* PakManager.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
+				EC1E00000000000000000003 /* udscript-lsp */,
 				FF00050000000000000000AA /* UDLauncher.app */,
 				CC00050000000000000000AA /* UDCore.framework */,
 				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
@@ -786,6 +926,7 @@
 			isa = PBXGroup;
 			children = (
 				AA00000800000000000000AA /* udpaktool */,
+				EC1E00000000000000000004 /* udscript-lsp */,
 			);
 			name = Tools;
 			path = Sources/Tools;
@@ -1126,11 +1267,13 @@
 				DD03000200000000000000AA /* Resources */,
 				EC0D00000000000000000010 /* Copy UDCodeKit's grammars into PlugIns */,
 				DD09000000000000000000AA /* Embed Frameworks */,
+				EC1E00000000000000000012 /* Embed udscript-lsp */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				EC1D00000000000000000006 /* PBXTargetDependency */,
+				EC1E00000000000000000010 /* PBXTargetDependency */,
 				CC07020100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Decl Browser";
@@ -1223,6 +1366,7 @@
 				AA04000000000000000000AA /* Pak Manager */,
 				DD04000000000000000000AA /* Decl Browser */,
 				AA04000100000000000000AA /* udpaktool */,
+				EC1E0000000000000000000B /* udscript-lsp */,
 				FF04000000000000000000AA /* UDLauncher */,
 				9D5D57CB7DB90240B958F42D /* DeclBrowserTests */,
 			);

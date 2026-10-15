@@ -49,7 +49,11 @@ static NSDictionary *UDErrorResponse(id identifier, NSInteger code, NSString *me
         if (action != nil) {
             SEL selector = NSSelectorFromString(action);
             void (*notify)(id, SEL, NSDictionary *) = (void (*)(id, SEL, NSDictionary *))[_target methodForSelector:selector];
-            notify(_target, selector, params);
+            @try {
+                notify(_target, selector, params);
+            } @catch (NSException *exception) {
+                NSLog(@"%@: %@", method, exception.reason);
+            }
         }
         return nil;
     }
@@ -60,7 +64,14 @@ static NSDictionary *UDErrorResponse(id identifier, NSInteger code, NSString *me
     }
     SEL selector = NSSelectorFromString(action);
     id (*request)(id, SEL, NSDictionary *) = (id (*)(id, SEL, NSDictionary *))[_target methodForSelector:selector];
-    id result = request(_target, selector, params);
+    // An action that raises answers with an internal error: the server
+    // goes on to the next message.
+    id result = nil;
+    @try {
+        result = request(_target, selector, params);
+    } @catch (NSException *exception) {
+        return UDErrorResponse(identifier, UDJSONRPCInternalError, [NSString stringWithFormat:@"%@: %@", method, exception.reason]);
+    }
     if ([result isKindOfClass:[NSError class]]) {
         NSError *error = result;
         return UDErrorResponse(identifier, error.code, error.localizedDescription);

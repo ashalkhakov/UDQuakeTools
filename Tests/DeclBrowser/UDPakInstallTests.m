@@ -449,10 +449,16 @@ static NSString *const UDEventsScript =
     id<UDDiagnosticTextViewDelegate> helpers = (id<UDDiagnosticTextViewDelegate>)textView.delegate;
     XCTAssertEqual(helpers, (id)script, @"the script editor helps with the typing");
 
+    // The helpers ask the workspace's script language server: once it is up.
+    UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
+    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:10.0],
+                  @"the script's language server should start");
+
     // After "sys.", every event; narrowed by what follows.
     [textView setSelectedRange:NSMakeRange(textView.string.length, 0)];
     [textView insertText:@"sys"];
     [textView insertText:@"."];
+    XCTAssertTrue([self spinUntil:^BOOL{ return [script valueForKey:@"completionList"] != nil; } timeout:5.0]);
     NSRange none = NSMakeRange(textView.selectedRange.location, 0);
     NSArray *all = [helpers textView:textView completions:@[] forPartialWordRange:none indexOfSelectedItem:NULL];
     XCTAssertEqualObjects(all, (@[@"println", @"wait"]));
@@ -463,9 +469,10 @@ static NSString *const UDEventsScript =
     // An event's parameters from its '(' to its ')'.
     [textView insertText:@"ait"];
     [textView insertText:@"("];
+    // The server answers, then AppKit shows the popover on the run loop, animated.
+    XCTAssertTrue([self spinUntil:^BOOL{ return [[script valueForKey:@"toolTip"] isShown]; } timeout:5.0],
+                  @"the parameters show at the '('");
     UDHoverViewController *toolTip = [script valueForKey:@"toolTip"];
-    // AppKit shows and closes a popover on the run loop, animated.
-    XCTAssertTrue([self spinUntil:^BOOL{ return toolTip.isShown; } timeout:2.0], @"the parameters show at the '('");
     XCTAssertEqualObjects(toolTip.textView.string, @"void wait( float seconds )");
     [textView insertText:@"1"];
     XCTAssertTrue(toolTip.isShown, @"and stay while the arguments are typed");
@@ -475,7 +482,8 @@ static NSString *const UDEventsScript =
     // Option-click: the event's help.
     NSUInteger println = [textView.string rangeOfString:@"println"].location;
     [helpers textView:textView requestTooltipAtIndex:println + 2 point:NSZeroPoint];
-    XCTAssertTrue([toolTip.textView.string hasPrefix:@"// Prints a line to the console."], @"%@", toolTip.textView.string);
+    XCTAssertTrue([self spinUntil:^BOOL{ return [toolTip.textView.string hasPrefix:@"// Prints a line to the console."]; } timeout:5.0],
+                  @"%@", toolTip.textView.string);
     [toolTip close];
 }
 

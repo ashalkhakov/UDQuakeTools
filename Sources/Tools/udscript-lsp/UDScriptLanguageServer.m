@@ -28,6 +28,7 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
     [self.connection setRequestAction:@selector(definition:) forMethod:@"textDocument/definition"];
     [self.connection setRequestAction:@selector(completion:) forMethod:@"textDocument/completion"];
     [self.connection setRequestAction:@selector(hover:) forMethod:@"textDocument/hover"];
+    [self.connection setRequestAction:@selector(signatureHelp:) forMethod:@"textDocument/signatureHelp"];
     [self.connection setNotificationAction:@selector(didChangeWatchedFiles:) forMethod:@"workspace/didChangeWatchedFiles"];
     return self;
 }
@@ -94,6 +95,7 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
         @"definitionProvider": @YES,
         @"hoverProvider": @YES,
         @"completionProvider": @{ @"triggerCharacters": @[ @"." ] },
+        @"signatureHelpProvider": @{ @"triggerCharacters": @[ @"(" ], @"retriggerCharacters": @[ @"," ] },
     };
 }
 
@@ -223,13 +225,41 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
     NSString *value = [_events toolTipForName:name];
     if (value == nil) {
         UDScriptDefinition *definition = [self definitionsOfName:name fromPath:[[self class] pathForURI:uri]].firstObject;
+        if (definition == nil) return [NSNull null];
         NSArray<NSString *> *lines = [[self textOfPath:definition.path] componentsSeparatedByString:@"\n"];
-        if (definition == nil || definition.line >= (NSInteger)lines.count) return [NSNull null];
+        if (definition.line >= (NSInteger)lines.count) return [NSNull null];
         NSString *declaration = [lines[(NSUInteger)definition.line]
             stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         value = [NSString stringWithFormat:@"%@\n\n%@:%ld", declaration, definition.path, (long)definition.line + 1];
     }
     return @{ @"contents": @{ @"kind": @"plaintext", @"value": value } };
+}
+
+/// An event's parameters, inside its call's parentheses (GetFunctionParms):
+/// the name before the '(' the cursor is in, when it is an event's.
+- (id)signatureHelp:(NSDictionary *)params {
+    NSString *uri = nil;
+    NSUInteger index = 0;
+    NSString *text = [self textOfPositionParams:params uri:&uri index:&index];
+    if (text == nil) return [NSNull null];
+
+    NSUInteger open = index;
+    NSInteger depth = 0;
+    while (open > 0) {
+        unichar c = [text characterAtIndex:--open];
+        if (c == ')') depth++;
+        else if (c == '(' && depth-- == 0) break;
+        else if (c == ';' || c == '{' || c == '}') return [NSNull null];
+        if (open == 0) return [NSNull null];
+    }
+    if (index == 0 || [text characterAtIndex:open] != '(') return [NSNull null];
+    NSUInteger start = open;
+    while (start > 0 && [text characterAtIndex:start - 1] == ' ') start--;
+    NSUInteger end = start;
+    while (start > 0 && UDIsNameCharacter([text characterAtIndex:start - 1])) start--;
+    NSString *parms = [_events functionParmsForName:[text substringWithRange:NSMakeRange(start, end - start)]];
+    if (parms == nil) return [NSNull null];
+    return @{ @"signatures": @[ @{ @"label": parms } ], @"activeSignature": @0 };
 }
 
 @end

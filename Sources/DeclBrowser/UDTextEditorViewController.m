@@ -3,7 +3,6 @@
 #import "UDDeclItem.h"
 #import "UDTextFileDocument.h"
 #import "UDDeclDocument.h"
-#import "UDScriptEvents.h"
 #import "UDWorkspace.h"
 #import "UDScriptServer.h"
 #import "UDWorkspaceWindowController.h"
@@ -14,11 +13,14 @@
 @property (nonatomic, strong) UDEditorSession *session;
 @property (nonatomic, strong) UDCodeEditorViewController *editor;
 
-// A script's helpers, as Doom 3's script editor had them: the events of
-// script/doom_events.script after a '.', an event's parameters from its '('
-// to its ')', and an event's help on Option-click.
-@property (nonatomic, strong, nullable) UDScriptEvents *scriptEvents;
+// A script's helpers, as Doom 3's script editor had them, from the
+// workspace's script language server: the events after a '.', an event's
+// parameters from its '(' to its ')', and a name's help on Option-click.
+@property (nonatomic) BOOL isScript;
+@property (nonatomic, strong, nullable) LSPClient *scriptServer;
+@property (nonatomic, copy, nullable) NSURL *scriptURL;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *completionList;
+@property (nonatomic) NSUInteger toolTipIndex;          // where the requested tool tip goes
 @property (nonatomic, strong, nullable) UDHoverViewController *toolTip;
 @property (nonatomic) NSInteger funcParmToolTipStart;   // after the '(', or -1
 @property (nonatomic) unichar typedCharacter;           // what the edit typed, or 0
@@ -97,10 +99,11 @@
 
     // A script's tab opens it on the workspace's language server, by its
     // path in the file system, once its text is in.
-    if (self.scriptEvents != nil && self.item.kind == UDWorkspaceItemKindFile) {
-        LSPClient *client = [UDScriptServer clientForWorkspace:self.workspace];
-        if (client != nil) {
-            [self.session startLanguageServerWithClient:client documentURL:[UDScriptServer URLForPath:self.item.path]];
+    if (self.isScript && self.item.kind == UDWorkspaceItemKindFile) {
+        self.scriptServer = [UDScriptServer clientForWorkspace:self.workspace];
+        self.scriptURL = [UDScriptServer URLForPath:self.item.path];
+        if (self.scriptServer != nil) {
+            [self.session startLanguageServerWithClient:self.scriptServer documentURL:self.scriptURL];
         }
     }
 }
@@ -181,13 +184,13 @@
     [self.session activateWithTheme:[[TreeSitterTheme alloc] initWithMode:dark]];
 
     if ([text.languageMode.identifier isEqualToString:@"idscript"]) {
-        self.scriptEvents = [UDScriptEvents eventsFromFileSystem:self.workspace.fileSystem];
+        self.isScript = YES;
         self.funcParmToolTipStart = -1;
         self.editor.textView.delegate = self;
     }
 }
 
-#pragma mark - Script helpers (SyntaxRichEditCtrl's OnChar and its callbacks)
+#pragma mark - Script helpers (SyntaxRichEditCtrl's OnChar, asking the server)
 
 static BOOL UDIsNameCharacter(unichar c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
@@ -198,6 +201,12 @@ static BOOL UDIsNameCharacter(unichar c) {
     NSUInteger start = index;
     while (start > 0 && UDIsNameCharacter([text characterAtIndex:start - 1])) start--;
     return [text substringWithRange:NSMakeRange(start, index - start)];
+}
+
+/// The server has the text as it is now: the edits LSPClient keeps until
+/// the run loop idles go before a request about them.
+- (void)sendPendingEdits {
+    [self.scriptServer documentDidChange:self.scriptURL];
 }
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)range replacementString:(nullable NSString *)string {
@@ -221,20 +230,41 @@ static BOOL UDIsNameCharacter(unichar c) {
     }
 
     if (c == '.' && self.funcParmToolTipStart < 0) {
-        NSString *name = [self nameBeforeIndex:self.typedIndex ofText:textView.string];
-        if (name.length > 0) {
-            self.completionList = [self.scriptEvents membersOfObject:name];
-            if (self.completionList.count > 0) {
-                [(UDDiagnosticTextView *)textView showCompleteList:nil];
-            }
+        if ([self nameBeforeIndex:self.typedIndex ofText:textView.string].length > 0) {
+            [self requestCompletionAtIndex:self.typedIndex + 1];
         }
     } else if (c == '(') {
-        NSString *name = [self nameBeforeIndex:self.typedIndex ofText:textView.string];
-        NSString *parms = name.length > 0 ? [self.scriptEvents functionParmsForName:name] : nil;
-        if (parms != nil) {
-            [self showToolTip:parms atIndex:self.typedIndex inTextView:textView];
-            self.funcParmToolTipStart = (NSInteger)self.typedIndex + 1;
-        }
+        [self sendPendingEdits];
+        UDPosition p = [self.session.textStorage.textModel getPositionAt:(NSInteger)self.typedIndex + 1];
+        self.toolTipIndex = self.typedIndex;
+        [self.scriptServer sendRequest:@"textDocument/signatureHelp"
+                                params:@{ @"textDocument": @{ @"uri": self.scriptURL.absoluteString },
+                                          @"position": @{ @"line": @(p.line - 1), @"character": @(p.column - 1) } }
+                                target:self action:@selector(_signatureHelpDidArrive:)];
+    }
+}
+
+- (void)_signatureHelpDidArrive:(LSPResponse *)response {
+    NSDictionary *help = [response.result isKindOfClass:[NSDictionary class]] ? response.result : nil;
+    NSString *parms = [[help[@"signatures"] firstObject] objectForKey:@"label"];
+    if (![parms isKindOfClass:[NSString class]]) return;
+    [self showToolTip:parms atIndex:self.toolTipIndex inTextView:self.editor.textView];
+    self.funcParmToolTipStart = (NSInteger)self.toolTipIndex + 1;
+}
+
+- (void)requestCompletionAtIndex:(NSUInteger)index {
+    [self sendPendingEdits];
+    [self.session.lspCoordinator completionAtIndex:index target:self action:@selector(_completionDidArrive:)];
+}
+
+- (void)_completionDidArrive:(LSPResponse *)response {
+    NSMutableArray<NSString *> *labels = [NSMutableArray array];
+    for (LSPCompletionItem *item in response.result) {
+        [labels addObject:item.label];
+    }
+    self.completionList = labels;
+    if (labels.count > 0) {
+        [(UDDiagnosticTextView *)self.editor.textView showCompleteList:nil];
     }
 }
 
@@ -253,32 +283,33 @@ static BOOL UDIsNameCharacter(unichar c) {
     return matches;
 }
 
-// Escape: the tool tip goes; otherwise the events again, after a '.'.
+// Escape: the tool tip goes; otherwise what the server offers here (the
+// events, after a '.').
 - (void)textViewRequestCompletion:(UDDiagnosticTextView *)textView {
     if (self.toolTip.isShown) {
         [self hideToolTip];
         return;
     }
-    NSUInteger at = textView.selectedRange.location;
-    NSString *partial = [self nameBeforeIndex:at ofText:textView.string];
-    NSUInteger dot = at - partial.length;
-    if (dot > 0 && [textView.string characterAtIndex:dot - 1] == '.') {
-        self.completionList = [self.scriptEvents membersOfObject:[self nameBeforeIndex:dot - 1 ofText:textView.string]];
-    } else {
-        self.completionList = nil;
-    }
-    [textView showCompleteList:nil];
+    [self requestCompletionAtIndex:textView.selectedRange.location];
 }
 
-// Option-click: the event's help and parameters (OnToolTipNotify).
+// Option-click: the name's help (OnToolTipNotify): an event's, or where it is declared.
 - (void)textView:(UDDiagnosticTextView *)textView requestTooltipAtIndex:(NSUInteger)characterIndex point:(NSPoint)point {
     NSString *text = textView.string;
     NSUInteger end = characterIndex;
     while (end < text.length && UDIsNameCharacter([text characterAtIndex:end])) end++;
     NSString *name = [self nameBeforeIndex:end ofText:text];
-    NSString *tip = name.length > 0 ? [self.scriptEvents toolTipForName:name] : nil;
-    if (tip != nil) {
-        [self showToolTip:tip atIndex:end - name.length inTextView:textView];
+    if (name.length == 0) return;
+    self.toolTipIndex = end - name.length;
+    [self sendPendingEdits];
+    [self.session.lspCoordinator hoverAtIndex:characterIndex target:self action:@selector(_hoverDidArrive:)];
+}
+
+- (void)_hoverDidArrive:(LSPResponse *)response {
+    id contents = [response.result isKindOfClass:[NSDictionary class]] ? response.result[@"contents"] : nil;
+    NSString *tip = [contents isKindOfClass:[NSDictionary class]] ? contents[@"value"] : contents;
+    if ([tip isKindOfClass:[NSString class]] && tip.length > 0) {
+        [self showToolTip:tip atIndex:self.toolTipIndex inTextView:self.editor.textView];
     }
 }
 

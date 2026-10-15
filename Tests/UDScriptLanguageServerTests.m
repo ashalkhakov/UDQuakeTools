@@ -135,8 +135,24 @@ static NSString *const UDLanternText =
     XCTAssertTrue([hover[@"contents"][@"value"] containsString:@"Waits a while."], @"%@", hover);
     XCTAssertTrue([hover[@"contents"][@"value"] containsString:@"void wait( float time )"], @"%@", hover);
 
+    // "void": nothing to say.
+    XCTAssertEqualObjects([self request:@"textDocument/hover" params:[self at:@"script/lantern.script" line:8 character:1]],
+                          [NSNull null]);
+
     hover = [self request:@"textDocument/hover" params:[self at:@"script/lantern.script" line:9 character:16]];
     XCTAssertEqualObjects(hover[@"contents"][@"value"], @"void lantern::swing( float angle ) {\n\nscript/lantern.script:5");
+}
+
+- (void)testAnEventsParametersShowInsideItsCall {
+    [self startWithOpenDocuments];
+    [self open:@"script/call.script" text:@"void f() { wait( 1 + ( 2 ), \n"];
+
+    NSDictionary *help = [self request:@"textDocument/signatureHelp" params:[self at:@"script/call.script" line:0 character:28]];
+    XCTAssertEqualObjects(help[@"signatures"][0][@"label"], @"void wait( float time )");
+    XCTAssertEqualObjects([self request:@"textDocument/signatureHelp" params:[self at:@"script/call.script" line:0 character:8]],
+                          [NSNull null], @"not inside a call");
+    XCTAssertEqualObjects([self request:@"textDocument/signatureHelp" params:[self at:@"script/call.script" line:0 character:7]],
+                          [NSNull null], @"f is no event");
 }
 
 - (void)testScriptsComeFromTheFileSystemAndItsChanges {

@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, UDJSONRPCErrorCode) {
 
 /// Requests named @a method go to @a action, -(id)request:(NSDictionary *)params:
 /// its result (NSNull for null), or an NSError, whose code and description
-/// the error response carries.
+/// the error response carries. An action that raises is answered with
+/// UDJSONRPCInternalError (a notification's, logged).
 - (void)setRequestAction:(SEL)action forMethod:(NSString *)method;
 
 /// Notifications named @a method go to @a action, -(void)notification:(NSDictionary *)params.

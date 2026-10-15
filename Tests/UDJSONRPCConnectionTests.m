@@ -20,6 +20,12 @@
     [self.connection setRequestAction:@selector(sum:) forMethod:@"sum"];
     [self.connection setRequestAction:@selector(refuse:) forMethod:@"refuse"];
     [self.connection setNotificationAction:@selector(note:) forMethod:@"note"];
+    [self.connection setRequestAction:@selector(fail:) forMethod:@"fail"];
+}
+
+- (id)fail:(NSDictionary *)params {
+    [NSException raise:NSInvalidArgumentException format:@"broken"];
+    return nil;
 }
 
 - (id)sum:(NSDictionary *)params {
@@ -46,6 +52,11 @@
 
     reply = [self.connection replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @4, @"method": @"divide" }];
     XCTAssertEqualObjects(reply[@"error"][@"code"], @(UDJSONRPCMethodNotFound));
+
+    // A request whose action raises is answered, and the server goes on.
+    reply = [self.connection replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @5, @"method": @"fail" }];
+    XCTAssertEqualObjects(reply[@"error"][@"code"], @(UDJSONRPCInternalError));
+    XCTAssertTrue([reply[@"error"][@"message"] containsString:@"broken"]);
 }
 
 - (void)testANotificationIsHandedOverAndNotAnswered {

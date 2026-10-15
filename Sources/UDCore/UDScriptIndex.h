@@ -38,6 +38,9 @@ typedef NS_ENUM(NSInteger, UDScriptDefinitionKind) {
 @property (nonatomic, readonly) NSInteger line;
 @property (nonatomic, readonly) NSInteger column;
 @property (nonatomic, readonly) NSInteger length;
+/// A function's or method's parameters, as written between its parentheses
+/// ("float times", "" for none); nil for what is no function.
+@property (nonatomic, copy, readonly, nullable) NSString *parameters;
 @end
 
 @interface UDScriptIndex : NSObject

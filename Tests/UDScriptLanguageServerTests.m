@@ -127,6 +127,10 @@ static NSString *const UDLanternText =
     result = [self request:@"textDocument/completion" params:[self at:@"script/lantern.script" line:5 character:6]];
     labels = [result[@"items"] valueForKey:@"label"];
     XCTAssertTrue([labels containsObject:@"lightAll"]);
+    NSDictionary *wait = [result[@"items"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"label == 'wait'"]].firstObject;
+    XCTAssertEqualObjects(wait[@"insertText"], @"wait(${1:float time})", @"an event, called bare, with its parameters");
+    NSDictionary *swing = [result[@"items"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"label == 'swing'"]].firstObject;
+    XCTAssertEqualObjects(swing[@"insertText"], @"swing(${1:float angle})", @"a method, with its parameters");
     XCTAssertTrue([labels containsObject:@"lantern"]);
     XCTAssertEqual([[[NSCountedSet alloc] initWithArray:labels] countForObject:@"swing"], 1u);
 }

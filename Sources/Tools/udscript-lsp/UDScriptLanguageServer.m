@@ -228,11 +228,27 @@ static NSString *UDCallSnippet(NSString *name, NSString *parms) {
                                 @"insertText": UDCallSnippet(name, parms), @"insertTextFormat": @2 }];
         }
     } else {
+        // The scripts' names, and the events, which an object's methods call
+        // bare (weaponState( "Reload", 1 )): calls with their parameters.
         NSMutableSet<NSString *> *seen = [NSMutableSet set];
         for (UDScriptDefinition *definition in _index.allDefinitions) {
             if ([seen containsObject:definition.name]) continue;
             [seen addObject:definition.name];
-            [items addObject:@{ @"label": definition.name, @"kind": @(UDCompletionKind(definition.kind)) }];
+            NSMutableDictionary *item = [@{ @"label": definition.name, @"kind": @(UDCompletionKind(definition.kind)) } mutableCopy];
+            NSString *eventParms = definition.kind == UDScriptDefinitionEvent ? [_events functionParmsForName:definition.name] : nil;
+            if (eventParms != nil || definition.parameters != nil) {
+                item[@"insertText"] = eventParms ? UDCallSnippet(definition.name, eventParms)
+                    : UDCallSnippet(definition.name, [NSString stringWithFormat:@"(%@)", definition.parameters]);
+                item[@"insertTextFormat"] = @2;
+            }
+            [items addObject:item];
+        }
+        for (NSString *name in [_events membersOfObject:@""]) {
+            if ([seen containsObject:name]) continue;
+            [seen addObject:name];
+            NSString *parms = [_events functionParmsForName:name] ?: @"";
+            [items addObject:@{ @"label": name, @"kind": @(UDCompletionEvent), @"detail": parms,
+                                @"insertText": UDCallSnippet(name, parms), @"insertTextFormat": @2 }];
         }
     }
     return @{ @"isIncomplete": @NO, @"items": items };

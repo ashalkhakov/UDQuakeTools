@@ -6,6 +6,10 @@
 #import "UDScriptIndex.h"
 #import "idLexer.h"
 
+@interface UDScriptDefinition ()
+@property (nonatomic, copy, readwrite, nullable) NSString *parameters;
+@end
+
 @implementation UDScriptDefinition
 
 - (instancetype)initWithKind:(UDScriptDefinitionKind)kind name:(NSString *)name qualifiedName:(NSString *)qualifiedName
@@ -19,6 +23,15 @@
     _column = column;
     _length = (NSInteger)name.length;
     return self;
+}
+
+/// @a definition as another kind (a prototype as the definition), its
+/// parameters kept.
++ (instancetype)definitionCopying:(UDScriptDefinition *)definition kind:(UDScriptDefinitionKind)kind {
+    UDScriptDefinition *copy = [[self alloc] initWithKind:kind name:definition.name qualifiedName:definition.qualifiedName
+                                                     path:definition.path line:definition.line column:definition.column];
+    copy.parameters = definition.parameters;
+    return copy;
 }
 
 - (BOOL)isPrototype {
@@ -76,15 +89,23 @@ static BOOL UDIs(const idToken *token, const char *text) {
                                                                path:path line:line column:(NSInteger)before.length]];
 }
 
-/// Past a parenthesized list, its '(' already read.
-- (void)skipParentheses {
+/// Past a parenthesized list, its '(' already read: what is between the
+/// parentheses, its white space made single spaces.
+- (NSString *)skipParentheses {
+    const char *start = (const char *)bytes.bytes;
+    NSInteger from = [lexer fileOffset], to = from;
     idToken token;
     idToken_Init(&token);
     int depth = 1;
     while (depth > 0 && [self next:&token]) {
         if (UDIs(&token, "(")) depth++;
-        else if (UDIs(&token, ")")) depth--;
+        else if (UDIs(&token, ")") && --depth == 0) to = token.whiteSpaceEnd_p - start;
     }
+    NSString *text = [[NSString alloc] initWithBytes:start + from length:(NSUInteger)MAX(to - from, 0)
+                                            encoding:NSUTF8StringEncoding] ?: @"";
+    NSArray *words = [text componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    words = [words filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+    return [[words componentsJoinedByString:@" "] stringByReplacingOccurrencesOfString:@" ," withString:@","];
 }
 
 /// Past a braced body, its '{' already read.
@@ -123,15 +144,14 @@ static BOOL UDIs(const idToken *token, const char *text) {
         if (![self next:&name]) return;                         // <type> <name>
         if (![self next:&token]) return;
         if (UDIs(&token, "(")) {
-            [self skipParentheses];
+            NSString *parameters = [self skipParentheses];
             NSInteger before = (NSInteger)definitions.count;
             [self add:UDScriptDefinitionMethodPrototype name:&name scope:scope];
+            definitions.lastObject.parameters = parameters;
             if ([self functionBody]) {
                 UDScriptDefinition *method = definitions[(NSUInteger)before];
                 [definitions replaceObjectAtIndex:(NSUInteger)before withObject:
-                    [[UDScriptDefinition alloc] initWithKind:UDScriptDefinitionMethod name:method.name
-                                               qualifiedName:method.qualifiedName path:method.path
-                                                        line:method.line column:method.column]];
+                    [UDScriptDefinition definitionCopying:method kind:UDScriptDefinitionMethod]];
             }
         } else {
             [self add:UDScriptDefinitionField name:&name scope:scope];
@@ -179,28 +199,26 @@ static BOOL UDIs(const idToken *token, const char *text) {
             if (![self next:&member]) return;
             NSString *objectScope = [NSString stringWithFormat:@"%@%s::", scope, name.text];
             if (![self next:&token]) return;                    // '('
-            [self skipParentheses];
+            NSString *parameters = [self skipParentheses];
             NSInteger at = (NSInteger)definitions.count;
             [self add:UDScriptDefinitionMethod name:&member scope:objectScope];
+            definitions.lastObject.parameters = parameters;
             if (![self functionBody]) {
                 UDScriptDefinition *prototype = definitions[(NSUInteger)at];
                 [definitions replaceObjectAtIndex:(NSUInteger)at withObject:
-                    [[UDScriptDefinition alloc] initWithKind:UDScriptDefinitionMethodPrototype name:prototype.name
-                                               qualifiedName:prototype.qualifiedName path:prototype.path
-                                                        line:prototype.line column:prototype.column]];
+                    [UDScriptDefinition definitionCopying:prototype kind:UDScriptDefinitionMethodPrototype]];
             }
             continue;
         }
         if (UDIs(&token, "(")) {                                 // a function, or its prototype
-            [self skipParentheses];
+            NSString *parameters = [self skipParentheses];
             NSInteger at = (NSInteger)definitions.count;
             [self add:UDScriptDefinitionFunction name:&name scope:scope];
+            definitions.lastObject.parameters = parameters;
             if (![self functionBody]) {
                 UDScriptDefinition *prototype = definitions[(NSUInteger)at];
                 [definitions replaceObjectAtIndex:(NSUInteger)at withObject:
-                    [[UDScriptDefinition alloc] initWithKind:UDScriptDefinitionFunctionPrototype name:prototype.name
-                                               qualifiedName:prototype.qualifiedName path:prototype.path
-                                                        line:prototype.line column:prototype.column]];
+                    [UDScriptDefinition definitionCopying:prototype kind:UDScriptDefinitionFunctionPrototype]];
             }
             continue;
         }

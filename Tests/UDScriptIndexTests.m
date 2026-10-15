@@ -66,6 +66,11 @@ static NSString *const UDLampScript =
 
     XCTAssertEqual([self onlyDefinitionOf:@"lamp::brightness" in:index].kind, UDScriptDefinitionField);
     XCTAssertEqual([self onlyDefinitionOf:@"lamp::dim" in:index].kind, UDScriptDefinitionMethod);
+    XCTAssertEqualObjects([self onlyDefinitionOf:@"lamp::dim" in:index].parameters, @"");
+    XCTAssertEqualObjects([index definitionsOfName:@"lamp::flicker"].firstObject.parameters, @"float times",
+                          @"a method's parameters, kept from its declaration to its definition");
+    XCTAssertEqualObjects([self onlyDefinitionOf:@"lamps::glow" in:index].parameters, @"entity e");
+    XCTAssertNil([self onlyDefinitionOf:@"lampCount" in:index].parameters, @"a variable has none");
 
     UDScriptDefinition *glow = [self onlyDefinitionOf:@"lamps::glow" in:index];
     XCTAssertEqual(glow.kind, UDScriptDefinitionFunction);

@@ -76,9 +76,10 @@ include $(GNUSTEP_MAKEFILES)/coredata-model.make
 
 include $(GNUSTEP_MAKEFILES)/application.make
 
-# UDCodeKit's grammar bundles (idScript among them) in the app's PlugIns,
-# where its language mode registry looks.
-UD_GRAMMARS = $(wildcard $(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit/*.bundle)
+# The grammar bundles in the app's PlugIns, where UDCodeKit's language mode
+# registry looks: UDCodeKit's, and this toolkit's idScript.
+UD_GRAMMARS = $(wildcard $(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit/*.bundle) \
+    ../../tree-sitter-idscript/TreeSitterIdScript.bundle
 after-all::
 	@mkdir -p $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns
 	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/`basename $$b`; \

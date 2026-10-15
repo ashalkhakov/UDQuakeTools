@@ -1,0 +1,60 @@
+===========
+Expressions
+===========
+
+void mix() {
+	x = !a == b && c || -d * e + f % 2 & 0x0f;
+	v = int( y / 3 ) + $door.getOrigin() * 2;
+	s += "lamp " + n;
+}
+
+---
+
+(source_file
+  (function_definition
+    type: (primitive_type)
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (assignment_expression
+              left: (identifier)
+              right: (unary_expression
+                argument: (binary_expression
+                  left: (identifier)
+                  right: (identifier))))
+            right: (identifier))
+          right: (unary_expression
+            argument: (binary_expression
+              left: (binary_expression
+                left: (identifier)
+                right: (identifier))
+              right: (binary_expression
+                left: (binary_expression
+                  left: (identifier)
+                  right: (number))
+                right: (number))))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (int_expression
+              (binary_expression
+                left: (identifier)
+                right: (number)))
+            right: (binary_expression
+              left: (call_expression
+                function: (field_expression
+                  object: (entity
+                    name: (identifier))
+                  field: (identifier))
+                arguments: (argument_list))
+              right: (number)))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (string)
+            right: (identifier)))))))

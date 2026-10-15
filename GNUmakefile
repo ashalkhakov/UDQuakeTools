@@ -17,7 +17,7 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = UDQuakeTools
-SUBPROJECTS = Sources/UDCore Sources/UDLauncher Sources/DeclBrowser Sources/PakManager \
+SUBPROJECTS = Sources/UDCore tree-sitter-idscript Sources/UDLauncher Sources/DeclBrowser Sources/PakManager \
               Sources/Tools/udpaktool Tests Tests/DeclBrowser
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make

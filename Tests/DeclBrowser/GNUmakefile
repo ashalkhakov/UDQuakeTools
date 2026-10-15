@@ -88,7 +88,7 @@ TEST_TIMEOUT ?= 900
 run-tests: all $(BUNDLE_NAME).bundle
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
 	LD_LIBRARY_PATH="$(CURDIR)/../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
-	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit" \
+	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit:$(CURDIR)/../../tree-sitter-idscript" \
 	timeout -s ABRT $(TEST_TIMEOUT) $(XCTEST) "$(BUNDLE_NAME).bundle"
 
 include $(GNUSTEP_MAKEFILES)/coredata-model.make

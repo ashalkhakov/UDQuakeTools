@@ -25,7 +25,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UD_PLUGINS_PATH"
-            value = "$(SRCROOT)/.deps/PlugIns"
+            value = "$(SRCROOT)/.deps/PlugIns:$(BUILT_PRODUCTS_DIR)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

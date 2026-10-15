@@ -214,6 +214,7 @@
 		EC0D0000000000000000000D /* UDPieceTable.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; };
 		EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = EC1D00000000000000000005 /* TreeSitterIdScript.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -251,6 +252,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
+		};
+		EC1D00000000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdScript;
+		};
+		EC1D00000000000000000008 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdScript;
+		};
+		EC1D00000000000000000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D5C76BB13881D15A3714902;
+			remoteInfo = TreeSitterIdScript;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -316,6 +338,17 @@
 				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1D0000000000000000000A /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -509,6 +542,7 @@
 		EC0D00000000000000000001 /* UDCodeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDCodeKit.xcframework; path = .deps/UDCodeKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
+		EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdScript.xcodeproj; path = "tree-sitter-idscript/TreeSitterIdScript.xcodeproj"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -591,6 +625,7 @@
 		AA00000200000000000000AA = {
 			isa = PBXGroup;
 			children = (
+				EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */,
 				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* PakManager */,
 				DD00000400000000000000AA /* DeclBrowser */,
@@ -931,6 +966,14 @@
 			path = DeclBrowser;
 			sourceTree = "<group>";
 		};
+		EC1D00000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EC1D00000000000000000005 /* TreeSitterIdScript.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1057,6 +1100,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */;
 			buildPhases = (
+				EC1D0000000000000000000A /* Embed PlugIns */,
 				DD03000000000000000000AA /* Sources */,
 				DD03000100000000000000AA /* Frameworks */,
 				DD03000200000000000000AA /* Resources */,
@@ -1066,6 +1110,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EC1D00000000000000000006 /* PBXTargetDependency */,
 				CC07020100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Decl Browser";
@@ -1103,6 +1148,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				EC1D00000000000000000007 /* PBXTargetDependency */,
 				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
 			);
 			name = DeclBrowserTests;
@@ -1144,6 +1190,12 @@
 			mainGroup = AA00000200000000000000AA;
 			productRefGroup = AA00000300000000000000AA /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EC1D00000000000000000002 /* Products */;
+					ProjectRef = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				CC04000000000000000000AA /* UDCore */,
@@ -1156,6 +1208,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EC1D00000000000000000005 /* TreeSitterIdScript.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TreeSitterIdScript.bundle;
+			remoteRef = EC1D00000000000000000004 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AA03000100000000000000AA /* Resources */ = {
@@ -1415,6 +1477,16 @@
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA /* UDCore */;
 			targetProxy = EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */;
+		};
+		EC1D00000000000000000006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdScript;
+			targetProxy = EC1D00000000000000000003 /* PBXContainerItemProxy */;
+		};
+		EC1D00000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdScript;
+			targetProxy = EC1D00000000000000000008 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -1,0 +1,50 @@
+===========
+Definitions
+===========
+
+#include "script/lamp.script"
+#define LIGHT_COUNT 3
+
+scriptEvent float getBrightness( entity lamp, float scale );
+float lampCount = LIGHT_COUNT, lit;
+void dim( entity lamp );
+namespace lamps {
+	vector warm = '1 0.8 -0.5';
+}
+
+---
+
+(source_file
+  (preproc)
+  (preproc)
+  (event_declaration
+    type: (primitive_type)
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter
+        type: (primitive_type)
+        name: (identifier))
+      (parameter
+        type: (primitive_type)
+        name: (identifier))))
+  (variable_declaration
+    type: (primitive_type)
+    (variable_declarator
+      name: (identifier)
+      value: (identifier))
+    (variable_declarator
+      name: (identifier)))
+  (function_definition
+    type: (primitive_type)
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter
+        type: (primitive_type)
+        name: (identifier))))
+  (namespace_definition
+    name: (identifier)
+    (variable_declaration
+      type: (primitive_type)
+      (variable_declarator
+        name: (identifier)
+        value: (vector)))))

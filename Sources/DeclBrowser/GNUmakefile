@@ -21,6 +21,7 @@ DeclBrowser_OBJC_FILES = \
     UDPDAEditorViewController.m \
     UDPathTree.m \
     UDProject.m \
+    UDScriptServer.m \
     UDTextEditorViewController.m \
     UDWorkspaceItem.m \
     Documents/UDBaseDocument.m \

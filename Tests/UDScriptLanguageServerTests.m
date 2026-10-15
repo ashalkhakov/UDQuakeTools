@@ -42,7 +42,7 @@ static NSString *const UDLanternText =
 }
 
 - (id)request:(NSString *)method params:(NSDictionary *)params {
-    NSDictionary *reply = [self.server replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @(++self.nextID),
+    NSDictionary *reply = [self.server.connection replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @(++self.nextID),
                                                          @"method": method, @"params": params }];
     XCTAssertEqualObjects(reply[@"id"], @(self.nextID));
     XCTAssertNil(reply[@"error"], @"%@", reply[@"error"]);
@@ -50,7 +50,7 @@ static NSString *const UDLanternText =
 }
 
 - (void)notify:(NSString *)method params:(NSDictionary *)params {
-    NSDictionary *reply = [self.server replyToMessage:@{ @"jsonrpc": @"2.0", @"method": method, @"params": params }];
+    NSDictionary *reply = [self.server.connection replyToMessage:@{ @"jsonrpc": @"2.0", @"method": method, @"params": params }];
     XCTAssertNil(reply);
 }
 
@@ -178,7 +178,7 @@ static NSString *const UDLanternText =
     [self notify:@"exit" params:@{}];
     XCTAssertTrue(self.server.exited);
 
-    NSDictionary *reply = [self.server replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @7, @"method": @"textDocument/rename" }];
+    NSDictionary *reply = [self.server.connection replyToMessage:@{ @"jsonrpc": @"2.0", @"id": @7, @"method": @"textDocument/rename" }];
     XCTAssertEqualObjects(reply[@"error"][@"code"], @(-32601));
 }
 

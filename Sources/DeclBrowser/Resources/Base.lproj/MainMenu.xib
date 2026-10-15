@@ -228,6 +228,12 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Jump to Definition" keyEquivalent="j" id="jTD-ef-0a1">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="jumpToDefinition:" target="-1" id="jTD-ef-0a2"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Spelling and Grammar" id="Dv1-io-Yv7">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Spelling" id="3IN-sU-3Bg">

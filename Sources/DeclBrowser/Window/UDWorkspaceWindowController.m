@@ -10,6 +10,9 @@
 #import "UDWorkspaceSettingsWindowController.h"
 #import <UDCodeKit/UDTabBarView.h>
 #import "UDTextPromptPanel.h"
+#import "UDTextEditorViewController.h"
+#import "UDFileItem.h"
+#import "UDScriptServer.h"
 #import "idDeclManager.h"
 
 @interface UDWorkspaceWindowController ()
@@ -228,6 +231,7 @@
     [self.document updateChangeCount:NSChangeDone];
 
     [self.tabManager closeAllTabs];
+    [UDScriptServer stopForWorkspace:workspace];
     [workspace shutdown];
 
     NSError *error = nil;
@@ -239,8 +243,37 @@
     [self.declBrowser reset];
 }
 
+#pragma mark - Jump to Definition
+
+- (IBAction)jumpToDefinition:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor jumpToDefinition:sender];
+    } else {
+        NSBeep();
+    }
+}
+
+- (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length {
+    UDBaseEditorViewController *editor = [self.tabManager openEditorForWorkspaceItem:[[UDFileItem alloc] initWithPath:path]];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor selectLine:line character:character length:length];
+    }
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [self.tabManager closeAllTabs];
+    [UDScriptServer stopForWorkspace:self.workspace];
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     SEL action = menuItem.action;
+
+    if (action == @selector(jumpToDefinition:)) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] &&
+               [(UDTextEditorViewController *)editor validateMenuItem:menuItem];
+    }
 
     if (action == @selector(showWorkspaceSettings:)) {
         return self.workspace != nil;

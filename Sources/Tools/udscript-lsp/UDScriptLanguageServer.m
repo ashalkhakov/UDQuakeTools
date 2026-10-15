@@ -1,6 +1,6 @@
 //
 //  UDScriptLanguageServer.m
-//  UDCore
+//  udscript-lsp
 //
 
 #import "UDScriptLanguageServer.h"
@@ -18,15 +18,17 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
     idFileSystem *_fileSystem;
     UDScriptIndex *_index;
     UDScriptEvents *_events;
-    NSMutableDictionary<NSString *, NSString *> *_openTexts;
 }
 
 - (instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
-    if (!(self = [super init])) return nil;
+    if (!(self = [super initWithName:@"udscript-lsp"])) return nil;
     _fileSystem = fileSystem;
     _index = [[UDScriptIndex alloc] init];
     _events = [UDScriptEvents eventsFromText:@""];
-    _openTexts = [NSMutableDictionary dictionary];
+    [self.connection setRequestAction:@selector(definition:) forMethod:@"textDocument/definition"];
+    [self.connection setRequestAction:@selector(completion:) forMethod:@"textDocument/completion"];
+    [self.connection setRequestAction:@selector(hover:) forMethod:@"textDocument/hover"];
+    [self.connection setNotificationAction:@selector(didChangeWatchedFiles:) forMethod:@"workspace/didChangeWatchedFiles"];
     return self;
 }
 
@@ -64,7 +66,12 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
 
 /// A script as it is now: as open, or in the file system.
 - (NSString *)textOfPath:(NSString *)path {
-    return _openTexts[path] ?: [self fileSystemTextOfPath:path];
+    return [self openTextOfDocument:[[self class] URIForPath:path]] ?: [self fileSystemTextOfPath:path];
+}
+
+- (NSString *)textOfDocument:(NSString *)uri {
+    NSString *path = [[self class] pathForURI:uri];
+    return path ? [self textOfPath:path] : nil;
 }
 
 /// Reads @a path again, after it was opened, edited, closed or changed.
@@ -80,7 +87,18 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
     }
 }
 
-- (void)indexFileSystem {
+#pragma mark - UDLanguageServer
+
+- (NSDictionary *)capabilities {
+    return @{
+        @"definitionProvider": @YES,
+        @"hoverProvider": @YES,
+        @"completionProvider": @{ @"triggerCharacters": @[ @"." ] },
+    };
+}
+
+/// Every script under script/ and maps/.
+- (void)serverWillInitialize {
     if (_fileSystem == nil) return;
     for (NSString *directory in @[ @"script", @"maps" ]) {
         idFileList *files = [_fileSystem listFilesTree:directory extension:@".script" sorted:YES inGameDir:@"" error:NULL];
@@ -91,30 +109,29 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
     }
 }
 
-#pragma mark - Positions
-
-/// The UTF-16 index of an LSP position in @a text, or NSNotFound.
-static NSUInteger UDIndexOfPosition(NSString *text, NSDictionary *position) {
-    NSInteger line = [position[@"line"] integerValue], character = [position[@"character"] integerValue];
-    NSUInteger index = 0;
-    for (NSInteger i = 0; i < line; i++) {
-        NSRange newline = [text rangeOfString:@"\n" options:NSLiteralSearch range:NSMakeRange(index, text.length - index)];
-        if (newline.location == NSNotFound) return NSNotFound;
-        index = NSMaxRange(newline);
-    }
-    NSRange rest = [text rangeOfString:@"\n" options:NSLiteralSearch range:NSMakeRange(index, text.length - index)];
-    NSUInteger lineEnd = rest.location == NSNotFound ? text.length : rest.location;
-    return MIN(index + (NSUInteger)MAX(character, 0), lineEnd);
+- (void)documentDidChange:(NSString *)uri {
+    NSString *path = [[self class] pathForURI:uri];
+    if (path != nil) [self reindexPath:path];
 }
+
+- (void)didChangeWatchedFiles:(NSDictionary *)params {
+    for (NSDictionary *change in params[@"changes"]) {
+        NSString *path = [[self class] pathForURI:change[@"uri"] ?: @""];
+        if (path != nil && [path.pathExtension caseInsensitiveCompare:@"script"] == NSOrderedSame) {
+            [self reindexPath:path];
+        }
+    }
+}
+
+#pragma mark - Names
 
 static BOOL UDIsNameCharacter(unichar c) {
     return c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
 /// The name at @a index (the cursor on or just after it), with the scopes
-/// written before it: "lamp::flicker" on "flicker". Its start, through
-/// @a start. Nil when there is none.
-static NSString *UDNameAtIndex(NSString *text, NSUInteger index, NSUInteger *start) {
+/// written before it: "lamp::flicker" on "flicker". Nil when there is none.
+static NSString *UDNameAtIndex(NSString *text, NSUInteger index) {
     NSUInteger from = index, to = index;
     while (from > 0 && UDIsNameCharacter([text characterAtIndex:from - 1])) from--;
     while (to < text.length && UDIsNameCharacter([text characterAtIndex:to])) to++;
@@ -125,51 +142,33 @@ static NSString *UDNameAtIndex(NSString *text, NSUInteger index, NSUInteger *sta
         qualified -= 2;
         while (qualified > 0 && UDIsNameCharacter([text characterAtIndex:qualified - 1])) qualified--;
     }
-    if (start) *start = from;
     return [text substringWithRange:NSMakeRange(qualified, to - qualified)];
-}
-
-static NSDictionary *UDLocation(UDScriptDefinition *definition) {
-    return @{
-        @"uri": [UDScriptLanguageServer URIForPath:definition.path],
-        @"range": @{
-            @"start": @{ @"line": @(definition.line), @"character": @(definition.column) },
-            @"end": @{ @"line": @(definition.line), @"character": @(definition.column + definition.length) },
-        },
-    };
-}
-
-#pragma mark - Requests
-
-/// The document and position a textDocument/... request is about.
-- (NSString *)textOfRequest:(NSDictionary *)params path:(NSString **)path index:(NSUInteger *)index {
-    NSString *documentPath = [[self class] pathForURI:params[@"textDocument"][@"uri"] ?: @""];
-    NSString *text = documentPath ? [self textOfPath:documentPath] : nil;
-    if (text == nil) return nil;
-    NSUInteger at = UDIndexOfPosition(text, params[@"position"]);
-    if (at == NSNotFound) return nil;
-    *path = documentPath;
-    *index = at;
-    return text;
 }
 
 /// What @a name names, as seen from @a path: its definitions in that
 /// script, if it has any; otherwise everywhere.
 - (NSArray<UDScriptDefinition *> *)definitionsOfName:(NSString *)name fromPath:(NSString *)path {
     NSArray<UDScriptDefinition *> *all = [_index definitionsOfName:name];
-    NSArray *here = [all filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"path == %@", path]];
+    NSMutableArray<UDScriptDefinition *> *here = [NSMutableArray array];
+    for (UDScriptDefinition *definition in all) {
+        if ([definition.path isEqualToString:path]) [here addObject:definition];
+    }
     return here.count > 0 ? here : all;
 }
 
+#pragma mark - Requests
+
 - (id)definition:(NSDictionary *)params {
-    NSString *path = nil;
+    NSString *uri = nil;
     NSUInteger index = 0;
-    NSString *text = [self textOfRequest:params path:&path index:&index];
-    NSString *name = text ? UDNameAtIndex(text, index, NULL) : nil;
+    NSString *text = [self textOfPositionParams:params uri:&uri index:&index];
+    NSString *name = text ? UDNameAtIndex(text, index) : nil;
     if (name == nil) return [NSNull null];
     NSMutableArray *locations = [NSMutableArray array];
-    for (UDScriptDefinition *definition in [self definitionsOfName:name fromPath:path]) {
-        [locations addObject:UDLocation(definition)];
+    for (UDScriptDefinition *definition in [self definitionsOfName:name fromPath:[[self class] pathForURI:uri]]) {
+        [locations addObject:[[self class] locationWithURI:[[self class] URIForPath:definition.path]
+                                                      line:definition.line character:definition.column
+                                                    length:definition.length]];
     }
     return locations;
 }
@@ -190,9 +189,9 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
 }
 
 - (id)completion:(NSDictionary *)params {
-    NSString *path = nil;
+    NSString *uri = nil;
     NSUInteger index = 0;
-    NSString *text = [self textOfRequest:params path:&path index:&index];
+    NSString *text = [self textOfPositionParams:params uri:&uri index:&index];
     if (text == nil) return [NSNull null];
     NSUInteger start = index;
     while (start > 0 && UDIsNameCharacter([text characterAtIndex:start - 1])) start--;
@@ -215,15 +214,15 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
 }
 
 - (id)hover:(NSDictionary *)params {
-    NSString *path = nil;
+    NSString *uri = nil;
     NSUInteger index = 0;
-    NSString *text = [self textOfRequest:params path:&path index:&index];
-    NSString *name = text ? UDNameAtIndex(text, index, NULL) : nil;
+    NSString *text = [self textOfPositionParams:params uri:&uri index:&index];
+    NSString *name = text ? UDNameAtIndex(text, index) : nil;
     if (name == nil) return [NSNull null];
 
     NSString *value = [_events toolTipForName:name];
     if (value == nil) {
-        UDScriptDefinition *definition = [self definitionsOfName:name fromPath:path].firstObject;
+        UDScriptDefinition *definition = [self definitionsOfName:name fromPath:[[self class] pathForURI:uri]].firstObject;
         NSArray<NSString *> *lines = [[self textOfPath:definition.path] componentsSeparatedByString:@"\n"];
         if (definition == nil || definition.line >= (NSInteger)lines.count) return [NSNull null];
         NSString *declaration = [lines[(NSUInteger)definition.line]
@@ -231,89 +230,6 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
         value = [NSString stringWithFormat:@"%@\n\n%@:%ld", declaration, definition.path, (long)definition.line + 1];
     }
     return @{ @"contents": @{ @"kind": @"plaintext", @"value": value } };
-}
-
-- (NSDictionary *)capabilities {
-    return @{
-        @"capabilities": @{
-            @"textDocumentSync": @1,                                // full text on each change
-            @"definitionProvider": @YES,
-            @"hoverProvider": @YES,
-            @"completionProvider": @{ @"triggerCharacters": @[ @"." ] },
-        },
-        @"serverInfo": @{ @"name": @"udscript-lsp" },
-    };
-}
-
-#pragma mark - Notifications
-
-- (void)didOpen:(NSDictionary *)params {
-    NSString *path = [[self class] pathForURI:params[@"textDocument"][@"uri"] ?: @""];
-    NSString *text = params[@"textDocument"][@"text"];
-    if (path == nil || ![text isKindOfClass:[NSString class]]) return;
-    _openTexts[path] = text;
-    [self reindexPath:path];
-}
-
-- (void)didChange:(NSDictionary *)params {
-    NSString *path = [[self class] pathForURI:params[@"textDocument"][@"uri"] ?: @""];
-    NSString *text = [params[@"contentChanges"] lastObject][@"text"];
-    if (path == nil || ![text isKindOfClass:[NSString class]]) return;
-    _openTexts[path] = text;
-    [self reindexPath:path];
-}
-
-- (void)didClose:(NSDictionary *)params {
-    NSString *path = [[self class] pathForURI:params[@"textDocument"][@"uri"] ?: @""];
-    if (path == nil) return;
-    [_openTexts removeObjectForKey:path];
-    [self reindexPath:path];
-}
-
-- (void)didChangeWatchedFiles:(NSDictionary *)params {
-    for (NSDictionary *change in params[@"changes"]) {
-        NSString *path = [[self class] pathForURI:change[@"uri"] ?: @""];
-        if (path != nil && [path.pathExtension caseInsensitiveCompare:@"script"] == NSOrderedSame) {
-            [self reindexPath:path];
-        }
-    }
-}
-
-#pragma mark - Messages
-
-- (NSDictionary *)replyToMessage:(NSDictionary *)message {
-    NSString *method = message[@"method"];
-    id identifier = message[@"id"];
-    NSDictionary *params = [message[@"params"] isKindOfClass:[NSDictionary class]] ? message[@"params"] : @{};
-
-    if (identifier == nil) {                                          // a notification
-        if ([method isEqualToString:@"textDocument/didOpen"]) [self didOpen:params];
-        else if ([method isEqualToString:@"textDocument/didChange"]) [self didChange:params];
-        else if ([method isEqualToString:@"textDocument/didClose"]) [self didClose:params];
-        else if ([method isEqualToString:@"workspace/didChangeWatchedFiles"]) [self didChangeWatchedFiles:params];
-        else if ([method isEqualToString:@"exit"]) _exited = YES;
-        return nil;
-    }
-
-    id result = nil;
-    if ([method isEqualToString:@"initialize"]) {
-        [self indexFileSystem];
-        result = [self capabilities];
-    } else if ([method isEqualToString:@"shutdown"]) {
-        _shutDown = YES;
-        result = [NSNull null];
-    } else if ([method isEqualToString:@"textDocument/definition"]) {
-        result = [self definition:params];
-    } else if ([method isEqualToString:@"textDocument/completion"]) {
-        result = [self completion:params];
-    } else if ([method isEqualToString:@"textDocument/hover"]) {
-        result = [self hover:params];
-    }
-    if (result == nil) {
-        return @{ @"jsonrpc": @"2.0", @"id": identifier,
-                  @"error": @{ @"code": @(-32601), @"message": [NSString stringWithFormat:@"%@: no such method", method] } };
-    }
-    return @{ @"jsonrpc": @"2.0", @"id": identifier, @"result": result };
 }
 
 @end

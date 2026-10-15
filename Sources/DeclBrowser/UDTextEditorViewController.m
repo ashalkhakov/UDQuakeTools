@@ -5,6 +5,8 @@
 #import "UDDeclDocument.h"
 #import "UDScriptEvents.h"
 #import "UDWorkspace.h"
+#import "UDScriptServer.h"
+#import "UDWorkspaceWindowController.h"
 #import <UDCodeKit/UDCodeKit.h>
 
 @interface UDTextEditorViewController () <UDDiagnosticTextViewDelegate>
@@ -92,6 +94,69 @@
     // from after the filling, which is no edit.
     [self.document setTextView:self.editor.textView];
     self.session.textStorage.textModel.undoManager = self.document.undoManager;
+
+    // A script's tab opens it on the workspace's language server, by its
+    // path in the file system, once its text is in.
+    if (self.scriptEvents != nil && self.item.kind == UDWorkspaceItemKindFile) {
+        LSPClient *client = [UDScriptServer clientForWorkspace:self.workspace];
+        if (client != nil) {
+            [self.session startLanguageServerWithClient:client documentURL:[UDScriptServer URLForPath:self.item.path]];
+        }
+    }
+}
+
+#pragma mark - Jump to Definition
+
+- (IBAction)jumpToDefinition:(id)sender {
+    UDLSPCoordinator *server = self.session.lspCoordinator;
+    if (server == nil || [server definitionAtIndex:self.editor.textView.selectedRange.location
+                                            target:self action:@selector(_definitionDidArrive:)] == 0) {
+        NSBeep();
+    }
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+    if (menuItem.action == @selector(jumpToDefinition:)) {
+        return self.session.lspCoordinator != nil;
+    }
+    return YES;
+}
+
+/// The definition's place: the first location, in its file's tab.
+- (void)_definitionDidArrive:(LSPResponse *)response {
+    id result = response.result;
+    NSDictionary *location = [result isKindOfClass:[NSArray class]] ? [result firstObject] : result;
+    if (![location isKindOfClass:[NSDictionary class]]) {
+        NSBeep();
+        return;
+    }
+    NSString *path = [UDScriptServer pathForURL:[NSURL URLWithString:location[@"uri"] ?: @""]];
+    NSDictionary *start = location[@"range"][@"start"], *end = location[@"range"][@"end"];
+    UDWorkspaceWindowController *windowController = self.view.window.windowController;
+    if (path == nil || ![windowController isKindOfClass:[UDWorkspaceWindowController class]]) {
+        NSBeep();
+        return;
+    }
+    [windowController openFileAtPath:path
+                                line:[start[@"line"] integerValue]
+                           character:[start[@"character"] integerValue]
+                              length:[end[@"character"] integerValue] - [start[@"character"] integerValue]];
+}
+
+- (void)selectLine:(NSInteger)line character:(NSInteger)character length:(NSInteger)length {
+    NSTextView *textView = self.editor.textView;
+    NSString *text = textView.string;
+    NSUInteger index = 0;
+    for (NSInteger i = 0; i < line && index < text.length; i++) {
+        NSRange newline = [text rangeOfString:@"\n" options:NSLiteralSearch range:NSMakeRange(index, text.length - index)];
+        if (newline.location == NSNotFound) break;
+        index = NSMaxRange(newline);
+    }
+    NSRange range = NSMakeRange(MIN(index + (NSUInteger)MAX(character, 0), text.length), 0);
+    range.length = MIN((NSUInteger)MAX(length, 0), text.length - range.location);
+    [textView setSelectedRange:range];
+    [textView scrollRangeToVisible:range];
+    [textView.window makeFirstResponder:textView];
 }
 
 - (void)_embedEditorForLanguageOfURL:(nullable NSURL *)url {

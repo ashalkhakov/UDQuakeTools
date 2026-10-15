@@ -8,6 +8,9 @@ Decl Browser's text editor and tab bar are UDCodeKit's (`../UDPieceTable`,
 github.com/ashalkhakov/UDCodeKit), with its grammar bundles (idScript for
 `.script`) in the app's PlugIns; the release `.github/pins.env` names is
 unpacked into the prefix on GNUstep and into `.deps/` on macOS.
+Scripts also have a language server, `udscript-lsp` (`Sources/Tools`),
+which Decl Browser carries beside its executable and starts per workspace;
+its protocol side is `Sources/LSPServerKit`, a framework of its own.
 
 ## GNUstep patches live elsewhere
 

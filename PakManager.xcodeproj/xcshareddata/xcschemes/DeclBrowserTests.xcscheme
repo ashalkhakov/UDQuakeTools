@@ -28,6 +28,11 @@
             value = "$(SRCROOT)/.deps/PlugIns:$(BUILT_PRODUCTS_DIR)"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UD_SCRIPT_LSP"
+            value = "$(BUILT_PRODUCTS_DIR)/udscript-lsp"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
       <Testables>
          <TestableReference

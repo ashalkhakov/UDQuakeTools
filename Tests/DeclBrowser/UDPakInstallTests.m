@@ -139,6 +139,12 @@ static NSString *const UDMainScript =
      "\tsys.println( \"udfix\" );\n"
      "}\n";
 
+// Calls udfix_main, defined in another script.
+static NSString *const UDLightsScript =
+    @"void udfix_lights_on( float level ) {\n"
+     "\tudfix_main();\n"
+     "}\n";
+
 // In doom_events.script's form: what the script editor offers.
 static NSString *const UDEventsScript =
     @"// Prints a line to the console.\n"
@@ -207,6 +213,7 @@ static NSString *const UDEventsScript =
         @[@"particles/udfix.prt", UDParticles],
         @[@"guis/udfix_terminal.gui", UDTerminalGUI],
         @[@"script/udfix_main.script", UDMainScript],
+        @[@"script/udfix_lights.script", UDLightsScript],
         @[@"script/doom_events.script", UDEventsScript],
     ]];
     [self writePak:@"pak001.pk4" entries:@[
@@ -470,6 +477,31 @@ static NSString *const UDEventsScript =
     [helpers textView:textView requestTooltipAtIndex:println + 2 point:NSZeroPoint];
     XCTAssertTrue([toolTip.textView.string hasPrefix:@"// Prints a line to the console."], @"%@", toolTip.textView.string);
     [toolTip close];
+}
+
+- (void)testJumpToDefinitionOpensTheScriptThatDefinesTheName {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+
+    UDBaseEditorViewController *lights = [self openOutlinePath:@"script/udfix_lights.script" inController:controller];
+    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:lights.view];
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"udfix_main"].location + 3, 0)];
+
+    // The script's language server answers once it has started and read
+    // the paks' scripts; the menu item goes through the window controller.
+    UDEditorTabManager *tabs = [self tabManagerOf:controller];
+    XCTAssertTrue([self spinUntil:^BOOL{
+        if ([tabs selectedEditor] != lights) return YES;
+        [NSApp sendAction:@selector(jumpToDefinition:) to:controller from:nil];
+        return [self spinUntil:^BOOL{ return [tabs selectedEditor] != lights; } timeout:0.5];
+    } timeout:10.0], @"the definition's script should open");
+
+    UDBaseEditorViewController *main = [tabs selectedEditor];
+    XCTAssertEqualObjects(main.item.path, @"script/udfix_main.script");
+    NSTextView *mainView = [self firstSubviewOfClass:[NSTextView class] inView:main.view];
+    XCTAssertEqualObjects(NSStringFromRange(mainView.selectedRange), NSStringFromRange(NSMakeRange(5, 10)),
+                          @"udfix_main, where 'void udfix_main()' names it");
 }
 
 #pragma mark - Editing

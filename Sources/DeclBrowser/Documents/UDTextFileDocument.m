@@ -1,6 +1,7 @@
 #import "UDTextFileDocument.h"
 #import "UDWorkspace.h"
 #import "idFileSystem.h"
+#import "UDScriptServer.h"
 
 @interface UDTextFileDocument ()
 @property (nonatomic, weak) NSTextView *textView;
@@ -55,6 +56,7 @@
 
     self.textContent = content;
     [self updateChangeCount:NSChangeCleared];
+    [UDScriptServer workspace:self.workspace didWriteFileAtPath:_path];
     return YES;
 }
 

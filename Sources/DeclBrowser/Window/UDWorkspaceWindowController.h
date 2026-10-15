@@ -34,4 +34,11 @@
 // File > Workspace Settings…: edit all workspace settings; applying them
 // restarts the workspace in place (closes tabs, reloads decls).
 - (IBAction)showWorkspaceSettings:(id)sender;
+
+// Edit > Jump to Definition: the current tab's, when it is a script's.
+- (IBAction)jumpToDefinition:(id)sender;
+
+// Opens the file at @a path (in the workspace's file system) in its tab,
+// selecting @a length characters from @a line's @a character (0-based).
+- (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
 @end

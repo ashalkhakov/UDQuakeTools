@@ -83,7 +83,6 @@ typedef struct indent_s {
                         length:(int)length
                           name:(NSString *)name
                          flags:(int)flags
-                    fileSystem:(idFileSystem *)fileSystem
                          error:(NSError **)error;
 
 // load a source file
@@ -122,7 +121,7 @@ typedef struct indent_s {
 // parse the rest of the line
 -(BOOL)parseRestOfLine:(NSMutableString *)str error:(NSError **)error;
 // unread the given token
--(BOOL)unreadToken:(idToken *)token error:(NSError **)error;
+-(void)unreadToken:(idToken *)token;
 // read a token only if on the current line
 -(BOOL)readTokenOnLine:(idToken *)token error:(NSError **)error;
 // read a signed integer
@@ -142,7 +141,7 @@ typedef struct indent_s {
 // Get the string from the marker to the current position
 -(void)stringFromMarker:(NSMutableString *)str clean:(BOOL)clean error:(NSError **)error;
 // add a define to the source
--(BOOL)addDefine:(NSString *)string error:(NSError **)error;
+-(BOOL)addDefine:(NSString *)string;
 // add builtin defines
 -(void)addBuiltinDefines;
 // set the source include path

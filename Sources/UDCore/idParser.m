@@ -2718,7 +2718,7 @@ int PC_OperatorPriority(int op) {
     return YES;
 }
 
--(void)freeSource:(bool)keepDefines {
+-(void)freeSource:(BOOL)keepDefines {
     idLexer *script;
     idToken *token;
     define_t *define;
@@ -2922,5 +2922,27 @@ int PC_OperatorPriority(int op) {
     return YES;
 }
 // jmarshall end
+
+// IsLoaded, GetFileName, GetFileOffset, GetFileTime and GetLineNum: the
+// script on top of the stack's, or nothing when none is loaded.
+-(BOOL)isLoaded {
+    return self->scriptstack != nil;
+}
+
+-(NSString *)fileName {
+    return self->scriptstack ? [self->scriptstack fileName] : @"";
+}
+
+-(int)fileOffset {
+    return self->scriptstack ? [self->scriptstack fileOffset] : 0;
+}
+
+-(unsigned int)fileTime {
+    return self->scriptstack ? [self->scriptstack fileTime] : 0;
+}
+
+-(int)lineNum {
+    return self->scriptstack ? [self->scriptstack lineNum] : 0;
+}
 
 @end

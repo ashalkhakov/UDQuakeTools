@@ -464,9 +464,14 @@ static NSString *DECL_WRITE_PROGRAM_IMAGES_CVAR = @"image_writeProgramImages";
 
 @class idDeclFile;
 
+// Abstract, as id's idDeclBase is (its methods are pure virtual): idDeclLocal
+// implements every one.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincomplete-implementation"
 @implementation idDeclBase
 
 @end
+#pragma clang diagnostic pop
 
 @interface idDeclLocal : idDeclBase {
 @public
@@ -3103,6 +3108,11 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
  */
 
 @implementation idDeclFile
+
+// id's idDeclFile(): the implicit file, of no default type.
+-(instancetype)init {
+    return [self initWithFileName:@"<implicit file>" defaultType:DECL_MAX_TYPES manager:nil];
+}
 
 -(instancetype)initWithFileName:(NSString *)filename defaultType:(declType_t)defaultType manager:(idDeclManager *)manager {
     self = [super init];

@@ -30,8 +30,9 @@ typedef NS_ENUM(NSInteger, UDGameType) {
                  displayName:(NSString *)displayName
                   identifier:(NSString *)identifier NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
+// Spelled out: GNUstep's NS_UNAVAILABLE is empty.
+- (instancetype)init __attribute__((unavailable));
++ (instancetype)new __attribute__((unavailable));
 
 + (NSArray<UDGame *> *)allGames;
 + (UDGame *)gameWithType:(UDGameType)type;

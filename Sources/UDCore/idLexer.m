@@ -1443,7 +1443,7 @@ static NSString *baseFolder;
     return self->line - self->lastline;
 }
 
--(BOOL)loadFile:(NSString *)filename isOSPath:(bool)OSPath error:(NSError **)error {
+-(BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error {
     idFile *fp;
     NSString *pathname;
     int length;

@@ -701,6 +701,12 @@ idFile_Memory
     return self->filePtr;
 }
 
+// SetGranularity
+-(void)setGranularity:(int)g {
+    NSAssert(g > 0, @"granularity must be positive");
+    self->granularity = g;
+}
+
 @end
 
 /*

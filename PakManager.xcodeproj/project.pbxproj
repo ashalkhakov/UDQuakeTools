@@ -197,8 +197,11 @@
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
 		BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */; };
+		5C0E00000000000000000001 /* UDScriptEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000005 /* UDScriptEvents.m */; };
 		93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5C0E00000000000000000002 /* UDScriptEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000004 /* UDScriptEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */; };
+		5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000006 /* UDScriptEventsTests.m */; };
 		EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; };
 		EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; };
@@ -498,8 +501,11 @@
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
+		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
 		76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextChecker.m; sourceTree = "<group>"; };
+		5C0E00000000000000000005 /* UDScriptEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEvents.m; sourceTree = "<group>"; };
 		013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextCheckerTests.m; sourceTree = "<group>"; };
+		5C0E00000000000000000006 /* UDScriptEventsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEventsTests.m; sourceTree = "<group>"; };
 		EC0D00000000000000000001 /* UDCodeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDCodeKit.xcframework; path = .deps/UDCodeKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
@@ -690,7 +696,9 @@
 				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
 				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
 				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
+				5C0E00000000000000000004 /* UDScriptEvents.h */,
 				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
+				5C0E00000000000000000005 /* UDScriptEvents.m */,
 			);
 			name = UDCore;
 			path = Sources/UDCore;
@@ -758,6 +766,7 @@
 				37E65B3E596BA91969F42366 /* DeclBrowser */,
 				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
 				013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */,
+				5C0E00000000000000000006 /* UDScriptEventsTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -966,6 +975,7 @@
 				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
 				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
 				93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */,
+				5C0E00000000000000000002 /* UDScriptEvents.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1258,6 +1268,7 @@
 				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
 				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
 				88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */,
+				5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1300,6 +1311,7 @@
 				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
 				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
 				D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */,
+				5C0E00000000000000000001 /* UDScriptEvents.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

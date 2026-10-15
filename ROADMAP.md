@@ -153,8 +153,10 @@ In order of value against cost; LOC is the MFC original's size.
 - [ ] **Script editor** (0.9k) — `.script` editing with highlighting,
       completion of events and functions, go to definition across the mod.
       Done: the editor is UDCodeKit's, highlighting `.script` with its
-      idScript grammar (a port of idCompiler's). Left: completion and go
-      to definition.
+      idScript grammar (a port of idCompiler's); and the helpers of the
+      tools' script editor, ported: the events of doom_events.script after
+      a '.', an event's parameters from its '(' to its ')', its help on
+      Option-click. Left: go to definition across the mod.
 
 ## 3. Script debugger
 

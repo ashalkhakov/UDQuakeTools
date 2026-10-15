@@ -296,7 +296,7 @@ static define_t *defineFromString(const char *string) {
     idParser *src = [[idParser alloc] init];
     define_t *def;
 
-    if (![src loadMemory:string length:strlen(string) name:@"*defineString" startLine:1 error:nil]) {
+    if (![src loadMemory:string length:(int)strlen(string) name:@"*defineString" error:nil]) {
         return NULL;
     }
     // create a define from the source

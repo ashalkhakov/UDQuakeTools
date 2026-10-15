@@ -89,7 +89,7 @@ typedef struct indent_s {
 // load a source file
 - (BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error;
 // load a source from memory
-- (BOOL)loadMemory:(const char *)ptr length:(int)length name:(NSString *)name startLine:(int)startLine error:(NSError**)error;
+- (BOOL)loadMemory:(const char *)ptr length:(int)length name:(NSString *)name error:(NSError **)error;
 // free the current source
 - (void)freeSource:(BOOL)keepDefines;
 // returns true if a source is loaded
@@ -99,13 +99,13 @@ typedef struct indent_s {
 // expect a certain token, reads the token when available
 - (BOOL)expectTokenString:(NSString *)string error:(NSError **)error;
 // expect a certain token type
-- (BOOL)expectTokenType:(int)type subtype:(int)subtype into:(idToken *)token error:(NSError **)error;
+- (BOOL)expectTokenType:(int)type subtype:(int)subtype token:(idToken *)token error:(NSError **)error;
 // expect a token
 - (BOOL)expectAnyToken:(idToken *)token error:(NSError **)error;
 // returns true and reads the token when it is available
 - (BOOL)checkTokenString:(NSString *)string error:(NSError **)error;
 // returns true and reads the token when a token with the given type is available
-- (BOOL)checkTokenType:(int)type subtype:(int)subtype into:(idToken *)token error:(NSError **)error;
+- (BOOL)checkTokenType:(int)type subtype:(int)subtype token:(idToken *)token error:(NSError **)error;
 // skip tokens until the given token string is read
 - (BOOL)skipUntilString:(NSString *)string error:(NSError **)error;
 // skip the rest of the current line

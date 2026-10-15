@@ -138,6 +138,14 @@ static NSString *const UDMainScript =
      "\tsys.println( \"udfix\" );\n"
      "}\n";
 
+// In doom_events.script's form: what the script editor offers.
+static NSString *const UDEventsScript =
+    @"// Prints a line to the console.\n"
+     "scriptEvent\tvoid\tprintln( string text );\n"
+     "\n"
+     "// Waits a while.\n"
+     "scriptEvent\tvoid\twait( float seconds );\n";
+
 @interface UDPakInstallTests : UDDeclBrowserTestCase
 @property (nonatomic, copy) NSString *installPath;
 @property (nonatomic, copy) NSString *savePath;
@@ -198,6 +206,7 @@ static NSString *const UDMainScript =
         @[@"particles/udfix.prt", UDParticles],
         @[@"guis/udfix_terminal.gui", UDTerminalGUI],
         @[@"script/udfix_main.script", UDMainScript],
+        @[@"script/doom_events.script", UDEventsScript],
     ]];
     [self writePak:@"pak001.pk4" entries:@[
         @[@"materials/udfix_walls.mtr", UDWallsMaterialsV2],
@@ -380,6 +389,46 @@ static NSString *const UDMainScript =
     NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_main.script"]
                                                 encoding:NSUTF8StringEncoding error:NULL];
     XCTAssertTrue([saved containsString:@"\"edited\""], @"saving should write the script under fs_savepath: %@", saved);
+}
+
+- (void)testAScriptOffersItsEventsAndTheirParameters {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    id<UDDiagnosticTextViewDelegate> helpers = (id<UDDiagnosticTextViewDelegate>)textView.delegate;
+    XCTAssertEqual(helpers, (id)script, @"the script editor helps with the typing");
+
+    // After "sys.", every event; narrowed by what follows.
+    [textView setSelectedRange:NSMakeRange(textView.string.length, 0)];
+    [textView insertText:@"sys"];
+    [textView insertText:@"."];
+    NSRange none = NSMakeRange(textView.selectedRange.location, 0);
+    NSArray *all = [helpers textView:textView completions:@[] forPartialWordRange:none indexOfSelectedItem:NULL];
+    XCTAssertEqualObjects(all, (@[@"println", @"wait"]));
+    [textView insertText:@"w"];
+    NSRange partial = NSMakeRange(textView.selectedRange.location - 1, 1);
+    XCTAssertEqualObjects([helpers textView:textView completions:@[] forPartialWordRange:partial indexOfSelectedItem:NULL], @[@"wait"]);
+
+    // An event's parameters from its '(' to its ')'.
+    [textView insertText:@"ait"];
+    [textView insertText:@"("];
+    UDHoverViewController *toolTip = [script valueForKey:@"toolTip"];
+    // AppKit shows and closes a popover on the run loop, animated.
+    XCTAssertTrue([self spinUntil:^BOOL{ return toolTip.isShown; } timeout:2.0], @"the parameters show at the '('");
+    XCTAssertEqualObjects(toolTip.textView.string, @"void wait( float seconds )");
+    [textView insertText:@"1"];
+    XCTAssertTrue(toolTip.isShown, @"and stay while the arguments are typed");
+    [textView insertText:@")"];
+    XCTAssertTrue([self spinUntil:^BOOL{ return !toolTip.isShown; } timeout:2.0], @"and go at the ')'");
+
+    // Option-click: the event's help.
+    NSUInteger println = [textView.string rangeOfString:@"println"].location;
+    [helpers textView:textView requestTooltipAtIndex:println + 2 point:NSZeroPoint];
+    XCTAssertTrue([toolTip.textView.string hasPrefix:@"// Prints a line to the console."], @"%@", toolTip.textView.string);
+    [toolTip close];
 }
 
 #pragma mark - Editing

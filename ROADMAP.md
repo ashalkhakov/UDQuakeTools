@@ -152,6 +152,9 @@ In order of value against cost; LOC is the MFC original's size.
       (4). Later, a native canvas for move/size/align/group (decision 3).
 - [ ] **Script editor** (0.9k) — `.script` editing with highlighting,
       completion of events and functions, go to definition across the mod.
+      Done: the editor is UDCodeKit's, highlighting `.script` with its
+      idScript grammar (a port of idCompiler's). Left: completion and go
+      to definition.
 
 ## 3. Script debugger
 

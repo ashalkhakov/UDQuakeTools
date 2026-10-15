@@ -9,6 +9,7 @@
 #import "UDBaseDocument.h"
 #import "UDZipWriter.h"
 #import "idDeclManager.h"
+#import <UDCodeKit/UDCodeKit.h>
 
 // A made-up idTech 4 game, laid out the way a retail install is: base/ with
 // numbered pk4s holding the decl folders the decl manager scans. Everything
@@ -331,6 +332,27 @@ static NSString *const UDMainScript =
     XCTAssertEqualObjects([self textFieldBoundTo:@"fullName" inView:other.view].stringValue, @"Luis M. Ortega");
 }
 
+/// The highlight class UDCodeKit gave the first occurrence of @a word, once
+/// the highlighting has caught up; nil when it has none.
+- (nullable NSString *)highlightOf:(NSString *)word inTextView:(NSTextView *)textView {
+    if (![textView.textStorage isKindOfClass:[UDTextModelTextStorage class]]) return nil;
+    UDTextModel *model = ((UDTextModelTextStorage *)textView.textStorage).textModel;
+    NSRange range = [textView.string rangeOfString:word];
+    if (range.location == NSNotFound) return nil;
+    __block NSString *found = nil;
+    [self spinUntil:^BOOL{
+        for (UDIntervalNode *node in [model decorationNodesInOffsetRange:(NSInteger)range.location
+                                                                     end:(NSInteger)NSMaxRange(range)]) {
+            if ([node.owner isEqualToString:UDHighlightDecorationOwner]
+                && node.start == (NSInteger)range.location && node.end == (NSInteger)NSMaxRange(range)) {
+                found = node.options.className;
+            }
+        }
+        return found != nil;
+    } timeout:2.0];
+    return found;
+}
+
 - (void)testScriptsAndGUIsInsideThePaksOpenAndSave {
     UDWorkspaceWindowController *controller = [self openInstall];
     if (controller == nil) return;
@@ -344,6 +366,10 @@ static NSString *const UDMainScript =
     XCTAssertTrue([script isKindOfClass:[UDTextEditorViewController class]], @"a script opens in the text editor, not %@", script);
     NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
     XCTAssertTrue([textView.string containsString:@"void udfix_main()"], @"the script's text should be shown:\n%@", textView.string);
+    XCTAssertEqualObjects([self highlightOf:@"void" inTextView:textView], @"type.builtin",
+                          @"a script is highlighted as idScript");
+    XCTAssertNil([self highlightOf:@"windowDef" inTextView:[self firstSubviewOfClass:[NSTextView class] inView:gui.view]],
+                 @"a GUI's text stays plain");
 
     [self typeText:@"void udfix_main() {\n\tsys.println( \"edited\" );\n}\n" intoTextView:textView];
     [self finishEvent];

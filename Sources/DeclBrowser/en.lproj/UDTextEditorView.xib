@@ -8,8 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDTextEditorViewController">
             <connections>
-                <outlet property="scrollView" destination="2" id="202"/>
-                <outlet property="textView" destination="3" id="203"/>
+                <outlet property="editorHost" destination="2" id="202"/>
                 <outlet property="view" destination="1" id="201"/>
             </connections>
         </customObject>
@@ -19,29 +18,10 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" id="2">
+                <customView id="2" userLabel="Editor Host">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <clipView key="contentView" id="4">
-                        <rect key="frame" x="1" y="1" width="598" height="398"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" continuousSpellChecking="YES" allowsUndo="YES" id="3">
-                                <rect key="frame" x="0.0" y="0.0" width="598" height="398"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                <size key="minSize" width="598" height="398"/>
-                                <size key="maxSize" width="10000000" height="10000000"/>
-                            </textView>
-                        </subviews>
-                    </clipView>
-                    <scroller key="verticalScroller" hidden="YES" horizontal="NO" id="5">
-                        <rect key="frame" x="583" y="1" width="16" height="398"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </scroller>
-                </scrollView>
+                </customView>
             </subviews>
             <point key="canvasLocation" x="140" y="154"/>
         </view>

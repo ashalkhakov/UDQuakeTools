@@ -4,8 +4,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Editor view controller for text/source files.
- * Embeds an NSTextView backed by a TextFileDocument (NSDocument subclass).
+ * Editor view controller for text/source files: UDCodeKit's code editor,
+ * in UDTextEditorView.xib's editor host, backed by a UDTextFileDocument or
+ * UDDeclDocument (NSDocument subclasses) for undo, saving and the dirty
+ * state. A file is highlighted by the language its extension names
+ * (idScript for .script); a decl is plain text.
  */
 @interface UDTextEditorViewController : UDBaseEditorViewController
 

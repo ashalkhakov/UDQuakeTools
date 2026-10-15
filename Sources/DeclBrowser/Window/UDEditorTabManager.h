@@ -1,5 +1,5 @@
 #import <AppKit/AppKit.h>
-#import "UDTabBarView.h"
+#import <UDCodeKit/UDTabBarView.h>
 
 @class UDBaseEditorViewController, UDWorkspace, UDWorkspaceItem;
 

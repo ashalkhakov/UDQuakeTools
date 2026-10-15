@@ -539,6 +539,65 @@ static NSString *const UDEventsScript =
     XCTAssertEqual((NSInteger)line, error.line, @"a click goes to the error's line");
 }
 
+/// A name being typed brings up what it can be, as Xcode does; typing in a
+/// string brings up nothing.
+- (void)testTypingANameOffersWhatItCanBe {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
+    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:10.0],
+                  @"the script's language server should start");
+
+    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"}"].location, 0)];
+    [textView insertText:@"\t"];
+    for (NSString *c in @[@"u", @"d", @"f"]) [textView insertText:c];
+    XCTAssertTrue([self spinUntil:^BOOL{ return textView.isShowingCompletions; } timeout:5.0], @"the list comes up");
+    id<UDDiagnosticTextViewDelegate> helpers = (id<UDDiagnosticTextViewDelegate>)textView.delegate;
+    NSRange word = NSMakeRange(textView.selectedRange.location - 3, 3);
+    NSArray *offered = [helpers textView:textView completions:@[] forPartialWordRange:word indexOfSelectedItem:NULL];
+    XCTAssertTrue([offered containsObject:@"udfix_main"], @"%@", offered);
+
+    [textView insertText:@"(\""];
+    XCTAssertFalse(textView.isShowingCompletions, @"leaving the name puts the list away");
+    for (NSString *c in @[@"a", @"b", @"c"]) [textView insertText:c];
+    [self spinUntil:^BOOL{ return textView.isShowingCompletions; } timeout:1.0];
+    XCTAssertFalse(textView.isShowingCompletions, @"nothing is offered in a string");
+}
+
+/// A call filled in as a completion leaves it, its placeholder typed over,
+/// has no errors once it is whole: those of the steps before it go.
+- (void)testAScriptsErrorsGoOnceACallIsTypedWhole {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    UDDiagnosticStore *store = ((UDTextEditorViewController *)script).diagnosticStore;
+
+    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"}"].location, 0)];
+    [textView insertText:@"\tsys.println(<#string text#>)\n"];
+    XCTAssertTrue([self spinUntil:^BOOL{ return store.allDiagnostics.count > 0; } timeout:5.0], @"a placeholder is an error");
+    [textView setSelectedRange:[textView.string rangeOfString:@"<#string text#>"]];
+    NSEvent *quote = [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint modifierFlags:NSEventModifierFlagShift
+                                     timestamp:0 windowNumber:textView.window.windowNumber context:nil
+                                    characters:@"\"" charactersIgnoringModifiers:@"\"" isARepeat:NO keyCode:48];
+    [textView keyDown:quote];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
+    [textView insertText:@"Reload"];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
+    [textView keyDown:quote];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
+    NSRange close = [textView.string rangeOfString:@"\"Reload\")"];
+    [textView setSelectedRange:NSMakeRange(NSMaxRange(close), 0)];
+    [textView insertText:@";"];
+    XCTAssertEqualObjects(textView.string, @"void udfix_main() {\n\tsys.println( \"udfix\" );\n\tsys.println(\"Reload\");\n}\n");
+    [self spinUntil:^BOOL{ return store.allDiagnostics.count == 0; } timeout:5.0];
+    XCTAssertEqual(store.allDiagnostics.count, 0U, @"%@", [store.allDiagnostics valueForKey:@"message"]);
+}
+
 - (void)testAScriptOffersItsEventsAndTheirParameters {
     UDWorkspaceWindowController *controller = [self openInstall];
     if (controller == nil) return;
@@ -580,6 +639,16 @@ static NSString *const UDEventsScript =
     XCTAssertTrue(toolTip.isShown, @"and stay while the arguments are typed");
     [textView insertText:@")"];
     XCTAssertTrue([self spinUntil:^BOOL{ return !toolTip.isShown; } timeout:2.0], @"and go at the ')'");
+
+    // The ')' not typed on its own (one typed with the '(' and stepped
+    // over): they go once the caret is past it.
+    [textView insertText:@";\n\tsys.wait"];
+    [textView insertText:@"("];
+    XCTAssertTrue([self spinUntil:^BOOL{ return toolTip.isShown; } timeout:5.0]);
+    [textView insertText:@"2, 3"];
+    XCTAssertTrue(toolTip.isShown, @"inside the call they stay");
+    [textView insertText:@");"];
+    XCTAssertTrue([self spinUntil:^BOOL{ return !toolTip.isShown; } timeout:2.0], @"past its ')' they go");
 
     // Option-click: the event's help.
     NSUInteger println = [textView.string rangeOfString:@"println"].location;

@@ -209,11 +209,31 @@ static NSString *UDCallSnippet(NSString *name, NSString *parms) {
     return [NSString stringWithFormat:@"%@(%@)", name, [stops componentsJoinedByString:@", "]];
 }
 
+/// Whether @a index is in a string or a "//" comment on its line: no names
+/// are offered there.
+static BOOL UDIndexIsInStringOrComment(NSString *text, NSUInteger index) {
+    NSUInteger lineStart = [text lineRangeForRange:NSMakeRange(index, 0)].location;
+    BOOL inString = NO;
+    for (NSUInteger i = lineStart; i < index; i++) {
+        unichar c = [text characterAtIndex:i];
+        if (inString) {
+            if (c == '\\') i++;
+            else if (c == '"') inString = NO;
+        } else if (c == '"') {
+            inString = YES;
+        } else if (c == '/' && i + 1 < index && [text characterAtIndex:i + 1] == '/') {
+            return YES;
+        }
+    }
+    return inString;
+}
+
 - (id)completion:(NSDictionary *)params {
     NSString *uri = nil;
     NSUInteger index = 0;
     NSString *text = [self textOfPositionParams:params uri:&uri index:&index];
     if (text == nil) return [NSNull null];
+    if (UDIndexIsInStringOrComment(text, index)) return @{ @"isIncomplete": @NO, @"items": @[] };
     NSUInteger start = index;
     while (start > 0 && UDIsNameCharacter([text characterAtIndex:start - 1])) start--;
 

@@ -24,6 +24,7 @@
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, NSString *> *completionInsertTexts;
 @property (nonatomic) NSUInteger toolTipIndex;          // where the requested tool tip goes
 @property (nonatomic) NSUInteger completionWordStart;   // where the word asked about begins
+@property (nonatomic) BOOL completionAsked;             // a completion request is out
 @property (nonatomic) BOOL hoverShowing;
 // What the server is being asked for is still wanted when it answers: the
 // parameters until their ')' (typed before the answer, say), the hover
@@ -247,6 +248,15 @@ static BOOL UDIsNameCharacter(unichar c) {
         if ([self nameBeforeIndex:self.typedIndex ofText:textView.string].length > 0) {
             [self requestCompletionAtIndex:self.typedIndex + 1];
         }
+    } else if (UDIsNameCharacter(c)) {
+        // A name being typed: what it can be, as Xcode offers it (the list,
+        // once shown, narrows as the name goes on).
+        NSString *name = [self nameBeforeIndex:self.typedIndex + 1 ofText:textView.string];
+        unichar first = [name characterAtIndex:0];
+        if (!(first >= '0' && first <= '9') && !self.completionAsked &&
+            ![(UDDiagnosticTextView *)textView isShowingCompletions]) {
+            [self requestCompletionAtIndex:self.typedIndex + 1];
+        }
     } else if (c == '(') {
         [self sendPendingEdits];
         UDPosition p = [self.session.textStorage.textModel getPositionAt:(NSInteger)self.typedIndex + 1];
@@ -272,10 +282,12 @@ static BOOL UDIsNameCharacter(unichar c) {
     NSString *text = self.editor.textView.string;
     self.completionWordStart = index - [self nameBeforeIndex:index ofText:text].length;
     [self sendPendingEdits];
-    [self.session.lspCoordinator completionAtIndex:index target:self action:@selector(_completionDidArrive:)];
+    self.completionAsked = [self.session.lspCoordinator completionAtIndex:index target:self
+                                                                   action:@selector(_completionDidArrive:)] != 0;
 }
 
 - (void)_completionDidArrive:(LSPResponse *)response {
+    self.completionAsked = NO;
     // An answer that comes after the caret left the word (typing on past
     // it: "wait(") is no longer wanted.
     NSString *text = self.editor.textView.string;
@@ -362,16 +374,25 @@ static BOOL UDIsNameCharacter(unichar c) {
     if (self.hoverShowing) [self hideToolTip];
 }
 
-// The caret leaving the call (a click elsewhere, before its '(' or on
-// another line): its parameters go.
+// The caret leaving the call (a click elsewhere, before its '(', past its
+// ')' or on another line): its parameters go.
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
     if (self.funcParmToolTipStart < 0) return;
     NSTextView *textView = notification.object;
     NSUInteger caret = textView.selectedRange.location, start = (NSUInteger)self.funcParmToolTipStart;
     NSString *text = textView.string;
-    if (caret < start || caret > text.length ||
-        [text rangeOfString:@"\n" options:NSLiteralSearch range:NSMakeRange(start, caret - start)].location != NSNotFound) {
+    if (caret < start || caret > text.length) {
         [self hideToolTip];
+        return;
+    }
+    NSInteger depth = 1;                        // inside the call's '('
+    for (NSUInteger i = start; i < caret; i++) {
+        unichar c = [text characterAtIndex:i];
+        if (c == '\n' || (c == ')' && --depth == 0)) {
+            [self hideToolTip];
+            return;
+        }
+        if (c == '(') depth++;
     }
 }
 

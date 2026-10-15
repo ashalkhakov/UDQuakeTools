@@ -38,6 +38,9 @@ NSString * _Nullable UDDoom3InstallPath(void);
 /// workspace does not start or the window does not load.
 - (nullable UDWorkspaceWindowController *)openWorkspaceWithSettings:(NSDictionary *)settings;
 
+/// A workspace document's window controller, once it has started (nil before).
+- (nullable UDWorkspaceWindowController *)workspaceWindowControllerOf:(UDWorkspaceDocument *)document;
+
 /// Closes a workspace opened with -openWorkspaceWithSettings: early (to
 /// reopen it fresh and see what was saved).
 - (void)closeWorkspace:(UDWorkspaceWindowController *)controller;

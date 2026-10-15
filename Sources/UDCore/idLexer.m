@@ -98,6 +98,15 @@ static NSString *baseFolder;
 
 @implementation idLexer
 
+// The default punctuation table is shared: built here, once, before any
+// lexer runs, so lexers on different threads (a workspace starting in the
+// background) never meet it half built.
++ (void)initialize {
+    if (self == [idLexer class]) {
+        [[[idLexer alloc] init] createPunctuationTable:default_punctuations];
+    }
+}
+
 - (BOOL)isLoaded {
     return self->loaded;
 }

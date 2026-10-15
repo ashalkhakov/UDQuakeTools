@@ -125,19 +125,17 @@ NSString *UDDoom3InstallPath(void) {
         return nil;
     }
 
+    // The workspace starts in the background; its window comes once it has.
     [document makeWindowControllers];
-    UDWorkspaceWindowController *controller = nil;
-    for (NSWindowController *candidate in document.windowControllers) {
-        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) {
-            controller = (UDWorkspaceWindowController *)candidate;
-        }
-    }
+    [self.openDocuments addObject:document];
+    [self spinUntil:^BOOL{ return [self workspaceWindowControllerOf:document] != nil; } timeout:60.0];
+    UDWorkspaceWindowController *controller = [self workspaceWindowControllerOf:document];
     if (controller == nil) {
         XCTFail(@"the workspace for %@ did not start, so no workspace window was made",
                 settings[@"fs_basepath"]);
+        [self.openDocuments removeObject:document];
         return nil;
     }
-    [self.openDocuments addObject:document];
 
     if (controller.window == nil) {
         XCTFail(@"%@", @"the workspace window did not load from UDWorkspaceWindow.xib");
@@ -147,6 +145,15 @@ NSString *UDDoom3InstallPath(void) {
     [controller.window setFrame:NSMakeRect(0, 0, 1280, 800) display:YES];
     [self spinUntil:^BOOL{ return NO; } timeout:0.05];
     return controller;
+}
+
+- (nullable UDWorkspaceWindowController *)workspaceWindowControllerOf:(UDWorkspaceDocument *)document {
+    for (NSWindowController *candidate in document.windowControllers) {
+        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) {
+            return (UDWorkspaceWindowController *)candidate;
+        }
+    }
+    return nil;
 }
 
 - (void)closeDocument:(UDWorkspaceDocument *)document {

@@ -3,26 +3,21 @@
 #import "UDWorkspaceManager.h"
 #import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import "UDWorkspaceOpeningController.h"
 
 @interface UDWorkspaceDocument ()
 // A new workspace's settings dialog, while it is up.
 @property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
+// "Opening…", while the workspace starts.
+@property (nonatomic, strong, nullable) UDWorkspaceOpeningController *openingController;
 @end
 
 @implementation UDWorkspaceDocument
 
 - (void)makeWindowControllers {
-    NSError *error = nil;
-
     if (self.workspace != nil) {
-        // Already configured (opened from file) — go straight to workspace window
-        BOOL success = [self applySettingsAndCreateWorkspace:&error];
-        if (success) {
-            [self addWorkspaceWindowController];
-        } else {
-            [self presentError:error]; // FIXME: is this correct?
-            [self close];
-        }
+        // Already configured (opened from file): start it, then its window.
+        [self _startWorkspace];
         return;
     }
 
@@ -46,51 +41,39 @@
 }
 
 - (void)_settingsDidFinish:(UDWorkspaceSettingsWindowController *)settingsWC {
-    NSError *error = nil;
     self.settingsController = nil;
-
-    BOOL ret = NO;
-    if (settingsWC.result == NSModalResponseOK) {
-        // The settings window edits a scratch copy; apply it to the real
-        // workspace before starting it up.
-        [self.workspace applySettingsFromDictionary:settingsWC.scratchWorkspace.dictionaryRepresentation];
-        [self updateChangeCount:NSChangeDone];
-
-        BOOL success = [self applySettingsAndCreateWorkspace:&error];
-        if (success) {
-            ret = YES;
-        } else {
-            [self presentError:error]; // FIXME: is this correct?
-            ret = NO;
-        }
-    } else {
-        // user cancelled
-        ret = NO;
-    }
-
-    if (ret == YES) {
-        [self addWorkspaceWindowController];
-        [self showWindows];
-    } else {
+    if (settingsWC.result != NSModalResponseOK) {
         [self close];
+        return;
     }
+    // The settings window edits a scratch copy; apply it to the real
+    // workspace before starting it up.
+    [self.workspace applySettingsFromDictionary:settingsWC.scratchWorkspace.dictionaryRepresentation];
+    [self updateChangeCount:NSChangeDone];
+    [self _startWorkspace];
 }
 
-- (BOOL)applySettingsAndCreateWorkspace:(NSError **)error {
-    if (![self.workspace startup:error]) {
-        // TODO: show this as error message
-        return NO;
-    }
-
-    [[UDWorkspaceManager sharedManager] registerWorkspace:self.workspace];
-
-    return YES;
+/// The workspace starts in the background (its paks and decls take a while
+/// from a hard disk), "Opening…" up meanwhile; its window comes once it has.
+- (void)_startWorkspace {
+    self.openingController = [[UDWorkspaceOpeningController alloc] initWithWorkspaceName:self.displayName];
+    [self.openingController showOverWindow:nil];
+    [self.workspace startupInBackgroundWithTarget:self action:@selector(_workspaceDidStart:)];
 }
 
-- (void)addWorkspaceWindowController {
+- (void)_workspaceDidStart:(UDWorkspace *)workspace {
+    [self.openingController close];
+    self.openingController = nil;
+    if (workspace.startupError != nil) {
+        [self presentError:workspace.startupError];
+        [self close];
+        return;
+    }
+    [[UDWorkspaceManager sharedManager] registerWorkspace:workspace];
     UDWorkspaceWindowController *wc =
         [[UDWorkspaceWindowController alloc] initWithWindowNibName:@"UDWorkspaceWindow"];
     [self addWindowController:wc];
+    [self showWindows];
 }
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {

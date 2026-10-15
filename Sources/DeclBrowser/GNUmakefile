@@ -32,6 +32,7 @@ DeclBrowser_OBJC_FILES = \
     Window/UDEditorTabManager.m \
     Window/UDTextPromptPanel.m \
     Window/UDWorkspaceSettingsWindowController.m \
+    Window/UDWorkspaceOpeningController.m \
     Window/UDWorkspaceWindowController.m
 
 DeclBrowser_INCLUDE_DIRS = \
@@ -55,6 +56,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDPDAEmailEditorView.xib \
     Resources/UDPDAVideoEditorView.xib \
     Resources/UDWorkspaceSettings.xib \
+    Resources/UDWorkspaceOpening.xib \
     Resources/en.lproj/UDImageViewerView.xib \
     en.lproj/UDTextEditorView.xib \
     DeclBrowser-Info.plist

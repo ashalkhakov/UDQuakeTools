@@ -264,11 +264,12 @@ static NSString *const UDEventsScript =
     [settings ok:nil];
 
     XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
-    UDWorkspaceWindowController *workspace = nil;
-    for (NSWindowController *candidate in document.windowControllers) {
-        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) workspace = (UDWorkspaceWindowController *)candidate;
-    }
-    XCTAssertNotNil(workspace, @"and the workspace opens");
+    NSWindowController *opening = [document valueForKey:@"openingController"];
+    XCTAssertTrue(opening.window.isVisible, @"the workspace starts in the background, \u201COpening\u2026\u201D up meanwhile");
+    XCTAssertTrue([self spinUntil:^BOOL{ return [self workspaceWindowControllerOf:document] != nil; } timeout:30.0],
+                  @"and the workspace opens");
+    XCTAssertFalse(opening.window.isVisible, @"\u201COpening\u2026\u201D goes when it has");
+    UDWorkspaceWindowController *workspace = [self workspaceWindowControllerOf:document];
     if (workspace != nil) [self closeWorkspace:workspace];
 }
 
@@ -304,6 +305,17 @@ static NSString *const UDEventsScript =
     XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
     XCTAssertEqual([tabs allEditors].count, 0U, @"and restarts the workspace: its tabs close");
     XCTAssertNil([controller valueForKey:@"settingsController"]);
+
+    // It restarts in the background: the window offers nothing meanwhile.
+    NSWindowController *opening = [controller valueForKey:@"openingController"];
+    XCTAssertTrue(opening.window.isVisible, @"\u201COpening\u2026\u201D over the window");
+    XCTAssertEqual(controller.outlineView.numberOfRows, 0, @"no decls to open while it restarts");
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Workspace Settings\u2026" action:@selector(showWorkspaceSettings:) keyEquivalent:@""];
+    XCTAssertFalse([(id)controller validateMenuItem:item], @"nor commands");
+    XCTAssertTrue([self spinUntil:^BOOL{ return [controller valueForKey:@"openingController"] == nil; } timeout:30.0]);
+    XCTAssertFalse(opening.window.isVisible);
+    XCTAssertGreaterThan(controller.outlineView.numberOfRows, 0, @"its decls are back");
+    XCTAssertTrue([(id)controller validateMenuItem:item]);
 }
 
 - (void)testCancellingAnOpenWorkspacesSettingsChangesNothing {

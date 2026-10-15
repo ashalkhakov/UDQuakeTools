@@ -48,6 +48,7 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/Window/UDEditorTabManager.m \
     $(APP_DIR)/Window/UDTextPromptPanel.m \
     $(APP_DIR)/Window/UDWorkspaceSettingsWindowController.m \
+    $(APP_DIR)/Window/UDWorkspaceOpeningController.m \
     $(APP_DIR)/Window/UDWorkspaceWindowController.m
 
 DeclBrowserTests_INCLUDE_DIRS = \
@@ -67,6 +68,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDPDAEmailEditorView.xib \
     $(APP_DIR)/Resources/UDPDAVideoEditorView.xib \
     $(APP_DIR)/Resources/UDWorkspaceSettings.xib \
+    $(APP_DIR)/Resources/UDWorkspaceOpening.xib \
     $(APP_DIR)/Resources/en.lproj/UDImageViewerView.xib \
     $(APP_DIR)/en.lproj/UDTextEditorView.xib
 

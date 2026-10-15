@@ -15,6 +15,8 @@
 
 @implementation UDWorkspace {
     NSPersistentStoreCoordinator *_declStoreCoordinator;
+    id _startupTarget;             // while a background startup runs
+    SEL _startupAction;
 }
 
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir {
@@ -106,6 +108,34 @@
     }
     
     return YES;
+}
+
+- (void)startupInBackgroundWithTarget:(id)target action:(SEL)action {
+    _startupTarget = target;
+    _startupAction = action;
+    _startupError = nil;
+    [NSThread detachNewThreadSelector:@selector(_startupThread) toTarget:self withObject:nil];
+}
+
+- (void)_startupThread {
+    @autoreleasepool {
+        NSError *error = nil;
+        if (![self startup:&error]) {
+            _startupError = error ?: [NSError errorWithDomain:@"UDWorkspace" code:1
+                                                     userInfo:@{ NSLocalizedDescriptionKey: @"The workspace did not start." }];
+        }
+        [self performSelectorOnMainThread:@selector(_startupDidFinish) withObject:nil waitUntilDone:NO];
+    }
+}
+
+- (void)_startupDidFinish {
+    id target = _startupTarget;
+    SEL action = _startupAction;
+    _startupTarget = nil;
+    _startupAction = NULL;
+    if (target != nil && action != NULL) {
+        ((void (*)(id, SEL, UDWorkspace *))[target methodForSelector:action])(target, action, self);
+    }
 }
 
 -(void)shutdown {

@@ -8,6 +8,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import "UDWorkspaceOpeningController.h"
 #import <UDCodeKit/UDTabBarView.h>
 #import <UDCodeKit/UDErrorsViewController.h>
 #import "UDTextPromptPanel.h"
@@ -21,6 +22,9 @@
 @property (nonatomic, weak) IBOutlet NSView *issuesHost;
 @property (nonatomic, strong) UDErrorsViewController *issuesNavigator;
 @property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
+// "Opening…", while the workspace restarts with new settings.
+@property (nonatomic, strong, nullable) UDWorkspaceOpeningController *openingController;
+@property (nonatomic, readonly, getter=isRestarting) BOOL restarting;
 @end
 
 @implementation UDWorkspaceWindowController
@@ -269,16 +273,29 @@
     [self.document updateChangeCount:NSChangeDone];
 
     [self.tabManager closeAllTabs];
+    [self.declBrowser clear];
     [UDScriptServer stopForWorkspace:workspace];
     [workspace shutdown];
 
-    NSError *error = nil;
-    if (![workspace startup:&error]) {
-        [self presentError:error];
+    // It starts again in the background, "Opening…" over the window, which
+    // offers nothing meanwhile (its outline empty, its commands off).
+    self.openingController = [[UDWorkspaceOpeningController alloc] initWithWorkspaceName:[(NSDocument *)self.document displayName]];
+    [self.openingController showOverWindow:self.window];
+    [workspace startupInBackgroundWithTarget:self action:@selector(_workspaceDidRestart:)];
+}
+
+- (void)_workspaceDidRestart:(UDWorkspace *)workspace {
+    [self.openingController close];
+    self.openingController = nil;
+    if (workspace.startupError != nil) {
+        [self presentError:workspace.startupError];
         return;
     }
-
     [self.declBrowser reset];
+}
+
+- (BOOL)isRestarting {
+    return self.openingController != nil;
 }
 
 #pragma mark - Issues
@@ -342,6 +359,9 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     SEL action = menuItem.action;
+    if (self.isRestarting) {
+        return NO;
+    }
 
     if (action == @selector(jumpToDefinition:)) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];

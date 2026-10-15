@@ -60,10 +60,6 @@
 
 - (void)_finishWithResult:(NSModalResponse)result {
     _result = result;
-    if (self.target == nil) {
-        [NSApp stopModalWithCode:result];
-        return;
-    }
     id target = self.target;
     self.target = nil;          // once: closing the window below is no cancel
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:self.window];

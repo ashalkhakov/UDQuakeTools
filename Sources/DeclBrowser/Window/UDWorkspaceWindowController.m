@@ -17,6 +17,7 @@
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
+@property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
 @end
 
 @implementation UDWorkspaceWindowController
@@ -188,20 +189,28 @@
 #pragma mark - Workspace settings
 
 // File > Workspace Settings…: edit ALL workspace settings (paths, game,
-// file system flags, decl options) in the tabbed settings window. On OK the
-// workspace is restarted in place — the new paths/game invalidate the loaded
-// VFS and decls, so every tab is closed and the browser tree rebuilt.
+// file system flags, decl options) in the tabbed settings window, a plain
+// window (no modal session holding the menus); OK or Cancel come back to
+// -_settingsDidFinish:. On OK the workspace is restarted in place: the new
+// paths/game invalidate the loaded VFS and decls, so every tab is closed
+// and the browser tree rebuilt.
 - (IBAction)showWorkspaceSettings:(id)sender {
+    if (self.settingsController != nil) {
+        [self.settingsController showWindow:nil];
+        return;
+    }
     UDWorkspaceSettingsWindowController *settingsWC =
         [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
     settingsWC.document = self.document;
+    settingsWC.target = self;
+    settingsWC.action = @selector(_settingsDidFinish:);
+    self.settingsController = settingsWC;
+    [settingsWC showWindow:nil];
+}
 
-    NSWindow *settingsWindow = [settingsWC window];
-    [settingsWindow makeKeyAndOrderFront:nil];
-    NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
-    [settingsWindow orderOut:nil];
-
-    if (result != NSModalResponseOK) {
+- (void)_settingsDidFinish:(UDWorkspaceSettingsWindowController *)settingsWC {
+    self.settingsController = nil;
+    if (settingsWC.result != NSModalResponseOK) {
         return;
     }
 
@@ -262,6 +271,10 @@
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
+    // The settings go with the workspace, unapplied.
+    self.settingsController.target = nil;
+    [self.settingsController close];
+    self.settingsController = nil;
     [self.tabManager closeAllTabs];
     [UDScriptServer stopForWorkspace:self.workspace];
 }

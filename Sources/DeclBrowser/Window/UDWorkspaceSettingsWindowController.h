@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The workspace settings window (used both when creating a new workspace and
- * from File > Workspace Settings… on an open one).
+ * from File > Workspace Settings… on an open one), a plain window.
  *
  * All controls are BOUND (through the objectController) to a scratch
  * UDWorkspace built from the source workspace's dictionaryRepresentation, so
@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
  * adding a control to the xib and binding it to selection.<property>.
  *
  * The controller itself never touches the real workspace: OK only validates
- * the scratch and ends the dialog: by stopping the modal session it runs in,
- * or, shown as a plain window (a new workspace's), by sending its action to
- * its target, with -result saying which button ended it. The CALLER applies
+ * the scratch and ends the dialog, sending its action to its target, with
+ * -result saying which button ended it. The CALLER applies
  * `scratchWorkspace.dictionaryRepresentation` via
  * -[UDWorkspace applySettingsFromDictionary:] (and restarts the workspace if
  * it was already running).
@@ -28,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /** The scratch copy being edited. Valid after the window has loaded. */
 @property (nonatomic, strong, readonly, nullable) UDWorkspace *scratchWorkspace;
 
-/** When set, the dialog is a plain window, not a modal session: OK, Cancel
- *  and closing it send @a action to @a target (with this controller). */
+/** OK, Cancel and closing the window send @a action to @a target (with
+ *  this controller). */
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;
 

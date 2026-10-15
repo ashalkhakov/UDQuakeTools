@@ -272,6 +272,47 @@ static NSString *const UDEventsScript =
     XCTAssertEqual(document.windowControllers.count, 0U, @"no workspace window");
 }
 
+#pragma mark - An open workspace's settings
+
+/// Workspace Settings… on an open workspace: a plain window too.
+- (UDWorkspaceSettingsWindowController *)settingsOfOpenWorkspace:(UDWorkspaceWindowController *)controller {
+    [NSApp sendAction:@selector(showWorkspaceSettings:) to:controller from:nil];
+    UDWorkspaceSettingsWindowController *settings = [controller valueForKey:@"settingsController"];
+    XCTAssertNotNil(settings);
+    XCTAssertTrue(settings.window.isVisible);
+    XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
+    return settings;
+}
+
+- (void)testAnOpenWorkspacesSettingsRestartItOnOK {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDEditorTabManager *tabs = [self tabManagerOf:controller];
+    XCTAssertEqual([tabs allEditors].count, 1U);
+
+    UDWorkspaceSettingsWindowController *settings = [self settingsOfOpenWorkspace:controller];
+    [settings ok:nil];
+    XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
+    XCTAssertEqual([tabs allEditors].count, 0U, @"and restarts the workspace: its tabs close");
+    XCTAssertNil([controller valueForKey:@"settingsController"]);
+}
+
+- (void)testCancellingAnOpenWorkspacesSettingsChangesNothing {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDEditorTabManager *tabs = [self tabManagerOf:controller];
+
+    UDWorkspaceSettingsWindowController *settings = [self settingsOfOpenWorkspace:controller];
+    XCTAssertEqual([self settingsOfOpenWorkspace:controller], settings, @"asking again shows the same window");
+    settings.scratchWorkspace.fs_game = @"elsewhere";
+    [settings.window performClose:nil];
+    XCTAssertFalse(settings.window.isVisible, @"closing the window is Cancel");
+    XCTAssertEqual([tabs allEditors].count, 1U, @"the workspace goes on as it was");
+    XCTAssertEqualObjects(controller.declBrowser.workspace.fs_game, @"base");
+}
+
 #pragma mark - Browsing
 
 - (void)testTheOutlineListsTheDeclsInsideThePaks {

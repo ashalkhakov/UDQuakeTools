@@ -31,8 +31,8 @@
 - (IBAction)saveAllDocuments:(id)sender; // Save every dirty open tab
 - (IBAction)saveDocumentAs:(id)sender;   // Save the current decl as a new decl
 
-// File > Workspace Settings…: edit all workspace settings; applying them
-// restarts the workspace in place (closes tabs, reloads decls).
+// File > Workspace Settings…: edit all workspace settings in a plain window;
+// applying them restarts the workspace in place (closes tabs, reloads decls).
 - (IBAction)showWorkspaceSettings:(id)sender;
 
 // Edit > Jump to Definition: the current tab's, when it is a script's.

@@ -10,6 +10,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
     UDScriptEventsTests.m \
+    UDScriptIndexTests.m \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \

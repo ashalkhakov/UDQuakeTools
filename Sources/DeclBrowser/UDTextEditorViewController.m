@@ -88,13 +88,14 @@
     [self _embedEditorForLanguageOfURL:languageURL];
 
     // The document fills the editor's text view, saves from it, and counts
-    // its changes; the editor's edits are undone through its undo manager.
+    // its changes; the editor's edits are undone through its undo manager,
+    // from after the filling, which is no edit.
     [self.document setTextView:self.editor.textView];
+    self.session.textStorage.textModel.undoManager = self.document.undoManager;
 }
 
 - (void)_embedEditorForLanguageOfURL:(nullable NSURL *)url {
     UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"" fileURL:url];
-    text.textModel.undoManager = self.document.undoManager;
     self.session = [[UDEditorSession alloc] initWithDocument:text];
 
     // The editor's view first, so its layout manager is attached before the

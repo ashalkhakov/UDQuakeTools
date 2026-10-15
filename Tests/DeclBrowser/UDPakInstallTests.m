@@ -6,6 +6,7 @@
 #import "UDTextEditorViewController.h"
 #import "UDWorkspace.h"
 #import "UDWorkspaceDocument.h"
+#import "UDWorkspaceSettingsWindowController.h"
 #import "UDBaseDocument.h"
 #import "UDZipWriter.h"
 #import "idDeclManager.h"
@@ -227,6 +228,43 @@ static NSString *const UDEventsScript =
                                                                       savePath:self.savePath]];
 }
 
+#pragma mark - A new workspace
+
+/// A new workspace's settings dialog: a plain window, no modal session
+/// holding the menus.
+- (UDWorkspaceSettingsWindowController *)settingsOfNewWorkspace:(UDWorkspaceDocument *)document {
+    [document makeWindowControllers];
+    UDWorkspaceSettingsWindowController *settings = [document valueForKey:@"settingsController"];
+    XCTAssertNotNil(settings, @"a new workspace asks for its settings");
+    XCTAssertTrue(settings.window.isVisible);
+    XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
+    return settings;
+}
+
+- (void)testANewWorkspaceStartsWithTheSettingsItIsGiven {
+    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
+    [settings.scratchWorkspace applySettingsFromDictionary:[self workspaceSettingsWithBasePath:self.installPath
+                                                                                      savePath:self.savePath]];
+    [settings ok:nil];
+
+    XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
+    UDWorkspaceWindowController *workspace = nil;
+    for (NSWindowController *candidate in document.windowControllers) {
+        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) workspace = (UDWorkspaceWindowController *)candidate;
+    }
+    XCTAssertNotNil(workspace, @"and the workspace opens");
+    if (workspace != nil) [self closeWorkspace:workspace];
+}
+
+- (void)testCancellingANewWorkspaceOpensNothing {
+    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
+    [settings cancel:nil];
+    XCTAssertFalse(settings.window.isVisible);
+    XCTAssertEqual(document.windowControllers.count, 0U, @"no workspace window");
+}
+
 #pragma mark - Browsing
 
 - (void)testTheOutlineListsTheDeclsInsideThePaks {
@@ -375,6 +413,9 @@ static NSString *const UDEventsScript =
     XCTAssertTrue([script isKindOfClass:[UDTextEditorViewController class]], @"a script opens in the text editor, not %@", script);
     NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
     XCTAssertTrue([textView.string containsString:@"void udfix_main()"], @"the script's text should be shown:\n%@", textView.string);
+    [self finishEvent];
+    XCTAssertFalse(script.editorDocument.isDocumentEdited, @"opening a script is no edit");
+    XCTAssertFalse(gui.editorDocument.isDocumentEdited, @"nor is opening a GUI");
     XCTAssertEqualObjects([self highlightOf:@"void" inTextView:textView], @"type.builtin",
                           @"a script is highlighted as idScript");
     XCTAssertNil([self highlightOf:@"windowDef" inTextView:[self firstSubviewOfClass:[NSTextView class] inView:gui.view]],

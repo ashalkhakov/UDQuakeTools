@@ -4,6 +4,11 @@
 #import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceSettingsWindowController.h"
 
+@interface UDWorkspaceDocument ()
+// A new workspace's settings dialog, while it is up.
+@property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
+@end
+
 @implementation UDWorkspaceDocument
 
 - (void)makeWindowControllers {
@@ -21,7 +26,9 @@
         return;
     }
 
-    // New document — show settings window modally first
+    // New document — its settings first, in a plain window (not a modal
+    // session, which would hold the menus); OK or Cancel come back to
+    // -_settingsDidFinish:.
 
     UDWorkspaceSettingsWindowController *settingsWC =
         [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
@@ -31,25 +38,19 @@
     // defaults the workspace itself would use.
     self.workspace = [[UDWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
 
-    NSWindow *settingsWindow = [settingsWC window];
     settingsWC.document = self;
+    settingsWC.target = self;
+    settingsWC.action = @selector(_settingsDidFinish:);
+    self.settingsController = settingsWC;
+    [settingsWC showWindow:nil];
+}
 
-    // Optional but nice: hide the main window while configuring.
-    // (Typed intermediate: GNUstep's -windowControllers returns a plain
-    // NSArray, so firstObject is `id` there and dot-syntax property access
-    // would not compile.)
-    NSWindowController *mainWindowController = self.windowControllers.firstObject;
-    NSWindow *mainWindow = mainWindowController.window;
-    [mainWindow orderOut:nil];
-
-    // Real modal session – always interactable
-    [settingsWindow makeKeyAndOrderFront:nil];
-    NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
-
-    [settingsWindow orderOut:nil];
+- (void)_settingsDidFinish:(UDWorkspaceSettingsWindowController *)settingsWC {
+    NSError *error = nil;
+    self.settingsController = nil;
 
     BOOL ret = NO;
-    if (result == NSModalResponseOK) {
+    if (settingsWC.result == NSModalResponseOK) {
         // The settings window edits a scratch copy; apply it to the real
         // workspace before starting it up.
         [self.workspace applySettingsFromDictionary:settingsWC.scratchWorkspace.dictionaryRepresentation];
@@ -57,7 +58,6 @@
 
         BOOL success = [self applySettingsAndCreateWorkspace:&error];
         if (success) {
-            [mainWindow makeKeyAndOrderFront:nil];   // show the real window
             ret = YES;
         } else {
             [self presentError:error]; // FIXME: is this correct?

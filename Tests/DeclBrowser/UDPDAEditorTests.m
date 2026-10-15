@@ -284,7 +284,9 @@ static NSString *const UDFixturePDA =
 
     [self selectTabLabeled:@"Emails" inView:editor.view];
     NSSegmentedControl *emailButtons = [self segmentedControlWithAction:@selector(addOrRemoveEmail:) inView:editor.view];
-    XCTAssertTrue([editor.emailArrayController setSelectionIndex:0], @"select the only email");
+    XCTAssertGreaterThan([editor.emailArrayController.arrangedObjects count], 0U, @"select the only email");
+    [editor.emailArrayController setSelectionIndex:0];     // NO when it was selected already
+    XCTAssertEqual(editor.emailArrayController.selectionIndex, 0U, @"select the only email");
     [emailButtons setSelectedSegment:1];
     [NSApp sendAction:emailButtons.action to:emailButtons.target from:emailButtons];
 

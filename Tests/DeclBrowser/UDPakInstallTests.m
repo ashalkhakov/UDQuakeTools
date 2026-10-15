@@ -11,6 +11,7 @@
 #import "UDZipWriter.h"
 #import "idDeclManager.h"
 #import <UDCodeKit/UDCodeKit.h>
+#import <UDCodeKit/UDErrorsViewController.h>
 
 // A made-up idTech 4 game, laid out the way a retail install is: base/ with
 // numbered pk4s holding the decl folders the decl manager scans. Everything
@@ -510,6 +511,34 @@ static NSString *const UDEventsScript =
     XCTAssertEqualObjects(saved, @"void udfix_crlf() {\r\n\tsys.wait( 1 ); // waited\r\n}\r\n");
 }
 
+/// The Issues tab lists an open script's errors, by the script's name; a
+/// click on one goes to its line.
+- (void)testTheIssuesTabListsAnOpenScriptsErrors {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    [textView setSelectedRange:NSMakeRange(textView.string.length, 0)];
+    [textView insertText:@"void broken( {\n"];
+
+    UDErrorsViewController *issues = [controller valueForKey:@"issuesNavigator"];
+    XCTAssertNotNil(issues, @"the third tab holds UDCodeKit's issues navigator");
+    UDDiagnosticStore *store = ((UDTextEditorViewController *)script).diagnosticStore;
+    XCTAssertTrue([self spinUntil:^BOOL{ return store.allDiagnostics.count > 0; } timeout:5.0], @"the error is found");
+    NSArray *entries = [issues valueForKey:@"entries"];
+    XCTAssertEqual(entries.count, 1U, @"one open script");
+    XCTAssertEqualObjects([entries.firstObject valueForKey:@"displayName"], @"udfix_main.script");
+    XCTAssertEqual([entries.firstObject valueForKey:@"store"], store);
+
+    UDDiagnosticItem *error = store.allDiagnostics.firstObject;
+    [textView setSelectedRange:NSMakeRange(0, 0)];
+    [controller errorsViewController:issues didSelectDiagnostic:error inStore:store];
+    NSUInteger line = 1;
+    NSString *text = textView.string;
+    for (NSUInteger i = 0; i < textView.selectedRange.location; i++) if ([text characterAtIndex:i] == '\n') line++;
+    XCTAssertEqual((NSInteger)line, error.line, @"a click goes to the error's line");
+}
+
 - (void)testAScriptOffersItsEventsAndTheirParameters {
     UDWorkspaceWindowController *controller = [self openInstall];
     if (controller == nil) return;
@@ -536,6 +565,8 @@ static NSString *const UDEventsScript =
     [textView insertText:@"w"];
     NSRange partial = NSMakeRange(textView.selectedRange.location - 1, 1);
     XCTAssertEqualObjects([helpers textView:textView completions:@[] forPartialWordRange:partial indexOfSelectedItem:NULL], @[@"wait"]);
+    XCTAssertEqualObjects([(id)helpers textView:textView insertTextForCompletion:@"wait"], @"wait(<#float seconds#>)",
+                          @"accepting it inserts the call, its argument a placeholder");
 
     // An event's parameters from its '(' to its ')'.
     [textView insertText:@"ait"];

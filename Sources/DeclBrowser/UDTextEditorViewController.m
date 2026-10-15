@@ -20,9 +20,16 @@
 @property (nonatomic, strong, nullable) LSPClient *scriptServer;
 @property (nonatomic, copy, nullable) NSURL *scriptURL;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *completionList;
+// What each completion inserts, by its label: the server's snippet, as placeholders.
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, NSString *> *completionInsertTexts;
 @property (nonatomic) NSUInteger toolTipIndex;          // where the requested tool tip goes
 @property (nonatomic) NSUInteger completionWordStart;   // where the word asked about begins
-@property (nonatomic) BOOL hoverShowing;                // the tool tip is the mouse's, not the parameters' 
+@property (nonatomic) BOOL hoverShowing;
+// What the server is being asked for is still wanted when it answers: the
+// parameters until their ')' (typed before the answer, say), the hover
+// until the mouse leaves the name.
+@property (nonatomic) BOOL parmsWanted;
+@property (nonatomic) BOOL hoverWanted;                // the tool tip is the mouse's, not the parameters' 
 @property (nonatomic, strong, nullable) UDHoverViewController *toolTip;
 @property (nonatomic) NSInteger funcParmToolTipStart;   // after the '(', or -1
 @property (nonatomic) unichar typedCharacter;           // what the edit typed, or 0
@@ -108,6 +115,10 @@
             [self.session startLanguageServerWithClient:self.scriptServer documentURL:self.scriptURL];
         }
     }
+}
+
+- (UDDiagnosticStore *)diagnosticStore {
+    return self.session.document.diagnosticStore;
 }
 
 #pragma mark - Jump to Definition
@@ -225,8 +236,9 @@ static BOOL UDIsNameCharacter(unichar c) {
 
     // The function parameter tool tip goes at its ')', or when the cursor
     // goes back before its '('.
-    if (self.funcParmToolTipStart >= 0) {
-        if (c == ')' || (c == 0x08 && (NSInteger)textView.selectedRange.location < self.funcParmToolTipStart)) {
+    if (self.funcParmToolTipStart >= 0 || self.parmsWanted) {
+        NSInteger start = self.funcParmToolTipStart >= 0 ? self.funcParmToolTipStart : (NSInteger)self.toolTipIndex + 1;
+        if (c == ')' || (c == 0x08 && (NSInteger)textView.selectedRange.location < start)) {
             [self hideToolTip];
         }
     }
@@ -239,6 +251,7 @@ static BOOL UDIsNameCharacter(unichar c) {
         [self sendPendingEdits];
         UDPosition p = [self.session.textStorage.textModel getPositionAt:(NSInteger)self.typedIndex + 1];
         self.toolTipIndex = self.typedIndex;
+        self.parmsWanted = YES;
         [self.scriptServer sendRequest:@"textDocument/signatureHelp"
                                 params:@{ @"textDocument": @{ @"uri": self.scriptURL.absoluteString },
                                           @"position": @{ @"line": @(p.line - 1), @"character": @(p.column - 1) } }
@@ -249,7 +262,7 @@ static BOOL UDIsNameCharacter(unichar c) {
 - (void)_signatureHelpDidArrive:(LSPResponse *)response {
     NSDictionary *help = [response.result isKindOfClass:[NSDictionary class]] ? response.result : nil;
     NSString *parms = [[help[@"signatures"] firstObject] objectForKey:@"label"];
-    if (![parms isKindOfClass:[NSString class]]) return;
+    if (![parms isKindOfClass:[NSString class]] || !self.parmsWanted) return;
     [self showToolTip:parms atIndex:self.toolTipIndex inTextView:self.editor.textView];
     self.hoverShowing = NO;
     self.funcParmToolTipStart = (NSInteger)self.toolTipIndex + 1;
@@ -272,10 +285,17 @@ static BOOL UDIsNameCharacter(unichar c) {
         return;
     }
     NSMutableArray<NSString *> *labels = [NSMutableArray array];
+    NSMutableDictionary<NSString *, NSString *> *insertTexts = [NSMutableDictionary dictionary];
     for (LSPCompletionItem *item in response.result) {
         [labels addObject:item.label];
+        NSString *insertText = [item.insertText isKindOfClass:[NSString class]] ? item.insertText : nil;
+        if (insertText.length > 0) {
+            BOOL snippet = [[(id)item.insertTextFormat description] integerValue] == 2;
+            insertTexts[item.label] = snippet ? UDPlaceholderTextFromSnippet(insertText) : insertText;
+        }
     }
     self.completionList = labels;
+    self.completionInsertTexts = insertTexts;
     if (labels.count > 0) {
         [(UDDiagnosticTextView *)self.editor.textView showCompleteList:nil];
     }
@@ -294,6 +314,11 @@ static BOOL UDIsNameCharacter(unichar c) {
         }
     }
     return matches;
+}
+
+// A call, its arguments placeholders to fill in (Tab between them).
+- (NSString *)textView:(UDDiagnosticTextView *)textView insertTextForCompletion:(NSString *)completion {
+    return self.completionInsertTexts[completion];
 }
 
 // Escape: the tool tip goes; otherwise what the server offers here (the
@@ -316,6 +341,7 @@ static BOOL UDIsNameCharacter(unichar c) {
     NSString *name = [self nameBeforeIndex:end ofText:text];
     if (name.length == 0) return;
     self.toolTipIndex = end - name.length;
+    self.hoverWanted = YES;
     [self sendPendingEdits];
     [self.session.lspCoordinator hoverAtIndex:characterIndex target:self action:@selector(_hoverDidArrive:)];
 }
@@ -323,7 +349,8 @@ static BOOL UDIsNameCharacter(unichar c) {
 - (void)_hoverDidArrive:(LSPResponse *)response {
     id contents = [response.result isKindOfClass:[NSDictionary class]] ? response.result[@"contents"] : nil;
     NSString *tip = [contents isKindOfClass:[NSDictionary class]] ? contents[@"value"] : contents;
-    if ([tip isKindOfClass:[NSString class]] && tip.length > 0 && self.funcParmToolTipStart < 0) {
+    if ([tip isKindOfClass:[NSString class]] && tip.length > 0 && self.hoverWanted &&
+        self.funcParmToolTipStart < 0 && !self.parmsWanted) {
         [self showToolTip:tip atIndex:self.toolTipIndex inTextView:self.editor.textView];
         self.hoverShowing = YES;
     }
@@ -331,7 +358,21 @@ static BOOL UDIsNameCharacter(unichar c) {
 
 // The mouse left the name: its help goes (the parameters' stays).
 - (void)textViewHoverDidEnd:(UDDiagnosticTextView *)textView {
+    self.hoverWanted = NO;
     if (self.hoverShowing) [self hideToolTip];
+}
+
+// The caret leaving the call (a click elsewhere, before its '(' or on
+// another line): its parameters go.
+- (void)textViewDidChangeSelection:(NSNotification *)notification {
+    if (self.funcParmToolTipStart < 0) return;
+    NSTextView *textView = notification.object;
+    NSUInteger caret = textView.selectedRange.location, start = (NSUInteger)self.funcParmToolTipStart;
+    NSString *text = textView.string;
+    if (caret < start || caret > text.length ||
+        [text rangeOfString:@"\n" options:NSLiteralSearch range:NSMakeRange(start, caret - start)].location != NSNotFound) {
+        [self hideToolTip];
+    }
 }
 
 - (void)showToolTip:(NSString *)text atIndex:(NSUInteger)index inTextView:(NSTextView *)textView {
@@ -343,6 +384,7 @@ static BOOL UDIsNameCharacter(unichar c) {
     [self.toolTip close];
     self.funcParmToolTipStart = -1;
     self.hoverShowing = NO;
+    self.parmsWanted = NO;
 }
 
 @end

@@ -9,6 +9,7 @@
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
 #import <UDCodeKit/UDTabBarView.h>
+#import <UDCodeKit/UDErrorsViewController.h>
 #import "UDTextPromptPanel.h"
 #import "UDTextEditorViewController.h"
 #import "UDFileItem.h"
@@ -17,6 +18,8 @@
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
+@property (nonatomic, weak) IBOutlet NSView *issuesHost;
+@property (nonatomic, strong) UDErrorsViewController *issuesNavigator;
 @property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
 @end
 
@@ -47,6 +50,17 @@
     self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView
                                                             tabBar:self.tabBarView
                                                          workspace:self.workspace];
+
+    // The Issues tab: UDCodeKit's navigator (UDCode's too), listing the open
+    // tabs' diagnostics; a click goes to one.
+    self.issuesNavigator = [[UDErrorsViewController alloc] init];
+    self.issuesNavigator.delegate = self;
+    self.issuesNavigator.view.frame = self.issuesHost.bounds;
+    self.issuesNavigator.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.issuesHost addSubview:self.issuesNavigator.view];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editorsDidChange:)
+                                                 name:UDEditorTabManagerEditorsDidChangeNotification
+                                               object:self.tabManager];
 
 }
 
@@ -267,6 +281,36 @@
     [self.declBrowser reset];
 }
 
+#pragma mark - Issues
+
+/// The text tabs' stores, by their names, in the Issues navigator.
+- (void)_editorsDidChange:(NSNotification *)notification {
+    NSMutableArray<UDDiagnosticStore *> *stores = [NSMutableArray array];
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if (![editor isKindOfClass:[UDTextEditorViewController class]]) continue;
+        UDDiagnosticStore *store = ((UDTextEditorViewController *)editor).diagnosticStore;
+        if (store == nil) continue;
+        [stores addObject:store];
+        [names addObject:editor.item.name ?: editor.item.path ?: @""];
+    }
+    [self.issuesNavigator setStores:stores displayNames:names];
+}
+
+- (void)errorsViewController:(UDErrorsViewController *)vc
+         didSelectDiagnostic:(UDDiagnosticItem *)diagnostic
+                     inStore:(UDDiagnosticStore *)store {
+    for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if (![editor isKindOfClass:[UDTextEditorViewController class]] ||
+            ((UDTextEditorViewController *)editor).diagnosticStore != store) continue;
+        [self.tabManager openEditorForWorkspaceItem:editor.item];
+        // The diagnostic's line is 1-based, its column 0-based.
+        [(UDTextEditorViewController *)editor selectLine:MAX(diagnostic.line - 1, 0)
+                                               character:MAX(diagnostic.column, 0) length:0];
+        return;
+    }
+}
+
 #pragma mark - Jump to Definition
 
 - (IBAction)jumpToDefinition:(id)sender {
@@ -286,6 +330,8 @@
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UDEditorTabManagerEditorsDidChangeNotification
+                                                  object:self.tabManager];
     // The settings go with the workspace, unapplied.
     self.settingsController.target = nil;
     [self.settingsController close];

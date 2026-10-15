@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDWorkspaceWindowController">
             <connections>
+                <outlet property="issuesHost" destination="IsT-hs-001" id="IsT-ol-001"/>
                 <outlet property="nameFilterField" destination="D99-4e-U2t" id="q4M-DV-AV5"/>
                 <outlet property="outlineView" destination="39P-QL-SWS" id="QGd-n6-efE"/>
                 <outlet property="searchOutlineView" destination="OB6-OY-IgM" id="4d8-jh-U2G"/>
@@ -170,6 +171,18 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="Issues" identifier="" id="IsT-ab-001">
+                                                <view key="view" id="IsT-vw-001">
+                                                    <rect key="frame" x="10" y="33" width="144" height="367"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <customView id="IsT-hs-001" userLabel="Issues Host">
+                                                            <rect key="frame" x="0.0" y="0.0" width="144" height="367"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        </customView>
                                                     </subviews>
                                                 </view>
                                             </tabViewItem>

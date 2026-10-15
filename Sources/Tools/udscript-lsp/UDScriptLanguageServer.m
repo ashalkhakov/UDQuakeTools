@@ -190,6 +190,25 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
     return UDCompletionVariable;
 }
 
+/// A call of @a name with its parameters as tab stops, in LSP's snippet
+/// syntax: "accelSound(${1:string sound})" for "void accelSound( string sound )".
+static NSString *UDCallSnippet(NSString *name, NSString *parms) {
+    NSRange open = [parms rangeOfString:@"("], close = [parms rangeOfString:@")" options:NSBackwardsSearch];
+    NSMutableArray<NSString *> *stops = [NSMutableArray array];
+    if (open.location != NSNotFound && close.location != NSNotFound && close.location > open.location) {
+        NSString *list = [parms substringWithRange:NSMakeRange(NSMaxRange(open), close.location - NSMaxRange(open))];
+        for (NSString *parm in [list componentsSeparatedByString:@","]) {
+            NSString *trimmed = [parm stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            if (trimmed.length == 0) continue;
+            NSString *escaped = [[[trimmed stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"]
+                                  stringByReplacingOccurrencesOfString:@"$" withString:@"\\$"]
+                                 stringByReplacingOccurrencesOfString:@"}" withString:@"\\}"];
+            [stops addObject:[NSString stringWithFormat:@"${%lu:%@}", (unsigned long)stops.count + 1, escaped]];
+        }
+    }
+    return [NSString stringWithFormat:@"%@(%@)", name, [stops componentsJoinedByString:@", "]];
+}
+
 - (id)completion:(NSDictionary *)params {
     NSString *uri = nil;
     NSUInteger index = 0;
@@ -204,8 +223,9 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
         for (NSString *name in [_events membersOfObject:@""]) {
             if ([seen containsObject:name]) continue;           // an event of sys's and of a thread's
             [seen addObject:name];
-            [items addObject:@{ @"label": name, @"kind": @(UDCompletionEvent),
-                                @"detail": [_events functionParmsForName:name] ?: @"" }];
+            NSString *parms = [_events functionParmsForName:name] ?: @"";
+            [items addObject:@{ @"label": name, @"kind": @(UDCompletionEvent), @"detail": parms,
+                                @"insertText": UDCallSnippet(name, parms), @"insertTextFormat": @2 }];
         }
     } else {
         NSMutableSet<NSString *> *seen = [NSMutableSet set];

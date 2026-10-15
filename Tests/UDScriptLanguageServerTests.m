@@ -120,6 +120,9 @@ static NSString *const UDLanternText =
     NSArray *labels = [result[@"items"] valueForKey:@"label"];
     XCTAssertEqualObjects(labels, (@[ @"fadeTo", @"wait" ]));
     XCTAssertEqualObjects(result[@"items"][0][@"detail"], @"void fadeTo( vector color , float alpha , float time )");
+    XCTAssertEqualObjects(result[@"items"][0][@"insertText"], @"fadeTo(${1:vector color}, ${2:float alpha}, ${3:float time})",
+                          @"a call, its parameters as tab stops");
+    XCTAssertEqualObjects(result[@"items"][0][@"insertTextFormat"], @2);
 
     result = [self request:@"textDocument/completion" params:[self at:@"script/lantern.script" line:5 character:6]];
     labels = [result[@"items"] valueForKey:@"label"];

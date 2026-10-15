@@ -11,7 +11,9 @@
  */
 @class UDTabBarView;
 
-@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate>
+@protocol UDErrorsViewControllerDelegate;
+
+@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate, UDErrorsViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSOutlineView *outlineView;
 @property (weak, nonatomic) IBOutlet NSSearchField *nameFilterField;

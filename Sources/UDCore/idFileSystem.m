@@ -490,8 +490,8 @@ static NSInteger FS_ComparePk4LoadOrder(NSString *aName, NSString *bName, void *
     return [aName caseInsensitiveCompare:bName];
 }
 
-static void FS_SortPk4FilesForLoadOrder(NSArray<NSString *> *pakfiles) {
-    [pakfiles sortedArrayUsingFunction:FS_ComparePk4LoadOrder context:NULL];
+static void FS_SortPk4FilesForLoadOrder(NSMutableArray<NSString *> *pakfiles) {
+    [pakfiles sortUsingFunction:FS_ComparePk4LoadOrder context:NULL];
 }
 
 #define MAX_ZIPPED_FILE_NAME    2048
@@ -579,8 +579,17 @@ typedef UDSearchPath searchpath_t;
 
     self->name = [name mutableCopy];
     if (self->name.length) {
-        CFStringLowercase((__bridge CFMutableStringRef)self->name, NULL);
-        [self->name replaceOccurrencesOfString:@"\\" withString:@"/" options:0 range:NSMakeRange(0, name.length)];
+        // Plain Foundation, NOT CFStringLowercase: gnustep-corebase's
+        // CFStringLowercase (and Uppercase/Capitalize/Fold) CFRelease the
+        // AUTORELEASED string that -lowercaseString returns — an
+        // over-release that frees the string while it still sits in the
+        // autorelease pool. This runs once per pk4 entry, so with real
+        // game data it poisoned the pool with thousands of dangling
+        // entries and the app segfaulted at the next pool drain (the
+        // long-standing "crashes right after the tree appears" Linux
+        // crash). macOS was immune: Apple's real CF mutates in place.
+        [self->name setString:[self->name lowercaseString]];
+        [self->name replaceOccurrencesOfString:@"\\" withString:@"/" options:0 range:NSMakeRange(0, self->name.length)];
     }
     pos = 0;
     next = nil;
@@ -3537,9 +3546,9 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
 }
 
 -(void)setupGameDirectories:(NSString *)gameName {
-    // setup savepath
-    if (self.fs_savepath.length) {
-        [self addGameDirectory:self.fs_savepath dir:gameName];
+    // setup cdpath
+    if (self.fs_cdpath.length) {
+        [self addGameDirectory:self.fs_cdpath dir:gameName];
     }
 
     // setup basepath
@@ -3547,9 +3556,9 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
         [self addGameDirectory:self.fs_basepath dir:gameName];
     }
 
-    // setup cdpath last so it has highest search priority
-    if (self.fs_cdpath.length) {
-        [self addGameDirectory:self.fs_cdpath dir:gameName];
+    // setup savepath
+    if (self.fs_savepath.length) {
+        [self addGameDirectory:self.fs_savepath dir:gameName];
     }
 }
 

@@ -51,3 +51,7 @@ obj/
 *.d
 *.app/
 *.bundle/
+.deps/
+build/
+# momc's output, from the data model beside it
+*.momd/

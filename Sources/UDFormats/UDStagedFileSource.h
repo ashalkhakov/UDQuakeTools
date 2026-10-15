@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDStagedFileSource — UDContentSource backed by a local file on disk.
  *
  * Used when the user adds a real file from the file system into an archive

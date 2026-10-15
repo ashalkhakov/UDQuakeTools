@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
-#include <zip.h>
+#import "UDZipFixture.h"
 
 #import "UDArchive.h"
 #import "UDArchiveEditor.h"
@@ -32,61 +32,13 @@
  * Entry 1: "maps/q3dm1.bsp"   content: "hello pk3"  (DEFLATED)
  * Entry 2: "scripts/base.shader"  content: "nolightmap" (STORED)
  *
- * We use libzip to create the in-memory archive so the test does not
+ * UDZipWriter builds it in memory, so the test does not
  * depend on an external tool. */
 - (NSData *)makeTestZIPData {
-    zip_source_t *src = zip_source_buffer_create(NULL, 0, 0, NULL);
-    if (!src) {
-        return nil;
-    }
-
-    zip_t *za = zip_open_from_source(src, ZIP_TRUNCATE, NULL);
-    if (!za) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    const char *payload1 = "hello pk3";
-    zip_source_t *s1 = zip_source_buffer(za, payload1, strlen(payload1), 0);
-    if (zip_file_add(za, "maps/q3dm1.bsp", s1, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 0, ZIP_CM_DEFLATE, 0);
-
-    const char *payload2 = "nolightmap";
-    zip_source_t *s2 = zip_source_buffer(za, payload2, strlen(payload2), 0);
-    if (zip_file_add(za, "scripts/base.shader", s2, ZIP_FL_OVERWRITE) < 0) {
-        zip_discard(za);
-        return nil;
-    }
-    zip_set_file_compression(za, 1, ZIP_CM_STORE, 0);
-
-    /* Keep the source alive so we can read it after zip_close. */
-    zip_source_keep(src);
-
-    if (zip_close(za) != 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    /* Read the in-memory buffer. */
-    zip_source_open(src);
-    zip_source_seek(src, 0, SEEK_END);
-    zip_int64_t size = zip_source_tell(src);
-    zip_source_seek(src, 0, SEEK_SET);
-
-    if (size <= 0) {
-        zip_source_free(src);
-        return nil;
-    }
-
-    NSMutableData *data = [NSMutableData dataWithLength:(NSUInteger)size];
-    zip_source_read(src, data.mutableBytes, (zip_uint64_t)size);
-    zip_source_close(src);
-    zip_source_free(src);
-
-    return data;
+    return UDZipFixtureData(@[
+        @[@"maps/q3dm1.bsp", @"hello pk3", @(UDZipCompressionMethodDeflated)],
+        @[@"scripts/base.shader", @"nolightmap", @(UDZipCompressionMethodStored)],
+    ]);
 }
 
 - (void)testPK3Codec {

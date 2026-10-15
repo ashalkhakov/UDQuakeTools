@@ -12,7 +12,12 @@ udpaktool_INCLUDE_DIRS = \
     -I../../UDCore \
     -I../../UDFormats
 
-ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_SYSTEM_LIBRARIES)
-ADDITIONAL_LDFLAGS += -lUDCore -lzip
+# UDCore's decl layer is Core Data, which on GNUstep is FreeCoreData; the
+# library does not pull it in by itself, so whatever links UDCore links it.
+ADDITIONAL_NATIVE_LIBS += CoreData
+
+# UDCore from the tree, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += -L../../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
+ADDITIONAL_LDFLAGS += -lUDCore
 
 include $(GNUSTEP_MAKEFILES)/tool.make

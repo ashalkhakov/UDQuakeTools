@@ -155,6 +155,12 @@ typedef struct punctuation_s
 
 @property (weak, nonatomic) idFileSystem *fileSystem;
 
+// When set, every error and warning is also appended here as
+// @{@"line": @(line), @"message": text, @"error": @(YES/NO)} — whether or not
+// LEXFL_NOERRORS / LEXFL_NOWARNINGS keep them quiet — so an editor can show
+// them on the lines they belong to.
+@property (strong, nonatomic) NSMutableArray<NSDictionary *> *diagnostics;
+
 // constructor
 - (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
 - (instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem;

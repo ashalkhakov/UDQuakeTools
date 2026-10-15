@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=UDQuakeTools
+Comment=Tools for id Tech 4 game data: declarations, paks, GUIs
+Exec=AppRun
+Icon=udquaketools
+Categories=Development;Utility;
+Terminal=false

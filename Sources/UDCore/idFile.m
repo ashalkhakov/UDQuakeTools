@@ -784,7 +784,15 @@ idFile_Permanent
     remaining = len;
     tries = 0;
     while (remaining) {
-        block = remaining < readChunkBytes ? readChunkBytes : remaining;
+        // Read at most readChunkBytes per iteration, and NEVER more than the
+        // caller's buffer has room for. (This ternary used to be inverted —
+        // any request smaller than the chunk size asked fread for the full
+        // 64KB into the small buffer. For partial reads of a larger file,
+        // fread then copied whatever the file still had into memory past the
+        // buffer: a heap overflow that corrupted glibc's allocator on Linux
+        // during decl loading and crashed at the next autorelease-pool
+        // drain. Original Doom 3 reads block = remaining, with no cap.)
+        block = remaining < readChunkBytes ? remaining : readChunkBytes;
         read = (int)fread(buf, 1, block, self->o);
         if (read == 0) {
             // we might have been trying to read from a CD, which

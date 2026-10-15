@@ -1,7 +1,11 @@
 #import "UDFileItem.h"
 #import "UDWorkspace.h"
 #import "idFileSystem.h"
+#ifdef GNUSTEP
+#import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
+#else
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
 
 @implementation UDFileItem
 

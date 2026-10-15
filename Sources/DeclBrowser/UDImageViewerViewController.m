@@ -9,7 +9,7 @@
 @implementation UDImageViewerViewController
 
 - (instancetype)init {
-    self = [super initWithNibName:@"UDImageViewerView" bundle:nil];
+    self = [super initWithNibName:@"UDImageViewerView" bundle:[NSBundle bundleForClass:[UDImageViewerViewController class]]];
     return self;
 }
 

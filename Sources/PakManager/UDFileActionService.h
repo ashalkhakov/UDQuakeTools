@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDFileActionService.h — Service to handle file actions (previewing, custom tools, or OS open).
  */
 

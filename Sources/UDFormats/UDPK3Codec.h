@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * PK3 files are standard ZIP archives with a .pk3 extension.  Entry data
  * may be stored uncompressed (method 0) or deflate-compressed (method 8).
- * Decompression is handled transparently by libzip inside UDPK3ZIPEntrySource.
+ * Reading goes through the vendored minizip unzip.c (UDPK3ZIPEntrySource)
+ * and writing through UDZipWriter; both need only zlib.
  *
  * Format identifier: com.udquake.pk3
  */

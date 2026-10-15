@@ -5,7 +5,11 @@
 #import "UDTextEditorViewController.h"
 #import "UDImageViewerViewController.h"
 #import "UDPDAEditorViewController.h"
+#ifdef GNUSTEP
+#import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
+#else
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
 
 @implementation UDBaseEditorViewController
 
@@ -75,6 +79,21 @@
     }
     
     return nil;
+}
+
+@end
+
+@implementation NSView (UDGNUstepLayoutFixes)
+
+- (void)ud_disableScrollerAutohideRecursively {
+#if !defined(__APPLE__)
+    if ([self isKindOfClass:[NSScrollView class]]) {
+        [(NSScrollView *)self setAutohidesScrollers:NO];
+    }
+    for (NSView *subview in self.subviews) {
+        [subview ud_disableScrollerAutohideRecursively];
+    }
+#endif
 }
 
 @end

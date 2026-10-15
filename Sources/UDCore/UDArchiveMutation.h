@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * UDArchiveMutation — an immutable record of a net archive delta.
  *
  * Supported kinds used by UDArchiveEditor.currentDiff / pendingMutations:

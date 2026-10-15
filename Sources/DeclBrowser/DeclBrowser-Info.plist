@@ -7,6 +7,10 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>qworkspace</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Workspace Configuration</string>
 			<key>CFBundleTypeRole</key>
@@ -60,5 +64,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>SUFeedURL</key>
+	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast-DeclBrowser.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>9cBO16YcwJZy7uzpT8tSbD/UnYF9HNTekubfnW8WlUE=</string>
 </dict>
 </plist>

@@ -97,7 +97,19 @@
     alert.messageText = message;
     alert.informativeText = informativeText;
     [alert addButtonWithTitle:@"OK"];
+#if defined(__APPLE__)
     [alert beginSheetModalForWindow:self.window completionHandler:nil];
+#else
+    // GNUstep: NSAlert's sheet path (-beginSheetModalForWindow:…) frees the
+    // alert panel with DESTROY(_window) after the modal ends. The Eau theme
+    // swizzles _setupPanel and installs its panel WITHOUT the +1 ownership
+    // GNUstep's teardown expects, so the sheet path double-releases the panel
+    // → use-after-free → segfault at the next autorelease-pool drain (this
+    // was the "crashes shortly after the tree appears" Linux crash). The
+    // theme fully covers -runModal, which is therefore safe — and GNUstep
+    // renders sheets as modal panels anyway, so nothing is lost visually.
+    [alert runModal];
+#endif
 }
 
 #pragma mark - Path pickers

@@ -38,8 +38,13 @@ UDCore_OBJC_FILES = \
     UDWorkspaceManager.m \
     MD5.m \
     idDeclManager.m \
+    UDBitMsg.m \
+    UDCrashReporter.m \
     UDDeclManagedObjects.m \
-    UDDeclIncrementalStore.m
+    UDDeclIncrementalStore.m \
+    UDZipWriter.m \
+    UDDeclTextChecker.m \
+    UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m
 
 UDCore_INCLUDE_DIRS = -I../UDFormats
 
@@ -63,13 +68,34 @@ UDCore_HEADER_FILES = \
     UDWorkspaceManager.h \
     MD5.h \
     idDeclManager.h \
+    UDCrashReporter.h \
     UDDeclManagedObjects.h \
-    UDDeclIncrementalStore.h
+    UDDeclIncrementalStore.h \
+    UDZipWriter.h \
+    UDDeclTextChecker.h
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lzip
+ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lz -lgnustep-corebase
 
 include $(GNUSTEP_MAKEFILES)/library.make
+
+# NOTE: UniformTypeIdentifiersGNUstep/ is the GNUstep compatibility shim for Apple's
+# UniformTypeIdentifiers framework (UTType, UTTypeImage, and the legacy
+# UTTypeConformsTo/UTTypeCreatePreferredIdentifierForTag C calls). The
+# DeclBrowser sources keep their ordinary
+#   #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+# line: on macOS the system framework resolves it, on GNUstep the
+# -I../UDCore include path finds this shim directory instead. The .m
+# compiles to nothing on macOS (guarded by !defined(__APPLE__)), so it is
+# NOT part of the Xcode project on purpose.
+#
+# ZIP archives need only zlib (-lz): unzip.c/ioapi.c (the minizip reader
+# ported with the Doom 3 file system) read them and UDZipWriter writes them.
+#
+# -lgnustep-corebase is required because idFileSystem.m/idLexer.m call
+# CFStringLowercase/CFStringTrimWhitespace (fine at library link, surfaces as
+# undefined symbols when linking the apps). UDBitMsg.m had gone missing from
+# the source list (idDeclManager.m references the class) — same symptom.

@@ -1,0 +1,45 @@
+name: Build
+
+# UDQuakeTools, built, tested and installed the familiar way (make, make
+# check, make install; Makefile.apple on macOS) by gnustep-release-actions'
+# workflows, the same as every repository's: every push is built, tested (the
+# tests; the apps started on a clean Ubuntu) and uploaded as artifacts, the
+# AppImage (the launcher, Decl Browser and Pak Manager) and the same three
+# apps for macOS; a v* tag (or a run started by hand with one) is also
+# released: the AppImage with its update information, the Mac apps signed
+# and notarized, each with its Sparkle appcast (appcast-<App>.xml), attached
+# to the tag's release (a pre-release when the tag has a '-'). What it builds on is in .github/pins.env.
+on:
+  push:
+    branches-ignore: ['copilot/**']
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'A v* tag to build and release (empty: this branch, as artifacts)'
+        required: false
+        default: ''
+
+# Pushes only: a push to a branch already shows its checks on the branch's
+# pull request. A newer push supersedes the run before it; a release is
+# never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    uses: ashalkhakov/gnustep-release-actions/.github/workflows/linux.yml@v1
+    with:
+      tag: ${{ inputs.tag }}
+      extra-packages: libsqlite3-dev zlib1g-dev
+
+  macos:
+    uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1
+    with:
+      tag: ${{ inputs.tag }}
+      apps: UDLauncher=UDLauncher DeclBrowser=DeclBrowser PakManager=PakManager
+    secrets: inherit

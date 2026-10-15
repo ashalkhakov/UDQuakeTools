@@ -39,8 +39,6 @@
 		CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC04020000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CC04030000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		CC04030100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC04040000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04050000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -65,7 +63,6 @@
 		CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
 		CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
-		CE1CDC98301FC20C0037DBA5 /* idMath.h in Headers */ = {isa = PBXBuildFile; fileRef = CE1CDC97301FC20A0037DBA5 /* idMath.h */; };
 		CE3FA369300172100048F206 /* idParser.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA3683001720E0048F206 /* idParser.h */; };
 		CE3FA36B3001746A0048F206 /* idParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA36A300174680048F206 /* idParser.m */; };
 		CE3FA36D3004FBF60048F206 /* idFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA36C3004FBF30048F206 /* idFileSystem.h */; };
@@ -105,6 +102,7 @@
 		CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
 		DAC0000600000000000000AA /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
 		DAC0000700000000000000AA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
+		DAD0000300000000000000AA /* UDTextPromptPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD0000200000000000000AA /* UDTextPromptPanel.m */; };
 		DAC0000800000000000000AA /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
 		CEFC65313027974B00157501 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
 		CEFC65323027974B00157501 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
@@ -145,12 +143,68 @@
 		DD01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = EE01000000000000000001AA /* UDDeclManagedObjects.h */; };
 		EE01000000000000000004AA /* UDDeclManagedObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = EE01000000000000000003AA /* UDDeclManagedObjects.m */; };
-		EE01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */; };
 		FF01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010000000000000000AA /* main.m */; };
 		FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010100000000000000AA /* UDLauncherAppDelegate.m */; };
 		FF01000200000000000000AA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF00010300000000000000AA /* MainMenu.xib */; };
 		FF01001000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		E9076863CF86AD655C2F5932 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
+		4EDA68FFA5D0252CE28DCD50 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
+		6518CC5863010F102A56FC54 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2AFD3CDF8A5F188D64CB99BE /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
+		32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
+		91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 14BDF382F6383E15016B4EAA /* UDZipWriter.m */; };
+		F11B76E69140841478600956 /* UDZipWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */; };
+		53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */; };
+		6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */; };
+		919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */; };
+		BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */; };
+		840A133AC766210687236006 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
+		BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
+		CC358F6D994B45EE98A5C63A /* UDFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652D3027974B00157501 /* UDFolder.m */; };
+		CEE7FEBF8D1935F0977016BB /* UDFileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652F3027974B00157501 /* UDFileItem.m */; };
+		C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */; };
+		C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6558302A203100157501 /* UDBaseDocument.m */; };
+		39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65183027923700157501 /* UDEditorTabManager.m */; };
+		9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000200000000000000AA /* UDTabBarView.m */; };
+		24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC0000400000000000000AA /* UDTabItemView.m */; };
+		4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD0000200000000000000AA /* UDTextPromptPanel.m */; };
+		312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65503029F03A00157501 /* UDDeclItem.m */; };
+		29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
+		FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */; };
+		52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
+		7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
+		070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
+		398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
+		F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC654B3029E5FC00157501 /* UDDeclDocument.m */; };
+		A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65413027994F00157501 /* UDWorkspaceDocument.m */; };
+		D5715A18F74F4A37F5CEB1DD /* UDImageFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65453027994F00157501 /* UDImageFileDocument.m */; };
+		ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65373027987300157501 /* UDBaseEditorViewController.m */; };
+		6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6515302790DD00157501 /* UDAppDocumentController.m */; };
+		399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
+		D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
+		B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC0000500000000000000AA /* UDTabItemView.xib */; };
+		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6555302A07BC00157501 /* UDImageViewerView.xib */; };
+		67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
+		67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6552302A077100157501 /* UDTextEditorView.xib */; };
+		B07DB34369ACF2681E8E1029 /* UDPDAVideoEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */; };
+		104EEEE72E01A8DF60557FED /* UDPDAAudioEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */; };
+		F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
+		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
+		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
+		D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
+		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
+		BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */; };
+		93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,13 +216,6 @@
 			remoteInfo = UDCore;
 		};
 		CC07020000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		CC07030000000000000000AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
 			proxyType = 1;
@@ -189,6 +236,13 @@
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
 		};
+		EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CC04000000000000000000AA;
+			remoteInfo = UDCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -199,6 +253,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,18 +275,30 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */,
 				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EE09000000000000000000AA /* Embed Frameworks */ = {
+		31946E44C7F06C8061D08B48 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CC04030100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				6518CC5863010F102A56FC54 /* Sparkle.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8BA630C87453D8DF901690F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,7 +373,6 @@
 		CE1151642FEE7777005C6DA3 /* UDGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGame.m; sourceTree = "<group>"; };
 		CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameDetectionService.h; sourceTree = "<group>"; };
 		CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionService.m; sourceTree = "<group>"; };
-		CE1CDC56301E0A750037DBA5 /* QuakeEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuakeEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1CDC6D301E41220037DBA5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CE1CDC6E301E41220037DBA5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		CE1CDC6F301E41220037DBA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -321,7 +387,6 @@
 		CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPathTree.m; sourceTree = "<group>"; };
 		CE1CDC90301E7EAB0037DBA5 /* UDDeclBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowser.h; sourceTree = "<group>"; };
 		CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowser.m; sourceTree = "<group>"; };
-		CE1CDC97301FC20A0037DBA5 /* idMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idMath.h; sourceTree = "<group>"; };
 		CE3FA3683001720E0048F206 /* idParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idParser.h; sourceTree = "<group>"; };
 		CE3FA36A300174680048F206 /* idParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idParser.m; sourceTree = "<group>"; };
 		CE3FA36C3004FBF30048F206 /* idFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idFileSystem.h; sourceTree = "<group>"; };
@@ -366,6 +431,8 @@
 		DAC0000200000000000000AA /* UDTabBarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabBarView.m; sourceTree = "<group>"; };
 		DAC0000300000000000000AA /* UDTabItemView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabItemView.h; sourceTree = "<group>"; };
 		DAC0000400000000000000AA /* UDTabItemView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabItemView.m; sourceTree = "<group>"; };
+		DAD0000100000000000000AA /* UDTextPromptPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPromptPanel.h; sourceTree = "<group>"; };
+		DAD0000200000000000000AA /* UDTextPromptPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextPromptPanel.m; sourceTree = "<group>"; };
 		DAC0000500000000000000AA /* UDTabItemView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTabItemView.xib; sourceTree = "<group>"; };
 		CEFC65283027974B00157501 /* UDWorkspaceItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceItem.h; sourceTree = "<group>"; };
 		CEFC65293027974B00157501 /* UDWorkspaceItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceItem.m; sourceTree = "<group>"; };
@@ -399,7 +466,6 @@
 		DD00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DD00010500000000000000AA /* DeclBrowser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DeclBrowser-Info.plist"; sourceTree = "<group>"; };
 		DD00050000000000000000AA /* DeclBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeclBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		EE00050000000000000000AA /* GuiEd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuiEd.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE01000000000000000001AA /* UDDeclManagedObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManagedObjects.h; sourceTree = "<group>"; };
 		EE01000000000000000003AA /* UDDeclManagedObjects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManagedObjects.m; sourceTree = "<group>"; };
 		EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclIncrementalStoreTests.m; sourceTree = "<group>"; };
@@ -409,6 +475,24 @@
 		FF00010300000000000000AA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		FF00010400000000000000AA /* UDLauncher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UDLauncher-Info.plist"; sourceTree = "<group>"; };
 		FF00050000000000000000AA /* UDLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UDLauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA34039EE147137D2F2DAC9B /* UDUpdater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UDUpdater.h"; path = "Sources/UDUpdater/UDUpdater.h"; sourceTree = SOURCE_ROOT; };
+		B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UDUpdater-Apple.m"; path = "Sources/UDUpdater/UDUpdater-Apple.m"; sourceTree = SOURCE_ROOT; };
+		F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sparkle.xcframework; path = .deps/Sparkle.xcframework; sourceTree = SOURCE_ROOT; };
+		F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipWriter.h; sourceTree = "<group>"; };
+		14BDF382F6383E15016B4EAA /* UDZipWriter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriter.m; sourceTree = "<group>"; };
+		C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriterTests.m; sourceTree = "<group>"; };
+		DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipFixture.h; sourceTree = "<group>"; };
+		EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipFixture.m; sourceTree = "<group>"; };
+		E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserTestCase.h; sourceTree = "<group>"; };
+		20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserTestCase.m; sourceTree = "<group>"; };
+		368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorTests.m; sourceTree = "<group>"; };
+		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
+		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
+		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
+		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
+		76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextChecker.m; sourceTree = "<group>"; };
+		013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextCheckerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -418,6 +502,7 @@
 			files = (
 				AA01003000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04010000000000000000AA /* UDCore.framework in Frameworks */,
+				6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,28 +534,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE1CDC53301E0A750037DBA5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DD03000100000000000000AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */,
 				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
 				CC04020000000000000000AA /* UDCore.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE03000100000000000000AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EE01001000000000000000AA /* Cocoa.framework in Frameworks */,
-				CC04030000000000000000AA /* UDCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -478,7 +548,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EDA68FFA5D0252CE28DCD50 /* Sparkle.xcframework in Frameworks */,
 				FF01001000000000000000AA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6EB93F75D308A90BE7FE30B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */,
+				478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */,
+				224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,12 +587,11 @@
 			children = (
 				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
 				AA00050000000000000000AA /* PakManager.app */,
-				EE00050000000000000000AA /* GuiEd.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
 				FF00050000000000000000AA /* UDLauncher.app */,
 				CC00050000000000000000AA /* UDCore.framework */,
-				CE1CDC56301E0A750037DBA5 /* QuakeEditor.app */,
+				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -548,7 +628,6 @@
 				EE01000000000000000001AA /* UDDeclManagedObjects.h */,
 				CED0148A302DDCA2009517DE /* UDBitMsg.h */,
 				CED0148B302DDCA2009517DE /* UDBitMsg.m */,
-				CE1CDC97301FC20A0037DBA5 /* idMath.h */,
 				CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */,
 				CECEB2F53018C04300F88078 /* UDEndian.h */,
 				CECEB2F33017B97A00F88078 /* MD5.m */,
@@ -592,6 +671,10 @@
 				AA00020800000000000000AA /* UDContentSource.h */,
 				AA00020700000000000000AA /* UDDirectoryNode.h */,
 				AA00010800000000000000AA /* UDDirectoryNode.m */,
+				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
+				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
+				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
+				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
 			);
 			name = UDCore;
 			path = Sources/UDCore;
@@ -653,6 +736,12 @@
 				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
 				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
 				CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */,
+				C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */,
+				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
+				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
+				37E65B3E596BA91969F42366 /* DeclBrowser */,
+				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
+				013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -686,6 +775,8 @@
 				DAC0000200000000000000AA /* UDTabBarView.m */,
 				DAC0000300000000000000AA /* UDTabItemView.h */,
 				DAC0000400000000000000AA /* UDTabItemView.m */,
+				DAD0000100000000000000AA /* UDTextPromptPanel.h */,
+				DAD0000200000000000000AA /* UDTextPromptPanel.m */,
 				CEFC65173027923700157501 /* UDEditorTabManager.h */,
 				CEFC65183027923700157501 /* UDEditorTabManager.m */,
 			);
@@ -795,6 +886,28 @@
 			path = Sources/UDLauncher;
 			sourceTree = "<group>";
 		};
+		84A64E858D7309C1DA581B24 /* UDUpdater */ = {
+			isa = PBXGroup;
+			children = (
+				AA34039EE147137D2F2DAC9B /* UDUpdater.h */,
+				B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */,
+				F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */,
+			);
+			name = UDUpdater;
+			sourceTree = "<group>";
+		};
+		37E65B3E596BA91969F42366 /* DeclBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */,
+				20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */,
+				368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */,
+				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
+				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
+			);
+			path = DeclBrowser;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -813,7 +926,6 @@
 				CC02001100000000000000AA /* UDArchiveEditor.h in Headers */,
 				CC02001200000000000000AA /* UDArchiveEntry.h in Headers */,
 				CC02001300000000000000AA /* UDArchiveMutation.h in Headers */,
-				CE1CDC98301FC20C0037DBA5 /* idMath.h in Headers */,
 				CC02001400000000000000AA /* UDContentSource.h in Headers */,
 				CC02001500000000000000AA /* UDDirectoryNode.h in Headers */,
 				CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */,
@@ -838,6 +950,8 @@
 				CE07E8833000D2F6007ED480 /* idToken.h in Headers */,
 				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
 				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
+				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
+				93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -915,25 +1029,6 @@
 			productReference = CC00050000000000000000AA /* UDCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		CE1CDC55301E0A750037DBA5 /* QuakeEditor */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CE1CDC6A301E0A760037DBA5 /* Build configuration list for PBXNativeTarget "QuakeEditor" */;
-			buildPhases = (
-				CE1CDC52301E0A750037DBA5 /* Sources */,
-				CE1CDC53301E0A750037DBA5 /* Frameworks */,
-				CE1CDC54301E0A750037DBA5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = QuakeEditor;
-			packageProductDependencies = (
-			);
-			productName = QuakeEditor;
-			productReference = CE1CDC56301E0A750037DBA5 /* QuakeEditor.app */;
-			productType = "com.apple.product-type.application";
-		};
 		DD04000000000000000000AA /* Decl Browser */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */;
@@ -953,29 +1048,11 @@
 			productReference = DD00050000000000000000AA /* DeclBrowser.app */;
 			productType = "com.apple.product-type.application";
 		};
-		EE04000000000000000000AA /* GuiEd */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EE06000000000000000000AA /* Build configuration list for PBXNativeTarget "GuiEd" */;
-			buildPhases = (
-				EE03000000000000000000AA /* Sources */,
-				EE03000100000000000000AA /* Frameworks */,
-				EE03000200000000000000AA /* Resources */,
-				EE09000000000000000000AA /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				CC07030100000000000000AA /* PBXTargetDependency */,
-			);
-			name = GuiEd;
-			productName = GuiEd;
-			productReference = EE00050000000000000000AA /* GuiEd.app */;
-			productType = "com.apple.product-type.application";
-		};
 		FF04000000000000000000AA /* UDLauncher */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FF06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDLauncher" */;
 			buildPhases = (
+				31946E44C7F06C8061D08B48 /* Embed Frameworks */,
 				FF03000000000000000000AA /* Sources */,
 				FF03000100000000000000AA /* Frameworks */,
 				FF03000200000000000000AA /* Resources */,
@@ -988,6 +1065,25 @@
 			productName = UDLauncher;
 			productReference = FF00050000000000000000AA /* UDLauncher.app */;
 			productType = "com.apple.product-type.application";
+		};
+		9D5D57CB7DB90240B958F42D /* DeclBrowserTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */;
+			buildPhases = (
+				BA11F7945378D123ABFAC6A1 /* Sources */,
+				6EB93F75D308A90BE7FE30B3 /* Frameworks */,
+				3CFED1D092CCEE513BA5AE61 /* Resources */,
+				F8BA630C87453D8DF901690F /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
+			);
+			name = DeclBrowserTests;
+			productName = DeclBrowserTests;
+			productReference = 395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -1004,13 +1100,7 @@
 					AA04000100000000000000AA = {
 						CreatedOnToolsVersion = 15.3;
 					};
-					CE1CDC55301E0A750037DBA5 = {
-						CreatedOnToolsVersion = 26.0;
-					};
 					DD04000000000000000000AA = {
-						CreatedOnToolsVersion = 15.3;
-					};
-					EE04000000000000000000AA = {
 						CreatedOnToolsVersion = 15.3;
 					};
 					FF04000000000000000000AA = {
@@ -1035,10 +1125,9 @@
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
 				DD04000000000000000000AA /* Decl Browser */,
-				EE04000000000000000000AA /* GuiEd */,
 				AA04000100000000000000AA /* udpaktool */,
 				FF04000000000000000000AA /* UDLauncher */,
-				CE1CDC55301E0A750037DBA5 /* QuakeEditor */,
+				9D5D57CB7DB90240B958F42D /* DeclBrowserTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1051,13 +1140,6 @@
 				AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */,
 				AA01002200000000000000AA /* PakManager.png in Resources */,
 				CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE1CDC54301E0A750037DBA5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1079,18 +1161,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EE03000200000000000000AA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FF03000200000000000000AA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				FF01000200000000000000AA /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3CFED1D092CCEE513BA5AE61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */,
+				D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */,
+				B54B2E2003B8B566E8551081 /* UDTabItemView.xib in Resources */,
+				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
+				30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */,
+				67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */,
+				67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */,
+				B07DB34369ACF2681E8E1029 /* UDPDAVideoEditorView.xib in Resources */,
+				104EEEE72E01A8DF60557FED /* UDPDAAudioEditorView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1107,6 +1198,7 @@
 				AA01000200000000000000AA /* UDArchiveDocument.m in Sources */,
 				AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */,
 				AA01002000000000000000AA /* UDTextPreviewController.m in Sources */,
+				D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1131,6 +1223,10 @@
 				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
 				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
 				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
+				663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */,
+				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
+				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
+				88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1171,13 +1267,8 @@
 				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
 				CE07E8853000D33B007ED480 /* idToken.m in Sources */,
 				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE1CDC52301E0A750037DBA5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
+				D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1185,6 +1276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AFD3CDF8A5F188D64CB99BE /* UDUpdater-Apple.m in Sources */,
 				CEFC65313027974B00157501 /* UDProject.m in Sources */,
 				CEFC65323027974B00157501 /* UDWorkspaceItem.m in Sources */,
 				CEFC65333027974B00157501 /* UDFolder.m in Sources */,
@@ -1194,6 +1286,7 @@
 				CEFC65193027923700157501 /* UDEditorTabManager.m in Sources */,
 				DAC0000600000000000000AA /* UDTabBarView.m in Sources */,
 				DAC0000700000000000000AA /* UDTabItemView.m in Sources */,
+				DAD0000300000000000000AA /* UDTextPromptPanel.m in Sources */,
 				DD01000000000000000000AA /* main.m in Sources */,
 				CEFC65513029F03B00157501 /* UDDeclItem.m in Sources */,
 				CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */,
@@ -1212,19 +1305,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EE03000000000000000000AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FF03000000000000000000AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9076863CF86AD655C2F5932 /* UDUpdater-Apple.m in Sources */,
 				FF01000000000000000000AA /* main.m in Sources */,
 				FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA11F7945378D123ABFAC6A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */,
+				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
+				BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */,
+				840A133AC766210687236006 /* UDProject.m in Sources */,
+				BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */,
+				CC358F6D994B45EE98A5C63A /* UDFolder.m in Sources */,
+				CEE7FEBF8D1935F0977016BB /* UDFileItem.m in Sources */,
+				C10E447EBD6E3B07853D5329 /* UDWorkspaceWindowController.m in Sources */,
+				C81ECDEB53FFB1DD4C2E02FD /* UDBaseDocument.m in Sources */,
+				39FEA381C6B61A9FF3AFD688 /* UDEditorTabManager.m in Sources */,
+				9CA70B28074BB7242793C19F /* UDTabBarView.m in Sources */,
+				24E93844F7D4C0CFF23F78CA /* UDTabItemView.m in Sources */,
+				4E33319DFD32C55DCA2C3FB2 /* UDTextPromptPanel.m in Sources */,
+				312F13ED100248A1A4FC5171 /* UDDeclItem.m in Sources */,
+				29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */,
+				FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */,
+				52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */,
+				6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */,
+				7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */,
+				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
+				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,
+				F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */,
+				A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */,
+				D5715A18F74F4A37F5CEB1DD /* UDImageFileDocument.m in Sources */,
+				ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */,
+				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
+				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1241,11 +1362,6 @@
 			target = CC04000000000000000000AA /* UDCore */;
 			targetProxy = CC07020000000000000000AA /* PBXContainerItemProxy */;
 		};
-		CC07030100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = CC07030000000000000000AA /* PBXContainerItemProxy */;
-		};
 		CC07040100000000000000AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA /* UDCore */;
@@ -1255,6 +1371,11 @@
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA /* UDCore */;
 			targetProxy = CC07050000000000000000AA /* PBXContainerItemProxy */;
+		};
+		18EAAA5C20CA24F3294E116C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CC04000000000000000000AA /* UDCore */;
+			targetProxy = EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1316,7 +1437,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				SDKROOT = macosx;
 			};
@@ -1360,7 +1481,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -1372,11 +1493,11 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
@@ -1398,10 +1519,9 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
@@ -1410,13 +1530,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
 				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1430,11 +1545,11 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
@@ -1453,10 +1568,9 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
@@ -1465,12 +1579,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.pakmanager;
 				PRODUCT_NAME = PakManager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1494,20 +1603,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_NAME = udpaktool;
 			};
 			name = Debug;
@@ -1526,20 +1628,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_NAME = udpaktool;
 			};
 			name = Release;
@@ -1550,9 +1645,9 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1567,20 +1662,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
-					"-lzip",
 					"-framework",
 					XCTest,
 				);
@@ -1596,9 +1684,9 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1610,20 +1698,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
-					"-lzip",
 					"-framework",
 					XCTest,
 				);
@@ -1639,12 +1720,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1659,8 +1740,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1668,14 +1747,10 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = UDCore;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1690,12 +1765,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1706,8 +1781,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1715,112 +1788,13 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = UDCore;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		CE1CDC6B301E0A760037DBA5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				ENABLE_USER_SELECTED_FILES = readwrite;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = QuakeEditor/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
-				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.7;
-				MARKETING_VERSION = 1.0;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.underivable.QuakeEditor;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-			};
-			name = Debug;
-		};
-		CE1CDC6C301E0A760037DBA5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				ENABLE_USER_SELECTED_FILES = readwrite;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = QuakeEditor/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainNibFile = MainMenu;
-				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.7;
-				MARKETING_VERSION = 1.0;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.underivable.QuakeEditor;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -1830,10 +1804,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_NS_ASSERTIONS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1846,10 +1820,9 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
@@ -1858,13 +1831,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
 				PRODUCT_NAME = DeclBrowser;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1878,10 +1846,10 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1890,10 +1858,9 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
@@ -1902,125 +1869,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
 				PRODUCT_NAME = DeclBrowser;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-			};
-			name = Release;
-		};
-		EE05000000000000000000AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_NS_ASSERTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
-					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
-				);
-				INFOPLIST_FILE = "Sources/GuiEd/GuiEd-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = GuiEd;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lzip";
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
-				PRODUCT_NAME = GuiEd;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-			};
-			name = Debug;
-		};
-		EE05000100000000000000AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
-					"$(SRCROOT)/Sources/UDFormats",
-					/opt/homebrew/include,
-					/usr/local/include,
-				);
-				INFOPLIST_FILE = "Sources/GuiEd/GuiEd-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = GuiEd;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/homebrew/lib,
-					/usr/local/lib,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				OTHER_LDFLAGS = "-lzip";
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.guied;
-				PRODUCT_NAME = GuiEd;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -2028,13 +1879,18 @@
 		FF05000000000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDUpdater";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = YES;
@@ -2054,7 +1910,7 @@
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
 				PRODUCT_NAME = UDLauncher;
@@ -2065,14 +1921,19 @@
 		FF05000100000000000000AA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/UDUpdater";
 				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = H5GRGUR75L;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -2089,9 +1950,86 @@
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.launcher;
 				PRODUCT_NAME = UDLauncher;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		A21877E3719F70D33F863672 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/DeclBrowser/Documents",
+					"$(SRCROOT)/Sources/DeclBrowser/Window",
+					"$(SRCROOT)/Tests/DeclBrowser",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
+				PRODUCT_NAME = DeclBrowserTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		EF44BC6BA9E8B20DCEAAA1C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5GRGUR75L;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/DeclBrowser/Documents",
+					"$(SRCROOT)/Sources/DeclBrowser/Window",
+					"$(SRCROOT)/Tests/DeclBrowser",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
+				PRODUCT_NAME = DeclBrowserTests;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -2144,15 +2082,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE1CDC6A301E0A760037DBA5 /* Build configuration list for PBXNativeTarget "QuakeEditor" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE1CDC6B301E0A760037DBA5 /* Debug */,
-				CE1CDC6C301E0A760037DBA5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2162,20 +2091,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EE06000000000000000000AA /* Build configuration list for PBXNativeTarget "GuiEd" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EE05000000000000000000AA /* Debug */,
-				EE05000100000000000000AA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		FF06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDLauncher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FF05000000000000000000AA /* Debug */,
 				FF05000100000000000000AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A21877E3719F70D33F863672 /* Debug */,
+				EF44BC6BA9E8B20DCEAAA1C4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

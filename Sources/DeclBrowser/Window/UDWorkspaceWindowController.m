@@ -82,17 +82,31 @@
         return;
     }
 
-    // Commit any in-flight field editing before saving.
-    [self.window makeFirstResponder:nil];
+    // Commit any in-flight field editing before saving; the keyboard goes
+    // back where it was.
+    NSResponder *responder = [self _endEditing];
 
     NSError *error = nil;
     if (![document ud_save:&error]) {
         [self presentError:error];
     }
+    [self.window makeFirstResponder:responder];
+}
+
+/// Ends the editing in progress (a field's), and says who had the keyboard:
+/// the text view, the text field (not its field editor), ...
+- (NSResponder *)_endEditing {
+    NSResponder *responder = self.window.firstResponder;
+    if ([responder isKindOfClass:[NSText class]] && ((NSText *)responder).isFieldEditor
+        && [((NSText *)responder).delegate isKindOfClass:[NSResponder class]]) {
+        responder = (NSResponder *)((NSText *)responder).delegate;
+    }
+    [self.window makeFirstResponder:nil];
+    return responder;
 }
 
 - (IBAction)saveAllDocuments:(id)sender {
-    [self.window makeFirstResponder:nil];
+    NSResponder *responder = [self _endEditing];
 
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
         UDBaseDocument *document = editor.editorDocument;
@@ -104,6 +118,7 @@
             [self presentError:error];
         }
     }
+    [self.window makeFirstResponder:responder];
 }
 
 - (IBAction)saveDocumentAs:(id)sender {

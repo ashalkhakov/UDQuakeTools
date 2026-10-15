@@ -21,6 +21,8 @@
 @property (nonatomic, copy, nullable) NSURL *scriptURL;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *completionList;
 @property (nonatomic) NSUInteger toolTipIndex;          // where the requested tool tip goes
+@property (nonatomic) NSUInteger completionWordStart;   // where the word asked about begins
+@property (nonatomic) BOOL hoverShowing;                // the tool tip is the mouse's, not the parameters' 
 @property (nonatomic, strong, nullable) UDHoverViewController *toolTip;
 @property (nonatomic) NSInteger funcParmToolTipStart;   // after the '(', or -1
 @property (nonatomic) unichar typedCharacter;           // what the edit typed, or 0
@@ -249,15 +251,26 @@ static BOOL UDIsNameCharacter(unichar c) {
     NSString *parms = [[help[@"signatures"] firstObject] objectForKey:@"label"];
     if (![parms isKindOfClass:[NSString class]]) return;
     [self showToolTip:parms atIndex:self.toolTipIndex inTextView:self.editor.textView];
+    self.hoverShowing = NO;
     self.funcParmToolTipStart = (NSInteger)self.toolTipIndex + 1;
 }
 
 - (void)requestCompletionAtIndex:(NSUInteger)index {
+    NSString *text = self.editor.textView.string;
+    self.completionWordStart = index - [self nameBeforeIndex:index ofText:text].length;
     [self sendPendingEdits];
     [self.session.lspCoordinator completionAtIndex:index target:self action:@selector(_completionDidArrive:)];
 }
 
 - (void)_completionDidArrive:(LSPResponse *)response {
+    // An answer that comes after the caret left the word (typing on past
+    // it: "wait(") is no longer wanted.
+    NSString *text = self.editor.textView.string;
+    NSUInteger caret = self.editor.textView.selectedRange.location;
+    if (caret < self.completionWordStart || caret > text.length ||
+        [self nameBeforeIndex:caret ofText:text].length != caret - self.completionWordStart) {
+        return;
+    }
     NSMutableArray<NSString *> *labels = [NSMutableArray array];
     for (LSPCompletionItem *item in response.result) {
         [labels addObject:item.label];
@@ -293,8 +306,10 @@ static BOOL UDIsNameCharacter(unichar c) {
     [self requestCompletionAtIndex:textView.selectedRange.location];
 }
 
-// Option-click: the name's help (OnToolTipNotify): an event's, or where it is declared.
+// The mouse resting on a name: its help (OnToolTipNotify), an event's or
+// where it is declared; not over a function's parameters being typed.
 - (void)textView:(UDDiagnosticTextView *)textView requestTooltipAtIndex:(NSUInteger)characterIndex point:(NSPoint)point {
+    if (self.funcParmToolTipStart >= 0) return;
     NSString *text = textView.string;
     NSUInteger end = characterIndex;
     while (end < text.length && UDIsNameCharacter([text characterAtIndex:end])) end++;
@@ -308,9 +323,15 @@ static BOOL UDIsNameCharacter(unichar c) {
 - (void)_hoverDidArrive:(LSPResponse *)response {
     id contents = [response.result isKindOfClass:[NSDictionary class]] ? response.result[@"contents"] : nil;
     NSString *tip = [contents isKindOfClass:[NSDictionary class]] ? contents[@"value"] : contents;
-    if ([tip isKindOfClass:[NSString class]] && tip.length > 0) {
+    if ([tip isKindOfClass:[NSString class]] && tip.length > 0 && self.funcParmToolTipStart < 0) {
         [self showToolTip:tip atIndex:self.toolTipIndex inTextView:self.editor.textView];
+        self.hoverShowing = YES;
     }
+}
+
+// The mouse left the name: its help goes (the parameters' stays).
+- (void)textViewHoverDidEnd:(UDDiagnosticTextView *)textView {
+    if (self.hoverShowing) [self hideToolTip];
 }
 
 - (void)showToolTip:(NSString *)text atIndex:(NSUInteger)index inTextView:(NSTextView *)textView {
@@ -321,6 +342,7 @@ static BOOL UDIsNameCharacter(unichar c) {
 - (void)hideToolTip {
     [self.toolTip close];
     self.funcParmToolTipStart = -1;
+    self.hoverShowing = NO;
 }
 
 @end

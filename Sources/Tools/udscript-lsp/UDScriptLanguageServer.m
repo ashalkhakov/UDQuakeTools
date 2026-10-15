@@ -200,7 +200,10 @@ static NSInteger UDCompletionKind(UDScriptDefinitionKind kind) {
 
     NSMutableArray *items = [NSMutableArray array];
     if (start > 0 && [text characterAtIndex:start - 1] == '.') {         // <object>.<event>
+        NSMutableSet<NSString *> *seen = [NSMutableSet set];
         for (NSString *name in [_events membersOfObject:@""]) {
+            if ([seen containsObject:name]) continue;           // an event of sys's and of a thread's
+            [seen addObject:name];
             [items addObject:@{ @"label": name, @"kind": @(UDCompletionEvent),
                                 @"detail": [_events functionParmsForName:name] ?: @"" }];
         }

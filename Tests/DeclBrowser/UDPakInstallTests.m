@@ -139,6 +139,12 @@ static NSString *const UDMainScript =
      "\tsys.println( \"udfix\" );\n"
      "}\n";
 
+// Written on Windows: CRLF, as Doom 3's own scripts are.
+static NSString *const UDCRLFScript =
+    @"void udfix_crlf() {\r\n"
+     "\tsys.wait( 1 );\r\n"
+     "}\r\n";
+
 // Calls udfix_main, defined in another script.
 static NSString *const UDLightsScript =
     @"void udfix_lights_on( float level ) {\n"
@@ -214,6 +220,7 @@ static NSString *const UDEventsScript =
         @[@"guis/udfix_terminal.gui", UDTerminalGUI],
         @[@"script/udfix_main.script", UDMainScript],
         @[@"script/udfix_lights.script", UDLightsScript],
+        @[@"script/udfix_crlf.script", UDCRLFScript],
         @[@"script/doom_events.script", UDEventsScript],
     ]];
     [self writePak:@"pak001.pk4" entries:@[
@@ -478,6 +485,29 @@ static NSString *const UDEventsScript =
     NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_main.script"]
                                                 encoding:NSUTF8StringEncoding error:NULL];
     XCTAssertTrue([saved containsString:@"\"edited\""], @"saving should write the script under fs_savepath: %@", saved);
+}
+
+/// A CRLF script is edited with "\n" alone (on GNUstep "\r" and "\n" were
+/// two places, the caret between them), and saved with its CRLF; saving
+/// leaves the keyboard with the editor.
+- (void)testACRLFScriptIsEditedWithOneLineEndingAndSavedWithItsOwn {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_crlf.script" inController:controller];
+    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertEqualObjects(textView.string, @"void udfix_crlf() {\n\tsys.wait( 1 );\n}\n");
+
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@");"].location + 2, 0)];
+    [textView insertText:@" // waited"];
+    [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.1];
+    XCTAssertEqual(textView.window.firstResponder, textView, @"the keyboard stays with the editor after saving");
+
+    NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_crlf.script"]
+                                                encoding:NSUTF8StringEncoding error:NULL];
+    XCTAssertEqualObjects(saved, @"void udfix_crlf() {\r\n\tsys.wait( 1 ); // waited\r\n}\r\n");
 }
 
 - (void)testAScriptOffersItsEventsAndTheirParameters {

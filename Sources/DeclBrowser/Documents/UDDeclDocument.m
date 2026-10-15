@@ -120,7 +120,7 @@
     }
 
     NSString *text = sourceText != nil ? [[NSString alloc] initWithData:sourceText encoding:NSUTF8StringEncoding] : nil;
-    _textContent = text ?: @"";
+    _textContent = [self editorTextFromFileText:text ?: @""];
     return YES;
 }
 
@@ -135,7 +135,7 @@
         // changes and the store re-derives the source text on save.
         if (self.textView != nil) {
             self.textContent = content;
-            self.declObject.sourceText = [content dataUsingEncoding:NSUTF8StringEncoding];
+            self.declObject.sourceText = [[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding];
         }
 
         if (![self.editingContext save:error]) {
@@ -156,7 +156,7 @@
     }
 
     // Legacy path.
-    NSMutableData *buffer = [[content dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    NSMutableData *buffer = [[[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
     [self.legacyDecl setText:buffer];
     if (![self.legacyDecl replaceSourceFileText:error]) {
         return NO;
@@ -193,7 +193,7 @@
     NSMutableDictionary<NSString *, id> *attributeValues = nil;
 
     if (self.textView != nil) {
-        bufferText = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
+        bufferText = [[self fileTextFromEditorText:self.textView.string] dataUsingEncoding:NSUTF8StringEncoding];
     } else {
         attributeValues = [NSMutableDictionary dictionary];
         for (NSAttributeDescription *attribute in entity.attributesByName.allValues) {

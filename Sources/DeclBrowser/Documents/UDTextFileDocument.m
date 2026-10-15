@@ -41,13 +41,13 @@
         
     NSString *text = [[NSString alloc] initWithBytes:buffer length:bufferLen encoding:NSUTF8StringEncoding];
     [self.workspace.fileSystem freeFile:buffer error:nil];
-    _textContent = text;
+    _textContent = [self editorTextFromFileText:text ?: @""];
     return YES;
 }
 
 - (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
     NSString *content = self.textView ? self.textView.string : self.textContent ?: @"";
-    NSData *buffer = [content dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *buffer = [[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding];
 
     int written = [self.workspace.fileSystem writeFile:_path buffer:buffer.bytes size:(int)buffer.length basePath:nil error:error];
     if (written == -1) {

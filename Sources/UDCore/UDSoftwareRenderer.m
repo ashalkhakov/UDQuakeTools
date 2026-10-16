@@ -20,12 +20,40 @@
 #import "idFileSystem.h"
 #import "idDeclManager.h"
 
-typedef struct {
-    float x, y;          // in the picture, its top row first
-    float invW;          // 1 / the view's depth
-    float s, t;          // texture coordinates, over the depth
-    float r, g, b, a;    // vertex color 0–1, over the depth
-} UDScreenVert;
+@interface UDTriangleList ()
+@property (nonatomic, strong) NSMutableData *data;
+@property (nonatomic, strong) NSMutableArray<UDImage *> *images;
+@end
+
+@implementation UDTriangleList
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _data = [NSMutableData data];
+        _images = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (NSUInteger)count {
+    return self.data.length / sizeof( UDTriangleCommand );
+}
+
+- (const UDTriangleCommand *)triangles {
+    return self.data.bytes;
+}
+
+- (UDImage *)imageOfTriangle:(NSUInteger)index {
+    return self.images[index];
+}
+
+- (void)addTriangle:(const UDTriangleCommand *)triangle image:(UDImage *)image {
+    [self.data appendBytes:triangle length:sizeof( UDTriangleCommand )];
+    [self.images addObject:image];
+}
+
+@end
 
 @implementation UDPointLight {
     float lightOrigin[3];
@@ -56,6 +84,9 @@ typedef struct {
     float projX, projY;      // the half picture over tan( half fov )
     BOOL guiView;            // EmitFullScreen's: qglOrtho( 0, 640, 480, 0, 0, 1 )
 }
+/// Where -drawTriangle:… puts its triangle while trianglesOfSurfaces: lists
+/// them; nil, and it is drawn.
+@property (nonatomic, strong, nullable) UDTriangleList *recording;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *sortOverrides;
 @property (nonatomic, strong, nullable) idDeclManager *declManager;
 @property (nonatomic, strong, nullable) idFileSystem *fileSystem;
@@ -68,6 +99,12 @@ typedef struct {
 @end
 
 @implementation UDSoftwareRenderer
+
++ (void)initialize {
+    if ( self == [UDSoftwareRenderer class] ) {
+        UDInitByteToFloat();
+    }
+}
 
 - (instancetype)initWithWidth:(int)width height:(int)height declManager:(idDeclManager *)declManager fileSystem:(idFileSystem *)fileSystem {
     self = [super init];
@@ -212,11 +249,35 @@ idMaterial::SetDefaultText
 /// @a repeat has the coordinates outside 0–1 (GL_REPEAT, or GL_CLAMP_TO_EDGE
 /// for the clamps; TR_CLAMP_TO_ZERO's 0 0 0 255 and …_ALPHA's alpha 0
 /// beyond the edge).
+static float UDByteToFloat[256];
+
+/// UDByteToFloat filled: each byte's p / 255.0f (the renderer's +initialize,
+/// before any drawing, on any thread).
+static void UDInitByteToFloat( void ) {
+    for ( int i = 0; i < 256; i++ ) {
+        UDByteToFloat[i] = i / 255.0f;
+    }
+}
+
 static void UDSampleRaw( const uint8_t *data, int w, int h, int repeat, float s, float t, float out[4] ) {
     float u = s * w - 0.5f, v = t * h - 0.5f;
     int x0 = (int)floorf( u ), y0 = (int)floorf( v );
     float fx = u - x0, fy = v - y0;
     float c[4] = { 0, 0, 0, 0 };
+    if ( x0 >= 0 && y0 >= 0 && x0 + 1 < w && y0 + 1 < h ) {
+        // all four texels inside: neither wrapped nor clamped
+        for ( int j = 0; j < 2; j++ ) {
+            for ( int i = 0; i < 2; i++ ) {
+                float weight = ( i ? fx : 1 - fx ) * ( j ? fy : 1 - fy );
+                const uint8_t *p = data + ( ( y0 + j ) * w + x0 + i ) * 4;
+                for ( int k = 0; k < 4; k++ ) {
+                    c[k] += UDByteToFloat[p[k]] * weight;
+                }
+            }
+        }
+        memcpy( out, c, sizeof( c ) );
+        return;
+    }
     for ( int j = 0; j < 2; j++ ) {
         for ( int i = 0; i < 2; i++ ) {
             int x = x0 + i, y = y0 + j;
@@ -232,7 +293,7 @@ static void UDSampleRaw( const uint8_t *data, int w, int h, int repeat, float s,
             float weight = ( i ? fx : 1 - fx ) * ( j ? fy : 1 - fy );
             const uint8_t *p = data + ( y * w + x ) * 4;
             for ( int k = 0; k < 4; k++ ) {
-                float value = p[k] / 255.0f;
+                float value = UDByteToFloat[p[k]];
                 if ( outside && repeat == 3 ) value = k == 3 ? 1.0f : 0.0f;
                 if ( outside && repeat == 4 && k == 3 ) value = 0.0f;
                 c[k] += value * weight;
@@ -240,10 +301,6 @@ static void UDSampleRaw( const uint8_t *data, int w, int h, int repeat, float s,
         }
     }
     memcpy( out, c, sizeof( c ) );
-}
-
-static void UDSample( UDImage *image, int repeat, float s, float t, float out[4] ) {
-    UDSampleRaw( image.pixels.bytes, image.width, image.height, repeat, s, t, out );
 }
 
 /// glBlendFunc's factor for the bits of drawStateBits.
@@ -320,18 +377,26 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
     return ( b->x - a->x ) * ( y - a->y ) - ( b->y - a->y ) * ( x - a->x );
 }
 
-/// A triangle drawn: its texels modulated by its colors and @a constant
-/// (GL_MODULATE, the second texture unit's constant color), blended by
-/// @a drawStateBits.
-- (void)drawTriangle:(const UDScreenVert *)v0 :(const UDScreenVert *)v1 :(const UDScreenVert *)v2
-               image:(UDImage *)image repeat:(int)repeat constant:(const float [4])constant drawStateBits:(int)drawStateBits {
+/// A triangle drawn into @a pixels, its rows from @a bandMinY to
+/// @a bandMaxY only: its texels modulated by its colors and its constant
+/// (GL_MODULATE, the second texture unit's constant color), blended by its
+/// drawStateBits.
+static void UDRasterTriangle( const UDTriangleCommand *command, float *pixels, int width, int height, int bandMinY, int bandMaxY ) {
+    const UDScreenVert *v0 = &command->v[0], *v1 = &command->v[1], *v2 = &command->v[2];
+    const float *constant = command->constant;
+    const int repeat = command->repeat, drawStateBits = command->drawStateBits;
     float area = UDEdge( v0, v1, v2->x, v2->y );
     if ( fabsf( area ) < 1e-6f ) return;
     int minX = (int)floorf( MIN( v0->x, MIN( v1->x, v2->x ) ) ), maxX = (int)ceilf( MAX( v0->x, MAX( v1->x, v2->x ) ) );
     int minY = (int)floorf( MIN( v0->y, MIN( v1->y, v2->y ) ) ), maxY = (int)ceilf( MAX( v0->y, MAX( v1->y, v2->y ) ) );
-    minX = MAX( minX, 0 ); minY = MAX( minY, 0 );
-    maxX = MIN( maxX, self.width - 1 ); maxY = MIN( maxY, self.height - 1 );
+    minX = MAX( minX, 0 ); minY = MAX( minY, bandMinY );
+    maxX = MIN( maxX, width - 1 ); maxY = MIN( maxY, MIN( height - 1, bandMaxY ) );
     int srcBits = drawStateBits & UDGLSSrcBlendBits, dstBits = drawStateBits & UDGLSDstBlendBits;
+    // the blends nearly every stage has, without a factor looked up per channel
+    const BOOL replaces = srcBits == 0x0 && dstBits == 0x00;          // GL_ONE, GL_ZERO
+    const BOOL alphaBlends = srcBits == 0x5 && dstBits == 0x60;       // GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+    const uint8_t *texels = command->texels;
+    const int texWidth = command->texWidth, texHeight = command->texHeight;
     // GL_State's glColorMask: GLS_REDMASK, _GREENMASK, _BLUEMASK, _ALPHAMASK
     const bool writes[4] = { !( drawStateBits & 0x00000200 ), !( drawStateBits & 0x00000400 ),
                              !( drawStateBits & 0x00000800 ), !( drawStateBits & 0x00001000 ) };
@@ -356,17 +421,28 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
                 ( w0 * v0->a + w1 * v1->a + w2 * v2->a ) * persp,
             };
             float texel[4];
-            UDSample( image, repeat, s, t, texel );
+            UDSampleRaw( texels, texWidth, texHeight, repeat, s, t, texel );
             float src[4];
             for ( int k = 0; k < 4; k++ ) {
                 src[k] = texel[k] * color[k] * constant[k];
                 src[k] = src[k] < 0 ? 0 : src[k] > 1 ? 1 : src[k];
             }
-            float *dst = pixels + ( y * self.width + x ) * 4;
+            float *dst = pixels + ( y * width + x ) * 4;
             float result[4];
-            for ( int k = 0; k < 4; k++ ) {
-                float value = src[k] * UDBlendFactor( srcBits, YES, k, src, dst ) + dst[k] * UDBlendFactor( dstBits, NO, k, src, dst );
-                result[k] = value < 0 ? 0 : value > 1 ? 1 : value;
+            if ( replaces ) {
+                for ( int k = 0; k < 4; k++ ) {
+                    result[k] = src[k];       // src * 1 + dst * 0, src already in 0-1
+                }
+            } else if ( alphaBlends ) {
+                for ( int k = 0; k < 4; k++ ) {
+                    float value = src[k] * src[3] + dst[k] * ( 1 - src[3] );
+                    result[k] = value < 0 ? 0 : value > 1 ? 1 : value;
+                }
+            } else {
+                for ( int k = 0; k < 4; k++ ) {
+                    float value = src[k] * UDBlendFactor( srcBits, YES, k, src, dst ) + dst[k] * UDBlendFactor( dstBits, NO, k, src, dst );
+                    result[k] = value < 0 ? 0 : value > 1 ? 1 : value;
+                }
             }
             for ( int k = 0; k < 4; k++ ) {
                 if ( writes[k] ) {
@@ -374,6 +450,35 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
                 }
             }
         }
+    }
+}
+
+/// A triangle drawn (or, while trianglesOfSurfaces: lists them, listed).
+- (void)drawTriangle:(const UDScreenVert *)v0 :(const UDScreenVert *)v1 :(const UDScreenVert *)v2
+               image:(UDImage *)image repeat:(int)repeat constant:(const float [4])constant drawStateBits:(int)drawStateBits {
+    UDTriangleCommand command;
+    command.v[0] = *v0;
+    command.v[1] = *v1;
+    command.v[2] = *v2;
+    command.texels = image.pixels.bytes;
+    command.texWidth = image.width;
+    command.texHeight = image.height;
+    command.repeat = repeat;
+    memcpy( command.constant, constant, sizeof( command.constant ) );
+    command.drawStateBits = drawStateBits;
+    if ( self.recording != nil ) {
+        [self.recording addTriangle:&command image:image];
+        return;
+    }
+    UDRasterTriangle( &command, pixels, self.width, self.height, 0, self.height - 1 );
+}
+
+#pragma mark - Triangle lists
+
+- (void)drawTriangles:(UDTriangleList *)list {
+    const UDTriangleCommand *triangles = list.triangles;
+    for ( NSUInteger i = 0; i < list.count; i++ ) {
+        UDRasterTriangle( &triangles[i], pixels, self.width, self.height, 0, self.height - 1 );
     }
 }
 
@@ -405,6 +510,10 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
 }
 
 - (void)drawSurfaces:(NSArray<UDParticleSurface *> *)surfaces time:(float)time {
+    [self drawTriangles:[self trianglesOfSurfaces:surfaces time:time]];
+}
+
+- (UDTriangleList *)trianglesOfSurfaces:(NSArray<UDParticleSurface *> *)surfaces time:(float)time {
     // the engine's order: by the material's sort, stable (an insertion sort)
     NSMutableArray<UDParticleSurface *> *sorted = [NSMutableArray arrayWithCapacity:surfaces.count];
     for ( UDParticleSurface *surf in surfaces ) {
@@ -413,9 +522,13 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
         while ( at > 0 && [self sortOfMaterial:sorted[at - 1].material] > key ) at--;
         [sorted insertObject:surf atIndex:at];
     }
+    UDTriangleList *list = [[UDTriangleList alloc] init];
+    self.recording = list;
     for ( UDParticleSurface *surf in sorted ) {
         [self drawSurface:surf time:time shaderParms:surf.shaderParms];
     }
+    self.recording = nil;
+    return list;
 }
 
 - (void)drawSurface:(UDParticleSurface *)surf time:(float)time shaderParms:(const float *)shaderParms {

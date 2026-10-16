@@ -22,6 +22,37 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) float *shaderParms;     // 12
 @end
 
+/// A vertex in the picture, as the triangles' setup leaves it for the
+/// rasterizer.
+typedef struct {
+    float x, y;          // in the picture, its top row first
+    float invW;          // 1 / the view's depth
+    float s, t;          // texture coordinates, over the depth
+    float r, g, b, a;    // vertex color 0–1, over the depth
+} UDScreenVert;
+
+/// A triangle the ambient pass draws: its vertices in the picture, the
+/// texels it reads (RGBA, the top row first) and how (0 GL_REPEAT, else a
+/// clamp: 3 TR_CLAMP_TO_ZERO, 4 TR_CLAMP_TO_ZERO_ALPHA, the others to the
+/// edge), the second texture unit's constant color (GL_MODULATE) and its
+/// stage's drawStateBits (GLS_SRCBLEND_*, GLS_DSTBLEND_*, the color mask).
+typedef struct {
+    UDScreenVert v[3];
+    const uint8_t *texels;
+    int texWidth, texHeight;
+    int repeat;
+    float constant[4];
+    int drawStateBits;
+} UDTriangleCommand;
+
+/// The triangles surfaces are drawn with, in the order they are drawn, and
+/// the images they read (kept while the list is).
+@interface UDTriangleList : NSObject
+@property (nonatomic, readonly) NSUInteger count;
+@property (nonatomic, readonly) const UDTriangleCommand *triangles;
+- (UDImage *)imageOfTriangle:(NSUInteger)index;
+@end
+
 @interface UDSoftwareRenderer : NSObject
 
 /// A picture of @a width × @a height, cleared to @a clearColor (RGBA, 0–1).
@@ -67,6 +98,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// sort, in order otherwise), their materials' registers at @a time
 /// seconds with each surface's entity's shader parms.
 - (void)drawSurfaces:(NSArray<UDParticleSurface *> *)surfaces time:(float)time;
+/// What -drawSurfaces:time: draws, as triangles in the picture, not drawn:
+/// the stages' registers evaluated, the vertices projected, the texture
+/// matrices applied (for a renderer of another kind: GL's).
+- (UDTriangleList *)trianglesOfSurfaces:(NSArray<UDParticleSurface *> *)surfaces time:(float)time;
+/// @a list drawn into the picture.
+- (void)drawTriangles:(UDTriangleList *)list;
 
 /// @a surfaces lit by @a light, as the ARB2 interaction pass lights them
 /// (RB_CreateSingleDrawInteractions, RB_ARB2_DrawInteraction, ported),

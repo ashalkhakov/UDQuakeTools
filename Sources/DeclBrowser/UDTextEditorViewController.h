@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
  * in UDTextEditorView.xib's editor host, backed by a UDTextFileDocument or
  * UDDeclDocument (NSDocument subclasses) for undo, saving and the dirty
  * state. A file is highlighted by the language its extension names
- * (idScript for .script); a decl is plain text.
+ * (idScript for .script, the decl grammar for .mtr, .def, ...); a decl, by
+ * the decl grammar.
  */
 @interface UDTextEditorViewController : UDBaseEditorViewController
 

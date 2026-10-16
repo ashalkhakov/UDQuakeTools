@@ -55,8 +55,10 @@
         return;
     }
 
-    // The language a file's extension names; a decl's text is plain.
+    // The language a file's extension names; a decl's, the decl grammar,
+    // whatever its file is called.
     NSURL *languageURL = nil;
+    UDLanguageMode *languageMode = nil;
     switch (self.item.kind) {
         case UDWorkspaceItemKindFile: {
             UDFileItem *fileItem = (UDFileItem *)self.item;
@@ -83,6 +85,7 @@
         case UDWorkspaceItemKindDecl: {
             UDDeclItem *declItem = (UDDeclItem *)self.item;
             NSError *error = nil;
+            languageMode = [[UDLanguageModeRegistry sharedRegistry] modeForIdentifier:@"iddecl"];
 
             self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
             if (self.document == nil) {
@@ -99,7 +102,7 @@
             return; // should never happen
     }
 
-    [self _embedEditorForLanguageOfURL:languageURL];
+    [self _embedEditorForURL:languageURL languageMode:languageMode];
 
     // The document fills the editor's text view, saves from it, and counts
     // its changes; the editor's edits are undone through its undo manager,
@@ -176,8 +179,8 @@
     [textView.window makeFirstResponder:textView];
 }
 
-- (void)_embedEditorForLanguageOfURL:(nullable NSURL *)url {
-    UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"" fileURL:url];
+- (void)_embedEditorForURL:(nullable NSURL *)url languageMode:(nullable UDLanguageMode *)languageMode {
+    UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"" fileURL:url languageMode:languageMode];
     self.session = [[UDEditorSession alloc] initWithDocument:text];
 
     // The editor's view first, so its layout manager is attached before the

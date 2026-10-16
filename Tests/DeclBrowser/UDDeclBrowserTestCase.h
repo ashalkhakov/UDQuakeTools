@@ -74,6 +74,9 @@ NSString * _Nullable UDDoom3InstallPath(void);
 - (nullable NSButton *)buttonTitled:(NSString *)title inView:(NSView *)view;
 - (nullable __kindof NSView *)firstSubviewOfClass:(Class)cls inView:(NSView *)view;
 - (nullable NSSegmentedControl *)segmentedControlWithAction:(SEL)action inView:(NSView *)view;
+/// A control by its tool tip (the settings' and New Declaration's name what
+/// they set).
+- (nullable __kindof NSView *)viewWithToolTip:(NSString *)toolTip inView:(NSView *)view;
 
 /// Clicks the tab labelled label of the first tab view under view that has
 /// one (only the selected tab's view is in the view hierarchy).

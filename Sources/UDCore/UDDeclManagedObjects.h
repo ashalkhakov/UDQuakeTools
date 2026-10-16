@@ -117,6 +117,23 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 @interface UDDeclMaterial : UDDeclBase
 @end
 
+// Edited as text until their editors arrive; each new one starts from its
+// engine class's DefaultDefinition.
+@interface UDDeclSound : UDDeclBase
+@end
+@interface UDDeclEntityDef : UDDeclBase
+@end
+@interface UDDeclMapDef : UDDeclBase
+@end
+@interface UDDeclFX : UDDeclBase
+@end
+@interface UDDeclAF : UDDeclBase
+@end
+@interface UDDeclModel : UDDeclBase
+@end
+@interface UDDeclExport : UDDeclBase
+@end
+
 // ---------------------------------------------------------------------------
 // A table's values and a skin's mappings and models: like particle stages,
 // plain KVO-compliant objects in transient attributes of their decl, read

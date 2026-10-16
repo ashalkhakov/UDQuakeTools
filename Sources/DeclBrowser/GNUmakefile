@@ -35,6 +35,7 @@ DeclBrowser_OBJC_FILES = \
     Window/UDEditorTabManager.m \
     Window/UDTextPromptPanel.m \
     Window/UDWorkspaceSettingsWindowController.m \
+    Window/UDNewDeclWindowController.m \
     Window/UDWorkspaceOpeningController.m \
     Window/UDWorkspaceWindowController.m
 
@@ -61,6 +62,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDPDAEmailEditorView.xib \
     Resources/UDPDAVideoEditorView.xib \
     Resources/UDWorkspaceSettings.xib \
+    Resources/UDNewDecl.xib \
     Resources/UDWorkspaceOpening.xib \
     Resources/en.lproj/UDImageViewerView.xib \
     en.lproj/UDTextEditorView.xib \
@@ -87,9 +89,10 @@ include $(GNUSTEP_MAKEFILES)/application.make
 # The scripts' language server beside the executable, where
 # -pathForAuxiliaryExecutable: finds it; the grammar bundles in the app's
 # PlugIns, where UDCodeKit's language mode registry looks: UDCodeKit's, and
-# this toolkit's idScript.
+# this toolkit's idScript and decls.
 UD_GRAMMARS = $(wildcard $(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit/*.bundle) \
-    ../../tree-sitter-idscript/TreeSitterIdScript.bundle
+    ../../tree-sitter-idscript/TreeSitterIdScript.bundle \
+    ../../tree-sitter-iddecl/TreeSitterIdDecl.bundle
 after-all::
 	@mkdir -p $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns
 	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/`basename $$b`; \

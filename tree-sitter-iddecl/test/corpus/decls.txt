@@ -1,0 +1,100 @@
+================================================================================
+A typed decl
+================================================================================
+
+table udtest_ramp { snap { 0, 0.5, 1 } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (decl
+    type: (name)
+    name: (name)
+    body: (block
+      (name)
+      (block
+        (number)
+        (punctuation)
+        (number)
+        (punctuation)
+        (number)))))
+
+================================================================================
+A decl of the file's default type, its name a path
+================================================================================
+
+// a material
+textures/udtest/wall
+{
+	/* the one stage */
+	{
+		blend	add
+		map		textures/udtest/wall.tga
+		rgb		.5
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (decl
+    name: (name)
+    body: (block
+      (comment)
+      (block
+        (name)
+        (name)
+        (name)
+        (name)
+        (name)
+        (number)))))
+
+================================================================================
+Strings, and decls one after another
+================================================================================
+
+entityDef udtest_lamp {
+	"inherit"	"func_static"
+	"model"		"models/udtest/lamp.lwo"
+}
+sound udtest_hum { minDistance 1 maxDistance 12 sound/udtest/hum.wav }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (decl
+    type: (name)
+    name: (name)
+    body: (block
+      (string)
+      (string)
+      (string)
+      (string)))
+  (decl
+    type: (name)
+    name: (name)
+    body: (block
+      (name)
+      (number)
+      (name)
+      (number)
+      (name))))
+
+================================================================================
+A stray before a decl
+================================================================================
+
+udtest_stray
+skin udtest_skin { * textures/udtest/wall }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (name)
+  (decl
+    type: (name)
+    name: (name)
+    body: (block
+      (punctuation)
+      (name))))

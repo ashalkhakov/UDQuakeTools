@@ -75,6 +75,11 @@
                                     <action selector="newDocument:" target="-1" id="4Si-XN-c54"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="New Declaration…" id="NDC-mi-001">
+                                <connections>
+                                    <action selector="newDecl:" target="-1" id="NDC-ac-001"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="New PDA…" id="NPD-mi-001">
                                 <connections>
                                     <action selector="newPDA:" target="-1" id="NPD-ac-001"/>

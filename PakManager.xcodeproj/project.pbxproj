@@ -395,8 +395,10 @@
 		CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
 		CE1CDC87301E48500037DBA5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC77301E41220037DBA5 /* MainMenu.xib */; };
 		CE1CDC8A301E4B660037DBA5 /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		9C3E73304F4440B3D01B3244 /* UDNewDeclWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17B05C33979061F9E2F779F3 /* UDNewDeclWindowController.m */; };
 		FE0D68E334C6258CEF7DADD4 /* UDWorkspaceOpeningController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */; };
 		CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		C536DE7B10180430F6FE1C48 /* UDNewDecl.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D95130CF5CADE32857620EB /* UDNewDecl.xib */; };
 		6FE5148463EDE1D4BC0DAD26 /* UDWorkspaceOpening.xib in Resources */ = {isa = PBXBuildFile; fileRef = E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */; };
 		CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
@@ -503,6 +505,7 @@
 		6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */; };
 		919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */; };
 		E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */; };
+		08CA9BD0BF0CBF7D675E458B /* UDDeclEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A31E456696FDB41746734F9C /* UDDeclEditorTests.m */; };
 		BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */; };
 		840A133AC766210687236006 /* UDProject.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652B3027974B00157501 /* UDProject.m */; };
 		BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65293027974B00157501 /* UDWorkspaceItem.m */; };
@@ -519,6 +522,7 @@
 		7D32A1D4BDDA72E8FA90D996 /* UDTableEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */; };
 		56188C66409329E7F92644C5 /* UDDeclEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */; };
 		52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		CC8865AB97DBBF4EABACBCCB /* UDNewDeclWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17B05C33979061F9E2F779F3 /* UDNewDeclWindowController.m */; };
 		70C2C9088B14EFDB10B59F35 /* UDWorkspaceOpeningController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */; };
 		6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
@@ -534,6 +538,7 @@
 		42EA6D3FAD19068EEEA3A386 /* UDSkinEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3C681834FB290A5F297E6DDF /* UDSkinEditorView.xib */; };
 		34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
 		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		100DDCD8BDC2EA6DB9D1CBB8 /* UDNewDecl.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D95130CF5CADE32857620EB /* UDNewDecl.xib */; };
 		C83C9AE15BCE77BA1BC099C2 /* UDWorkspaceOpening.xib in Resources */ = {isa = PBXBuildFile; fileRef = E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */; };
 		30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6555302A07BC00157501 /* UDImageViewerView.xib */; };
 		67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
@@ -571,6 +576,7 @@
 		EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; };
 		EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = EC1D00000000000000000005 /* TreeSitterIdScript.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		ED1D00000000000000000009 /* TreeSitterIdDecl.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = ED1D00000000000000000005 /* TreeSitterIdDecl.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -616,6 +622,13 @@
 			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
 			remoteInfo = TreeSitterIdScript;
 		};
+		ED1D00000000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1DDECC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdDecl;
+		};
 		EC1D00000000000000000008 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
@@ -623,12 +636,26 @@
 			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
 			remoteInfo = TreeSitterIdScript;
 		};
+		ED1D00000000000000000008 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1DDECC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdDecl;
+		};
 		EC1D00000000000000000004 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1D5C76BB13881D15A3714902;
 			remoteInfo = TreeSitterIdScript;
+		};
+		ED1D00000000000000000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1DDE76BB13881D15A3714902;
+			remoteInfo = TreeSitterIdDecl;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -705,6 +732,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */,
+				ED1D00000000000000000009 /* TreeSitterIdDecl.bundle in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -787,10 +815,13 @@
 		CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceWindowController.h; sourceTree = "<group>"; };
 		CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceWindowController.m; sourceTree = "<group>"; };
 		CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceSettingsWindowController.h; sourceTree = "<group>"; };
+		C9DC01459249E8B7CEE76B2A /* UDNewDeclWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDNewDeclWindowController.h; sourceTree = "<group>"; };
 		E3BD27A52F19203E7882A806 /* UDWorkspaceOpeningController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceOpeningController.h; sourceTree = "<group>"; };
 		CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceSettingsWindowController.m; sourceTree = "<group>"; };
+		17B05C33979061F9E2F779F3 /* UDNewDeclWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDNewDeclWindowController.m; sourceTree = "<group>"; };
 		6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceOpeningController.m; sourceTree = "<group>"; };
 		CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDWorkspaceSettings.xib; sourceTree = "<group>"; };
+		2D95130CF5CADE32857620EB /* UDNewDecl.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDNewDecl.xib; sourceTree = "<group>"; };
 		E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDWorkspaceOpening.xib; sourceTree = "<group>"; };
 		CE1CDC8D301E7E250037DBA5 /* UDPathTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPathTree.h; sourceTree = "<group>"; };
 		CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPathTree.m; sourceTree = "<group>"; };
@@ -902,6 +933,7 @@
 		20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserTestCase.m; sourceTree = "<group>"; };
 		368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorTests.m; sourceTree = "<group>"; };
 		54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTableSkinEditorTests.m; sourceTree = "<group>"; };
+		A31E456696FDB41746734F9C /* UDDeclEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclEditorTests.m; sourceTree = "<group>"; };
 		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
 		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
@@ -919,6 +951,7 @@
 		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdScript.xcodeproj; path = "tree-sitter-idscript/TreeSitterIdScript.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdDecl.xcodeproj; path = "tree-sitter-iddecl/TreeSitterIdDecl.xcodeproj"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1003,6 +1036,7 @@
 			isa = PBXGroup;
 			children = (
 				EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */,
+				ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */,
 				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* PakManager */,
 				DD00000400000000000000AA /* DeclBrowser */,
@@ -1215,8 +1249,10 @@
 			isa = PBXGroup;
 			children = (
 				CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */,
+				17B05C33979061F9E2F779F3 /* UDNewDeclWindowController.m */,
 				6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */,
 				CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */,
+				C9DC01459249E8B7CEE76B2A /* UDNewDeclWindowController.h */,
 				E3BD27A52F19203E7882A806 /* UDWorkspaceOpeningController.h */,
 				CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */,
 				CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */,
@@ -1301,6 +1337,7 @@
 				CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */,
 				CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */,
 				CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */,
+				2D95130CF5CADE32857620EB /* UDNewDecl.xib */,
 				E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */,
 			);
 			path = Resources;
@@ -1361,6 +1398,7 @@
 				20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */,
 				368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */,
 				54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */,
+				A31E456696FDB41746734F9C /* UDDeclEditorTests.m */,
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 			);
@@ -1371,6 +1409,14 @@
 			isa = PBXGroup;
 			children = (
 				EC1D00000000000000000005 /* TreeSitterIdScript.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ED1D00000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED1D00000000000000000005 /* TreeSitterIdDecl.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1515,6 +1561,7 @@
 			);
 			dependencies = (
 				EC1D00000000000000000006 /* PBXTargetDependency */,
+				ED1D00000000000000000006 /* PBXTargetDependency */,
 				EC1E00000000000000000010 /* PBXTargetDependency */,
 				CC07020100000000000000AA /* PBXTargetDependency */,
 			);
@@ -1554,6 +1601,7 @@
 			);
 			dependencies = (
 				EC1D00000000000000000007 /* PBXTargetDependency */,
+				ED1D00000000000000000007 /* PBXTargetDependency */,
 				EC1E00000000000000000014 /* PBXTargetDependency */,
 				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
 			);
@@ -1601,6 +1649,10 @@
 					ProductGroup = EC1D00000000000000000002 /* Products */;
 					ProjectRef = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
 				},
+				{
+					ProductGroup = ED1D00000000000000000002 /* Products */;
+					ProjectRef = ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1625,6 +1677,13 @@
 			remoteRef = EC1D00000000000000000004 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		ED1D00000000000000000005 /* TreeSitterIdDecl.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TreeSitterIdDecl.bundle;
+			remoteRef = ED1D00000000000000000004 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1647,6 +1706,7 @@
 				6C63619AC5B5A4746914DFB2 /* UDSkinEditorView.xib in Resources */,
 				3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */,
 				CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */,
+				C536DE7B10180430F6FE1C48 /* UDNewDecl.xib in Resources */,
 				6FE5148463EDE1D4BC0DAD26 /* UDWorkspaceOpening.xib in Resources */,
 				CE1CDC81301E41500037DBA5 /* Assets.xcassets in Resources */,
 				CEFC6556302A07BC00157501 /* UDImageViewerView.xib in Resources */,
@@ -1675,6 +1735,7 @@
 				42EA6D3FAD19068EEEA3A386 /* UDSkinEditorView.xib in Resources */,
 				34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */,
 				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
+				100DDCD8BDC2EA6DB9D1CBB8 /* UDNewDecl.xib in Resources */,
 				C83C9AE15BCE77BA1BC099C2 /* UDWorkspaceOpening.xib in Resources */,
 				30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */,
 				67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */,
@@ -1818,6 +1879,7 @@
 				10479B4660C30C0A918643FC /* UDTableEditorViewController.m in Sources */,
 				07A76E187297B22FB10DCD99 /* UDDeclEditorViewController.m in Sources */,
 				CE1CDC8A301E4B660037DBA5 /* UDWorkspaceSettingsWindowController.m in Sources */,
+				9C3E73304F4440B3D01B3244 /* UDNewDeclWindowController.m in Sources */,
 				FE0D68E334C6258CEF7DADD4 /* UDWorkspaceOpeningController.m in Sources */,
 				CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */,
 				CE1CDC80301E41450037DBA5 /* AppDelegate.m in Sources */,
@@ -1850,6 +1912,7 @@
 				6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */,
 				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
 				E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */,
+				08CA9BD0BF0CBF7D675E458B /* UDDeclEditorTests.m in Sources */,
 				BBEF0789E18F371F0AEA9BDB /* UDDoom3WorkspaceTests.m in Sources */,
 				840A133AC766210687236006 /* UDProject.m in Sources */,
 				BCD3691FA6DF00EF7CBFDD54 /* UDWorkspaceItem.m in Sources */,
@@ -1866,6 +1929,7 @@
 				7D32A1D4BDDA72E8FA90D996 /* UDTableEditorViewController.m in Sources */,
 				56188C66409329E7F92644C5 /* UDDeclEditorViewController.m in Sources */,
 				52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */,
+				CC8865AB97DBBF4EABACBCCB /* UDNewDeclWindowController.m in Sources */,
 				70C2C9088B14EFDB10B59F35 /* UDWorkspaceOpeningController.m in Sources */,
 				6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */,
 				7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */,
@@ -1914,10 +1978,20 @@
 			name = TreeSitterIdScript;
 			targetProxy = EC1D00000000000000000003 /* PBXContainerItemProxy */;
 		};
+		ED1D00000000000000000006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdDecl;
+			targetProxy = ED1D00000000000000000003 /* PBXContainerItemProxy */;
+		};
 		EC1D00000000000000000007 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TreeSitterIdScript;
 			targetProxy = EC1D00000000000000000008 /* PBXContainerItemProxy */;
+		};
+		ED1D00000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdDecl;
+			targetProxy = ED1D00000000000000000008 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

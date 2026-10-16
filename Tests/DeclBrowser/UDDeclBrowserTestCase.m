@@ -323,6 +323,15 @@ NSString *UDDoom3InstallPath(void) {
     return found;
 }
 
+- (NSView *)viewWithToolTip:(NSString *)toolTip inView:(NSView *)view {
+    __block NSView *found = nil;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        if ([candidate.toolTip isEqualToString:toolTip]) found = candidate;
+        return found == nil;
+    }];
+    return found;
+}
+
 - (NSSegmentedControl *)segmentedControlWithAction:(SEL)action inView:(NSView *)view {
     __block NSSegmentedControl *found = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {

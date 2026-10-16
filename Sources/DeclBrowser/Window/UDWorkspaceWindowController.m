@@ -11,6 +11,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import "UDNewDeclWindowController.h"
 #import "UDWorkspaceOpeningController.h"
 #import <UDCodeKit/UDTabBarView.h>
 #import <UDCodeKit/UDErrorsViewController.h>
@@ -247,7 +248,7 @@
     if (name == nil) return;
 
     NSError *error = nil;
-    if (![self _createDeclOfTypeName:typeName named:name error:&error]) {
+    if (![self _createDeclOfTypeName:typeName named:name fileName:nil error:&error]) {
         [self presentError:error];
         return;
     }
@@ -255,7 +256,32 @@
     [self.tabManager openEditorForWorkspaceItem:[[UDDeclItem alloc] initWithType:type declName:name path:name]];
 }
 
-- (BOOL)_createDeclOfTypeName:(NSString *)typeName named:(NSString *)name error:(NSError **)error {
+#pragma mark - New Declaration
+
+// File > New Declaration…: DialogDeclNew's type, name and file; the decl
+// starts from its type's default definition, in that file (a new one, or
+// one the decls already come from), and opens in its editor.
+- (IBAction)newDecl:(id)sender {
+    id selected = [self.outlineView itemAtRow:self.outlineView.selectedRow];
+    NSString *typeName = [selected isKindOfClass:[UDDeclItem class]]
+        ? [self.workspace.declManager declNameFromType:((UDDeclItem *)selected).type] : nil;
+    UDNewDeclWindowController *dialog = [[UDNewDeclWindowController alloc] initWithDeclManager:self.workspace.declManager
+                                                                                        typeName:typeName];
+    if ([dialog runModal] != NSModalResponseOK) return;
+
+    NSError *error = nil;
+    if (![self _createDeclOfTypeName:dialog.typeName named:dialog.declName fileName:dialog.fileName error:&error]) {
+        [self presentError:error];
+        return;
+    }
+    declType_t type = [self.workspace.declManager declTypeFromName:dialog.typeName];
+    [self.declBrowser reset];
+    [self.tabManager openEditorForWorkspaceItem:[[UDDeclItem alloc] initWithType:type declName:dialog.declName path:dialog.declName]];
+}
+
+/// A new decl of @a typeName in @a fileName, or where the store puts one of
+/// its type when that is nil.
+- (BOOL)_createDeclOfTypeName:(NSString *)typeName named:(NSString *)name fileName:(NSString *)fileName error:(NSError **)error {
     NSManagedObjectContext *context = [self.workspace newDeclEditingContextWithError:error];
     if (context == nil) return NO;
     NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:typeName
@@ -263,6 +289,16 @@
     if (entityName == nil) return NO;
     UDDeclBase *decl = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
     decl.name = name;
+    if (fileName.length > 0) {
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"DeclFile"];
+        request.predicate = [NSPredicate predicateWithFormat:@"fileName ==[c] %@", fileName];
+        NSManagedObject *file = [[context executeFetchRequest:request error:NULL] firstObject];
+        if (file == nil) {
+            file = [NSEntityDescription insertNewObjectForEntityForName:@"DeclFile" inManagedObjectContext:context];
+            [file setValue:fileName forKey:@"fileName"];
+        }
+        [decl setValue:file forKey:@"sourceFile"];
+    }
     return [context save:error];
 }
 
@@ -438,7 +474,7 @@
         }
         return NO;
     }
-    if (action == @selector(newPDA:) || action == @selector(newSkin:)) {
+    if (action == @selector(newDecl:) || action == @selector(newPDA:) || action == @selector(newSkin:)) {
         return self.workspace.declManager != nil;
     }
     if (action == @selector(saveDocumentAs:)) {

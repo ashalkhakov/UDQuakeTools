@@ -19,10 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
  * moves, added/removed child decls) down into idDeclManager and rewrites
  * the affected decl files. Unsaved edits in other documents are untouched.
  *
- * Decl types that don't have a Core Data entity in DeclModel yet (anything
- * other than material/table/skin/particle/pda/email/audio/video today) fall
- * back to editing the idDecl's raw text directly against the manager;
- * declObject is nil for them.
+ * A decl type without a Core Data entity in DeclModel (every one of Doom
+ * 3's has one) falls back to editing the idDecl's raw text directly
+ * against the manager; declObject is nil for them.
  */
 @interface UDDeclDocument : UDBaseDocument
 

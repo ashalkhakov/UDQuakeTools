@@ -466,8 +466,18 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
         values = @{ @"fileName": referenceObject, @"checksum": @(checksum), @"timestamp": @((int64_t)timestamp) };
 
     } else {
-        idDeclBase *decl = [self _declForEntity:entity name:referenceObject error:error];
+        NSError *lookupError = nil;
+        idDeclBase *decl = [self _declForEntity:entity name:referenceObject error:&lookupError];
         if (decl == nil) {
+            if ([lookupError.domain isEqualToString:UDDeclIncrementalStoreDomain] &&
+                lookupError.code == UDDeclIncrementalStoreDeclNotFound) {
+                // Named by another decl (a PDA's pda_email) but defined in no
+                // file: its name and nothing else, so it can be shown, and
+                // taken off; not a fault that cannot be fulfilled.
+                return [[NSIncrementalStoreNode alloc] initWithObjectID:objectID
+                                                             withValues:@{ @"name": referenceObject } version:1];
+            }
+            if (error != NULL) *error = lookupError;
             return nil;
         }
 
@@ -754,6 +764,19 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     }
 
     idDeclBase *decl = [_declManager declByName:lookupName type:type forceParse:YES error:error];
+    if (decl == nil && !isInserted) {
+        // One no file defines (see -newValuesForObjectWithID:…), changed only
+        // in its relationships — taken off its PDA, say: the owner's text is
+        // what changes; it has nothing of its own to write.
+        BOOL onlyRelationships = YES;
+        for (NSString *key in object.changedValues) {
+            if (entity.attributesByName[key] != nil) onlyRelationships = NO;
+        }
+        if (onlyRelationships) {
+            if (error != NULL) *error = nil;
+            return YES;
+        }
+    }
     if (decl == nil) {
         if (error != NULL && *error == nil) {
             *error = [self _errorWithCode:UDDeclIncrementalStoreDeclNotFound

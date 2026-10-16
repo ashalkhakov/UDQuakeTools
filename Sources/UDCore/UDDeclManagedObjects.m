@@ -363,18 +363,6 @@ static BOOL UDValidateName(id *ioValue, NSString *what, NSError **error) {
     return NO;
 }
 
-@implementation UDDeclBase (UDDeclElements)
-
-// The elements are adopted here as well as in the decl's setter: FreeCoreData's
-// -setValue:forKey: sets a modelled attribute's primitive value without
-// calling a custom accessor (Apple's KVC calls it).
-- (void)ud_setElements:(NSArray *)elements forKey:(NSString *)key {
-    [self setValue:[elements copy] forKey:key];
-    UDAdoptElements(elements, self, key);
-}
-
-@end
-
 @implementation UDDeclElement
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -395,7 +383,7 @@ static BOOL UDValidateName(id *ioValue, NSString *what, NSError **error) {
         return NO;
     }
     elements[index] = edited;
-    [owner ud_setElements:elements forKey:key];
+    [owner setValue:elements forKey:key];
     return YES;
 }
 

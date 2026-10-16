@@ -31,11 +31,11 @@ static UDDiagnosticSource const UDSkinReferencesSource = @"references";
     if (segment == 0) {
         NSUInteger at = selected != NSNotFound ? selected + 1 : elements.count;
         [elements insertObject:element atIndex:at];
-        [self.skin ud_setElements:elements forKey:key];
+        [self.skin setValue:elements forKey:key];
         [controller setSelectionIndex:at];
     } else if (selected != NSNotFound && selected < elements.count) {
         [elements removeObjectAtIndex:selected];
-        [self.skin ud_setElements:elements forKey:key];
+        [self.skin setValue:elements forKey:key];
     } else {
         NSBeep();
     }

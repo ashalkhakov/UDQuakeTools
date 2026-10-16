@@ -28,7 +28,7 @@
         // before it.
         NSUInteger at = selected != NSNotFound ? selected + 1 : values.count;
         [values insertObject:(at > 0 ? [values[at - 1] copy] : [UDTableValue valueWithNumber:0]) atIndex:at];
-        [self.table ud_setElements:values forKey:@"values"];
+        self.table.values = values;
         [self.valuesController setSelectionIndex:at];
     } else {
         // A table has a value at least: the engine reads one with none as
@@ -38,7 +38,7 @@
             return;
         }
         [values removeObjectAtIndex:selected];
-        [self.table ud_setElements:values forKey:@"values"];
+        self.table.values = values;
     }
 }
 

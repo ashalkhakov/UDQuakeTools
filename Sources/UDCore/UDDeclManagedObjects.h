@@ -126,12 +126,6 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 // decl updated) and undo brings the element back as it was.
 // ---------------------------------------------------------------------------
 
-@interface UDDeclBase (UDDeclElements)
-/// @a elements as the decl's @a key, each element the decl's: a new array,
-/// so the decl is updated and the change undoable.
-- (void)ud_setElements:(NSArray *)elements forKey:(NSString *)key;
-@end
-
 @interface UDDeclElement : NSObject <NSCopying>
 /// The decl and its attribute holding this element; nil until it is in one.
 @property (nonatomic, weak, nullable) UDDeclBase *ud_owner;

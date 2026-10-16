@@ -347,6 +347,15 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     return @"{ { 0 } }";
 }
 
+/// What idDeclTable::MakeDefault leaves: the default definition, { { 0 } }.
+static NSDictionary<NSString *, id> *UDDefaultTableValues(void) {
+    return @{ @"snap": @NO, @"clamp": @NO, @"values": @"0" };
+}
+
+// A port of idDeclTable::Parse (neo/framework/DeclTable.cpp). Where it calls
+// MakeDefault(), the values are the default definition's, as the engine's
+// are. The copy of the 0 element it appends, for lerping, is not the decl's
+// text and is not kept.
 + (NSDictionary<NSString *, id> *)ud_parseValuesFromText:(NSData *)text
                                                     name:(NSString *)name
                                                 fileName:(NSString *)fileName
@@ -357,65 +366,58 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (src == nil) {
         return nil;
     }
-
     idToken token;
     idToken_Init(&token);
+    float v;
 
     BOOL snap = NO;
     BOOL clamp = NO;
-    NSMutableArray<NSString *> *numbers = [NSMutableArray array];
+    NSMutableArray<NSString *> *values = [NSMutableArray array];
 
-    // Tolerant scanner over the table body. The game data is not uniform
-    // here: most tables wrap their values in an inner brace pair, some list
-    // values directly, and some lists are empty. Track brace depth and
-    // collect numbers wherever they appear; anything unrecognized is skipped
-    // with a warning instead of aborting the whole table.
-    int depth = 1; // the codec lexer already consumed the opening brace
-    while ([src readToken:&token error:error]) {
-        if (!strcmp(token.text, "{")) {
-            depth++;
-            continue;
+    while (1) {
+        if (![src readToken:&token error:NULL]) {
+            break;
         }
+
         if (!strcmp(token.text, "}")) {
-            if (--depth == 0) {
-                break;
-            }
-            continue;
+            break;
         }
-        if (!strcmp(token.text, ",")) {
-            continue;
-        }
+
         if (!strcasecmp(token.text, "snap")) {
             snap = YES;
-            continue;
-        }
-        if (!strcasecmp(token.text, "clamp")) {
+        } else if (!strcasecmp(token.text, "clamp")) {
             clamp = YES;
-            continue;
-        }
+        } else if (!strcasecmp(token.text, "{")) {
 
-        if (!strcmp(token.text, "-")) {
-            if ([src readToken:&token error:error]) {
-                idToken_StripQuotes(&token);
-                [numbers addObject:[NSString stringWithFormat:@"%g", -atof(token.text)]];
+            while (1) {
+                if (![src parseFloat:&v error:NULL]) {
+                    // we got something non-numeric
+                    return UDDefaultTableValues();
+                }
+
+                [values addObject:[NSString stringWithFormat:@"%g", v]];
+
+                [src readToken:&token error:NULL];
+                if (!strcmp(token.text, "}")) {
+                    break;
+                }
+                if (!strcmp(token.text, ",")) {
+                    continue;
+                }
+                [src warning:@"expected comma or brace"];
+                return UDDefaultTableValues();
             }
-            continue;
-        }
 
-        idToken_StripQuotes(&token);
-        const char first = token.text[0];
-        if ((first >= '0' && first <= '9') || first == '.' || first == '+') {
-            [numbers addObject:[NSString stringWithFormat:@"%g", atof(token.text)]];
-            continue;
+        } else {
+            [src warning:@"unknown token '%s'", token.text];
+            return UDDefaultTableValues();
         }
-
-        [src warning:@"table '%@': unknown token '%s'", name, token.text];
     }
 
     return @{
         @"snap": @(snap),
         @"clamp": @(clamp),
-        @"values": [numbers componentsJoinedByString:@", "],
+        @"values": [values componentsJoinedByString:@", "],
     };
 }
 
@@ -459,6 +461,9 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     @"}";
 }
 
+// A port of idDeclSkin::Parse (neo/framework/DeclSkin.cpp): the mappings,
+// "from to" a line ("*" the wildcard from), and the associated models. Where
+// it calls MakeDefault(), the values are the default definition's.
 + (NSDictionary<NSString *, id> *)ud_parseValuesFromText:(NSData *)text
                                                     name:(NSString *)name
                                                 fileName:(NSString *)fileName
@@ -469,38 +474,38 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (src == nil) {
         return nil;
     }
-
     idToken token, token2;
     idToken_Init(&token);
     idToken_Init(&token2);
 
-    NSMutableArray<NSString *> *mappingLines = [NSMutableArray array];
-    NSMutableArray<NSString *> *modelLines = [NSMutableArray array];
+    NSMutableArray<NSString *> *mappings = [NSMutableArray array];
+    NSMutableArray<NSString *> *associatedModels = [NSMutableArray array];
 
     while (1) {
-        if (![src readToken:&token error:error]) {
+        if (![src readToken:&token error:NULL]) {
             break;
         }
+
         if (!strcasecmp(token.text, "}")) {
             break;
         }
-        if (![src readToken:&token2 error:error]) {
-            [src warning:@"skin '%@': unexpected end of file", name];
-            break;
+        if (![src readToken:&token2 error:NULL]) {
+            [src warning:@"Unexpected end of file"];
+            return @{ @"mappings": @"* _default", @"associatedModels": @"" };
         }
 
         if (!strcasecmp(token.text, "model")) {
-            [modelLines addObject:UDTokenString(&token2)];
+            [associatedModels addObject:UDTokenString(&token2)];
             continue;
         }
 
-        NSString *from = !strcasecmp(token.text, "*") ? @"*" : UDTokenString(&token);
-        [mappingLines addObject:[NSString stringWithFormat:@"%@ %@", from, UDTokenString(&token2)]];
+        NSString *from = !strcasecmp(token.text, "*") ? @"*" /* wildcard */ : UDTokenString(&token);
+        [mappings addObject:[NSString stringWithFormat:@"%@ %@", from, UDTokenString(&token2)]];
     }
 
     return @{
-        @"mappings": [mappingLines componentsJoinedByString:@"\n"],
-        @"associatedModels": [modelLines componentsJoinedByString:@"\n"],
+        @"mappings": [mappings componentsJoinedByString:@"\n"],
+        @"associatedModels": [associatedModels componentsJoinedByString:@"\n"],
     };
 }
 

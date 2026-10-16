@@ -480,6 +480,7 @@
 		EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = EE01000000000000000001AA /* UDDeclManagedObjects.h */; };
 		EE01000000000000000004AA /* UDDeclManagedObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = EE01000000000000000003AA /* UDDeclManagedObjects.m */; };
 		EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */; };
+		A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */; };
 		FF01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010000000000000000AA /* main.m */; };
 		FF01000100000000000000AA /* UDLauncherAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF00010100000000000000AA /* UDLauncherAppDelegate.m */; };
 		FF01000200000000000000AA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF00010300000000000000AA /* MainMenu.xib */; };
@@ -863,6 +864,7 @@
 		EE01000000000000000001AA /* UDDeclManagedObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManagedObjects.h; sourceTree = "<group>"; };
 		EE01000000000000000003AA /* UDDeclManagedObjects.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclManagedObjects.m; sourceTree = "<group>"; };
 		EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclIncrementalStoreTests.m; sourceTree = "<group>"; };
+		71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclCodecTests.m; sourceTree = "<group>"; };
 		FF00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FF00010100000000000000AA /* UDLauncherAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDLauncherAppDelegate.m; sourceTree = "<group>"; };
 		FF00010200000000000000AA /* UDLauncherAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDLauncherAppDelegate.h; sourceTree = "<group>"; };
@@ -1149,6 +1151,7 @@
 			children = (
 				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
 				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
+				71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */,
 				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
 				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
 				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
@@ -1700,6 +1703,7 @@
 				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
 				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
 				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
+				A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */,
 				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
 				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
 				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,

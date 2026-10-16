@@ -91,6 +91,13 @@ static idLexer *UDDeclCodecLexerWithFlags(NSData *text, NSString *name, NSString
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [src setFlags:flags];
     if (![src skipUntilString:@"{" error:error]) {
+        // SkipUntilString says nothing at the end of the text: a decl
+        // without a body is not one its parser can read.
+        if (error != NULL && *error == nil) {
+            *error = [NSError errorWithDomain:@"org.underivable.udquaketools.lexer" code:1002 userInfo:
+                      @{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@: no '{' opens the decl",
+                                                    name.length > 0 ? name : @"decl"]}];
+        }
         return nil;
     }
     return src;
@@ -242,6 +249,20 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
                             values:(NSDictionary<NSString *, id> *)values
                              error:(NSError **)error {
     return nil; // raw-text-only entity
+}
+
+- (UDDeclIncrementalStore *)ud_store {
+    id store = self.objectID.persistentStore ?: self.managedObjectContext.persistentStoreCoordinator.persistentStores.firstObject;
+    return [store isKindOfClass:[UDDeclIncrementalStore class]] ? store : nil;
+}
+
+- (NSData *)ud_currentText:(NSError **)error {
+    return [[self ud_store] ud_textForDeclObject:self error:error];
+}
+
+- (BOOL)ud_applyText:(NSData *)text error:(NSError **)error {
+    UDDeclIncrementalStore *store = [self ud_store];
+    return store != nil && [store ud_applyText:text toDeclObject:self error:error];
 }
 
 + (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text

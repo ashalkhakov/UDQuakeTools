@@ -292,4 +292,94 @@ static NSString *const UDFixtureSkin =
     XCTAssertTrue([text containsString:@"* _default"], @"%@", text);
 }
 
+#pragma mark - The source (Editor | Source)
+
+/// The window's Editor | Source switch, clicked.
+- (void)show:(NSInteger)segment in:(UDWorkspaceWindowController *)controller {
+    NSSegmentedControl *control = controller.representationControl;
+    XCTAssertTrue(control.isEnabled, @"a structured editor has its source");
+    [control setSelectedSegment:segment];
+    [NSApp sendAction:control.action to:control.target from:control];
+}
+
+- (void)retype:(NSString *)text in:(NSTextView *)textView {
+    [textView setSelectedRange:NSMakeRange(0, textView.string.length)];
+    [textView insertText:text];
+}
+
+- (void)testTheSourceShowsTheDeclWithItsUnsavedEdits {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDTableEditorViewController *editor = [self openTableIn:controller];
+    if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
+    [[self buttonTitled:@"Clamp" inView:editor.view] performClick:nil];
+
+    [self show:1 in:controller];
+    XCTAssertTrue(editor.showsSource);
+    NSString *text = editor.sourceTextView.string;
+    XCTAssertTrue([text containsString:@"clamp"], @"the edit not yet saved: %@", text);
+    XCTAssertTrue([text containsString:@"0.5"], @"%@", text);
+    XCTAssertEqual(controller.representationControl.selectedSegment, 1);
+
+    [self show:0 in:controller];
+    XCTAssertFalse(editor.showsSource);
+    XCTAssertNil(editor.sourceTextView);
+    XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOn, @"unedited: as it was");
+}
+
+- (void)testTheSourceEditedIsReadBackAsOneEdit {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDTableEditorViewController *editor = [self openTableIn:controller];
+    if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
+
+    [self show:1 in:controller];
+    [self retype:@"table udtest_ramp { clamp { 0, 2 } }\n" in:editor.sourceTextView];
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited, @"one dirty state for both");
+    [self show:0 in:controller];
+
+    XCTAssertFalse(editor.showsSource);
+    XCTAssertEqualObjects(editor.values, (@[@0, @2]), @"the editor shows the text's values");
+    XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOn);
+    XCTAssertEqual([self buttonTitled:@"Snap" inView:editor.view].state, NSControlStateValueOff);
+
+    [editor.editorDocument.undoManager undo];
+    XCTAssertEqualObjects(editor.values, (@[@0, @0.5, @1]), @"one undo takes the source's edit back");
+    XCTAssertEqual([self buttonTitled:@"Snap" inView:editor.view].state, NSControlStateValueOn);
+}
+
+- (void)testSourceThatDoesNotParseStaysUp {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDTableEditorViewController *editor = [self openTableIn:controller];
+    if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
+
+    [self show:1 in:controller];
+    [self retype:@"table udtest_ramp snap\n" in:editor.sourceTextView];
+    __block BOOL told = NO;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        told = YES;
+        [window orderOut:nil];
+        [NSApp stopModalWithCode:NSModalResponseOK];
+    }];
+    [self show:0 in:controller];
+    XCTAssertTrue(told, @"the parser's error is shown");
+    XCTAssertTrue(editor.showsSource, @"and the source stays up");
+    XCTAssertEqual(controller.representationControl.selectedSegment, 1);
+    XCTAssertEqualObjects(editor.values, (@[@0, @0.5, @1]), @"nothing changed");
+}
+
+- (void)testSavingInTheSourceSavesItsText {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDTableEditorViewController *editor = [self openTableIn:controller];
+    if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
+
+    [self show:1 in:controller];
+    [self retype:@"table udtest_ramp { { 0, 0.75, 1 } }\n" in:editor.sourceTextView];
+    [self save:controller];
+    XCTAssertFalse(editor.editorDocument.isDocumentEdited);
+    XCTAssertTrue([[self savedText:@"materials/udtest.mtr"] containsString:@"0.75"], @"%@", [self savedText:@"materials/udtest.mtr"]);
+
+    [self show:0 in:controller];
+    XCTAssertEqualObjects(editor.values, (@[@0, @0.75, @1]));
+    XCTAssertFalse(editor.editorDocument.isDocumentEdited, @"what was saved is no edit");
+}
+
 @end

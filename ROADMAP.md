@@ -105,10 +105,13 @@ Built when the first editor needs each one, not up front:
 - Reference checking and a Problems panel (a PDA's emails exist, a material's
   images exist, an entityDef's `inherit` resolves).
 - New / Delete / Duplicate / Rename decl in the browser (only Save As exists).
-- A decl's source beside its structured editor: the main pane switches
-  between the two representations of the decl (the PDA, table, skin and
-  later editors, and the text editor over the decl's source), each edit in
-  one showing in the other, one undo history and one dirty state for both.
+- A decl's source beside its structured editor — done: Editor | Source
+  beside the tabs switches the PDA, table and skin editors to the decl's
+  text and back, an edited text read into the decl as one undoable edit.
+- A decl's text is its braced body: the decl manager is openQ4's, whose
+  idDeclFile keeps the section after the name. Doom 3's keeps the
+  `type name` header with it (`LoadAndParse`'s startMarker), so its
+  editor showed and renamed through it.
 - Lookup dialogs wherever a decl refers to another: a PDA's emails, audio
   logs and videos, a skin's materials, a particle stage's material and
   tables, an entityDef's inherit, and so on. Find the decl by name and pick
@@ -134,8 +137,15 @@ In order of value against cost; LOC is the MFC original's size.
       PDA references but no decl defines, as errors in the Issues tab before
       saving (a click shows the row); File > New PDA… makes one in a file of
       its own (`newpdas/<name>.pda`).
-- [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
-      diagnostics, per-type templates for New.
+- [x] **Decl editor** (3.2k) — DialogDeclEditor and DialogDeclNew: a
+      decl's text highlighted by a grammar of its own (`tree-sitter-iddecl`,
+      LoadAndParse's shape over idLexer's tokens); Edit > Test Declaration,
+      the braces and the lexer, then the decl's own parser over the text,
+      into its Issues; File > New Declaration… with a type, a name and a
+      file, the decl starting from its engine class's DefaultDefinition.
+- [ ] Keywords from `editors/<type>.def`, as CSyntaxRichEditCtrl's
+      LoadKeyWordsFromFile reads them (a colour and a description each):
+      Quake 4 ships them, Doom 3 does not.
 - [x] **Table** and **Skin** — structured editors over the existing
       entities, patterned on the PDA's: a table's Snap and Clamp, its values
       in a list and the curve they make; a skin's mappings and models in

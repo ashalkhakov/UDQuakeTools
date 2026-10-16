@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDWorkspaceWindowController">
             <connections>
+                <outlet property="representationControl" destination="rep-sc-001" id="rep-ot-001"/>
                 <outlet property="issuesHost" destination="IsT-hs-001" id="IsT-ol-001"/>
                 <outlet property="nameFilterField" destination="D99-4e-U2t" id="q4M-DV-AV5"/>
                 <outlet property="outlineView" destination="39P-QL-SWS" id="QGd-n6-efE"/>
@@ -195,9 +196,23 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="udB-ar-vw1" customClass="UDTabBarView">
-                                        <rect key="frame" x="0.0" y="385" width="342" height="28"/>
+                                        <rect key="frame" x="0.0" y="385" width="214" height="28"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </customView>
+                                    <segmentedControl toolTip="Edit the decl in its editor, or its source" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rep-sc-001">
+                                        <rect key="frame" x="216" y="387" width="124" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="rep-scc-001">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <segments>
+                                                <segment label="Editor" width="58" selected="YES"/>
+                                                <segment label="Source" width="58" tag="1"/>
+                                            </segments>
+                                        </segmentedCell>
+                                        <connections>
+                                            <action selector="showRepresentation:" target="-2" id="rep-ac-001"/>
+                                        </connections>
+                                    </segmentedControl>
                                     <tabView fixedFrame="YES" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="4rW-Hd-hq9">
                                         <rect key="frame" x="0.0" y="0.0" width="342" height="385"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

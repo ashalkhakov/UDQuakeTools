@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Posted (object: the tab manager) when an editor's tab opens or closes.
 extern NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification;
+/// Posted (object: the tab manager) when another editor's tab is selected.
+extern NSNotificationName const UDEditorTabManagerSelectionDidChangeNotification;
 
 
 NS_ASSUME_NONNULL_END

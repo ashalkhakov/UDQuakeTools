@@ -69,7 +69,29 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editorsDidChange:)
                                                  name:UDEditorTabManagerEditorsDidChangeNotification
                                                object:self.tabManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedEditorDidChange:)
+                                                 name:UDEditorTabManagerSelectionDidChangeNotification
+                                               object:self.tabManager];
+    [self _selectedEditorDidChange:nil];
+}
 
+#pragma mark - Editor | Source
+
+/// The switch is the selected tab's: a structured editor's, shown as it is.
+- (void)_selectedEditorDidChange:(NSNotification *)notification {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    BOOL structured = [editor isKindOfClass:[UDDeclEditorViewController class]];
+    self.representationControl.enabled = structured;
+    self.representationControl.selectedSegment = structured && ((UDDeclEditorViewController *)editor).showsSource ? 1 : 0;
+}
+
+- (IBAction)showRepresentation:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDDeclEditorViewController class]]) {
+        ((UDDeclEditorViewController *)editor).showsSource = self.representationControl.selectedSegment == 1;
+    }
+    // As it is: the source stays up when its text does not parse.
+    [self _selectedEditorDidChange:nil];
 }
 
 -(UDWorkspace *)workspace {

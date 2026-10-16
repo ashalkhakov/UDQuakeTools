@@ -642,6 +642,79 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     return [self _rawTextForDecl:decl];
 }
 
+#pragma mark - A decl object's text, both ways (a structured editor's source view)
+
+/// The decl the object was fetched as, or nil for one not saved yet.
+- (idDeclBase *)_declForObject:(NSManagedObject *)object {
+    if (object.objectID.isTemporaryID) {
+        return nil;
+    }
+    return [self _declForEntity:object.entity name:[self referenceObjectForObjectID:object.objectID] error:NULL];
+}
+
+- (NSData *)ud_textForDeclObject:(NSManagedObject *)object error:(NSError **)error {
+    Class cls = NSClassFromString(object.entity.managedObjectClassName);
+    if (![cls isSubclassOfClass:[UDDeclBase class]] || ((UDDeclBase *)object).ud_sourceTextEdited) {
+        return [object valueForKey:@"sourceText"];
+    }
+    // As -_applyChangesForDeclObject:isInserted:error: writes it.
+    idDeclBase *decl = [self _declForObject:object];
+    NSDictionary *currentValues = decl != nil ? [self _parsedValuesForEntity:object.entity decl:decl error:NULL] : nil;
+    NSDictionary *values = [self _codecValuesForDeclObject:object currentValues:currentValues];
+    NSData *text = [cls ud_textByUnparsingName:[object valueForKey:@"name"] values:values error:error];
+    return text ?: [object valueForKey:@"sourceText"];
+}
+
+- (BOOL)ud_applyText:(NSData *)text toDeclObject:(NSManagedObject *)object error:(NSError **)error {
+    Class cls = NSClassFromString(object.entity.managedObjectClassName);
+    NSDictionary *parsed = nil;
+    if ([cls isSubclassOfClass:[UDDeclBase class]]) {
+        NSError *parseError = nil;
+        parsed = [cls ud_parseValuesFromText:text name:[object valueForKey:@"name"] fileName:nil lineNum:1
+                                  fileSystem:_declManager.workspace.fileSystem error:&parseError];
+        if (parsed == nil && parseError != nil) {
+            if (error != NULL) *error = parseError;
+            return NO;
+        }
+    }
+    if (parsed == nil) {
+        [object setValue:text forKey:@"sourceText"];    // raw text only
+        return YES;
+    }
+
+    // The attributes, as -newValuesForObjectWithID:… fills them (and
+    // -awakeFromFetch the transient ones).
+    for (NSAttributeDescription *attribute in object.entity.attributesByName.allValues) {
+        if ([attribute.name isEqualToString:@"name"] || [attribute.name isEqualToString:@"sourceText"]) {
+            continue;
+        }
+        id value = parsed[attribute.name];
+        if (value == [NSNull null] || (value == nil && !attribute.isTransient)) {
+            value = attribute.defaultValue;
+        }
+        id current = [object valueForKey:attribute.name];
+        if (value != current && ![value isEqual:current]) {
+            [object setValue:value forKey:attribute.name];
+        }
+    }
+    // The children it names, as -newValueForRelationship:… finds them.
+    for (NSRelationshipDescription *relationship in object.entity.relationshipsByName.allValues) {
+        if (!relationship.isToMany || ![self _isDeclEntity:relationship.destinationEntity]) {
+            continue;
+        }
+        NSMutableSet<NSManagedObject *> *children = [NSMutableSet set];
+        for (NSString *childName in parsed[relationship.name]) {
+            if (![childName isKindOfClass:[NSString class]]) continue;
+            NSManagedObjectID *childID = [self newObjectIDForEntity:relationship.destinationEntity referenceObject:childName];
+            [children addObject:[object.managedObjectContext objectWithID:childID]];
+        }
+        if (![[object valueForKey:relationship.name] isEqualToSet:children]) {
+            [object setValue:children forKey:relationship.name];
+        }
+    }
+    return YES;
+}
+
 #pragma mark - Saving
 
 - (id)_executeSaveRequest:(NSSaveChangesRequest *)request

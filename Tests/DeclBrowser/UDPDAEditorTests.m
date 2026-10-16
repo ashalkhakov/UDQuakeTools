@@ -553,4 +553,39 @@ static NSString *const UDDanglingPDA =
     XCTAssertEqualObjects([(UDPDAEditorViewController *)again pda].fullName, @"Jonathan Ishii", @"and read back");
 }
 
+#pragma mark - The source
+
+- (void)testAPDAsSourceTakesItsChildrenOffAndOn {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+    XCTAssertEqual([editor.audioArrayController.arrangedObjects count], 1U);
+
+    NSSegmentedControl *control = controller.representationControl;
+    [control setSelectedSegment:1];
+    [NSApp sendAction:control.action to:control.target from:control];
+    NSTextView *textView = editor.sourceTextView;
+    NSString *text = textView.string;
+    XCTAssertTrue([text containsString:@"udtest_pda_audio_1"], @"%@", text);
+
+    NSMutableArray<NSString *> *lines = [NSMutableArray array];
+    for (NSString *line in [text componentsSeparatedByString:@"\n"]) {
+        if (![line containsString:@"pda_audio"]) [lines addObject:line];
+    }
+    [textView setSelectedRange:NSMakeRange(0, text.length)];
+    [textView insertText:[[lines componentsJoinedByString:@"\n"] stringByReplacingOccurrencesOfString:@"Technician" withString:@"Engineer"]];
+    [control setSelectedSegment:0];
+    [NSApp sendAction:control.action to:control.target from:control];
+
+    XCTAssertFalse(editor.showsSource);
+    XCTAssertEqualObjects(editor.pda.title, @"Engineer");
+    XCTAssertEqual([editor.audioArrayController.arrangedObjects count], 0U, @"the audio log it no longer names is off its list");
+    XCTAssertEqual([editor.emailArrayController.arrangedObjects count], 1U);
+
+    [self save:controller];
+    NSString *saved = [self declNamed:@"pda udtest_pda" inText:[self savedPDAFileText]];
+    XCTAssertTrue([saved containsString:@"Engineer"], @"%@", saved);
+    XCTAssertFalse([saved containsString:@"pda_audio"], @"%@", saved);
+}
+
 @end

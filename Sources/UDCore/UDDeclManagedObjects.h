@@ -93,6 +93,14 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
                                                        fileSystem:(nullable idFileSystem *)fileSystem
                                                             error:(NSError * _Nullable * _Nullable)error;
 
+/// The decl's text as it would be saved now, its unsaved edits in it; and
+/// a text read back into the decl, as one edit of its context (NO, with the
+/// parser's error, when it does not parse). A structured editor's source
+/// view: UDDeclIncrementalStore's -ud_textForDeclObject:error: and
+/// -ud_applyText:toDeclObject:error:.
+- (nullable NSData *)ud_currentText:(NSError * _Nullable * _Nullable)error;
+- (BOOL)ud_applyText:(NSData *)text error:(NSError * _Nullable * _Nullable)error;
+
 /// What this entity's parser says of @a text (DialogDeclEditor's Test, which
 /// has the decl parse its edited text): its lexer's errors and warnings, by
 /// line from the text's first, and the parse's own error. None for a

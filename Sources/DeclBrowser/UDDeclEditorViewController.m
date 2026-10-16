@@ -4,10 +4,17 @@
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspace.h"
 #import "idDeclManager.h"
+#import <UDCodeKit/UDCodeKit.h>
 
 @interface UDDeclEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDDiagnosticStore *diagnosticStore;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id> *diagnosticTargets;
+// The source, while it is up: its session and editor, the text it was shown
+// with, and the editor's views it covers.
+@property (nonatomic, strong, nullable) UDEditorSession *sourceSession;
+@property (nonatomic, strong, nullable) UDCodeEditorViewController *sourceEditor;
+@property (nonatomic, copy, nullable) NSString *shownSourceText;
+@property (nonatomic, copy, nullable) NSArray<NSView *> *coveredViews;
 @end
 
 static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
@@ -60,6 +67,9 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidChange:)
                                                  name:NSManagedObjectContextObjectsDidChangeNotification
                                                object:self.editingContext];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidSave:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:self.editingContext];
     [self declDidLoad];
     [self editingContextDidChange];
 }
@@ -70,6 +80,124 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
 
 - (void)_editingContextDidChange:(NSNotification *)notification {
     [self editingContextDidChange];
+    if (self.showsSource) [self _refreshUneditedSource];
+}
+
+#pragma mark - The source
+
+/// Saved from the source: what it shows is the decl now.
+- (void)_editingContextDidSave:(NSNotification *)notification {
+    if (self.showsSource) self.shownSourceText = self.sourceEditor.textView.string;
+}
+
+- (NSTextView *)sourceTextView {
+    return self.sourceEditor.textView;
+}
+
+- (nullable NSString *)_currentDeclText:(NSError **)error {
+    NSData *text = [self.declObject ud_currentText:error];
+    if (text == nil) return nil;
+    return [self.document editorTextFromFileText:[[NSString alloc] initWithData:text encoding:NSUTF8StringEncoding] ?: @""];
+}
+
+- (void)setShowsSource:(BOOL)showsSource {
+    if (showsSource == _showsSource || self.declObject == nil) return;
+    if (showsSource) {
+        NSError *error = nil;
+        NSString *text = [self _currentDeclText:&error];
+        if (text == nil) {
+            [self presentError:error];
+            return;
+        }
+        [self _showSourceText:text];
+    } else {
+        if (![self _readSourceIntoDecl]) return;
+        [self _hideSource];
+    }
+    _showsSource = showsSource;
+}
+
+- (void)_showSourceText:(NSString *)text {
+    UDCodeDocument *code = [[UDCodeDocument alloc] initWithText:@"" fileURL:nil
+        languageMode:[[UDLanguageModeRegistry sharedRegistry] modeForIdentifier:@"iddecl"]];
+    self.sourceSession = [[UDEditorSession alloc] initWithDocument:code];
+    self.sourceEditor = [[UDCodeEditorViewController alloc] initWithTextStorage:self.sourceSession.textStorage];
+    [self.sourceEditor configureForLanguageMode:code.languageMode];
+
+    self.coveredViews = self.view.subviews;
+    for (NSView *view in self.coveredViews) view.hidden = YES;
+    self.sourceEditor.view.frame = self.view.bounds;
+    self.sourceEditor.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.view addSubview:self.sourceEditor.view];
+#ifdef __APPLE__
+    NSAppearanceName appearance = [NSApp.effectiveAppearance
+        bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+    BOOL dark = [appearance isEqualToString:NSAppearanceNameDarkAqua];
+#else
+    BOOL dark = NO;          // GNUstep: no appearances; the light theme
+#endif
+    [self.sourceSession activateWithTheme:[[TreeSitterTheme alloc] initWithMode:dark]];
+
+    // The document fills the text view, counts its edits, and saves from it
+    // while it is up; its edits go on the document's undo stack.
+    self.shownSourceText = text;
+    self.document.textContent = text;
+    [self.document setTextView:self.sourceEditor.textView];
+    self.sourceSession.textStorage.textModel.undoManager = self.document.undoManager;
+    [self.view.window makeFirstResponder:self.sourceEditor.textView];
+}
+
+/// The text read into the decl, when it was edited: one undoable edit,
+/// which takes the text's own edits' place on the undo stack.
+- (BOOL)_readSourceIntoDecl {
+    NSString *text = self.sourceEditor.textView.string;
+    if ([text isEqualToString:self.shownSourceText]) return YES;
+
+    NSUndoManager *undoManager = self.document.undoManager;
+    NSData *data = [[self.document fileTextFromEditorText:text] dataUsingEncoding:NSUTF8StringEncoding];
+    // Text that does not parse changes nothing: the source stays up.
+    NSError *error = nil;
+    if ([[self.declObject class] ud_parseValuesFromText:data name:self.declObject.name fileName:nil lineNum:1
+                                              fileSystem:self.workspace.fileSystem error:&error] == nil && error != nil) {
+        [self presentError:error];
+        return NO;
+    }
+    // The context's changes go on the undo stack as it processes them:
+    // inside the group, so that they are one undo.
+    [undoManager beginUndoGrouping];
+    [self.declObject ud_applyText:data error:NULL];
+    [self.editingContext processPendingChanges];
+    [undoManager setActionName:@"Edit Source"];
+    [undoManager endUndoGrouping];
+    [undoManager removeAllActionsWithTarget:self.sourceSession.textStorage.textModel];
+    [undoManager removeAllActionsWithTarget:self.sourceEditor.textView.textStorage];
+    return YES;
+}
+
+- (void)_hideSource {
+    [self.document setTextView:nil];
+    [self.document.undoManager removeAllActionsWithTarget:self.sourceSession.textStorage.textModel];
+    [self.sourceEditor.view removeFromSuperview];
+    for (NSView *view in self.coveredViews) view.hidden = NO;
+    [self.sourceSession close];
+    self.sourceSession = nil;
+    self.sourceEditor = nil;
+    self.coveredViews = nil;
+    self.shownSourceText = nil;
+}
+
+/// An undo past the text's edits, back into the editor's, or a save: the
+/// text shows the decl as it is now, if it is as it was shown.
+- (void)_refreshUneditedSource {
+    NSTextView *textView = self.sourceEditor.textView;
+    if (textView == nil || ![textView.string isEqualToString:self.shownSourceText]) return;
+    NSString *text = [self _currentDeclText:NULL];
+    if (text == nil || [text isEqualToString:self.shownSourceText]) return;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    self.shownSourceText = text;
 }
 
 - (NSInteger)lineOfDeclTextContaining:(NSString *)text {

@@ -488,4 +488,40 @@
     XCTAssertFalse([onDisk containsString:@"post \"Chief Tester\""]);
 }
 
+#pragma mark - A decl object's text, both ways
+
+- (void)testADeclsTextHasItsUnsavedEdits {
+    UDDeclPDA *pda = [self declWithTypeName:@"pda" name:@"test/pda1"];
+    pda.title = @"Unsaved Title";
+    NSError *error = nil;
+    NSString *text = [[NSString alloc] initWithData:[pda ud_currentText:&error] encoding:NSUTF8StringEncoding];
+    XCTAssertTrue([text containsString:@"Unsaved Title"], @"%@ %@", text, error);
+    XCTAssertTrue([text containsString:@"test/email1"], @"its children too: %@", text);
+}
+
+- (void)testTextReadIntoADeclIsOneEditOfItsContext {
+    UDDeclPDA *pda = [self declWithTypeName:@"pda" name:@"test/pda1"];
+    NSManagedObject *email = pda.emails.anyObject;
+    NSString *text = [[NSString alloc] initWithData:[pda ud_currentText:NULL] encoding:NSUTF8StringEncoding];
+    text = [text stringByReplacingOccurrencesOfString:@"PDA Title" withString:@"Read Title"];
+    NSMutableArray<NSString *> *lines = [NSMutableArray array];
+    for (NSString *line in [text componentsSeparatedByString:@"\n"]) {
+        if (![line containsString:@"pda_audio"]) [lines addObject:line];
+    }
+
+    [self.context.undoManager beginUndoGrouping];
+    NSError *error = nil;
+    XCTAssertTrue([pda ud_applyText:[[lines componentsJoinedByString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding] error:&error], @"%@", error);
+    [self.context processPendingChanges];
+    [self.context.undoManager endUndoGrouping];
+    XCTAssertEqualObjects(pda.title, @"Read Title");
+    XCTAssertEqual(pda.audios.count, 0U, @"the child it no longer names is taken off");
+    XCTAssertEqualObjects(pda.emails.anyObject, email, @"the one it still names is the same object");
+    XCTAssertTrue(self.context.hasChanges);
+
+    [self.context.undoManager undo];
+    XCTAssertEqualObjects(pda.title, @"PDA Title", @"one undo takes it back");
+    XCTAssertEqual(pda.audios.count, 1U);
+}
+
 @end

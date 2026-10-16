@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet NSSearchField *textFilterField;
 @property (weak, nonatomic) IBOutlet NSTabView *tabView;         // right side of the split (tabless; content only)
 @property (weak, nonatomic) IBOutlet UDTabBarView *tabBarView;   // the Xcode-like tab strip above it
+@property (weak, nonatomic) IBOutlet NSSegmentedControl *representationControl; // Editor | Source, beside it
 
 @property (nonatomic, strong, nonnull) UDDeclBrowser *declBrowser;
 

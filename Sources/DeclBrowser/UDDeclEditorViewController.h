@@ -41,6 +41,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// ignored; 1 when it is not there. Where a diagnostic about it points.
 - (NSInteger)lineOfDeclTextContaining:(NSString *)text;
 
+/// The decl's source in place of the editor: its text as it would be saved
+/// now, in the code editor, highlighted as a decl. Back in the editor, the
+/// text, if edited, is read into the decl as one edit (undone as one); text
+/// that does not parse keeps the source up, the parser's error shown. Both
+/// share the document, its undo and its dirty state; saving in the source
+/// saves the text.
+@property (nonatomic) BOOL showsSource;
+
+/// The source's text view while the source is up, else nil.
+@property (nonatomic, readonly, nullable) NSTextView *sourceTextView;
+
 /// For the subclass: the decl has been opened (the object controller has
 /// it); and the editing context changed (an edit, an undo).
 - (void)declDidLoad;

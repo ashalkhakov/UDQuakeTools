@@ -2,6 +2,8 @@
 
 @class idDeclManager;
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString * const UDDeclIncrementalStoreType;
 extern NSString * const UDDeclIncrementalStoreConfigureDeclManager;
 extern NSString * const UDDeclIncrementalStoreConfigureDebugEnabled;
@@ -52,4 +54,18 @@ typedef enum {
 /// are never faulted in through -newValuesForObjectWithID:withContext:error:.
 - (nullable NSData *)ud_currentSourceTextForObjectID:(NSManagedObjectID *)objectID error:(NSError * _Nullable * _Nullable)error;
 
+/// The text @a object would save as now, its unsaved edits in it: what its
+/// codec writes from its attributes and children, as a save has it written,
+/// or its edited raw text.
+- (nullable NSData *)ud_textForDeclObject:(NSManagedObject *)object error:(NSError * _Nullable * _Nullable)error;
+
+/// @a text read into @a object, as a fetch reads a decl's text into one: its
+/// codec's values set on its attributes and children, through KVC, so that
+/// it is an edit of the object's context (undoable, the object updated). An
+/// object with no codec takes the text as its raw text. NO, and the
+/// parser's error, when the text does not parse.
+- (BOOL)ud_applyText:(NSData *)text toDeclObject:(NSManagedObject *)object error:(NSError * _Nullable * _Nullable)error;
+
 @end
+
+NS_ASSUME_NONNULL_END

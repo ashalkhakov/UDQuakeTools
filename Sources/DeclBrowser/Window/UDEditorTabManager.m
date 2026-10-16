@@ -12,6 +12,7 @@
 @end
 
 NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEditorTabManagerEditorsDidChange";
+NSNotificationName const UDEditorTabManagerSelectionDidChangeNotification = @"UDEditorTabManagerSelectionDidChange";
 
 @implementation UDEditorTabManager
 
@@ -52,6 +53,7 @@ NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEd
             [self.tabView selectTabViewItem:tabItem];
         }
         self.tabBar.selectedItem = [self.tabBar itemWithRepresentedObject:path];
+        [self _selectionDidChange];
         return existing;
     }
 
@@ -92,6 +94,7 @@ NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEd
     barItem.toolTip = path;
     [self.tabBar addItem:barItem];
     self.tabBar.selectedItem = barItem;
+    [self _selectionDidChange];
 
     return vc;
 }
@@ -112,6 +115,11 @@ NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEd
     NSString *selectedPath = [self _selectedTabViewPath];
     self.tabBar.selectedItem = selectedPath != nil ? [self.tabBar itemWithRepresentedObject:selectedPath] : nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:UDEditorTabManagerEditorsDidChangeNotification object:self];
+    [self _selectionDidChange];
+}
+
+- (void)_selectionDidChange {
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDEditorTabManagerSelectionDidChangeNotification object:self];
 }
 
 - (void)closeAllTabs {
@@ -136,6 +144,7 @@ NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEd
     if (tabItem) {
         [self.tabView selectTabViewItem:tabItem];
     }
+    [self _selectionDidChange];
 }
 
 // Close button clicked: confirm when the tab's document has unsaved changes.

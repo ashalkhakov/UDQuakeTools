@@ -676,4 +676,53 @@
     XCTAssertTrue([problems.firstObject.message containsString:@"unknown token 'wobble'"], @"%@", problems.firstObject.message);
 }
 
+#pragma mark - FX
+
+- (void)testAnFXIsReadAsParseSingleFXActionReadsItAndWrittenBackTheSame {
+    NSString *text =
+        @"fx fx/test_burst\n{\n"
+         "\tbindto \"muzzle\"\n"
+         "\t{\n\t\tname \"flash\"\n\t\tdelay 0\n\t\tduration 0.05\n\t\trestart 0\n"
+         "\t\tlight \"lights/test_flash\", 1, 0.5, 0, 240\n\t\tnoshadows\n\t}\n"
+         "\t{\n\t\tdelay 0.1\n\t\tduration 2\n\t\tuseLight \"flash\"\n\t\tfadeOut 0.5\n\t}\n"
+         "\t{\n\t\trandom 0.1, 0.4\n\t\tduration 1\n\t\tparticle \"test_sparks.prt\"\n"
+         "\t\toffset 0, 0, -16\n\t\taxis 0, 0, 1\n\t\tparticleTrackVelocity\n\t}\n"
+         "\t{\n\t\tduration 0.5\n\t\tshake 0.5, 2, 300, 1, 0.1\n\t\tignoreMaster\n\t}\n"
+         "\t{\n\t\tsound \"test_boom\"\n\t}\n"
+         "}";
+    NSArray<UDDeclTextProblem *> *problems = [UDDeclFX ud_problemsParsingText:text name:@"fx/test_burst" fileSystem:nil];
+    XCTAssertEqual(problems.count, 0U, @"%@", problems);
+
+    NSDictionary *values = [UDDeclFX ud_parseValuesFromText:[text dataUsingEncoding:NSUTF8StringEncoding]
+                                                       name:@"fx/test_burst" fileName:nil lineNum:1 fileSystem:nil error:NULL];
+    XCTAssertEqualObjects(values[@"bindTo"], @"muzzle");
+    NSArray<UDFXAction *> *actions = values[@"actions"];
+    XCTAssertEqual(actions.count, 5U);
+    XCTAssertEqualObjects(actions[0].kind, @"light");
+    XCTAssertEqualObjects(actions[0].data, @"lights/test_flash");
+    XCTAssertEqualObjects(actions[0].lightColor, @"1 0.5 0");
+    XCTAssertEqualObjects(actions[0].lightRadius, @240);
+    XCTAssertEqualObjects(actions[0].delay, @0, @"a delay written is kept, 0 or not");
+    XCTAssertTrue(actions[0].noshadows);
+    XCTAssertEqualObjects(actions[1].kind, @"uselight");
+    XCTAssertEqualObjects(actions[1].data, @"flash");
+    XCTAssertNil(actions[1].restart, @"one not written is not set");
+    XCTAssertEqualObjects(actions[2].random2, @0.4f);
+    XCTAssertNil(actions[2].delay, @"random leaves no delay");
+    XCTAssertEqualObjects(actions[2].offset, @"0 0 -16");
+    XCTAssertEqualObjects(actions[3].shakeDistance, @300);
+    XCTAssertTrue(actions[3].shakeFalloff);
+    XCTAssertEqualObjects(actions[4].kind, @"sound");
+
+    NSData *written = [UDDeclFX ud_textByUnparsingName:@"fx/test_burst" values:values error:NULL];
+    NSDictionary *again = [UDDeclFX ud_parseValuesFromText:written name:@"fx/test_burst" fileName:nil lineNum:1 fileSystem:nil error:NULL];
+    NSArray<NSString *> *keys = [UDFXAction ud_valueKeys];
+    for (NSUInteger i = 0; i < actions.count; i++) {
+        XCTAssertEqualObjects([again[@"actions"][i] dictionaryWithValuesForKeys:keys], [actions[i] dictionaryWithValuesForKeys:keys],
+                              @"action %lu written and read back the same:\n%@", (unsigned long)i,
+                              [[NSString alloc] initWithData:written encoding:NSUTF8StringEncoding]);
+    }
+    XCTAssertEqualObjects(again[@"bindTo"], @"muzzle");
+}
+
 @end

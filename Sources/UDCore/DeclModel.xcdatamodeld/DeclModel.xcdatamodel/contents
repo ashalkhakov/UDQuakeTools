@@ -5,7 +5,10 @@
         <attribute name="keyValues" optional="YES" transient="YES" attributeType="Undefined"/>
     </entity>
     <entity name="DeclExport" representedClassName="UDDeclExport" parentEntity="DeclBase" syncable="YES"/>
-    <entity name="DeclFX" representedClassName="UDDeclFX" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclFX" representedClassName="UDDeclFX" parentEntity="DeclBase" syncable="YES">
+        <attribute name="bindTo" optional="YES" attributeType="String"/>
+        <attribute name="actions" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
     <entity name="DeclMapDef" representedClassName="UDDeclMapDef" parentEntity="DeclBase" syncable="YES">
         <attribute name="keyValues" optional="YES" transient="YES" attributeType="Undefined"/>
     </entity>

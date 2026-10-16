@@ -137,8 +137,6 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 // Edited as text until their editors arrive; each new one starts from its
 // engine class's DefaultDefinition.
 
-@interface UDDeclFX : UDDeclBase
-@end
 @interface UDDeclAF : UDDeclBase
 @end
 @interface UDDeclModel : UDDeclBase
@@ -159,6 +157,16 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 /// The decl and its attribute holding this element; nil until it is in one.
 @property (nonatomic, weak, nullable) UDDeclBase *ud_owner;
 @property (nonatomic, copy, nullable) NSString *ud_ownerKey;
+@end
+
+/// An element of many values (a particle stage, an FX action): its declared
+/// properties are its values, copied with it; one set through KVC (a
+/// binding's edit) puts an edited copy in its place. A number typed in is
+/// validated: its scalar properties' and +ud_numberKeys' (NSNumber, nothing
+/// for none).
+@interface UDDeclPropertyElement : UDDeclElement
++ (NSArray<NSString *> *)ud_valueKeys;
++ (NSSet<NSString *> *)ud_numberKeys;
 @end
 
 /// One of a table's values.
@@ -237,6 +245,45 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 @end
 
 @interface UDDeclMapDef : UDDeclEntityDef
+@end
+
+/// One of an FX's actions, as idDeclFX::ParseSingleFXAction reads it: what
+/// it does (its keyword: light, uselight, attachlight, model, usemodel,
+/// particle, decal, sound, shake, attachentity, launch, shockwave) on what
+/// (data), and the keywords it sets. A number it does not set is nil (0 to
+/// the engine); vectors are their numbers, space-separated.
+@interface UDFXAction : UDDeclPropertyElement
+@property (nonatomic, copy, nullable) NSString *kind;
+@property (nonatomic, copy, nullable) NSString *data;
+@property (nonatomic, copy, nullable) NSString *name;
+@property (nonatomic, copy, nullable) NSString *fire;
+@property (nonatomic, copy, nullable) NSNumber *delay;
+@property (nonatomic, copy, nullable) NSNumber *duration;
+@property (nonatomic, copy, nullable) NSNumber *restart;
+@property (nonatomic, copy, nullable) NSNumber *size;
+@property (nonatomic, copy, nullable) NSNumber *fadeIn;
+@property (nonatomic, copy, nullable) NSNumber *fadeOut;
+@property (nonatomic, copy, nullable) NSNumber *rotate;
+@property (nonatomic, copy, nullable) NSNumber *random1;
+@property (nonatomic, copy, nullable) NSNumber *random2;
+@property (nonatomic, copy, nullable) NSString *offset;
+@property (nonatomic, copy, nullable) NSString *axis;
+@property (nonatomic, copy, nullable) NSString *angle;
+@property (nonatomic, copy, nullable) NSString *lightColor;
+@property (nonatomic, copy, nullable) NSNumber *lightRadius;
+@property (nonatomic, copy, nullable) NSNumber *shakeTime;
+@property (nonatomic, copy, nullable) NSNumber *shakeAmplitude;
+@property (nonatomic, copy, nullable) NSNumber *shakeDistance;
+@property (nonatomic) BOOL shakeFalloff;
+@property (nonatomic, copy, nullable) NSNumber *shakeImpulse;
+@property (nonatomic) BOOL noshadows, particleTrackVelocity, trackOrigin, ignoreMaster;
+@end
+
+/// An FX: the joint it binds to, and its actions, TRANSIENT, as a table's
+/// values are.
+@interface UDDeclFX : UDDeclBase
+@property (nonatomic, copy, nullable) NSString *bindTo;
+@property (nonatomic, copy, nullable) NSArray<UDFXAction *> *actions;
 @end
 
 /// One of a sound shader's samples or leadins: a .wav or .ogg path.
@@ -332,7 +379,7 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 // from/to floats. -init installs the engine's parse-time stage defaults.
 // ---------------------------------------------------------------------------
 
-@interface UDParticleStage : UDDeclElement
+@interface UDParticleStage : UDDeclPropertyElement
 
 @property (nonatomic, copy, nullable) NSString *material;
 @property (nonatomic) int32_t totalParticles;

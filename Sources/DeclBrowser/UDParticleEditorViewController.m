@@ -26,6 +26,9 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
     }
     if (self.previewView != nil) {
         self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
+        self.preview.timeSlider = self.timeSlider;
+        self.preview.timeLabel = self.timeLabel;
+        self.preview.playButton = self.playButton;
     }
 }
 
@@ -36,6 +39,15 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
 
 - (IBAction)restartPreview:(id)sender {
     [self.preview restart];
+}
+
+- (IBAction)scrubPreview:(id)sender {
+    [self.preview showTime:[sender intValue]];
+}
+
+- (IBAction)togglePreview:(id)sender {
+    self.preview.playing = !self.preview.playing;
+    self.playButton.title = self.preview.playing ? @"Pause" : @"Play";
 }
 
 #pragma mark - The stages (AddStage, RemoveStage)

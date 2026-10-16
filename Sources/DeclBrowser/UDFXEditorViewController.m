@@ -30,6 +30,11 @@ static UDDiagnosticSource const UDFXReferencesSource = @"references";
         self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
         self.preview.target = self;
         self.preview.action = @selector(previewDidDraw:);
+        self.preview.timeSlider = self.timeSlider;
+        self.preview.timeLabel = self.timeLabel;
+        self.preview.playButton = self.playButton;
+        self.timelineView.target = self;
+        self.timelineView.action = @selector(scrubTimeline:);
     }
 }
 
@@ -42,6 +47,20 @@ static UDDiagnosticSource const UDFXReferencesSource = @"references";
 
 - (IBAction)restartPreview:(id)sender {
     [self.preview restart];
+}
+
+- (IBAction)scrubPreview:(id)sender {
+    [self.preview showTime:[sender intValue]];
+}
+
+- (IBAction)togglePreview:(id)sender {
+    self.preview.playing = !self.preview.playing;
+    self.playButton.title = self.preview.playing ? @"Pause" : @"Play";
+}
+
+/// A click or a drag on the timeline: the preview paused there.
+- (void)scrubTimeline:(UDFXTimelineView *)timeline {
+    [self.preview showTime:timeline.scrubTime];
 }
 
 /// The preview's frame drawn: the timeline at its time.

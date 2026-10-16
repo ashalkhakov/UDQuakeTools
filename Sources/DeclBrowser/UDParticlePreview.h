@@ -23,12 +23,25 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSArray<UDFXAction *> *fxActions;
 /// Plays from the start again.
 - (void)restart;
+/// Whether it plays (YES at first); paused, it shows the time it is at.
+@property (nonatomic) BOOL playing;
+/// Paused at @a msec, that frame drawn: a time slider's.
+- (void)showTime:(int)msec;
+/// The time it goes over, in milliseconds, from its start again after it:
+/// an FX's Duration and a frame; a particle system's stages' time offsets,
+/// and their cycles (two for a system that does not stop).
+@property (nonatomic, readonly) int span;
 /// The time it is at, in milliseconds since its start (its FX's, looped).
 @property (nonatomic, readonly) int time;
 /// An FX's actions' states at the time drawn (idEntityFx::Run's), and its
 /// Duration in milliseconds.
 @property (nonatomic, copy, readonly) NSArray<UDFXActionState *> *fxStates;
 @property (nonatomic, readonly) int fxDuration;
+/// The controls it keeps up to date at each frame: a time slider (its range
+/// the span), a label of the time, a Play/Pause button.
+@property (nonatomic, weak, nullable) NSSlider *timeSlider;
+@property (nonatomic, weak, nullable) NSTextField *timeLabel;
+@property (nonatomic, weak, nullable) NSButton *playButton;
 /// Told the time at each frame drawn (an FX editor's timeline).
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;

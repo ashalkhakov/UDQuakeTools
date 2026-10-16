@@ -31,8 +31,9 @@
         [timer invalidate];
         return;
     }
-    if (preview.imageView.window == nil) return;     // not shown
-    [preview renderAtTime:(int)(-[preview.start timeIntervalSinceNow] * 1000)];
+    if (preview.imageView.window == nil || !preview.playing) return;     // not shown, or paused
+    int elapsed = (int)(-[preview.start timeIntervalSinceNow] * 1000);
+    [preview renderAtTime:elapsed % MAX(preview.span, 1)];
 }
 
 @end
@@ -45,6 +46,7 @@
         _imageView = imageView;
         _workspace = workspace;
         _start = [NSDate date];
+        _playing = YES;
         UDParticlePreviewTicker *ticker = [[UDParticlePreviewTicker alloc] init];
         ticker.preview = self;
         _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 / 30 target:ticker selector:@selector(tick:) userInfo:nil repeats:YES];
@@ -59,11 +61,40 @@
 - (void)setStages:(NSArray<UDParticleStage *> *)stages {
     _stages = [stages copy];
     self.model = stages.count > 0 ? [[UDParticleModel alloc] initWithStages:stages declManager:self.workspace.declManager] : nil;
+    if (!self.playing) [self renderAtTime:self.time];
 }
 
 - (void)setFxActions:(NSArray<UDFXAction *> *)fxActions {
     _fxActions = [fxActions copy];
     self.fxModel = fxActions.count > 0 ? [[UDFXModel alloc] initWithActions:fxActions declManager:self.workspace.declManager] : nil;
+    if (!self.playing) [self renderAtTime:self.time];
+}
+
+- (int)span {
+    if (self.fxModel != nil) {
+        return MAX(self.fxModel.duration, 16) + 16;
+    }
+    // each stage: its offset, then its cycles of ( particleLife + deadTime ),
+    // as idRenderModelPrt counts them
+    float span = 0;
+    for (UDParticleStage *stage in self.stages) {
+        float cycles = stage.cycles > 0 ? stage.cycles : 2;
+        span = MAX(span, stage.timeOffset + cycles * (stage.particleLife + stage.deadTime));
+    }
+    return MAX((int)(span * 1000), 100);
+}
+
+- (void)setPlaying:(BOOL)playing {
+    if (playing && !_playing) {
+        // on from where it was
+        self.start = [NSDate dateWithTimeIntervalSinceNow:-self.time / 1000.0];
+    }
+    _playing = playing;
+}
+
+- (void)showTime:(int)msec {
+    self.playing = NO;
+    [self renderAtTime:msec];
 }
 
 - (int)fxDuration {
@@ -72,14 +103,14 @@
 
 - (void)restart {
     self.start = [NSDate date];
+    if (!self.playing) [self renderAtTime:0];
 }
 
 - (void)renderAtTime:(int)msec {
     UDFXModel *fxModel = self.fxModel;
     if (fxModel != nil) {
         // a "test" fx: activated again at its ClearFx, its Duration
-        int period = MAX(fxModel.duration, 16) + 16;
-        msec %= period;
+        msec %= self.span;
         self.fxStates = [fxModel statesAtTime:msec];
     } else {
         self.fxStates = @[];
@@ -118,6 +149,11 @@
     NSImage *picture = [[NSImage alloc] initWithSize:NSMakeSize(image.width, image.height)];
     [picture addRepresentation:rep];
     imageView.image = picture;
+    NSSlider *slider = self.timeSlider;
+    slider.maxValue = self.span;
+    slider.intValue = msec;
+    self.timeLabel.stringValue = [NSString stringWithFormat:@"%.2f s", msec / 1000.0];
+    self.playButton.title = self.playing ? @"Pause" : @"Play";
     id target = self.target;
     if (target != nil && self.action != NULL) {
         [NSApp sendAction:self.action to:target from:self];

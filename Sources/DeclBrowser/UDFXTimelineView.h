@@ -15,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// In milliseconds.
 @property (nonatomic) int time;
 @property (nonatomic) int duration;
+/// A click or a drag along it: the time there (scrubTime) sent to its target.
+@property (nonatomic, weak, nullable) id target;
+@property (nonatomic, nullable) SEL action;
+@property (nonatomic, readonly) int scrubTime;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -2,7 +2,31 @@
 #import "UDDeclManagedObjects.h"
 #import "UDFXModel.h"
 
+@interface UDFXTimelineView ()
+@property (nonatomic, readwrite) int scrubTime;
+@end
+
 @implementation UDFXTimelineView
+
+static const CGFloat UDTimelineLabelWidth = 90;
+
+- (void)scrubToEvent:(NSEvent *)event {
+    NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+    CGFloat left = UDTimelineLabelWidth + 4, width = NSWidth(self.bounds) - left - 4;
+    CGFloat fraction = MIN(MAX((point.x - left) / width, 0), 1);
+    self.scrubTime = (int)(fraction * MAX(self.duration, 1));
+    if (self.target != nil && self.action != NULL) {
+        [NSApp sendAction:self.action to:self.target from:self];
+    }
+}
+
+- (void)mouseDown:(NSEvent *)event {
+    [self scrubToEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event {
+    [self scrubToEvent:event];
+}
 
 - (BOOL)isFlipped {
     return YES;
@@ -29,7 +53,7 @@
     NSArray<UDFXAction *> *actions = self.actions;
     if (actions.count == 0) return;
 
-    CGFloat labelWidth = 90, laneHeight = MIN(20, NSHeight(self.bounds) / actions.count);
+    CGFloat labelWidth = UDTimelineLabelWidth, laneHeight = MIN(20, NSHeight(self.bounds) / actions.count);
     CGFloat left = labelWidth + 4, width = NSWidth(self.bounds) - left - 4;
     float span = MAX(self.duration, 1) / 1000.0f;
     NSDictionary *attributes = @{NSFontAttributeName: [NSFont systemFontOfSize:10],

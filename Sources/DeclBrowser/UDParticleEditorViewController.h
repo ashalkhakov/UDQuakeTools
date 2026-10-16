@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// The system playing, as the engine draws it (UDParticlePreview).
 @property (weak) IBOutlet NSImageView *previewView;
 @property (nonatomic, strong, readonly, nullable) UDParticlePreview *preview;
+/// The preview's time: a slider (dragged, it pauses there), its label, and
+/// Play/Pause.
+@property (weak) IBOutlet NSSlider *timeSlider;
+@property (weak) IBOutlet NSTextField *timeLabel;
+@property (weak) IBOutlet NSButton *playButton;
 
 /// + adds a stage after the selection, the engine's default one (a copy of
 /// the selected one with Option, as AddStage's Ctrl had it); - takes the
@@ -27,6 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)addOrRemoveStage:(nullable id)sender;
 /// Plays the preview from the start again.
 - (IBAction)restartPreview:(nullable id)sender;
+/// The preview paused at the slider's time.
+- (IBAction)scrubPreview:(nullable id)sender;
+/// The preview played, or paused where it is.
+- (IBAction)togglePreview:(nullable id)sender;
 
 @end
 

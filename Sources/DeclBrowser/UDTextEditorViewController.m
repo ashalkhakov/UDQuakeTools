@@ -128,6 +128,10 @@
     }
 }
 
+- (NSTextView *)editorTextView {
+    return self.editor.textView;
+}
+
 - (UDDiagnosticStore *)diagnosticStore {
     return self.session.document.diagnosticStore;
 }

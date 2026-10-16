@@ -3,6 +3,7 @@
 #import "UDFileItem.h"
 #import "UDDeclItem.h"
 #import "UDTextEditorViewController.h"
+#import "UDGuiEditorViewController.h"
 #import "UDImageViewerViewController.h"
 #import "UDPDAEditorViewController.h"
 #import "UDTableEditorViewController.h"
@@ -61,6 +62,14 @@
             }
         }
         
+        // A GUI, running
+        if ([fileItem.path.pathExtension caseInsensitiveCompare:@"gui"] == NSOrderedSame) {
+            UDGuiEditorViewController *vc = [[UDGuiEditorViewController alloc] init];
+            vc.item = item;
+            vc.workspace = workspace;
+            return vc;
+        }
+
         // Default: text editor
         UDTextEditorViewController *vc = [[UDTextEditorViewController alloc] init];
         vc.item = item;
@@ -111,6 +120,22 @@
         [subview ud_disableScrollerAutohideRecursively];
     }
 #endif
+}
+
+@end
+
+@implementation UDInspectorPane
+
++ (instancetype)paneWithTitle:(NSString *)title letters:(NSString *)letters
+                          red:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue view:(NSView *)view {
+    UDInspectorPane *pane = [[self alloc] init];
+    pane->_title = [title copy];
+    pane->_letters = [letters copy];
+    pane->_red = red;
+    pane->_green = green;
+    pane->_blue = blue;
+    pane->_view = view;
+    return pane;
 }
 
 @end

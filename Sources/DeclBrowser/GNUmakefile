@@ -29,6 +29,13 @@ DeclBrowser_OBJC_FILES = \
     UDAFEditorViewController.m \
     UDMaterialEditorViewController.m \
     UDParticlePreview.m \
+    UDGuiPlayer.m \
+    UDGuiView.m \
+    UDGuiGLView.m \
+    UDTabBadge.m \
+    ThirdParty/DMTabBar/DMTabBar.m \
+    ThirdParty/DMTabBar/DMTabBarItem.m \
+    UDGuiEditorViewController.m \
     UDFXTimelineView.m \
     UDPathTree.m \
     UDProject.m \
@@ -52,6 +59,7 @@ DeclBrowser_INCLUDE_DIRS = \
     -I../UDUpdater \
     -IDocuments \
     -IWindow \
+    -IThirdParty/DMTabBar \
     -I../UDCore \
     -I../UDFormats
 
@@ -69,6 +77,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDEntityDefEditorView.xib \
     Resources/UDSoundEditorView.xib \
     Resources/UDParticleEditorView.xib \
+    Resources/UDGuiViewerView.xib \
     Resources/UDFXEditorView.xib \
     Resources/UDAFEditorView.xib \
     Resources/UDMaterialEditorView.xib \
@@ -93,6 +102,14 @@ ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 # UDCodeKit (the editor, its tab bar) from the prefix, where its release
 # archive is unpacked (.github/pins.env).
 ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic
+
+# The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
+# GLX and GL's headers are here (libgl-dev); without them it draws in
+# software.
+ifneq ($(wildcard /usr/include/GL/glx.h),)
+ADDITIONAL_CPPFLAGS += -DUD_HAVE_GL
+ADDITIONAL_LDFLAGS += -lGL
+endif
 
 # Compiles $(DeclBrowser_XCDATAMODELD_FILES) with momc and bundles the
 # resulting .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData.

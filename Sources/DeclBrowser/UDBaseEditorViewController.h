@@ -34,6 +34,35 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
+ * An editor with its text beside it: Editor | Source in the workspace
+ * window switches between them (a structured decl editor's, a GUI's).
+ */
+@protocol UDSourceRepresenting <NSObject>
+/// The text in place of the editor. Setting NO may leave it up (text the
+/// editor cannot take); the switch shows what it is.
+@property (nonatomic) BOOL showsSource;
+@end
+
+/**
+ * A tab of the workspace window's right pane, the inspector: what an
+ * editor shows there beside itself (a GUI's state, its log), its badge in
+ * the pane's tab bar.
+ */
+@interface UDInspectorPane : NSObject
++ (instancetype)paneWithTitle:(NSString *)title letters:(NSString *)letters
+                          red:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue view:(NSView *)view;
+@property (nonatomic, copy, readonly) NSString *title;
+@property (nonatomic, copy, readonly) NSString *letters;
+@property (nonatomic, readonly) CGFloat red, green, blue;
+@property (nonatomic, strong, readonly) NSView *view;
+@end
+
+/// An editor with tabs in the right pane while it is the selected one.
+@protocol UDInspecting <NSObject>
+@property (nonatomic, readonly) NSArray<UDInspectorPane *> *inspectorPanes;
+@end
+
+/**
  * GNUstep layout hardening. gnustep-gui's NSScrollView has no re-entrancy
  * guard around scroller auto-hiding: _autohideScrollers → tile → clip-view
  * setFrame: → the document view re-wraps (NSTextView height follows width)

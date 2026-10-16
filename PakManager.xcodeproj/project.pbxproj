@@ -342,6 +342,8 @@
 		};
 
 /* Begin PBXBuildFile section */
+		AF7E50172F726A0C78A3C8E9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
+		902F0A0371C8BE1A7CAEAB3A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
 		AA01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010000000000000000AA /* main.m */; };
 		AA01000100000000000000AA /* UDAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010100000000000000AA /* UDAppDelegate.m */; };
 		AA01000200000000000000AA /* UDArchiveDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010200000000000000AA /* UDArchiveDocument.m */; };
@@ -428,6 +430,7 @@
 		7FAF3B86B91064F94092B1F9 /* UDAFEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC874032549B57AD8AF2CB0 /* UDAFEditorView.xib */; };
 		6D676DAECD02005F96A46667 /* UDMaterialEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A09DF2D43891437EB435796A /* UDMaterialEditorView.xib */; };
 		EE8015C6FA7158822A8219C3 /* UDParticleEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9C50AF51B92AAD1E83249D1 /* UDParticleEditorView.xib */; };
+		B3C8BDA78B8E01F9F44042F1 /* UDGuiViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */; };
 		007B49A66F00E77391EEA747 /* UDSoundEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */; };
 		96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
@@ -472,6 +475,13 @@
 		F892B297F7259F3449CAB3A5 /* UDAFEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */; };
 		1AA8043CB6BA5E1A812A666E /* UDMaterialEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */; };
 		75E54F321E91C99FA534B920 /* UDParticlePreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */; };
+		25427BDD3E70A0CED6E82A41 /* ThirdParty/DMTabBar/DMTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */; };
+		F4CEAAECF54F7B2667DDD83D /* ThirdParty/DMTabBar/DMTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */; };
+		78F44C7E99BB949A32F8D0C7 /* UDTabBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */; };
+		E671582FF68F53BCAE6F80C0 /* UDGuiGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 936BAB3FC1597215BA4B670D /* UDGuiGLView.m */; };
+		4AF8A80D3B1575E7138C351B /* UDGuiEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */; };
+		A40044A6C58C3809DDF2174A /* UDGuiView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CD2BD211C45BCC10418142 /* UDGuiView.m */; };
+		4B3F566AD0A40BA815CF61C9 /* UDGuiPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */; };
 		00A3DDA9AB6D60C94BEF372D /* UDFXTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 481364967D51A060DC767609 /* UDFXTimelineView.m */; };
 		31C6A263CFA825AE8DBFAEF7 /* UDParticleEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */; };
 		81BE7E5C61B206A95B4EBBA6 /* UDSoundEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */; };
@@ -619,6 +629,13 @@
 		28E17A7B3723020CF03893F6 /* UDAFEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */; };
 		F2164EC657A518765C09343C /* UDMaterialEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */; };
 		E5DD98304903D8A647F0B8BB /* UDParticlePreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */; };
+		EA2B26D8E04B5E665BD4BC32 /* ThirdParty/DMTabBar/DMTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */; };
+		BDCD7B7EF2F4D220E48E83DF /* ThirdParty/DMTabBar/DMTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */; };
+		0B6D4956F3BABEEF017B29E1 /* UDTabBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */; };
+		002D46570EDE4A75BCF33863 /* UDGuiGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 936BAB3FC1597215BA4B670D /* UDGuiGLView.m */; };
+		0EE071A6B05A03B2B3AD062E /* UDGuiEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */; };
+		999A8D0CD6429A874E5AAAC4 /* UDGuiView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CD2BD211C45BCC10418142 /* UDGuiView.m */; };
+		70EA60F918EF638BACE3197F /* UDGuiPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */; };
 		F7F31350FFEBC9461C0D39C2 /* UDFXTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 481364967D51A060DC767609 /* UDFXTimelineView.m */; };
 		CC99F238C0AB926281A94AE9 /* UDParticleEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */; };
 		88DA7452C53533B4317AEA95 /* UDSoundEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */; };
@@ -644,6 +661,7 @@
 		6BE8FC5788D74EC56AB2453A /* UDAFEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC874032549B57AD8AF2CB0 /* UDAFEditorView.xib */; };
 		B0A08306E8ABECB463071599 /* UDMaterialEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A09DF2D43891437EB435796A /* UDMaterialEditorView.xib */; };
 		A1C6C7015BF421B24325DAAB /* UDParticleEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9C50AF51B92AAD1E83249D1 /* UDParticleEditorView.xib */; };
+		69E672F575AE3A6B4F7C4214 /* UDGuiViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */; };
 		75167D22DB2EC225633E4467 /* UDSoundEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */; };
 		690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
@@ -660,6 +678,7 @@
 		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
 		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
+		7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */; };
 		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
 		D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
@@ -896,6 +915,7 @@
 		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		212EA36225CB84430A3DB034 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -963,6 +983,13 @@
 		0EA31B431111A5056D4CE676 /* UDAFEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDAFEditorViewController.h; sourceTree = "<group>"; };
 		2594E3F6207A3C81DCAFA447 /* UDMaterialEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDMaterialEditorViewController.h; sourceTree = "<group>"; };
 		25187EFA74DBCA91036A4C39 /* UDParticlePreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDParticlePreview.h; sourceTree = "<group>"; };
+		932342E93CE03E531C257071 /* ThirdParty/DMTabBar/DMTabBarItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DMTabBarItem.h; path = ThirdParty/DMTabBar/DMTabBarItem.h; sourceTree = "<group>"; };
+		B38B29002205549DFD5CD5C8 /* ThirdParty/DMTabBar/DMTabBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DMTabBar.h; path = ThirdParty/DMTabBar/DMTabBar.h; sourceTree = "<group>"; };
+		5C763FC8864FE17D895C5751 /* UDTabBadge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTabBadge.h; sourceTree = "<group>"; };
+		C4B8F8B34293C2486ED09F35 /* UDGuiGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiGLView.h; sourceTree = "<group>"; };
+		9F60BA2F4904EF7BB78F6010 /* UDGuiEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEditorViewController.h; sourceTree = "<group>"; };
+		BC8058C48C854AB54DF43004 /* UDGuiView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiView.h; sourceTree = "<group>"; };
+		7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiPlayer.h; sourceTree = "<group>"; };
 		ABBB3E1D8BD921C103C6E55E /* UDFXTimelineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFXTimelineView.h; sourceTree = "<group>"; };
 		04DCF0BDBBF47EF8B3956C02 /* UDParticleEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDParticleEditorViewController.h; sourceTree = "<group>"; };
 		A2AC34FCD8C33C45C3B548ED /* UDSoundEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSoundEditorViewController.h; sourceTree = "<group>"; };
@@ -975,6 +1002,7 @@
 		BCC874032549B57AD8AF2CB0 /* UDAFEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDAFEditorView.xib; sourceTree = "<group>"; };
 		A09DF2D43891437EB435796A /* UDMaterialEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDMaterialEditorView.xib; sourceTree = "<group>"; };
 		B9C50AF51B92AAD1E83249D1 /* UDParticleEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDParticleEditorView.xib; sourceTree = "<group>"; };
+		47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDGuiViewerView.xib; sourceTree = "<group>"; };
 		45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDSoundEditorView.xib; sourceTree = "<group>"; };
 		FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDEntityDefEditorView.xib; sourceTree = "<group>"; };
 		2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTableEditorView.xib; sourceTree = "<group>"; };
@@ -1035,6 +1063,13 @@
 		8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDAFEditorViewController.m; sourceTree = "<group>"; };
 		75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDMaterialEditorViewController.m; sourceTree = "<group>"; };
 		53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDParticlePreview.m; sourceTree = "<group>"; };
+		C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DMTabBarItem.m; path = ThirdParty/DMTabBar/DMTabBarItem.m; sourceTree = "<group>"; };
+		651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DMTabBar.m; path = ThirdParty/DMTabBar/DMTabBar.m; sourceTree = "<group>"; };
+		5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTabBadge.m; sourceTree = "<group>"; };
+		936BAB3FC1597215BA4B670D /* UDGuiGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiGLView.m; sourceTree = "<group>"; };
+		D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiEditorViewController.m; sourceTree = "<group>"; };
+		93CD2BD211C45BCC10418142 /* UDGuiView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiView.m; sourceTree = "<group>"; };
+		54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiPlayer.m; sourceTree = "<group>"; };
 		481364967D51A060DC767609 /* UDFXTimelineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFXTimelineView.m; sourceTree = "<group>"; };
 		3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDParticleEditorViewController.m; sourceTree = "<group>"; };
 		0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSoundEditorViewController.m; sourceTree = "<group>"; };
@@ -1151,6 +1186,7 @@
 		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
 		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
+		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
@@ -1212,6 +1248,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				902F0A0371C8BE1A7CAEAB3A /* OpenGL.framework in Frameworks */,
 				EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */,
 				EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */,
 				EC0D00000000000000000008 /* LSPKit.xcframework in Frameworks */,
@@ -1234,6 +1271,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF7E50172F726A0C78A3C8E9 /* OpenGL.framework in Frameworks */,
 				EC0D0000000000000000000A /* UDCodeKit.xcframework in Frameworks */,
 				EC0D0000000000000000000C /* UDPieceTable.xcframework in Frameworks */,
 				EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */,
@@ -1527,6 +1565,7 @@
 			isa = PBXGroup;
 			children = (
 				AA00060000000000000000AA /* Cocoa.framework */,
+				212EA36225CB84430A3DB034 /* OpenGL.framework */,
 				AA00060100000000000000AA /* Foundation.framework */,
 				BB00060200000000000000AA /* XCTest.framework */,
 			);
@@ -1577,6 +1616,13 @@
 				8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */,
 				75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */,
 				53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */,
+				C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */,
+				651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */,
+				5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */,
+				936BAB3FC1597215BA4B670D /* UDGuiGLView.m */,
+				D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */,
+				93CD2BD211C45BCC10418142 /* UDGuiView.m */,
+				54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */,
 				481364967D51A060DC767609 /* UDFXTimelineView.m */,
 				3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */,
 				0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */,
@@ -1589,6 +1635,13 @@
 				0EA31B431111A5056D4CE676 /* UDAFEditorViewController.h */,
 				2594E3F6207A3C81DCAFA447 /* UDMaterialEditorViewController.h */,
 				25187EFA74DBCA91036A4C39 /* UDParticlePreview.h */,
+				932342E93CE03E531C257071 /* ThirdParty/DMTabBar/DMTabBarItem.h */,
+				B38B29002205549DFD5CD5C8 /* ThirdParty/DMTabBar/DMTabBar.h */,
+				5C763FC8864FE17D895C5751 /* UDTabBadge.h */,
+				C4B8F8B34293C2486ED09F35 /* UDGuiGLView.h */,
+				9F60BA2F4904EF7BB78F6010 /* UDGuiEditorViewController.h */,
+				BC8058C48C854AB54DF43004 /* UDGuiView.h */,
+				7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */,
 				ABBB3E1D8BD921C103C6E55E /* UDFXTimelineView.h */,
 				04DCF0BDBBF47EF8B3956C02 /* UDParticleEditorViewController.h */,
 				A2AC34FCD8C33C45C3B548ED /* UDSoundEditorViewController.h */,
@@ -1648,6 +1701,7 @@
 				BCC874032549B57AD8AF2CB0 /* UDAFEditorView.xib */,
 				A09DF2D43891437EB435796A /* UDMaterialEditorView.xib */,
 				B9C50AF51B92AAD1E83249D1 /* UDParticleEditorView.xib */,
+				47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */,
 				45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */,
 				FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */,
 				2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */,
@@ -1719,6 +1773,7 @@
 				A31E456696FDB41746734F9C /* UDDeclEditorTests.m */,
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
+				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
 			);
 			path = DeclBrowser;
 			sourceTree = "<group>";
@@ -2066,6 +2121,7 @@
 				7FAF3B86B91064F94092B1F9 /* UDAFEditorView.xib in Resources */,
 				6D676DAECD02005F96A46667 /* UDMaterialEditorView.xib in Resources */,
 				EE8015C6FA7158822A8219C3 /* UDParticleEditorView.xib in Resources */,
+				B3C8BDA78B8E01F9F44042F1 /* UDGuiViewerView.xib in Resources */,
 				007B49A66F00E77391EEA747 /* UDSoundEditorView.xib in Resources */,
 				96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */,
 				3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */,
@@ -2101,6 +2157,7 @@
 				6BE8FC5788D74EC56AB2453A /* UDAFEditorView.xib in Resources */,
 				B0A08306E8ABECB463071599 /* UDMaterialEditorView.xib in Resources */,
 				A1C6C7015BF421B24325DAAB /* UDParticleEditorView.xib in Resources */,
+				69E672F575AE3A6B4F7C4214 /* UDGuiViewerView.xib in Resources */,
 				75167D22DB2EC225633E4467 /* UDSoundEditorView.xib in Resources */,
 				690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */,
 				34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */,
@@ -2292,6 +2349,13 @@
 				F892B297F7259F3449CAB3A5 /* UDAFEditorViewController.m in Sources */,
 				1AA8043CB6BA5E1A812A666E /* UDMaterialEditorViewController.m in Sources */,
 				75E54F321E91C99FA534B920 /* UDParticlePreview.m in Sources */,
+				25427BDD3E70A0CED6E82A41 /* ThirdParty/DMTabBar/DMTabBarItem.m in Sources */,
+				F4CEAAECF54F7B2667DDD83D /* ThirdParty/DMTabBar/DMTabBar.m in Sources */,
+				78F44C7E99BB949A32F8D0C7 /* UDTabBadge.m in Sources */,
+				E671582FF68F53BCAE6F80C0 /* UDGuiGLView.m in Sources */,
+				4AF8A80D3B1575E7138C351B /* UDGuiEditorViewController.m in Sources */,
+				A40044A6C58C3809DDF2174A /* UDGuiView.m in Sources */,
+				4B3F566AD0A40BA815CF61C9 /* UDGuiPlayer.m in Sources */,
 				00A3DDA9AB6D60C94BEF372D /* UDFXTimelineView.m in Sources */,
 				31C6A263CFA825AE8DBFAEF7 /* UDParticleEditorViewController.m in Sources */,
 				81BE7E5C61B206A95B4EBBA6 /* UDSoundEditorViewController.m in Sources */,
@@ -2350,6 +2414,13 @@
 				28E17A7B3723020CF03893F6 /* UDAFEditorViewController.m in Sources */,
 				F2164EC657A518765C09343C /* UDMaterialEditorViewController.m in Sources */,
 				E5DD98304903D8A647F0B8BB /* UDParticlePreview.m in Sources */,
+				EA2B26D8E04B5E665BD4BC32 /* ThirdParty/DMTabBar/DMTabBarItem.m in Sources */,
+				BDCD7B7EF2F4D220E48E83DF /* ThirdParty/DMTabBar/DMTabBar.m in Sources */,
+				0B6D4956F3BABEEF017B29E1 /* UDTabBadge.m in Sources */,
+				002D46570EDE4A75BCF33863 /* UDGuiGLView.m in Sources */,
+				0EE071A6B05A03B2B3AD062E /* UDGuiEditorViewController.m in Sources */,
+				999A8D0CD6429A874E5AAAC4 /* UDGuiView.m in Sources */,
+				70EA60F918EF638BACE3197F /* UDGuiPlayer.m in Sources */,
 				F7F31350FFEBC9461C0D39C2 /* UDFXTimelineView.m in Sources */,
 				CC99F238C0AB926281A94AE9 /* UDParticleEditorViewController.m in Sources */,
 				88DA7452C53533B4317AEA95 /* UDSoundEditorViewController.m in Sources */,
@@ -2370,6 +2441,7 @@
 				ACA6304A8472FB4FB36BEA51 /* UDBaseEditorViewController.m in Sources */,
 				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
 				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
+				7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

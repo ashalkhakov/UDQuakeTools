@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
  * an object controller (from the subclass's XIB) whose content is the decl;
  * and a diagnostic store the Issues tab lists.
  */
-@interface UDDeclEditorViewController : UDBaseEditorViewController
+@interface UDDeclEditorViewController : UDBaseEditorViewController <UDSourceRepresenting>
 
 /** The backing NSDocument (undo, save, dirty). Made as the view loads. */
 @property (nonatomic, strong, nullable) UDDeclDocument *document;

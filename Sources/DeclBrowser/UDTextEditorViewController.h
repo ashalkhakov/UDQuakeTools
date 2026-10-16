@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
     navigator lists them; nil before the text is in. */
 @property (nonatomic, readonly, nullable) UDDiagnosticStore *diagnosticStore;
 
+/** The code editor's text view, once the text is in. */
+@property (nonatomic, readonly, nullable) NSTextView *editorTextView;
+
 /** Selects @a length characters from @a line's @a character (0-based; UTF-16). */
 - (void)selectLine:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
 

@@ -29,6 +29,7 @@ DeclBrowserTests_OBJC_FILES = \
     UDDeclEditorTests.m \
     UDDoom3WorkspaceTests.m \
     UDPakInstallTests.m \
+    UDGuiViewerTests.m \
     $(APP_DIR)/UDAppDocumentController.m \
     $(APP_DIR)/UDBaseEditorViewController.m \
     $(APP_DIR)/UDDeclBrowser.m \
@@ -47,6 +48,13 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDAFEditorViewController.m \
     $(APP_DIR)/UDMaterialEditorViewController.m \
     $(APP_DIR)/UDParticlePreview.m \
+    $(APP_DIR)/UDGuiPlayer.m \
+    $(APP_DIR)/UDGuiView.m \
+    $(APP_DIR)/UDGuiGLView.m \
+    $(APP_DIR)/UDTabBadge.m \
+    $(APP_DIR)/ThirdParty/DMTabBar/DMTabBar.m \
+    $(APP_DIR)/ThirdParty/DMTabBar/DMTabBarItem.m \
+    $(APP_DIR)/UDGuiEditorViewController.m \
     $(APP_DIR)/UDFXTimelineView.m \
     $(APP_DIR)/UDPathTree.m \
     $(APP_DIR)/UDProject.m \
@@ -70,6 +78,7 @@ DeclBrowserTests_INCLUDE_DIRS = \
     -I$(APP_DIR) \
     -I$(APP_DIR)/Documents \
     -I$(APP_DIR)/Window \
+    -I$(APP_DIR)/ThirdParty/DMTabBar \
     -I../../Sources/UDCore \
     -I../../Sources/UDFormats
 
@@ -83,6 +92,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDEntityDefEditorView.xib \
     $(APP_DIR)/Resources/UDSoundEditorView.xib \
     $(APP_DIR)/Resources/UDParticleEditorView.xib \
+    $(APP_DIR)/Resources/UDGuiViewerView.xib \
     $(APP_DIR)/Resources/UDFXEditorView.xib \
     $(APP_DIR)/Resources/UDAFEditorView.xib \
     $(APP_DIR)/Resources/UDMaterialEditorView.xib \
@@ -103,6 +113,14 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 # UDCore from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += -L../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch -lBlocksRuntime
+
+# The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
+# GLX and GL's headers are here (libgl-dev); without them it draws in
+# software.
+ifneq ($(wildcard /usr/include/GL/glx.h),)
+ADDITIONAL_CPPFLAGS += -DUD_HAVE_GL
+ADDITIONAL_LDFLAGS += -lGL
+endif
 
 XCTEST ?= xctest
 

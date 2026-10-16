@@ -4,16 +4,21 @@
 /**
  * NSWindowController subclass that manages the single IDE workspace window.
  *
- * Layout (built programmatically / from WorkspaceWindow.xib):
- *   NSSplitView
- *     Left  → NSScrollView > NSOutlineView   (workspace file tree)
- *     Right → NSTabView                      (editor tabs)
+ * Layout (UDWorkspaceWindow.xib), Xcode's and RDLKit's designer's three
+ * panes in an NSSplitView:
+ *     Left   → the navigator: a DMTabBar over a tabless NSTabView (the
+ *              decls and files, Find, Issues)
+ *     Centre → the editor tabs: UDTabBarView over a tabless NSTabView,
+ *              Editor | Source beside them
+ *     Right  → the inspector: a DMTabBar over a host the selected editor's
+ *              panes go in (UDInspecting), "No Inspector" when it has none
+ * The sides keep their width as the window grows; the centre takes it.
  */
-@class UDTabBarView;
+@class UDTabBarView, DMTabBar;
 
 @protocol UDErrorsViewControllerDelegate;
 
-@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate, UDErrorsViewControllerDelegate>
+@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate, UDErrorsViewControllerDelegate, NSSplitViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSOutlineView *outlineView;
 @property (weak, nonatomic) IBOutlet NSSearchField *nameFilterField;
@@ -22,10 +27,21 @@
 @property (weak, nonatomic) IBOutlet NSTabView *tabView;         // right side of the split (tabless; content only)
 @property (weak, nonatomic) IBOutlet UDTabBarView *tabBarView;   // the Xcode-like tab strip above it
 @property (weak, nonatomic) IBOutlet NSSegmentedControl *representationControl; // Editor | Source, beside it
+@property (weak, nonatomic) IBOutlet NSSplitView *split;                 // navigator | editors | inspector
+@property (weak, nonatomic) IBOutlet DMTabBar *navigatorTabBar;
+@property (weak, nonatomic) IBOutlet NSTabView *navigatorTabView;
+@property (weak, nonatomic) IBOutlet DMTabBar *inspectorTabBar;
+@property (weak, nonatomic) IBOutlet NSView *inspectorHost;
+@property (weak, nonatomic) IBOutlet NSTextField *inspectorPlaceholder;
 
 @property (nonatomic, strong, nonnull) UDDeclBrowser *declBrowser;
 
 - (IBAction)nameFilterChanged:(NSSearchField *)sender;
+
+// The side panes' tab bars: the tab each has chosen shown (the sender is
+// the bar).
+- (IBAction)navigatorTabChanged:(id)sender;
+- (IBAction)inspectorTabChanged:(id)sender;
 - (IBAction)textContainsFilterChanged:(NSSearchField *)sender;
 
 // File menu save plumbing (VSCode-style; the window controller intercepts

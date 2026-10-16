@@ -20,6 +20,15 @@
 #import "UDFileItem.h"
 #import "UDScriptServer.h"
 #import "idDeclManager.h"
+#import "DMTabBar.h"
+#import "UDTabBadge.h"
+
+// The panes' widths: what each side opens at, the least it can be dragged
+// to, and the least the editors keep (RDLKit's designer's, near enough).
+static const CGFloat UDNavigatorWidth = 240;
+static const CGFloat UDInspectorWidth = 280;
+static const CGFloat UDSidePaneMinimum = 160;
+static const CGFloat UDEditorsMinimum = 400;
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
@@ -29,6 +38,10 @@
 // "Opening…", while the workspace restarts with new settings.
 @property (nonatomic, strong, nullable) UDWorkspaceOpeningController *openingController;
 @property (nonatomic, readonly, getter=isRestarting) BOOL restarting;
+/// The selected editor's inspector panes, as the right pane shows them, and
+/// the title of the one last chosen (chosen again where an editor has it).
+@property (nonatomic, copy) NSArray<UDInspectorPane *> *inspectorPanes;
+@property (nonatomic, copy, nullable) NSString *inspectorTitle;
 @end
 
 @implementation UDWorkspaceWindowController
@@ -72,23 +85,185 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedEditorDidChange:)
                                                  name:UDEditorTabManagerSelectionDidChangeNotification
                                                object:self.tabManager];
+    [self _buildPanes];
     [self _selectedEditorDidChange:nil];
+}
+
+#pragma mark - The panes
+
+/// The navigator's tab bar, after its tab view's items (RDLKit's
+/// RDLFillTabBar), and the sides at their widths.
+- (void)_buildPanes {
+    NSArray<NSArray *> *navigator = @[
+        @[ @"D", @"Decls and files", @0.47, @0.53, @0.64 ],
+        @[ @"F", @"Find", @0.36, @0.55, @0.42 ],
+        @[ @"I", @"Issues", @0.78, @0.42, @0.25 ],
+    ];
+    NSMutableArray<DMTabBarItem *> *items = [NSMutableArray array];
+    for (NSUInteger i = 0; i < navigator.count && i < (NSUInteger)self.navigatorTabView.numberOfTabViewItems; i++) {
+        NSArray *tab = navigator[i];
+        DMTabBarItem *item = [DMTabBarItem tabBarItemWithIcon:UDTabBadge(tab[0], [tab[2] doubleValue], [tab[3] doubleValue], [tab[4] doubleValue]) tag:i];
+        item.toolTip = tab[1];
+        [items addObject:item];
+    }
+    self.navigatorTabBar.tabBarItems = items;
+    [self.navigatorTabBar setTarget:self action:@selector(navigatorTabChanged:)];
+    self.navigatorTabBar.selectedIndex = 0;
+    self.inspectorPanes = @[];
+    [self.inspectorTabBar setTarget:self action:@selector(inspectorTabChanged:)];
+    [self _setDefaultPaneWidths];
+}
+
+/// The tab the bar has chosen. (The sender is the bar: an item's -tag read
+/// off it is NSView's, -1.)
+- (IBAction)navigatorTabChanged:(id)sender {
+    NSUInteger index = self.navigatorTabBar.selectedIndex;
+    if (index < (NSUInteger)self.navigatorTabView.numberOfTabViewItems) {
+        [self.navigatorTabView selectTabViewItemAtIndex:(NSInteger)index];
+    }
+}
+
+- (IBAction)inspectorTabChanged:(id)sender {
+    NSUInteger index = self.inspectorTabBar.selectedIndex;
+    if (index < self.inspectorPanes.count) {
+        self.inspectorTitle = self.inspectorPanes[index].title;
+        [self _showInspectorPane:self.inspectorPanes[index]];
+    }
+}
+
+/// The right pane: the editor's panes in its bar, the one chosen before if
+/// it has one of that title, else its first; "No Inspector" for none.
+- (void)_showInspectorOf:(UDBaseEditorViewController *)editor {
+    NSArray<UDInspectorPane *> *panes = [editor conformsToProtocol:@protocol(UDInspecting)]
+        ? ((id<UDInspecting>)editor).inspectorPanes : @[];
+    if ([panes isEqualToArray:self.inspectorPanes]) return;
+    self.inspectorPanes = panes;
+    NSMutableArray<DMTabBarItem *> *items = [NSMutableArray array];
+    NSUInteger chosen = 0;
+    for (NSUInteger i = 0; i < panes.count; i++) {
+        UDInspectorPane *pane = panes[i];
+        DMTabBarItem *item = [DMTabBarItem tabBarItemWithIcon:UDTabBadge(pane.letters, pane.red, pane.green, pane.blue) tag:i];
+        item.toolTip = pane.title;
+        [items addObject:item];
+        if ([pane.title isEqualToString:self.inspectorTitle]) chosen = i;
+    }
+    self.inspectorTabBar.tabBarItems = items;
+    self.inspectorPlaceholder.hidden = panes.count > 0;
+    if (panes.count > 0) {
+        self.inspectorTabBar.selectedIndex = chosen;
+        [self _showInspectorPane:panes[chosen]];
+    } else {
+        [self _showInspectorPane:nil];
+    }
+}
+
+/// @a pane's view, alone in the host, filling it.
+- (void)_showInspectorPane:(UDInspectorPane *)pane {
+    NSView *host = self.inspectorHost;
+    for (NSView *view in [host.subviews copy]) {
+        if (view != self.inspectorPlaceholder) [view removeFromSuperview];
+    }
+    if (pane == nil) return;
+    NSView *view = pane.view;
+    view.frame = host.bounds;
+    view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [host addSubview:view];
+}
+
+#pragma mark - The split (RDLKit's designer's)
+
+// The widths each side opens at, set here: GSXib5 lays a split's subviews
+// out itself rather than keeping the frames in the XIB.
+- (void)_setDefaultPaneWidths {
+    NSSplitView *split = self.split;
+    if (split.subviews.count < 3) return;
+    CGFloat width = NSWidth(split.bounds), divider = split.dividerThickness;
+    // a window too narrow for both keeps what the split worked out
+    if (width < UDNavigatorWidth + UDInspectorWidth + 2 * divider + UDEditorsMinimum) return;
+    [split setPosition:UDNavigatorWidth ofDividerAtIndex:0];
+    [split setPosition:width - UDInspectorWidth - divider ofDividerAtIndex:1];
+}
+
+/// What a wider window is for is wider editors: the sides keep the width
+/// they were dragged to, as Xcode's do. Below the window's least width,
+/// everyone gives, so none is squeezed away.
+- (BOOL)splitView:(NSSplitView *)splitView shouldAdjustSizeOfSubview:(NSView *)subview {
+    NSArray<NSView *> *panes = splitView.subviews;
+    if (NSWidth(splitView.bounds) < self.window.minSize.width) return YES;
+    return subview != panes.firstObject && subview != panes.lastObject;
+}
+
+#if !defined(__APPLE__)
+// GNUstep's -adjustSubviews sizes the last subview to what is left and never
+// asks -shouldAdjustSizeOfSubview: about it, so the inspector could not keep
+// its width: the same rule, by hand. (RDLKit's designer's.)
+- (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+    NSArray<NSView *> *subviews = splitView.subviews;
+    NSUInteger n = subviews.count;
+    if (n == 0) return;
+    BOOL vertical = splitView.isVertical;
+    NSRect bounds = splitView.bounds;
+    CGFloat divider = splitView.dividerThickness;
+    CGFloat total = (vertical ? NSWidth(bounds) : NSHeight(bounds)) - divider * (CGFloat)(n - 1);
+    CGFloat spans[n];
+    BOOL adjusts[n];
+    CGFloat oldAdjustable = 0, fixed = 0;
+    NSUInteger adjustableCount = 0;
+    for (NSUInteger i = 0; i < n; i++) {
+        NSRect frame = subviews[i].frame;
+        spans[i] = vertical ? NSWidth(frame) : NSHeight(frame);
+        adjusts[i] = ![splitView isSubviewCollapsed:subviews[i]] && [self splitView:splitView shouldAdjustSizeOfSubview:subviews[i]];
+        if (adjusts[i]) {
+            oldAdjustable += spans[i];
+            adjustableCount++;
+        } else {
+            fixed += spans[i];
+        }
+    }
+    CGFloat forAdjustable = MAX(0, total - fixed);
+    CGFloat running = 0;
+    for (NSUInteger i = 0; i < n; i++) {
+        CGFloat span = spans[i];
+        if (adjusts[i]) {
+            span = oldAdjustable > 0.5 ? forAdjustable * (spans[i] / oldAdjustable) : forAdjustable / (CGFloat)adjustableCount;
+        }
+        NSRect rect = vertical ? NSMakeRect(running, 0, span, NSHeight(bounds)) : NSMakeRect(0, running, NSWidth(bounds), span);
+        subviews[i].frame = [splitView centerScanRect:rect];
+        running += span + divider;
+    }
+}
+#endif
+
+/// Each side has a floor, so a pane dragged to nothing can be had back;
+/// the editors keep theirs.
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposed ofSubviewAt:(NSInteger)index {
+    return index == 0 ? MAX(proposed, UDSidePaneMinimum) : MAX(proposed, NSMinX([splitView.subviews[(NSUInteger)index] frame]) + UDEditorsMinimum);
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposed ofSubviewAt:(NSInteger)index {
+    CGFloat width = NSWidth(splitView.bounds), divider = splitView.dividerThickness;
+    if (index == (NSInteger)splitView.subviews.count - 2) {
+        return MIN(proposed, width - UDSidePaneMinimum - divider);
+    }
+    return MIN(proposed, width - NSWidth([splitView.subviews.lastObject frame]) - 2 * divider - UDEditorsMinimum);
 }
 
 #pragma mark - Editor | Source
 
-/// The switch is the selected tab's: a structured editor's, shown as it is.
+/// The switch is the selected tab's: an editor with a source (a structured
+/// decl editor, a GUI), shown as it is.
 - (void)_selectedEditorDidChange:(NSNotification *)notification {
     UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
-    BOOL structured = [editor isKindOfClass:[UDDeclEditorViewController class]];
-    self.representationControl.enabled = structured;
-    self.representationControl.selectedSegment = structured && ((UDDeclEditorViewController *)editor).showsSource ? 1 : 0;
+    BOOL hasSource = [editor conformsToProtocol:@protocol(UDSourceRepresenting)];
+    self.representationControl.enabled = hasSource;
+    self.representationControl.selectedSegment = hasSource && ((id<UDSourceRepresenting>)editor).showsSource ? 1 : 0;
+    [self _showInspectorOf:editor];
 }
 
 - (IBAction)showRepresentation:(id)sender {
     UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
-    if ([editor isKindOfClass:[UDDeclEditorViewController class]]) {
-        ((UDDeclEditorViewController *)editor).showsSource = self.representationControl.selectedSegment == 1;
+    if ([editor conformsToProtocol:@protocol(UDSourceRepresenting)]) {
+        ((id<UDSourceRepresenting>)editor).showsSource = self.representationControl.selectedSegment == 1;
     }
     // As it is: the source stays up when its text does not parse.
     [self _selectedEditorDidChange:nil];
@@ -436,6 +611,7 @@
         // The diagnostic's line is 1-based, its column 0-based.
         [(UDTextEditorViewController *)editor selectLine:MAX(diagnostic.line - 1, 0)
                                                character:MAX(diagnostic.column, 0) length:0];
+        [self _selectedEditorDidChange:nil];    // a GUI's tab goes to its source for it
         return;
     }
 }

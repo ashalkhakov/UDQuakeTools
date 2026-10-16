@@ -17,6 +17,12 @@
                 <outlet property="tabView" destination="4rW-Hd-hq9" id="RpV-bp-o1c"/>
                 <outlet property="textFilterField" destination="SVv-zu-nIE" id="44t-rI-f5g"/>
                 <outlet property="window" destination="xOd-HO-29H" id="xO0-4K-tpX"/>
+                <outlet property="split" destination="YnG-Fq-gtR" id="SPL-ol-001"/>
+                <outlet property="navigatorTabBar" destination="NAV-bar-001" id="NAV-ol-001"/>
+                <outlet property="navigatorTabView" destination="9eg-zg-aNq" id="NAV-ol-002"/>
+                <outlet property="inspectorTabBar" destination="INS-bar-001" id="INS-ol-001"/>
+                <outlet property="inspectorHost" destination="INS-hst-001" id="INS-ol-002"/>
+                <outlet property="inspectorPlaceholder" destination="INS-non-001" id="INS-ol-003"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -24,23 +30,27 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="xOd-HO-29H" userLabel="Window">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="133" y="235" width="507" height="413"/>
+            <rect key="contentRect" x="133" y="235" width="1280" height="780"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
-            <value key="minSize" type="size" width="720" height="480"/>
+            <value key="minSize" type="size" width="880" height="480"/>
             <view key="contentView" id="gIp-Ho-8D9">
-                <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <rect key="frame" x="0.0" y="0.0" width="1280" height="780"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" id="YnG-Fq-gtR">
-                        <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1280" height="780"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <customView fixedFrame="YES" id="GkV-Cg-DOg">
-                                <rect key="frame" x="0.0" y="0.0" width="164" height="413"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="780"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <tabView id="9eg-zg-aNq">
-                                        <rect key="frame" x="0.0" y="0.0" width="164" height="413"/>
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NAV-bar-001" customClass="DMTabBar">
+                                        <rect key="frame" x="0.0" y="756" width="240" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    </customView>
+                                    <tabView type="noTabsNoBorder" id="9eg-zg-aNq">
+                                        <rect key="frame" x="0.0" y="0.0" width="240" height="756"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <font key="font" metaFont="system"/>
                                         <tabViewItems>
@@ -192,15 +202,15 @@
                                 </subviews>
                             </customView>
                             <customView fixedFrame="YES" id="Sai-85-3ai">
-                                <rect key="frame" x="165" y="0.0" width="342" height="413"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="241" y="0.0" width="758" height="780"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="udB-ar-vw1" customClass="UDTabBarView">
-                                        <rect key="frame" x="0.0" y="385" width="214" height="28"/>
+                                        <rect key="frame" x="0.0" y="752" width="630" height="28"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     </customView>
                                     <segmentedControl toolTip="Edit the decl in its editor, or its source" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rep-sc-001">
-                                        <rect key="frame" x="216" y="387" width="124" height="24"/>
+                                        <rect key="frame" x="632" y="754" width="124" height="24"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="rep-scc-001">
                                             <font key="font" metaFont="smallSystem"/>
@@ -214,13 +224,13 @@
                                         </connections>
                                     </segmentedControl>
                                     <tabView fixedFrame="YES" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="4rW-Hd-hq9">
-                                        <rect key="frame" x="0.0" y="0.0" width="342" height="385"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <font key="font" metaFont="system"/>
                                         <tabViewItems>
                                             <tabViewItem label="Tab" identifier="" id="9cv-OG-39v">
                                                 <view key="view" id="RQv-TK-re6">
-                                                    <rect key="frame" x="0.0" y="0.0" width="342" height="385"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </view>
                                             </tabViewItem>
@@ -228,11 +238,40 @@
                                     </tabView>
                                 </subviews>
                             </customView>
+                            <customView fixedFrame="YES" id="INS-pan-001" userLabel="Inspector">
+                                <rect key="frame" x="1000" y="0.0" width="280" height="780"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="INS-bar-001" customClass="DMTabBar">
+                                        <rect key="frame" x="0.0" y="756" width="280" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    </customView>
+                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="INS-hst-001" userLabel="Inspector Host">
+                                        <rect key="frame" x="0.0" y="0.0" width="280" height="756"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="INS-non-001">
+                                                <rect key="frame" x="20" y="370" width="240" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Inspector" id="INS-non-c01">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                        </subviews>
+                                    </customView>
+                                </subviews>
+                            </customView>
                         </subviews>
                         <holdingPriorities>
+                            <real value="260"/>
                             <real value="250"/>
-                            <real value="250"/>
+                            <real value="260"/>
                         </holdingPriorities>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="SPL-dl-001"/>
+                        </connections>
                     </splitView>
                 </subviews>
             </view>

@@ -229,8 +229,13 @@ In order of value against cost; LOC is the MFC original's size.
       the software renderer draws as the ambient pass would, its images
       loaded through idFileSystem; a renderDef's 3D view comes through the
       bridge (4). The port is in (UDCore; every retail GUI loads and
-      draws, the main menu and PDA as in the game); the viewer and the
-      editor are next. The port interprets as well as draws: GUI scripts, named events,
+      draws, the main menu and PDA as in the game), and so is the viewer:
+      a .gui's tab runs it on the game's clock, drawn with GL (in software
+      where there is none), the mouse and keys sent as the game sends them,
+      its named events, its state and its log in the window's new
+      inspector pane (Xcode's three panes, as RDLKit's designer has them).
+      The editor is next, its canvas RDLKit's designer's: drag, resize,
+      select. The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

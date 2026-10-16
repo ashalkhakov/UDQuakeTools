@@ -17,6 +17,11 @@
 #import "idDeclManager.h"
 #import "idUserInterface.h"
 #import "idGuiModel.h"
+#import "UDGuiPlayer.h"
+#import "UDGuiView.h"
+#import "UDGuiGLView.h"
+#import "UDGuiEditorViewController.h"
+#import "UDSoftwareRenderer.h"
 
 /**
  * The Decl Browser against a real Doom 3 install (see UDDoom3InstallPath:
@@ -466,6 +471,50 @@
     }
     XCTAssertGreaterThan(guis, 500U, @"the retail GUIs are listed");
     XCTAssertEqual(problems.count, 0U, @"idWindow::Parse reads them all: %@", problems);
+}
+
+- (void)testTheRetailMainMenuRunsInTheViewer {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    [controller.window orderFront:nil];
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDGuiEditorViewController class]], @"the main menu opens running, not %@", editor);
+    UDGuiEditorViewController *viewer = (UDGuiEditorViewController *)editor;
+    UDGuiPlayer *player = viewer.player;
+    XCTAssertEqual(player.diagnostics.count, 0u, @"%@", player.diagnostics);
+    // as idSessionLocal::StartMenu leaves it when there is no intro to play
+    player.playing = NO;
+    [player sendNamedEvent:@"noIntro"];
+    for (int i = 0; i < 120; i++) [player step];
+    XCTAssertGreaterThan(player.triangles.count, 100u, @"the menu should be drawn");
+
+    UDGuiGLView *gl = (UDGuiGLView *)viewer.guiView.glView;
+    if (gl == nil) return;
+#ifdef __APPLE__
+    gl.wantsBestResolutionOpenGLSurface = NO;
+#endif
+    // the GUI at its own size, pixel for pixel
+    [viewer.guiView setFrameSize:NSMakeSize(640, 480)];
+    player.drawsPicture = YES;
+    [player renderFrame];
+    [viewer.guiView showFrame];
+    NSBitmapImageRep *drawn = [gl readPicture];
+    NSBitmapImageRep *expected = (NSBitmapImageRep *)player.frame.representations.firstObject;
+    NSInteger off = 0, samples = 0;
+    for (int y = 2; y < 480; y += 4) {
+        for (int x = 2; x < 640; x += 4) {
+            NSInteger gx = x * drawn.pixelsWide / 640, gy = y * drawn.pixelsHigh / 480;
+            const uint8_t *a = drawn.bitmapData + gy * drawn.bytesPerRow + gx * 4;
+            const uint8_t *b = expected.bitmapData + y * expected.bytesPerRow + x * 4;
+            for (int k = 0; k < 3; k++) {
+                if (abs((int)a[k] - (int)b[k]) > 16) off++;
+                samples++;
+            }
+        }
+    }
+    XCTAssertLessThan(off, samples / 50, @"GL (%@) should draw the menu as the software renderer does: %ld of %ld off",
+                      gl.glDescription, (long)off, (long)samples);
 }
 
 #pragma mark - Editing

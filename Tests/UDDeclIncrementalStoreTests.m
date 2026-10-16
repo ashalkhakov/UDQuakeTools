@@ -23,6 +23,9 @@
 #import "UDMaterialParser.h"
 #import "UDImageProgram.h"
 #import "UDSourceTokens.h"
+#import "UDParticleModel.h"
+#import "UDSoftwareRenderer.h"
+#import "UDFXModel.h"
 
 @interface UDDeclIncrementalStoreTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
@@ -1049,6 +1052,130 @@ static NSString *const UDMaterialFixture =
     XCTAssertTrue([UDImageProgram imageExistsNamed:@"textures/test/pre" fileSystem:fileSystem], @"ImageProgramStringToCompressedFileName's");
     XCTAssertTrue([UDImageProgram imageExistsNamed:@"_flat" fileSystem:fileSystem]);
     XCTAssertEqual([UDImageProgram imageNamed:@"_white" fileSystem:fileSystem problem:NULL].width, 16);
+}
+
+#pragma mark - The particle preview
+
+/// A stage straight up: cone 0, speed 100, life 1, no gravity, all at once.
+- (UDParticleStage *)upwardStageWithMaterial:(NSString *)material {
+    UDParticleStage *stage = [[UDParticleStage alloc] init];
+    stage.material = material;
+    stage.totalParticles = 8;
+    stage.particleLife = 1;
+    stage.spawnBunching = 0;
+    stage.distributionType = 0;
+    stage.distributionParms = @"0 0 0 0";
+    stage.directionType = 0;
+    stage.directionParms = @"0 0 0 0";
+    stage.speedFrom = stage.speedTo = 100;
+    stage.sizeFrom = stage.sizeTo = 4;
+    stage.aspectFrom = stage.aspectTo = 1;
+    stage.gravity = 0;
+    stage.color = @"1 1 1 1";
+    stage.fadeColor = @"0 0 0 0";
+    stage.fadeInFraction = 0;
+    stage.fadeOutFraction = 0;
+    stage.initialAngle = 1;
+    return stage;
+}
+
+- (void)testAParticleSystemsQuadsAreTheEngines {
+    UDParticleModel *model = [[UDParticleModel alloc] initWithStages:@[[self upwardStageWithMaterial:@"_white"]] declManager:self.workspace.declManager];
+    const float axis[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+    NSArray<UDParticleSurface *> *surfaces = [model surfacesAtTime:500 viewAxis:axis];
+    XCTAssertEqual(surfaces.count, 1U);
+    XCTAssertEqual(surfaces[0].numVerts, 8 * 4, @"every particle a quad");
+    // speed.Integrate( 0.5 ) * particleLife: ( 100 + 0.5 * 0 * 0.5 ) * 0.5 = 50 up
+    for (int i = 0; i < surfaces[0].numVerts; i++) {
+        XCTAssertEqualWithAccuracy(surfaces[0].verts[i].xyz[2], 50.0f, 5.66f, @"vert %d: the centre, and a 4 × 4 quad turned by its angle", i);
+        XCTAssertEqualWithAccuracy(surfaces[0].verts[i].xyz[0], 0.0f, 1e-3, @"facing the view: in its left-up plane");
+    }
+    XCTAssertEqual(surfaces[0].verts[0].color[3], 255);
+    XCTAssertEqual([model surfacesAtTime:1200 viewAxis:axis][0].numVerts, 8 * 4, @"the next cycle");
+
+    float bounds[6];
+    [model getBounds:bounds];
+    XCTAssertEqualWithAccuracy(bounds[5], 100.0f + 4 + 8, 0.5f, @"GetStageBounds: the highest origin, the size, and 8");
+}
+
+- (void)testTheSoftwareRendererDrawsAsTheAmbientPassDoes {
+    UDParticleModel *model = [[UDParticleModel alloc] initWithStages:@[[self upwardStageWithMaterial:@"_white"]] declManager:self.workspace.declManager];
+    const float axis[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+    UDSoftwareRenderer *renderer = [[UDSoftwareRenderer alloc] initWithWidth:64 height:64 declManager:self.workspace.declManager
+                                                                  fileSystem:self.workspace.fileSystem];
+    const float origin[3] = { -50, 0, 50 };
+    [renderer setViewOrigin:origin axis:axis fovX:90];
+    const float black[4] = { 0, 0, 0, 1 };
+    [renderer clearToColor:black];
+    [renderer drawSurfaces:[model surfacesAtTime:500 viewAxis:axis] time:0.5f];
+    UDImage *image = [renderer image];
+    const uint8_t *pixels = image.pixels.bytes;
+    const uint8_t *center = pixels + (32 * 64 + 32) * 4;
+    XCTAssertEqual(center[0], 255, @"SetDefaultText's material: _white, blended, colored");
+    XCTAssertEqual(center[1], 255);
+    XCTAssertEqual(pixels[0], 0, @"the clear color beyond it");
+}
+
+#pragma mark - The FX preview
+
+- (UDFXAction *)fxAction:(NSString *)kind data:(NSString *)data {
+    UDFXAction *action = [[UDFXAction alloc] init];
+    action.kind = kind;
+    action.data = data;
+    return action;
+}
+
+- (void)testAnFXPlaysAsIdEntityFxRunsIt {
+    UDFXAction *smoke = [self fxAction:@"particle" data:@"testfx.prt"];
+    smoke.duration = @1;
+    UDFXAction *lamp = [self fxAction:@"light" data:@"lights/test"];
+    lamp.name = @"lamp";
+    lamp.delay = @0.5;
+    lamp.duration = @1;
+    lamp.fadeOut = @1;
+    lamp.lightColor = @"1 0.5 0";
+    lamp.lightRadius = @64;
+    UDFXAction *again = [self fxAction:@"uselight" data:@"lamp"];
+    again.delay = @0.2;
+    again.duration = @0.1;
+    UDFXModel *fx = [[UDFXModel alloc] initWithActions:@[smoke, lamp, again] declManager:self.workspace.declManager];
+    XCTAssertEqual(fx.duration, 1500, @"Duration: the latest delay + duration");
+
+    NSArray<UDFXActionState *> *states = [fx statesAtTime:250];
+    XCTAssertTrue(states[0].running);
+    XCTAssertTrue(states[0].hasModel);
+    XCTAssertEqual(states[0].spawnTime, 0);
+    XCTAssertFalse(states[1].running, @"delayed");
+    XCTAssertTrue(states[1].hasLight, @"the uselight, at 0.2, added its sibling's light");
+    XCTAssertEqualWithAccuracy(states[1].shaderParms[0], 1.0f, 1e-5, @"the lamp's color, the uselight's: its sibling's");
+
+    states = [fx statesAtTime:1000];
+    XCTAssertTrue(states[0].running, @"the last frame, 992: 0.992 of its second");
+    XCTAssertTrue(states[1].running);
+    // the last frame at or before 1000 is 992: ( 992 - 500 ) / 1000 of a fade out
+    XCTAssertEqualWithAccuracy(states[1].shaderParms[0], 1.0f * (1 - 0.492f), 1e-4, @"ApplyFade's");
+    XCTAssertEqualWithAccuracy(states[1].shaderParms[1], 0.5f * (1 - 0.492f), 1e-4);
+
+    states = [fx statesAtTime:1050];
+    XCTAssertFalse(states[0].running, @"its second is over");
+    XCTAssertTrue(states[0].hasModel, @"its model there till the FX's clean-up");
+
+    states = [fx statesAtTime:1600];
+    XCTAssertFalse(states[0].hasModel, @"Event_ClearFx at its Duration");
+    XCTAssertFalse(states[1].hasLight);
+
+    // Its particle system: testfx, where its offset puts it.
+    const float axis[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+    NSArray<UDParticleSurface *> *here = [fx surfacesAtTime:250 viewAxis:axis];
+    XCTAssertEqual(here.count, 1U);
+    XCTAssertGreaterThan(here[0].numVerts, 0);
+    smoke.offset = @"0 0 100";
+    UDFXModel *raised = [[UDFXModel alloc] initWithActions:@[smoke, lamp, again] declManager:self.workspace.declManager];
+    NSArray<UDParticleSurface *> *there = [raised surfacesAtTime:250 viewAxis:axis];
+    XCTAssertEqual(there[0].numVerts, here[0].numVerts);
+    for (int v = 0; v < here[0].numVerts; v++) {
+        XCTAssertEqualWithAccuracy(there[0].verts[v].xyz[2] - here[0].verts[v].xyz[2], 100.0f, 1e-3);
+    }
 }
 
 @end

@@ -11,6 +11,9 @@
 #import "UDFXEditorViewController.h"
 #import "UDAFEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
+#import "UDParticlePreview.h"
+#import "UDFXTimelineView.h"
+#import "UDFXModel.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -549,6 +552,29 @@ static NSString *const UDFixtureParticles =
     }
 }
 
+- (void)testTheParticlePreviewDrawsTheSystemAsTheEngineDoes {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *editor = [self openSparkIn:controller];
+    if (editor == nil) return;
+    XCTAssertNotNil(editor.preview);
+
+    // Its material made the glow's: "blend add", a red and green image.
+    [editor.stagesController setValue:@"textures/udtest/glow" forKeyPath:@"selection.material"];
+    [editor.editingContext processPendingChanges];
+    [editor.preview renderAtTime:300];
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)editor.previewView.image.representations.firstObject;
+    XCTAssertNotNil(rep);
+    NSUInteger lit = 0;
+    for (NSInteger y = 0; y < rep.pixelsHigh; y++) {
+        for (NSInteger x = 0; x < rep.pixelsWide; x++) {
+            NSUInteger pixel[4];
+            [rep getPixel:pixel atX:x y:y];
+            if (pixel[0] > 60 || pixel[1] > 60) lit++;
+        }
+    }
+    XCTAssertGreaterThan(lit, 0U, @"its particles added onto the background");
+}
+
 #pragma mark - The FX editor
 
 - (UDFXEditorViewController *)openFXIn:(UDWorkspaceWindowController *)controller {
@@ -785,6 +811,24 @@ static NSString *const UDFixtureParticles =
          "\t}\n"
          "}\n"], @"the comment kept, the edits made:\n%@", saved);
     XCTAssertTrue([saved containsString:@"textures/udtest/lost\n{\n\t{\n\t\tblend\tadd\n"], @"the other material untouched:\n%@", saved);
+}
+
+- (void)testTheFXPreviewPlaysItsActions {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDFXEditorViewController *editor = [self openFXIn:controller];
+    if (editor == nil) return;
+    XCTAssertNotNil(editor.preview);
+    XCTAssertEqual(editor.preview.fxDuration, 1000, @"the latest delay + duration: the particle's 1 s");
+    XCTAssertEqual(editor.timelineView.actions.count, 3U);
+
+    [editor.preview renderAtTime:200];
+    XCTAssertNotNil(editor.previewView.image);
+    XCTAssertEqual(editor.timelineView.time, 200, @"the timeline at the frame drawn");
+    XCTAssertEqual(editor.timelineView.states.count, 3U);
+    XCTAssertTrue(editor.timelineView.states[0].hasLight, @"its spark light, added");
+    XCTAssertTrue(editor.timelineView.states[2].running, @"its particle running");
+    [editor.preview renderAtTime:1100];
+    XCTAssertEqual(editor.preview.time, 1100 % 1016, @"a test fx: from its start again after its duration");
 }
 
 @end

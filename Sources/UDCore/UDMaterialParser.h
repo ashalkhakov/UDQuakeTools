@@ -46,6 +46,10 @@ extern const int UDGLSDstBlendZero, UDGLSDstBlendOne, UDGLSDstBlendSrcColor, UDG
 @property (nonatomic, readonly) BOOL dynamic;
 @property (nonatomic, readonly) BOOL cinematic;
 @property (nonatomic, readonly) BOOL newStage;
+/// stageVertexColor_t: 0 ignore, 1 modulate, 2 inverse modulate.
+@property (nonatomic, readonly) int vertexColor;
+/// textureRepeat_t: 0 repeat, 1 clamp, 2 clamp to border, 3 clamp to zero, 4 clamp to zero alpha.
+@property (nonatomic, readonly) int repeat;
 /// The stage's place in the text (ParseStage from it, a shortcut counted),
 /// -1 for one AddImplicitStages adds.
 @property (nonatomic, readonly) NSInteger textIndex;
@@ -107,6 +111,8 @@ typedef NS_ENUM(NSInteger, UDMaterialTextKind) {
 /// idMaterial::EvaluateRegisters at @a time, its shader parms all 1 (an
 /// entity's default color) and its globals 0, without a sound emitter.
 - (NSData *)registersAtTime:(float)time;
+/// The same, with @a shaderParms (MAX_ENTITY_SHADER_PARMS of them).
+- (NSData *)registersAtTime:(float)time shaderParms:(const float *)shaderParms;
 
 /// The text the parse went through: the body's keywords and stages.
 @property (nonatomic, copy, readonly) NSArray<UDMaterialTextNode *> *body;

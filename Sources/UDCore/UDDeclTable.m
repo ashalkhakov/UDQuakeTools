@@ -5,6 +5,7 @@
 
 #import "UDDeclManagedObjects.h"
 #import "UDDeclTable.h"
+#import "idDeclManager.h"
 #import <objc/runtime.h>
 
 #import "UDDeclCodec.h"
@@ -168,6 +169,67 @@ static NSDictionary<NSString *, id> *UDDefaultTableValues(void) {
     [out appendFormat:@"\t{ %@ }\n", [numbers componentsJoinedByString:@", "]];
     [out appendString:@"}"];
     return [out dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+/*
+===================
+idDeclTable::TableLookup
+===================
+*/
++ (float)ud_lookup:(float)index inTableNamed:(NSString *)name declManager:(idDeclManager *)declManager {
+    NSDictionary *parsed = nil;
+    idDeclBase *base = [declManager findDeclWithoutParsing:DECL_TABLE name:name makeDefault:NO];
+    if ( base != nil ) {
+        NSMutableData *buffer = [NSMutableData data];
+        [base text:buffer];
+        if ( buffer.length > 0 ) [buffer setLength:buffer.length - 1];
+        parsed = [self ud_parseValuesFromText:buffer name:name fileName:nil lineNum:1 fileSystem:nil error:NULL];
+    }
+    NSArray *read = [parsed[@"values"] valueForKey:@"number"] ?: @[];
+    BOOL clamp = [parsed[@"clamp"] boolValue];
+    BOOL snap = [parsed[@"snap"] boolValue];
+    // copy the 0 element to the end, so lerping doesn't
+    // need to worry about the wrap case (idDeclTable::Parse)
+    NSMutableArray<NSNumber *> *values = [read mutableCopy];
+    if ( values.count > 0 ) [values addObject:values[0]];
+
+    int iIndex;
+    float iFrac;
+
+    int domain = (int)values.count - 1;
+
+    if ( domain <= 1 ) {
+        return 1.0f;
+    }
+
+    if ( clamp ) {
+        index *= (domain-1);
+        if ( index >= domain - 1 ) {
+            return values[domain - 1].floatValue;
+        } else if ( index <= 0 ) {
+            return values[0].floatValue;
+        }
+        iIndex = (int)index;                                       // idMath::Ftoi
+        iFrac = index - iIndex;
+    } else {
+        index *= domain;
+
+        if ( index < 0 ) {
+            index += domain * ceilf( -index / domain );
+        }
+
+        iIndex = (int)floorf( index );                              // idMath::FtoiFast( idMath::Floor( index ) )
+        iFrac = index - iIndex;
+        iIndex = iIndex % domain;
+    }
+
+    if ( !snap ) {
+        // we duplicated the 0 index at the end at creation time, so we
+        // don't need to worry about wrapping the filter
+        return values[iIndex].floatValue * ( 1.0f - iFrac ) + values[iIndex + 1].floatValue * iFrac;
+    }
+
+    return values[iIndex].floatValue;
 }
 
 @end

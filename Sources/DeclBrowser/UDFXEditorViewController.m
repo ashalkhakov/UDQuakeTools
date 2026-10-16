@@ -3,8 +3,14 @@
 #import "UDWorkspace.h"
 #import "idDeclManager.h"
 #import "idFileSystem.h"
+#import "UDFXTimelineView.h"
+#import "UDParticlePreview.h"
 
 static UDDiagnosticSource const UDFXReferencesSource = @"references";
+
+@interface UDFXEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDParticlePreview *preview;
+@end
 
 @implementation UDFXEditorViewController
 
@@ -20,10 +26,28 @@ static UDDiagnosticSource const UDFXReferencesSource = @"references";
     if (self.fx.actions.count > 0) {
         [self.actionsController setSelectionIndex:0];
     }
+    if (self.previewView != nil) {
+        self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
+        self.preview.target = self;
+        self.preview.action = @selector(previewDidDraw:);
+    }
 }
 
 - (void)editingContextDidChange {
     [self checkReferences];
+    self.preview.fxActions = self.fx.actions;
+    self.timelineView.actions = self.fx.actions;
+    self.timelineView.duration = self.preview.fxDuration;
+}
+
+- (IBAction)restartPreview:(id)sender {
+    [self.preview restart];
+}
+
+/// The preview's frame drawn: the timeline at its time.
+- (void)previewDidDraw:(UDParticlePreview *)preview {
+    self.timelineView.states = preview.fxStates;
+    self.timelineView.time = preview.time;
 }
 
 #pragma mark - The actions

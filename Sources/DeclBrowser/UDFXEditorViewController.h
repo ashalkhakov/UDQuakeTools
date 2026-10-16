@@ -1,6 +1,6 @@
 #import "UDDeclEditorViewController.h"
 
-@class UDDeclFX;
+@class UDDeclFX, UDFXTimelineView, UDParticlePreview;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,10 +19,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong) IBOutlet NSArrayController *actionsController;
 @property (weak) IBOutlet NSTableView *actionsTable;
+/// Its particle systems playing as the engine plays the FX, and its actions
+/// over its time (UDParticlePreview, UDFXTimelineView).
+@property (weak) IBOutlet NSImageView *previewView;
+@property (weak) IBOutlet UDFXTimelineView *timelineView;
+@property (nonatomic, strong, readonly, nullable) UDParticlePreview *preview;
 
 /// + adds the default definition's action after the selection; - takes the
 /// selected one off.
 - (IBAction)addOrRemoveAction:(nullable id)sender;
+/// Plays the preview from the start again.
+- (IBAction)restartPreview:(nullable id)sender;
 
 @end
 

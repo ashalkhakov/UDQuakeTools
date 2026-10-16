@@ -46,6 +46,8 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDFXEditorViewController.m \
     $(APP_DIR)/UDAFEditorViewController.m \
     $(APP_DIR)/UDMaterialEditorViewController.m \
+    $(APP_DIR)/UDParticlePreview.m \
+    $(APP_DIR)/UDFXTimelineView.m \
     $(APP_DIR)/UDPathTree.m \
     $(APP_DIR)/UDProject.m \
     $(APP_DIR)/UDScriptServer.m \

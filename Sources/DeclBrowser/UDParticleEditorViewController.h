@@ -1,6 +1,6 @@
 #import "UDDeclEditorViewController.h"
 
-@class UDDeclParticle;
+@class UDDeclParticle, UDParticlePreview;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,11 +17,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong) IBOutlet NSArrayController *stagesController;
 @property (weak) IBOutlet NSTableView *stagesTable;
+/// The system playing, as the engine draws it (UDParticlePreview).
+@property (weak) IBOutlet NSImageView *previewView;
+@property (nonatomic, strong, readonly, nullable) UDParticlePreview *preview;
 
 /// + adds a stage after the selection, the engine's default one (a copy of
 /// the selected one with Option, as AddStage's Ctrl had it); - takes the
 /// selected one off.
 - (IBAction)addOrRemoveStage:(nullable id)sender;
+/// Plays the preview from the start again.
+- (IBAction)restartPreview:(nullable id)sender;
 
 @end
 

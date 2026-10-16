@@ -28,6 +28,8 @@ DeclBrowser_OBJC_FILES = \
     UDFXEditorViewController.m \
     UDAFEditorViewController.m \
     UDMaterialEditorViewController.m \
+    UDParticlePreview.m \
+    UDFXTimelineView.m \
     UDPathTree.m \
     UDProject.m \
     UDScriptServer.m \

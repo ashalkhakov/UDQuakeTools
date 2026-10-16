@@ -1,9 +1,14 @@
 #import "UDParticleEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspace.h"
+#import "UDParticlePreview.h"
 #import "idDeclManager.h"
 
 static UDDiagnosticSource const UDParticleReferencesSource = @"references";
+
+@interface UDParticleEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDParticlePreview *preview;
+@end
 
 @implementation UDParticleEditorViewController
 
@@ -19,10 +24,18 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
     if (self.particle.stages.count > 0) {
         [self.stagesController setSelectionIndex:0];
     }
+    if (self.previewView != nil) {
+        self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
+    }
 }
 
 - (void)editingContextDidChange {
     [self checkReferences];
+    self.preview.stages = self.particle.stages;
+}
+
+- (IBAction)restartPreview:(id)sender {
+    [self.preview restart];
 }
 
 #pragma mark - The stages (AddStage, RemoveStage)

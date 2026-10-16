@@ -12,6 +12,8 @@
                 <outlet property="objectController" destination="FXE-oc" id="UDF-o-objectController"/>
                 <outlet property="actionsController" destination="FXE-aac" id="UDF-o-actionsController"/>
                 <outlet property="actionsTable" destination="FXE-actions" id="UDF-o-actionsTable"/>
+                <outlet property="previewView" destination="FXE-preview" id="UDF-o-previewView"/>
+                <outlet property="timelineView" destination="FXE-timeline" id="UDF-o-timelineView"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -26,11 +28,11 @@
             </connections>
         </arrayController>
         <customView id="FXE-root">
-            <rect key="frame" x="0.0" y="0.0" width="900" height="600"/>
+            <rect key="frame" x="0.0" y="0.0" width="900" height="680"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-al">
-                    <rect key="frame" x="20" y="570" width="300" height="16"/>
+                    <rect key="frame" x="20" y="650" width="300" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Actions" id="FXE-al-c">
                         <font key="font" metaFont="systemBold"/>
@@ -39,14 +41,14 @@
                     </textFieldCell>
                 </textField>
                 <scrollView fixedFrame="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-actions-s">
-                    <rect key="frame" x="20" y="71" width="300" height="493"/>
+                    <rect key="frame" x="20" y="427" width="300" height="223"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                     <clipView key="contentView" id="FXE-actions-cv">
-                        <rect key="frame" x="1" y="1" width="298" height="491"/>
+                        <rect key="frame" x="1" y="1" width="298" height="221"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" headerView="FXE-actions-h" id="FXE-actions">
-                                <rect key="frame" x="0.0" y="0.0" width="298" height="463"/>
+                                <rect key="frame" x="0.0" y="0.0" width="298" height="193"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -118,7 +120,7 @@
                         </subviews>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-actions-hs">
-                        <rect key="frame" x="1" y="477" width="298" height="15"/>
+                        <rect key="frame" x="1" y="207" width="298" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-actions-vs">
@@ -131,7 +133,7 @@
                     </tableHeaderView>
                 </scrollView>
                 <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-actions-pm">
-                    <rect key="frame" x="20" y="46" width="69" height="23"/>
+                    <rect key="frame" x="20" y="402" width="69" height="23"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="selectOne" id="FXE-actions-pm-c">
                         <font key="font" metaFont="system"/>
@@ -145,7 +147,7 @@
                     </connections>
                 </segmentedControl>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l1">
-                    <rect key="frame" x="20" y="15" width="60" height="16"/>
+                    <rect key="frame" x="20" y="375" width="60" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bind To:" id="FXE-l1-c">
                         <font key="font" metaFont="system"/>
@@ -154,7 +156,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="bindTo" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f2">
-                    <rect key="frame" x="86" y="12" width="150" height="21"/>
+                    <rect key="frame" x="86" y="372" width="150" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f2-c">
                         <font key="font" metaFont="system"/>
@@ -170,7 +172,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l3">
-                    <rect key="frame" x="340" y="563" width="90" height="16"/>
+                    <rect key="frame" x="340" y="643" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Name:" id="FXE-l3-c">
                         <font key="font" metaFont="system"/>
@@ -179,7 +181,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="name" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f4">
-                    <rect key="frame" x="436" y="560" width="160" height="21"/>
+                    <rect key="frame" x="436" y="640" width="160" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f4-c">
                         <font key="font" metaFont="system"/>
@@ -195,7 +197,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l5">
-                    <rect key="frame" x="610" y="563" width="50" height="16"/>
+                    <rect key="frame" x="610" y="643" width="50" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fire:" id="FXE-l5-c">
                         <font key="font" metaFont="system"/>
@@ -204,7 +206,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="fire" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f6">
-                    <rect key="frame" x="666" y="560" width="160" height="21"/>
+                    <rect key="frame" x="666" y="640" width="160" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f6-c">
                         <font key="font" metaFont="system"/>
@@ -220,7 +222,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l7">
-                    <rect key="frame" x="340" y="536" width="90" height="16"/>
+                    <rect key="frame" x="340" y="616" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Kind:" id="FXE-l7-c">
                         <font key="font" metaFont="system"/>
@@ -229,7 +231,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton toolTip="kind" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-p8">
-                    <rect key="frame" x="436" y="530" width="130" height="25"/>
+                    <rect key="frame" x="436" y="610" width="130" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="light" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FXE-p8-i0" id="FXE-p8-c">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -256,7 +258,7 @@
                     </connections>
                 </popUpButton>
                 <textField toolTip="data" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f9">
-                    <rect key="frame" x="572" y="533" width="300" height="21"/>
+                    <rect key="frame" x="572" y="613" width="300" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f9-c">
                         <font key="font" metaFont="system"/>
@@ -272,7 +274,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l10">
-                    <rect key="frame" x="340" y="502" width="90" height="16"/>
+                    <rect key="frame" x="340" y="582" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Delay:" id="FXE-l10-c">
                         <font key="font" metaFont="system"/>
@@ -281,7 +283,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="delay" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f11">
-                    <rect key="frame" x="436" y="499" width="60" height="21"/>
+                    <rect key="frame" x="436" y="579" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f11-c">
                         <font key="font" metaFont="system"/>
@@ -297,7 +299,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l12">
-                    <rect key="frame" x="510" y="502" width="70" height="16"/>
+                    <rect key="frame" x="510" y="582" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Duration:" id="FXE-l12-c">
                         <font key="font" metaFont="system"/>
@@ -306,7 +308,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="duration" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f13">
-                    <rect key="frame" x="586" y="499" width="60" height="21"/>
+                    <rect key="frame" x="586" y="579" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f13-c">
                         <font key="font" metaFont="system"/>
@@ -322,7 +324,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l14">
-                    <rect key="frame" x="660" y="502" width="70" height="16"/>
+                    <rect key="frame" x="660" y="582" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Restart:" id="FXE-l14-c">
                         <font key="font" metaFont="system"/>
@@ -331,7 +333,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="restart" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f15">
-                    <rect key="frame" x="736" y="499" width="60" height="21"/>
+                    <rect key="frame" x="736" y="579" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f15-c">
                         <font key="font" metaFont="system"/>
@@ -347,7 +349,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l16">
-                    <rect key="frame" x="340" y="475" width="90" height="16"/>
+                    <rect key="frame" x="340" y="555" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Random:" id="FXE-l16-c">
                         <font key="font" metaFont="system"/>
@@ -356,7 +358,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="random1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f17">
-                    <rect key="frame" x="436" y="472" width="60" height="21"/>
+                    <rect key="frame" x="436" y="552" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f17-c">
                         <font key="font" metaFont="system"/>
@@ -372,7 +374,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l18">
-                    <rect key="frame" x="510" y="475" width="70" height="16"/>
+                    <rect key="frame" x="510" y="555" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="to" id="FXE-l18-c">
                         <font key="font" metaFont="system"/>
@@ -381,7 +383,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="random2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f19">
-                    <rect key="frame" x="586" y="472" width="60" height="21"/>
+                    <rect key="frame" x="586" y="552" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f19-c">
                         <font key="font" metaFont="system"/>
@@ -397,7 +399,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l20">
-                    <rect key="frame" x="340" y="448" width="90" height="16"/>
+                    <rect key="frame" x="340" y="528" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade In:" id="FXE-l20-c">
                         <font key="font" metaFont="system"/>
@@ -406,7 +408,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="fadeIn" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f21">
-                    <rect key="frame" x="436" y="445" width="60" height="21"/>
+                    <rect key="frame" x="436" y="525" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f21-c">
                         <font key="font" metaFont="system"/>
@@ -422,7 +424,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l22">
-                    <rect key="frame" x="510" y="448" width="70" height="16"/>
+                    <rect key="frame" x="510" y="528" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade Out:" id="FXE-l22-c">
                         <font key="font" metaFont="system"/>
@@ -431,7 +433,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="fadeOut" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f23">
-                    <rect key="frame" x="586" y="445" width="60" height="21"/>
+                    <rect key="frame" x="586" y="525" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f23-c">
                         <font key="font" metaFont="system"/>
@@ -447,7 +449,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l24">
-                    <rect key="frame" x="340" y="421" width="90" height="16"/>
+                    <rect key="frame" x="340" y="501" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Size:" id="FXE-l24-c">
                         <font key="font" metaFont="system"/>
@@ -456,7 +458,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="size" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f25">
-                    <rect key="frame" x="436" y="418" width="60" height="21"/>
+                    <rect key="frame" x="436" y="498" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f25-c">
                         <font key="font" metaFont="system"/>
@@ -472,7 +474,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l26">
-                    <rect key="frame" x="510" y="421" width="70" height="16"/>
+                    <rect key="frame" x="510" y="501" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Rotate:" id="FXE-l26-c">
                         <font key="font" metaFont="system"/>
@@ -481,7 +483,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="rotate" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f27">
-                    <rect key="frame" x="586" y="418" width="60" height="21"/>
+                    <rect key="frame" x="586" y="498" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f27-c">
                         <font key="font" metaFont="system"/>
@@ -497,7 +499,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l28">
-                    <rect key="frame" x="340" y="387" width="90" height="16"/>
+                    <rect key="frame" x="340" y="467" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Offset:" id="FXE-l28-c">
                         <font key="font" metaFont="system"/>
@@ -506,7 +508,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="offset" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f29">
-                    <rect key="frame" x="436" y="384" width="150" height="21"/>
+                    <rect key="frame" x="436" y="464" width="150" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f29-c">
                         <font key="font" metaFont="system"/>
@@ -522,7 +524,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l30">
-                    <rect key="frame" x="340" y="360" width="90" height="16"/>
+                    <rect key="frame" x="340" y="440" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Axis:" id="FXE-l30-c">
                         <font key="font" metaFont="system"/>
@@ -531,7 +533,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="axis" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f31">
-                    <rect key="frame" x="436" y="357" width="150" height="21"/>
+                    <rect key="frame" x="436" y="437" width="150" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f31-c">
                         <font key="font" metaFont="system"/>
@@ -547,7 +549,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l32">
-                    <rect key="frame" x="600" y="360" width="60" height="16"/>
+                    <rect key="frame" x="600" y="440" width="60" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angle:" id="FXE-l32-c">
                         <font key="font" metaFont="system"/>
@@ -556,7 +558,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="angle" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f33">
-                    <rect key="frame" x="666" y="357" width="150" height="21"/>
+                    <rect key="frame" x="666" y="437" width="150" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f33-c">
                         <font key="font" metaFont="system"/>
@@ -572,7 +574,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-ll">
-                    <rect key="frame" x="360" y="323" width="200" height="16"/>
+                    <rect key="frame" x="360" y="403" width="200" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Light" id="FXE-ll-c">
                         <font key="font" metaFont="systemBold"/>
@@ -581,7 +583,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l34">
-                    <rect key="frame" x="340" y="302" width="90" height="16"/>
+                    <rect key="frame" x="340" y="382" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Color:" id="FXE-l34-c">
                         <font key="font" metaFont="system"/>
@@ -590,7 +592,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="lightColor" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f35">
-                    <rect key="frame" x="436" y="299" width="150" height="21"/>
+                    <rect key="frame" x="436" y="379" width="150" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f35-c">
                         <font key="font" metaFont="system"/>
@@ -606,7 +608,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l36">
-                    <rect key="frame" x="600" y="302" width="60" height="16"/>
+                    <rect key="frame" x="600" y="382" width="60" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Radius:" id="FXE-l36-c">
                         <font key="font" metaFont="system"/>
@@ -615,7 +617,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="lightRadius" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f37">
-                    <rect key="frame" x="666" y="299" width="60" height="21"/>
+                    <rect key="frame" x="666" y="379" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f37-c">
                         <font key="font" metaFont="system"/>
@@ -631,7 +633,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-sl">
-                    <rect key="frame" x="360" y="265" width="200" height="16"/>
+                    <rect key="frame" x="360" y="345" width="200" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Shake" id="FXE-sl-c">
                         <font key="font" metaFont="systemBold"/>
@@ -640,7 +642,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l38">
-                    <rect key="frame" x="340" y="244" width="90" height="16"/>
+                    <rect key="frame" x="340" y="324" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Time:" id="FXE-l38-c">
                         <font key="font" metaFont="system"/>
@@ -649,7 +651,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="shakeTime" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f39">
-                    <rect key="frame" x="436" y="241" width="60" height="21"/>
+                    <rect key="frame" x="436" y="321" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f39-c">
                         <font key="font" metaFont="system"/>
@@ -665,7 +667,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l40">
-                    <rect key="frame" x="510" y="244" width="70" height="16"/>
+                    <rect key="frame" x="510" y="324" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Amplitude:" id="FXE-l40-c">
                         <font key="font" metaFont="system"/>
@@ -674,7 +676,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="shakeAmplitude" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f41">
-                    <rect key="frame" x="586" y="241" width="60" height="21"/>
+                    <rect key="frame" x="586" y="321" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f41-c">
                         <font key="font" metaFont="system"/>
@@ -690,7 +692,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l42">
-                    <rect key="frame" x="660" y="244" width="70" height="16"/>
+                    <rect key="frame" x="660" y="324" width="70" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Distance:" id="FXE-l42-c">
                         <font key="font" metaFont="system"/>
@@ -699,7 +701,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="shakeDistance" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f43">
-                    <rect key="frame" x="736" y="241" width="60" height="21"/>
+                    <rect key="frame" x="736" y="321" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f43-c">
                         <font key="font" metaFont="system"/>
@@ -715,7 +717,7 @@
                     </connections>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l44">
-                    <rect key="frame" x="340" y="217" width="90" height="16"/>
+                    <rect key="frame" x="340" y="297" width="90" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Impulse:" id="FXE-l44-c">
                         <font key="font" metaFont="system"/>
@@ -724,7 +726,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="shakeImpulse" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f45">
-                    <rect key="frame" x="436" y="214" width="60" height="21"/>
+                    <rect key="frame" x="436" y="294" width="60" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f45-c">
                         <font key="font" metaFont="system"/>
@@ -740,7 +742,7 @@
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c46">
-                    <rect key="frame" x="510" y="214" width="120" height="18"/>
+                    <rect key="frame" x="510" y="294" width="120" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Falloff" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c46-c">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -751,7 +753,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c47">
-                    <rect key="frame" x="640" y="214" width="160" height="18"/>
+                    <rect key="frame" x="640" y="294" width="160" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Ignore master" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c47-c">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -762,7 +764,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c48">
-                    <rect key="frame" x="360" y="180" width="120" height="18"/>
+                    <rect key="frame" x="360" y="260" width="120" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="No shadows" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c48-c">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -773,7 +775,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c49">
-                    <rect key="frame" x="490" y="180" width="120" height="18"/>
+                    <rect key="frame" x="490" y="260" width="120" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Track origin" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c49-c">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -784,7 +786,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c50">
-                    <rect key="frame" x="620" y="180" width="200" height="18"/>
+                    <rect key="frame" x="620" y="260" width="200" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Particle tracks velocity" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c50-c">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -794,6 +796,26 @@
                         <binding destination="FXE-aac" name="value" keyPath="selection.particleTrackVelocity" id="FXE-c50-b"/>
                     </connections>
                 </button>
+                <imageView toolTip="fx preview" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-preview">
+                    <rect key="frame" x="20" y="160" width="200" height="200"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="FXE-preview-c"/>
+                </imageView>
+                <button toolTip="restart preview" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-restart">
+                    <rect key="frame" x="224" y="324" width="100" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Restart" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-restart-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="restartPreview:" target="-2" id="FXE-restart-a"/>
+                    </connections>
+                </button>
+                <customView toolTip="fx timeline" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-timeline" customClass="UDFXTimelineView">
+                    <rect key="frame" x="20" y="12" width="300" height="140"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </customView>
             </subviews>
         </customView>
     </objects>

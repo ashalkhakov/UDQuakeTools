@@ -5,6 +5,8 @@
 
 #import "UDDeclElement.h"
 
+@class idDeclManager;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /// One of a table's values.
@@ -21,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// written back on save; a new array marks the decl updated.
 @property (nonatomic, copy, nullable) NSArray<UDTableValue *> *values;
 
+
+/// idDeclTable::TableLookup( @a index ) of the table decl @a name in
+/// @a declManager (its values as idDeclTable::Parse leaves them, the first
+/// copied to the end); 1 for none, as a table of no domain is.
++ (float)ud_lookup:(float)index inTableNamed:(NSString *)name declManager:(nullable idDeclManager *)declManager;
 @end
 
 NS_ASSUME_NONNULL_END

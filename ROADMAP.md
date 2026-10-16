@@ -174,10 +174,17 @@ In order of value against cost; LOC is the MFC original's size.
       no decl defines in the Issues tab. idDeclParticle's Parse and
       ParseParticleStage are ported again, directly (one retail particle
       they give up on: bfg_wallmark), and WriteStage writes it.
-- [ ] Particle preview: a 2D animated one is possible
-      (idParticleStage::ParticleOrigin and friends, ported); the 3D one
-      comes with the bridge. The material picker comes with the lookup
-      dialogs.
+- [x] Particle preview: the system playing as the engine makes it
+      (idRenderModelPrt::InstantiateDynamicModel, idParticleStage's
+      CreateParticle and friends, GetStageBounds, idRandom, idMath's 16-bit
+      trigonometry, ported), drawn as its ambient pass draws it
+      (RB_STD_T_RenderShaderPasses' stages, the material's registers, ported;
+      GL's texturing and blending done in software). The material picker
+      comes with the lookup dialogs.
+- [x] FX preview: idEntityFx's Setup, Start, Run, ApplyFade and CleanUp,
+      ported and stepped at the game's frames; its particle systems in the
+      particle preview, its actions on a timeline. Its lights and other
+      models come with the bridge.
 - [x] **FX editor** — idDeclFX::Parse and ParseSingleFXAction ported (every
       retail FX parses): the joint it binds to, its actions in a list, the
       selected action's every keyword; in the Issues tab, what the engine

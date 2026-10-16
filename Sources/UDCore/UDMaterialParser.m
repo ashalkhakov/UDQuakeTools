@@ -527,6 +527,8 @@ static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
 - (BOOL)dynamic { return stage.texture.dynamic != DI_STATIC; }
 - (BOOL)cinematic { return stage.texture.cinematic; }
 - (BOOL)newStage { return stage.hasNewStage; }
+- (int)vertexColor { return stage.vertexColor; }
+- (int)repeat { return stage.texture.image.repeat; }
 - (NSInteger)textIndex { return stage.textIndex; }
 
 @end
@@ -2960,70 +2962,11 @@ Parses the current material definition and finds all necessary images.
     return YES;
 }
 
-/*
-===================
-idDeclTable::TableLookup
-===================
-*/
 - (float)tableLookup:(int)tableIndex index:(float)index {
     if ( tableIndex < 0 || (NSUInteger)tableIndex >= tables.count ) {
         return 1.0f;
     }
-    UDDeclTable *decl = nil;
-    NSDictionary *parsed = nil;
-    idDeclBase *base = [self.declManager findDeclWithoutParsing:DECL_TABLE name:tables[tableIndex] makeDefault:NO];
-    if ( base != nil ) {
-        NSMutableData *buffer = [NSMutableData data];
-        [base text:buffer];
-        if ( buffer.length > 0 ) [buffer setLength:buffer.length - 1];
-        parsed = [UDDeclTable ud_parseValuesFromText:buffer name:tables[tableIndex] fileName:nil lineNum:1 fileSystem:nil error:NULL];
-    }
-    (void)decl;
-    NSArray *read = [parsed[@"values"] valueForKey:@"number"] ?: @[];
-    BOOL clamp = [parsed[@"clamp"] boolValue];
-    BOOL snap = [parsed[@"snap"] boolValue];
-    // copy the 0 element to the end, so lerping doesn't
-    // need to worry about the wrap case (idDeclTable::Parse)
-    NSMutableArray<NSNumber *> *values = [read mutableCopy];
-    if ( values.count > 0 ) [values addObject:values[0]];
-
-    int iIndex;
-    float iFrac;
-
-    int domain = (int)values.count - 1;
-
-    if ( domain <= 1 ) {
-        return 1.0f;
-    }
-
-    if ( clamp ) {
-        index *= (domain-1);
-        if ( index >= domain - 1 ) {
-            return values[domain - 1].floatValue;
-        } else if ( index <= 0 ) {
-            return values[0].floatValue;
-        }
-        iIndex = (int)index;                                       // idMath::Ftoi
-        iFrac = index - iIndex;
-    } else {
-        index *= domain;
-
-        if ( index < 0 ) {
-            index += domain * ceilf( -index / domain );
-        }
-
-        iIndex = (int)floorf( index );                              // idMath::FtoiFast( idMath::Floor( index ) )
-        iFrac = index - iIndex;
-        iIndex = iIndex % domain;
-    }
-
-    if ( !snap ) {
-        // we duplicated the 0 index at the end at creation time, so we
-        // don't need to worry about wrapping the filter
-        return values[iIndex].floatValue * ( 1.0f - iFrac ) + values[iIndex + 1].floatValue * iFrac;
-    }
-
-    return values[iIndex].floatValue;
+    return [UDDeclTable ud_lookup:index inTableNamed:tables[tableIndex] declManager:self.declManager];
 }
 
 /*
@@ -3155,9 +3098,13 @@ This is probably an optimization of dubious value.
 }
 
 - (NSData *)registersAtTime:(float)time {
-    NSMutableData *registers = [NSMutableData dataWithLength:MAX( numRegisters, EXP_REG_NUM_PREDEFINED ) * sizeof( float )];
     float shaderParms[MAX_ENTITY_SHADER_PARMS];
     for ( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) shaderParms[i] = 1;
+    return [self registersAtTime:time shaderParms:shaderParms];
+}
+
+- (NSData *)registersAtTime:(float)time shaderParms:(const float *)shaderParms {
+    NSMutableData *registers = [NSMutableData dataWithLength:MAX( numRegisters, EXP_REG_NUM_PREDEFINED ) * sizeof( float )];
     float globalParms[8];
     memset( globalParms, 0, sizeof( globalParms ) );
     [self evaluateRegisters:registers.mutableBytes shaderParms:shaderParms floatTime:time globalParms:globalParms];

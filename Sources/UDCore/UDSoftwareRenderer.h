@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "UDParticleModel.h"
 
-@class idDeclManager, idFileSystem, UDImage;
+@class idDeclManager, idFileSystem, UDImage, UDMaterialParser;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +36,25 @@ NS_ASSUME_NONNULL_BEGIN
 /// up), and its horizontal field of view in degrees (the vertical one the
 /// picture's aspect's).
 - (void)setViewOrigin:(const float [_Nonnull 3])origin axis:(const float [_Nonnull 3][3])axis fovX:(float)fovX;
+
+/// The picture resized (cleared); the view's field of view kept.
+- (void)resizeToWidth:(int)width height:(int)height;
+
+/// The view idGuiModel::EmitFullScreen makes: the 640 x 480 virtual screen
+/// (qglOrtho( 0, 640, 480, 0, 0, 1 )) over the picture, no depth.
+- (void)setGuiView;
+
+/// idMaterial::SetSort on the material @a name (the GUIs' SS_GUI).
+- (void)setSort:(float)sort forMaterial:(NSString *)name;
+
+/// The material @a name, as declManager->FindMaterial gives it: its decl
+/// parsed, or SetDefaultText's for a name no decl defines. @a name is
+/// canonical (lowercase, its extension off).
+- (UDMaterialParser *)materialNamed:(NSString *)name;
+/// The image @a name, as ImageFromFile loads it; nil for none.
+- (nullable UDImage *)imageNamed:(NSString *)name;
+/// idImage::UploadScratch: @a image is the image @a name from now on.
+- (void)setImage:(UDImage *)image forName:(NSString *)name;
 
 /// The material @a name read from @a text instead of its decl's (an
 /// editor's text, not saved yet).

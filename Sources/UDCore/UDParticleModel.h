@@ -34,6 +34,14 @@ typedef struct {
 /// entity's @a shaderParms.
 + (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts
                         shaderParms:(const float *)shaderParms;
+/// A surface of triangles: @a numIndexes @a indexes into @a verts, three to
+/// a triangle (srfTriangles_t's).
++ (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts
+                            indexes:(const int *)indexes numIndexes:(int)numIndexes
+                        shaderParms:(const float *)shaderParms;
+/// Its triangles' indexes; NULL, 0 for quads.
+@property (nonatomic, readonly, nullable) const int *indexes;
+@property (nonatomic, readonly) int numIndexes;
 @end
 
 @interface UDParticleModel : NSObject

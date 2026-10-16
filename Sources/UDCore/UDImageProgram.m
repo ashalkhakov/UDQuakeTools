@@ -1691,6 +1691,18 @@ static NSArray<UDImage *> *R_AmbientNormalImage( void ) {
     return image;
 }
 
++ (UDImage *)loadImage:(NSString *)name fileSystem:(idFileSystem *)fileSystem {
+    byte *pic = NULL;
+    int width = 0, height = 0;
+    R_LoadImage( fileSystem, name, &pic, &width, &height, NULL, NO, NULL );
+    if ( pic == NULL ) {
+        return nil;
+    }
+    NSData *pixels = [NSData dataWithBytes:pic length:(NSUInteger)width * height * 4];
+    free( pic );
+    return [[UDImage alloc] initWithWidth:width height:height pixels:pixels];
+}
+
 + (BOOL)imageExistsNamed:(NSString *)rawName fileSystem:(idFileSystem *)fileSystem {
     if ( rawName.length == 0 || [rawName caseInsensitiveCompare:@"default"] == NSOrderedSame ) {
         return YES;

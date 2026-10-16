@@ -379,6 +379,9 @@ static define_t *defineFromString(const char *string) {
             return;
         }
     }
+    if (self.diagnostics != nil) {
+        script.diagnostics = self.diagnostics;
+    }
     //push the script on the script stack
     [script setNext:self->scriptstack];
     self->scriptstack = script;
@@ -921,6 +924,7 @@ static BOOL mergeTokens(idToken *t1, idToken *t2) {
     }
     [script setFlags:self->flags];
     [script setPunctuations:self->punctuations];
+    script.diagnostics = self.diagnostics;
     [self pushScript:script];
     return YES;
 }
@@ -2499,7 +2503,7 @@ int PC_OperatorPriority(int op) {
         return YES;
     }
     else if (token.type != TT_NUMBER) {
-        [self error:error format:@"expected float value, found '%s'", token.type];
+        [self error:error format:@"expected float value, found '%s'", token.text];
     }
     if (result) *result = idToken_FloatValue(&token);
     return YES;
@@ -2665,6 +2669,7 @@ int PC_OperatorPriority(int op) {
     }
     [script setFlags:self->flags];
     [script setPunctuations:self->punctuations];
+    script.diagnostics = self.diagnostics;
     [script setNext:nil];
     self->OSPath = OSPath;
     self->filename = filename;
@@ -2699,6 +2704,7 @@ int PC_OperatorPriority(int op) {
     }
     [script setFlags:self->flags];
     [script setPunctuations:self->punctuations];
+    script.diagnostics = self.diagnostics;
     //[script setNext:nil];
     self->filename = name;
     self->scriptstack = script;

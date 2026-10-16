@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
                       fileSystem:(idFileSystem *)fileSystem
                          problem:(NSString * _Nullable * _Nullable)problem;
 
+/// R_LoadImage( name, … makePowerOf2 false ): the file's pixels as they
+/// are (a .tga, or the .jpg of its name; a .bmp, a .jpg); nil for none.
++ (nullable UDImage *)loadImage:(NSString *)name fileSystem:(idFileSystem *)fileSystem;
+
 /// Whether the engine finds an image for @a name: a built-in one, the
 /// files its program names (R_LoadImageProgram for timestamps), or its
 /// precompressed .dds (ImageProgramStringToCompressedFileName).

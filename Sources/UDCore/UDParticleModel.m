@@ -8,6 +8,7 @@
  */
 
 #import "UDParticleModel.h"
+#import "idMath.h"
 #import "UDDeclCodec.h"
 #import "UDDeclParticle.h"
 #import "UDDeclTable.h"
@@ -93,16 +94,6 @@ static void idMath_SinCos16( float a, float *s, float *c ) {
     *c = d * ( ( ( ( ( -2.605e-07f * t + 2.47609e-05f ) * t - 1.3888397e-03f ) * t + 4.16666418e-02f ) * t - 4.999999963e-01f ) * t + 1.0f );
 }
 
-static float idMath_ClampFloat( float min, float max, float value ) {
-    if ( value < min ) {
-        return min;
-    }
-    if ( value > max ) {
-        return max;
-    }
-    return value;
-}
-
 // idVec3, as float[3]
 static float Vec3_Dot( const float a[3], const float b[3] ) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
 
@@ -125,26 +116,7 @@ static void Vec3_ProjectSelfOntoSphere( float v[3], const float radius ) {
     }
 }
 
-#pragma mark - idRandom
-
-#define idRandom_MAX_RAND 0x7fff
-
-typedef struct { int seed; } idRandom;
-
-static void idRandom_SetSeed( idRandom *r, int seed ) { r->seed = seed; }
-
-static int idRandom_RandomInt( idRandom *r ) {
-    r->seed = 69069 * r->seed + 1;
-    return ( r->seed & idRandom_MAX_RAND );
-}
-
-static float idRandom_RandomFloat( idRandom *r ) {
-    return ( idRandom_RandomInt( r ) / ( float )( idRandom_MAX_RAND + 1 ) );
-}
-
-static float idRandom_CRandomFloat( idRandom *r ) {
-    return ( 2.0f * ( idRandom_RandomFloat( r ) - 0.5f ) );
-}
+// idRandom: idMath.h's
 
 #pragma mark - DeclParticle.h
 
@@ -258,6 +230,7 @@ typedef struct {
 @interface UDParticleSurface () {
 @public
     NSMutableData *vertData;
+    NSData *indexData;
     float parms[12];
 }
 @property (nonatomic, copy, readwrite) NSString *material;
@@ -273,6 +246,22 @@ typedef struct {
 
 - (const float *)shaderParms {
     return parms;
+}
+
+- (const int *)indexes {
+    return indexData.bytes;
+}
+
+- (int)numIndexes {
+    return (int)( indexData.length / sizeof( int ) );
+}
+
++ (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts
+                            indexes:(const int *)indexes numIndexes:(int)numIndexes
+                        shaderParms:(const float *)shaderParms {
+    UDParticleSurface *surf = [self surfaceWithMaterial:material verts:verts numVerts:numVerts shaderParms:shaderParms];
+    surf->indexData = [NSData dataWithBytes:indexes length:(NSUInteger)numIndexes * sizeof( int )];
+    return surf;
 }
 
 + (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts

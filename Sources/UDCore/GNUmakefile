@@ -58,6 +58,27 @@ UDCore_OBJC_FILES = \
     UDSoftwareRenderer.m \
     UDFXModel.m \
     UDARBProgram.m \
+    idMath.m \
+    idDict.m \
+    idStrPool.m \
+    idLangDict.m \
+    idCVarSystem.m \
+    idWinVar.m \
+    idRegExp.m \
+    idGuiScript.m \
+    idWindow.m \
+    idSimpleWindow.m \
+    idGuiModel.m \
+    idDeviceContext.m \
+    idUserInterface.m \
+    idSliderWindow.m \
+    idEditWindow.m \
+    idChoiceWindow.m \
+    idListWindow.m \
+    idBindWindow.m \
+    idFieldWindow.m \
+    idMarkerWindow.m \
+    idRenderWindow.m \
     UDMaterialParser.m \
     UDImageProgram.m \
     UDDeclPDA.m \
@@ -108,6 +129,26 @@ UDCore_HEADER_FILES = \
     UDSoftwareRenderer.h \
     UDFXModel.h \
     UDARBProgram.h \
+    idMath.h \
+    idDict.h \
+    idStrPool.h \
+    idLangDict.h \
+    idCVarSystem.h \
+    idWinVar.h \
+    idRegExp.h \
+    idGuiScript.h \
+    idWindow.h \
+    idGuiModel.h \
+    idDeviceContext.h \
+    idUserInterface.h \
+    idSliderWindow.h \
+    idEditWindow.h \
+    idChoiceWindow.h \
+    idListWindow.h \
+    idBindWindow.h \
+    idFieldWindow.h \
+    idMarkerWindow.h \
+    idRenderWindow.h \
     UDMaterialParser.h \
     UDImageProgram.h \
     UDDeclPDA.h \

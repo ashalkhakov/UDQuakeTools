@@ -225,9 +225,12 @@ In order of value against cost; LOC is the MFC original's size.
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser
       and decl manager already ported in UDCore. The render system is
-      replaced: `idDeviceContext` draws with AppKit, its images loaded
-      through idFileSystem; a renderDef's 3D view comes through the bridge
-      (4). The port interprets as well as draws: GUI scripts, named events,
+      replaced: `idDeviceContext` draws into the GUI model, whose surfaces
+      the software renderer draws as the ambient pass would, its images
+      loaded through idFileSystem; a renderDef's 3D view comes through the
+      bridge (4). The port is in (UDCore; every retail GUI loads and
+      draws, the main menu and PDA as in the game); the viewer and the
+      editor are next. The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

@@ -71,6 +71,11 @@ typedef struct indent_s {
 
 @property (weak, nonatomic) idFileSystem *fileSystem;
 
+// When set, given to every script the parser reads (its file's, and the
+// files it #includes), which collect their errors and warnings into it
+// (idLexer's diagnostics).
+@property (strong, nonatomic) NSMutableArray<NSDictionary *> *diagnostics;
+
 - (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
 - (instancetype)initWithFlags:(int)flags
                    fileSystem:(idFileSystem *)fileSystem;

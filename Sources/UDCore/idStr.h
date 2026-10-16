@@ -328,3 +328,45 @@ int idStr_vsnPrintf(char *dest, int size, const char *fmt, va_list argptr);
             be used to specify a range (e.g. a-z, A-Z, 0-9)
  */
 BOOL idStr_Filter(const char *filter, const char *name, BOOL casesensitive);
+
+#pragma mark - idStr's, over NSString
+
+#define C_COLOR_ESCAPE          '^'
+#define C_COLOR_DEFAULT         '0'
+
+/// idStr::CharIsPrintable: regular ascii and western European high-ascii
+static inline BOOL idStr_CharIsPrintable(int c) {
+    return ( c >= 0x20 && c <= 0x7E ) || ( c >= 0xA1 && c <= 0xFF );
+}
+
+/// idStr::FloatArrayToString: each "%.<precision>f", its trailing zeros and
+/// point off, spaces between.
+NSString *idStr_FloatArrayToString(const float *array, int length, int precision);
+
+/// What idStr does that the GUI code uses, on NSString: its characters are
+/// the bytes of the engine's Latin-1 strings.
+@interface NSString (idStr)
+/// idStr::Icmp, Icmpn, Cmpn: id's order, Icmp ignoring the case of A–Z only.
+- (int)ud_icmp:(NSString *)text;
+/// [self ud_icmp:text] == 0, without copying strings of different lengths
+- (BOOL)ud_iequals:(nullable NSString *)text;
+- (int)ud_icmpn:(NSString *)text length:(NSInteger)n;
+- (int)ud_cmpn:(NSString *)text length:(NSInteger)n;
+/// idStr::ToLower: A–Z and 0xC0–0xDF lowered.
+- (NSString *)ud_lowercase;
+/// idStr::IsColor at @a index: "^" and a character other than "\0" or " ".
+- (BOOL)ud_isColorAtIndex:(NSUInteger)index;
+/// idStr::LengthWithoutColors
+- (NSUInteger)ud_lengthWithoutColors;
+/// idStr::RemoveColors
+- (NSString *)ud_stringByRemovingColors;
+/// idStr::StripTrailingWhitespace: the characters up to ' ' off the end.
+- (NSString *)ud_stringByStrippingTrailingWhitespace;
+/// The engine's bytes of it (Latin-1).
+- (NSData *)ud_latin1Data;
+/// The same and a NUL after them, not counted in a parser's length: the
+/// lexer, like the engine's, reads up to one.
+- (NSData *)ud_latin1Buffer;
+/// A string of the engine's bytes @a bytes (Latin-1).
++ (NSString *)ud_stringWithLatin1:(const char *)bytes;
+@end

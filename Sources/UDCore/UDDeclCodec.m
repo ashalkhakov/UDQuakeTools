@@ -5,6 +5,7 @@
 
 // AppKit (UDWorkspace.h) before Core Data: GNUstep's NSPredicateEditorRowTemplate.h
 // defines Core Data's attribute types when Core Data is not yet in.
+#include <strings.h>
 #import "UDWorkspace.h"
 #import "UDDeclManagedObjects.h"
 #import <objc/runtime.h>
@@ -74,6 +75,18 @@ idLexer *UDDeclCodecLexer(NSData *text, NSString *name, NSString *fileName, int 
 
 NSString *UDTokenString(const idToken *token) {
     return [NSString stringWithUTF8String:token->text] ?: @"";
+}
+
+NSString *UDTokenLatin1String(const idToken *token) {
+    return [NSString stringWithCString:token->text encoding:NSISOLatin1StringEncoding] ?: @"";
+}
+
+BOOL UDTokenIs(const idToken *token, const char *text) {
+    return !strcmp(token->text, text);
+}
+
+BOOL UDTokenIcmp(const idToken *token, const char *text) {
+    return !strcasecmp(token->text, text);
 }
 
 // key "value" — quoted so values containing spaces survive a re-parse.

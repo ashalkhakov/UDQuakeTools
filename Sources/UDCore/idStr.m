@@ -946,3 +946,190 @@ BOOL idStr_Filter(const char *filter, const char *name, BOOL casesensitive) {
     idStr_Free(&buf);
     return YES;
 }
+
+#pragma mark - idStr's, over NSString
+
+NSString *idStr_FloatArrayToString(const float *array, int length, int precision) {
+    NSMutableString *s = [NSMutableString string];
+    for (int i = 0; i < length; i++) {
+        NSMutableString *n = [NSMutableString stringWithFormat:@"%.*f", precision, array[i]];
+        if (precision > 0) {
+            while (n.length > 0 && [n characterAtIndex:n.length - 1] == '0') [n deleteCharactersInRange:NSMakeRange(n.length - 1, 1)];
+            while (n.length > 0 && [n characterAtIndex:n.length - 1] == '.') [n deleteCharactersInRange:NSMakeRange(n.length - 1, 1)];
+        }
+        if (i > 0) [s appendString:@" "];
+        [s appendString:n];
+    }
+    return s;
+}
+
+// The compares below run idStr's loops over a NUL-terminated copy of each
+// string: on the stack when short (names, keys), on the heap otherwise.
+#define UD_CMP_STACK 128
+
+static unichar *UDCopyChars(NSString *s, unichar *stack) {
+    NSUInteger length = s.length;
+    unichar *chars = length < UD_CMP_STACK ? stack : malloc(sizeof(unichar) * (length + 1));
+    [s getCharacters:chars range:NSMakeRange(0, length)];
+    chars[length] = 0;
+    return chars;
+}
+
+static void UDFreeChars(unichar *chars, unichar *stack) {
+    if (chars != stack) {
+        free(chars);
+    }
+}
+
+// idStr::Icmpn; a negative n compares the whole strings
+static int UDIcmpn(const unichar *s1, const unichar *s2, NSInteger n) {
+    int c1, c2, d;
+    do {
+        c1 = *s1++;
+        c2 = *s2++;
+        if (n >= 0 && !n--) {
+            return 0;        // strings are equal until end point
+        }
+        d = c1 - c2;
+        while (d) {
+            if (c1 <= 'Z' && c1 >= 'A') {
+                d += ('a' - 'A');
+                if (!d) {
+                    break;
+                }
+            }
+            if (c2 <= 'Z' && c2 >= 'A') {
+                d -= ('a' - 'A');
+                if (!d) {
+                    break;
+                }
+            }
+            return (INTSIGNBITNOTSET(d) << 1) - 1;
+        }
+    } while (c1);
+    return 0;        // strings are equal
+}
+
+// idStr::Cmpn
+static int UDCmpn(const unichar *s1, const unichar *s2, NSInteger n) {
+    int c1, c2, d;
+    do {
+        c1 = *s1++;
+        c2 = *s2++;
+        if (!n--) {
+            return 0;        // strings are equal until end point
+        }
+        d = c1 - c2;
+        if (d) {
+            return (INTSIGNBITNOTSET(d) << 1) - 1;
+        }
+    } while (c1);
+    return 0;        // strings are equal
+}
+
+@implementation NSString (idStr)
+
+- (int)ud_icmp:(NSString *)text {
+    return [self ud_icmpn:text length:-1];
+}
+
+- (BOOL)ud_iequals:(NSString *)text {
+    // folding A-Z keeps lengths, so strings of different lengths differ
+    if (self.length != text.length) {
+        return NO;
+    }
+    return [self ud_icmpn:text length:-1] == 0;
+}
+
+- (int)ud_icmpn:(NSString *)text length:(NSInteger)n {
+    unichar b1[UD_CMP_STACK], b2[UD_CMP_STACK];
+    unichar *s1 = UDCopyChars(self, b1), *s2 = UDCopyChars(text, b2);
+    int r = UDIcmpn(s1, s2, n);
+    UDFreeChars(s1, b1);
+    UDFreeChars(s2, b2);
+    return r;
+}
+
+- (int)ud_cmpn:(NSString *)text length:(NSInteger)n {
+    unichar b1[UD_CMP_STACK], b2[UD_CMP_STACK];
+    unichar *s1 = UDCopyChars(self, b1), *s2 = UDCopyChars(text, b2);
+    int r = UDCmpn(s1, s2, n);
+    UDFreeChars(s1, b1);
+    UDFreeChars(s2, b2);
+    return r;
+}
+
+- (NSString *)ud_lowercase {
+    NSUInteger length = self.length;
+    unichar *chars = malloc(sizeof(unichar) * (length + 1));
+    [self getCharacters:chars range:NSMakeRange(0, length)];
+    for (NSUInteger i = 0; i < length; i++) {
+        unichar c = chars[i];
+        if ((c <= 'Z' && c >= 'A') || (c >= 0xC0 && c <= 0xDF)) {
+            chars[i] = c + ('a' - 'A');
+        }
+    }
+    NSString *lowered = [NSString stringWithCharacters:chars length:length];
+    free(chars);
+    return lowered;
+}
+
+- (BOOL)ud_isColorAtIndex:(NSUInteger)index {
+    NSUInteger length = self.length;
+    if (index >= length || [self characterAtIndex:index] != C_COLOR_ESCAPE) {
+        return NO;
+    }
+    unichar next = index + 1 < length ? [self characterAtIndex:index + 1] : 0;
+    return next != 0 && next != ' ';
+}
+
+- (NSUInteger)ud_lengthWithoutColors {
+    NSUInteger len = 0, length = self.length;
+    for (NSUInteger p = 0; p < length; ) {
+        if ([self ud_isColorAtIndex:p]) {
+            p += 2;
+            continue;
+        }
+        p++;
+        len++;
+    }
+    return len;
+}
+
+- (NSString *)ud_stringByRemovingColors {
+    NSMutableString *d = [NSMutableString stringWithCapacity:self.length];
+    NSUInteger length = self.length;
+    for (NSUInteger s = 0; s < length; s++) {
+        if ([self ud_isColorAtIndex:s]) {
+            s++;
+        } else {
+            unichar c = [self characterAtIndex:s];
+            [d appendString:[NSString stringWithCharacters:&c length:1]];
+        }
+    }
+    return d;
+}
+
+- (NSString *)ud_stringByStrippingTrailingWhitespace {
+    NSUInteger i = self.length;
+    while (i > 0 && [self characterAtIndex:i - 1] <= ' ') {
+        i--;
+    }
+    return [self substringToIndex:i];
+}
+
+- (NSData *)ud_latin1Data {
+    return [self dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES] ?: [NSData data];
+}
+
+- (NSData *)ud_latin1Buffer {
+    NSMutableData *bytes = [[self ud_latin1Data] mutableCopy];
+    [bytes appendBytes:"" length:1];
+    return bytes;
+}
+
++ (NSString *)ud_stringWithLatin1:(const char *)bytes {
+    return [NSString stringWithCString:bytes ? bytes : "" encoding:NSISOLatin1StringEncoding] ?: @"";
+}
+
+@end

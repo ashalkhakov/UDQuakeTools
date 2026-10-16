@@ -54,7 +54,9 @@ typedef struct {
     float viewOrigin[3];
     float viewAxis[3][3];
     float projX, projY;      // the half picture over tan( half fov )
+    BOOL guiView;            // EmitFullScreen's: qglOrtho( 0, 640, 480, 0, 0, 1 )
 }
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *sortOverrides;
 @property (nonatomic, strong, nullable) idDeclManager *declManager;
 @property (nonatomic, strong, nullable) idFileSystem *fileSystem;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UDMaterialParser *> *materials;
@@ -76,6 +78,7 @@ typedef struct {
         _fileSystem = fileSystem;
         _materials = [NSMutableDictionary dictionary];
         _images = [NSMutableDictionary dictionary];
+        _sortOverrides = [NSMutableDictionary dictionary];
         pixels = calloc( (size_t)( _width * _height * 4 ), sizeof( float ) );
         float origin[3] = { 0, 0, 0 };
         float axis[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
@@ -88,7 +91,38 @@ typedef struct {
     free( pixels );
 }
 
+- (void)resizeToWidth:(int)width height:(int)height {
+    width = MAX( width, 1 );
+    height = MAX( height, 1 );
+    if ( width == _width && height == _height ) {
+        return;
+    }
+    free( pixels );
+    _width = width;
+    _height = height;
+    pixels = calloc( (size_t)( _width * _height * 4 ), sizeof( float ) );
+    if ( !guiView ) {
+        float halfX = self.width * 0.5f / projX;
+        float fovX = atanf( halfX ) * 2.0f * 180.0f / (float)M_PI;
+        [self setViewOrigin:viewOrigin axis:viewAxis fovX:fovX];
+    }
+}
+
+- (void)setGuiView {
+    guiView = YES;
+}
+
+- (void)setSort:(float)sort forMaterial:(NSString *)name {
+    self.sortOverrides[name] = @( sort );
+}
+
+- (float)sortOfMaterial:(NSString *)name {
+    NSNumber *sort = self.sortOverrides[name];
+    return sort != nil ? sort.floatValue : [self materialNamed:name].sort;
+}
+
 - (void)setViewOrigin:(const float [3])origin axis:(const float [3][3])axis fovX:(float)fovX {
+    guiView = NO;
     memcpy( viewOrigin, origin, sizeof( viewOrigin ) );
     memcpy( viewAxis, axis, sizeof( viewAxis ) );
     float halfX = tanf( fovX * 0.5f * (float)M_PI / 180.0f );
@@ -168,6 +202,10 @@ idMaterial::SetDefaultText
     return image == [NSNull null] ? nil : image;
 }
 
+- (void)setImage:(UDImage *)image forName:(NSString *)name {
+    self.images[name] = image;
+}
+
 #pragma mark - GL's part
 
 /// A texel of @a w × @a h RGBA @a data at ( @a s, @a t ), bilinear, as
@@ -239,6 +277,20 @@ static float UDBlendFactor( int bits, BOOL source, int channel, const float src[
 
 /// A vertex in the picture; NO behind the view.
 - (BOOL)project:(const UDDrawVert *)vert texture:(const float [6])matrix vertexColor:(int)vertexColor into:(UDScreenVert *)out {
+    if ( guiView ) {
+        // the 640 x 480 virtual screen, stretched over the picture
+        out->invW = 1.0f;
+        out->x = vert->xyz[0] * self.width / 640.0f;
+        out->y = vert->xyz[1] * self.height / 480.0f;
+        out->s = matrix[0] * vert->st[0] + matrix[1] * vert->st[1] + matrix[2];
+        out->t = matrix[3] * vert->st[0] + matrix[4] * vert->st[1] + matrix[5];
+        for ( int k = 0; k < 4; k++ ) {
+            float c = vert->color[k] / 255.0f;
+            float v = vertexColor == 2 && k < 3 ? 1 - c : vertexColor == 0 ? 1 : c;
+            if ( k == 0 ) out->r = v; else if ( k == 1 ) out->g = v; else if ( k == 2 ) out->b = v; else out->a = v;
+        }
+        return YES;
+    }
     float d[3] = { vert->xyz[0] - viewOrigin[0], vert->xyz[1] - viewOrigin[1], vert->xyz[2] - viewOrigin[2] };
     float z = d[0] * viewAxis[0][0] + d[1] * viewAxis[0][1] + d[2] * viewAxis[0][2];
     if ( z < 1.0f ) return NO;                                    // the near plane
@@ -280,6 +332,9 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
     minX = MAX( minX, 0 ); minY = MAX( minY, 0 );
     maxX = MIN( maxX, self.width - 1 ); maxY = MIN( maxY, self.height - 1 );
     int srcBits = drawStateBits & UDGLSSrcBlendBits, dstBits = drawStateBits & UDGLSDstBlendBits;
+    // GL_State's glColorMask: GLS_REDMASK, _GREENMASK, _BLUEMASK, _ALPHAMASK
+    const bool writes[4] = { !( drawStateBits & 0x00000200 ), !( drawStateBits & 0x00000400 ),
+                             !( drawStateBits & 0x00000800 ), !( drawStateBits & 0x00001000 ) };
     for ( int y = minY; y <= maxY; y++ ) {
         for ( int x = minX; x <= maxX; x++ ) {
             // the pixel's center, a hair off: a pixel on an edge two
@@ -313,7 +368,11 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
                 float value = src[k] * UDBlendFactor( srcBits, YES, k, src, dst ) + dst[k] * UDBlendFactor( dstBits, NO, k, src, dst );
                 result[k] = value < 0 ? 0 : value > 1 ? 1 : value;
             }
-            memcpy( dst, result, sizeof( result ) );
+            for ( int k = 0; k < 4; k++ ) {
+                if ( writes[k] ) {
+                    dst[k] = result[k];
+                }
+            }
         }
     }
 }
@@ -349,9 +408,9 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
     // the engine's order: by the material's sort, stable (an insertion sort)
     NSMutableArray<UDParticleSurface *> *sorted = [NSMutableArray arrayWithCapacity:surfaces.count];
     for ( UDParticleSurface *surf in surfaces ) {
-        float key = [self materialNamed:surf.material].sort;
+        float key = [self sortOfMaterial:surf.material];
         NSUInteger at = sorted.count;
-        while ( at > 0 && [self materialNamed:sorted[at - 1].material].sort > key ) at--;
+        while ( at > 0 && [self sortOfMaterial:sorted[at - 1].material] > key ) at--;
         [sorted insertObject:surf atIndex:at];
     }
     for ( UDParticleSurface *surf in sorted ) {
@@ -361,7 +420,7 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
 
 - (void)drawSurface:(UDParticleSurface *)surf time:(float)time shaderParms:(const float *)shaderParms {
     UDMaterialParser *shader = [self materialNamed:surf.material];
-    if ( surf.numVerts < 4 ) {
+    if ( surf.indexes ? surf.numIndexes < 3 : surf.numVerts < 4 ) {
         return;
     }
     // the expressions for conditionals / color / texcoords
@@ -423,9 +482,19 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
         // color is the second unit's constant; without, the color itself
         int vertexColor = pStage.vertexColor;
 
-        // draw it: each quad as 0 2 3, 0 3 1
+        // draw it: its triangles; or each quad as 0 2 3, 0 3 1
         const UDDrawVert *verts = surf.verts;
-        for ( int i = 0; i + 3 < surf.numVerts; i += 4 ) {
+        const int *indexes = surf.indexes;
+        for ( int i = 0; indexes && i + 2 < surf.numIndexes; i += 3 ) {
+            UDScreenVert sv[3];
+            BOOL visible = YES;
+            for ( int k = 0; k < 3 && visible; k++ ) {
+                visible = [self project:&verts[indexes[i + k]] texture:matrix vertexColor:vertexColor into:&sv[k]];
+            }
+            if ( !visible ) continue;
+            [self drawTriangle:&sv[0] :&sv[1] :&sv[2] image:image repeat:pStage.repeat constant:color drawStateBits:pStage.drawStateBits];
+        }
+        for ( int i = 0; !indexes && i + 3 < surf.numVerts; i += 4 ) {
             UDScreenVert sv[4];
             BOOL visible = YES;
             for ( int k = 0; k < 4 && visible; k++ ) {

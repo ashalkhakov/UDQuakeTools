@@ -232,7 +232,7 @@ static NSString *baseFolder;
     NSString *result = [[NSString alloc] initWithFormat:format arguments:ap];
     va_end(ap);
 
-    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @YES}];
+    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @YES, @"file": self->filename ?: @""}];
 
     if ( self->flags & LEXFL_NOERRORS ) {
         return YES;
@@ -263,7 +263,7 @@ static NSString *baseFolder;
     NSString *result = [[NSString alloc] initWithFormat:format arguments:ap];
     va_end(ap);
 
-    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @NO}];
+    [self.diagnostics addObject:@{@"line": @(self->line), @"message": result, @"error": @NO, @"file": self->filename ?: @""}];
 
     if (self->flags & LEXFL_NOWARNINGS ) {
         return;

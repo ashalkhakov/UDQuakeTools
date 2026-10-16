@@ -473,14 +473,6 @@ static const infoParm_t    infoParms[] = {
 
 static const int numInfoParms = sizeof(infoParms) / sizeof (infoParms[0]);
 
-static BOOL UDTokenIs( const idToken *token, const char *text ) {
-    return !strcmp( token->text, text );
-}
-
-static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
-    return !strcasecmp( token->text, text );
-}
-
 #pragma mark - The text the parse reads
 
 @interface UDMaterialTextNode ()

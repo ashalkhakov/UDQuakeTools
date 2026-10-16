@@ -232,6 +232,10 @@ typedef enum {
 -(idDeclBase *)findType:(declType_t)type name:(NSString *)name error:(NSError **)error;
 
 -(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name;
+
+// MakeNameCanonical: the name a decl is looked up by (lowercase, backslashes
+// made slashes, its extension off).
++(NSMutableString *)makeCanonicalName:(NSString *)name;
 -(idDeclBase *)findDeclWithoutParsing:(declType_t)type name:(NSString *)name makeDefault:(BOOL)makeDefault;
 
 // The complete lists of decls can be walked to populate editor browsers.

@@ -10,6 +10,7 @@
  * seeds it.
  */
 
+#import "idMath.h"
 #import "UDFXModel.h"
 #import "UDDeclCodec.h"
 #import "UDDeclFX.h"
@@ -84,14 +85,7 @@ typedef struct {
     float       pct;
 } idFXLocalAction;
 
-#pragma mark - idRandom
-
-typedef struct { int seed; } idRandom;
-
-static float idRandom_RandomFloat( idRandom *r ) {
-    r->seed = 69069 * r->seed + 1;
-    return ( ( r->seed & 0x7fff ) / ( float )( 0x7fff + 1 ) );
-}
+// idRandom: idMath.h's
 
 #pragma mark - idMath, idVec3, idAngles
 

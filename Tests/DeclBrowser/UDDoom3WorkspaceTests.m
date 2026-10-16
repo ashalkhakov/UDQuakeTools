@@ -15,6 +15,8 @@
 #import "UDWorkspaceDocument.h"
 #import "UDBaseDocument.h"
 #import "idDeclManager.h"
+#import "idUserInterface.h"
+#import "idGuiModel.h"
 
 /**
  * The Decl Browser against a real Doom 3 install (see UDDoom3InstallPath:
@@ -429,6 +431,41 @@
     }
     XCTAssertGreaterThan(checked, 10U, @"figures whose meshes retail has");
     XCTAssertEqualObjects(missing, @[], @"the joints of each figure's model, as LoadModel reads them");
+}
+
+- (void)testEveryRetailGuiLoadsAndDraws {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
+    [manager managerInit];
+    idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
+    NSUInteger guis = 0;
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    for (NSString *name in list.list) {
+        @autoreleasepool {
+            idUserInterfaceLocal *gui = [manager allocGui];
+            if (![gui initFromFile:name]) {
+                [problems addObject:[NSString stringWithFormat:@"%@: did not load", name]];
+            }
+            for (NSDictionary *d in gui.diagnostics) {
+                [problems addObject:[NSString stringWithFormat:@"%@: %@:%@ %@", name, d[@"file"], d[@"line"], d[@"message"]]];
+            }
+            [gui activate:YES time:0];
+            [manager.guiModel clear];
+            [gui redraw:1000];
+            [manager.guiModel emitFullScreen];
+            if ([name isEqualToString:@"guis/mainmenu.gui"]) {
+                XCTAssertNotNil([[gui getDesktop] findChildByName:@"LineH1"], @"the main menu's #include is read");
+            }
+            [manager deAlloc:gui];
+            guis++;
+        }
+    }
+    XCTAssertGreaterThan(guis, 500U, @"the retail GUIs are listed");
+    XCTAssertEqual(problems.count, 0U, @"idWindow::Parse reads them all: %@", problems);
 }
 
 #pragma mark - Editing

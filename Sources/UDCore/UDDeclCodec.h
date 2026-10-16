@@ -32,6 +32,11 @@ idLexer * _Nullable UDDeclCodecLexer(NSData * _Nullable text, NSString * _Nullab
                                     int lineNum, idFileSystem * _Nullable fileSystem, NSError * _Nullable * _Nullable error);
 
 NSString *UDTokenString(const idToken *token);
+/// The token's bytes as the engine's Latin-1 text (a GUI's strings).
+NSString *UDTokenLatin1String(const idToken *token);
+/// token == text, token.Icmp( text ) == 0
+BOOL UDTokenIs(const idToken *token, const char *text);
+BOOL UDTokenIcmp(const idToken *token, const char *text);
 void UDAppendQuoted(NSMutableString *out, NSString *key, NSString * _Nullable value);
 void UDAppendQuotedEscaped(NSMutableString *out, NSString *key, NSString * _Nullable value);
 NSString * _Nullable UDStringValue(id _Nullable values, NSString *key);

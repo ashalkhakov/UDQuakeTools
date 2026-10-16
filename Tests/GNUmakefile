@@ -23,6 +23,7 @@ UDQuakeToolsTests_OBJC_FILES = \
     idFileSystemTests.m \
     idDeclManagerTests.m \
     idDeclFileWriteTests.m \
+    idUserInterfaceTests.m \
     UDDeclTextCheckerTests.m \
     UDDeclIncrementalStoreTests.m \
     UDDeclCodecTests.m \

@@ -439,6 +439,7 @@
 		CECEB2F63018C04600F88078 /* UDEndian.h in Headers */ = {isa = PBXBuildFile; fileRef = CECEB2F53018C04300F88078 /* UDEndian.h */; };
 		CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */; };
 		CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F930190F8400F88078 /* idDeclManagerTests.m */; };
+		CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D940108D00B900E3722F5781 /* idUserInterfaceTests.m */; };
 		CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = CED0148A302DDCA2009517DE /* UDBitMsg.h */; };
 		CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED0148B302DDCA2009517DE /* UDBitMsg.m */; };
 		CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
@@ -509,6 +510,26 @@
 		BAE673DC0103B476A1F7AFB7 /* UDSoftwareRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */; };
 		C825B09B3DCB4352E26E1E78 /* UDFXModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 091AA4BB439C1C4F99491AFF /* UDFXModel.h */; };
 		5CE0592AB3401285E17CB225 /* UDARBProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 4373BA33DA044F471BEF3F84 /* UDARBProgram.h */; };
+		FE7248A09DAE35AC620A94AB /* idRenderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = E5B38B30EC8C8B531C25578F /* idRenderWindow.h */; };
+		D2D4F78A62053FBC28232E4D /* idMarkerWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = A4D2E7EAF5309DC24CB4FC78 /* idMarkerWindow.h */; };
+		C13E0FB5FAD30F00FD3933D4 /* idFieldWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F108086491DE24B19C0EEAC4 /* idFieldWindow.h */; };
+		E9F64CBFD29F81F570A3392E /* idBindWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */; };
+		9D6354400A7E6CD43AE55093 /* idListWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 56E78D01ADB0C5CD2073E4FB /* idListWindow.h */; };
+		4DEB17C0D26961ED197CB455 /* idChoiceWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 49448419A78E96B080ED7EB0 /* idChoiceWindow.h */; };
+		48115E435BF7661989F7EAB6 /* idEditWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 48D4A6A4B535E92C7C4E63BE /* idEditWindow.h */; };
+		4E18C44BB393C597DD30E954 /* idSliderWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EB5F1B522125C48A8E51171 /* idSliderWindow.h */; };
+		EB8CF2D704CB991D53084636 /* idUserInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 733E795D12B9FE65BC2D3275 /* idUserInterface.h */; };
+		E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */; };
+		7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */ = {isa = PBXBuildFile; fileRef = A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */; };
+		14CC3EF91B74FD716076483C /* idWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBE249827AAF111537E815F /* idWindow.h */; };
+		CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CB740118B731208062C3B6B /* idGuiScript.h */; };
+		F7591715089EA88330F0827A /* idRegExp.h in Headers */ = {isa = PBXBuildFile; fileRef = 53049CA0968E0953B66F23CE /* idRegExp.h */; };
+		1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B34F3D384DF609685676F89 /* idWinVar.h */; };
+		713E5322772E5EE5B5728E38 /* idCVarSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */; };
+		DDE31DC5AAD1756E9C22D4B5 /* idLangDict.h in Headers */ = {isa = PBXBuildFile; fileRef = C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */; };
+		EF88F042BC708D757173477B /* idDict.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C8B3721B67B69644503E42C /* idDict.h */; };
+		07292F50A723010BDA7A8E1C /* idStrPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 40202AC4B23060A21F17842D /* idStrPool.h */; };
+		E8FEA4EE1F8DDB31EC7792F9 /* idMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 1476EE829F45453D38F3147C /* idMath.h */; };
 		CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D7A3E79A627C2E068122604 /* UDParticleModel.h */; };
 		50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */; };
 		47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = A1003F1D0030C0B804080444 /* UDMD5Mesh.h */; };
@@ -529,6 +550,27 @@
 		2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */; };
 		D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A25610E5A2219107B5F20 /* UDFXModel.m */; };
 		149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = C58B4F2531625A19ACA0B306 /* UDARBProgram.m */; };
+		91248DA27F7CA4220E9D63D7 /* idRenderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 593DBD1A5667D3799D5895EF /* idRenderWindow.m */; };
+		F24A6957E5F442C60BF8E56F /* idMarkerWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EF1E7C7C58971DFDA752CF9 /* idMarkerWindow.m */; };
+		34B1A9DC85F136BD6B35AEEF /* idFieldWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4926E895F515C0C7E959BBEE /* idFieldWindow.m */; };
+		C9BD31CF9AE1D310DF6E2CB0 /* idBindWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 48492ACABB8B95DD179FB9D8 /* idBindWindow.m */; };
+		9AA57244A4FE73A088C91CF7 /* idListWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FA67773CCD26C1673783B39 /* idListWindow.m */; };
+		D6F21723F3E8F85DFDCADB12 /* idChoiceWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C49CF5D2057311C7F2E5FCF /* idChoiceWindow.m */; };
+		792114C24F6E4AC3141E6FE4 /* idEditWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CF82039C1BDC7D0AC7D258E0 /* idEditWindow.m */; };
+		62CE3F6A1DF351D2F2F77942 /* idSliderWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C6D584F9E7158C5A57DA5C /* idSliderWindow.m */; };
+		EBBBE57818273C42978114C9 /* idUserInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */; };
+		CA2E02DD33B1C11CF37A185B /* idDeviceContext.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05ED608716DD1F61442CE3 /* idDeviceContext.m */; };
+		21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EDFA4996907856A58FD832BB /* idGuiModel.m */; };
+		71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */; };
+		FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */; };
+		300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */ = {isa = PBXBuildFile; fileRef = F08015F811AF8060B27F068B /* idGuiScript.m */; };
+		8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */ = {isa = PBXBuildFile; fileRef = CAC3D29085F68079F61091E9 /* idRegExp.m */; };
+		5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */ = {isa = PBXBuildFile; fileRef = D20D58546873E10F1A43336C /* idWinVar.m */; };
+		3C670BBE25910D48BAC6BC1E /* idCVarSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */; };
+		9AD721BAAC3F29C3E9E2C99B /* idLangDict.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DD1C51B1D932B49224CDC /* idLangDict.m */; };
+		A127A7D61121CD580996284B /* idDict.m in Sources */ = {isa = PBXBuildFile; fileRef = 106FB3A2BE4BE631C4F88A33 /* idDict.m */; };
+		14D8F6216E794E9563A7A255 /* idStrPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 31854F6DA3A3B3F7D25191B0 /* idStrPool.m */; };
+		00910D7B86E6E51C370F1408 /* idMath.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAE08FD19BF8E859D320005 /* idMath.m */; };
 		A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1835DE984890C47029638F55 /* UDParticleModel.m */; };
 		61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */; };
 		C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */ = {isa = PBXBuildFile; fileRef = C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */; };
@@ -944,6 +986,7 @@
 		CECEB2F53018C04300F88078 /* UDEndian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEndian.h; sourceTree = "<group>"; };
 		CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFileSystemTests.m; sourceTree = "<group>"; };
 		CECEB2F930190F8400F88078 /* idDeclManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclManagerTests.m; sourceTree = "<group>"; };
+		D940108D00B900E3722F5781 /* idUserInterfaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idUserInterfaceTests.m; sourceTree = "<group>"; };
 		CED0148A302DDCA2009517DE /* UDBitMsg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDBitMsg.h; sourceTree = "<group>"; };
 		CED0148B302DDCA2009517DE /* UDBitMsg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBitMsg.m; sourceTree = "<group>"; };
 		CEFC59D2303572CE001E2179 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1012,6 +1055,26 @@
 		61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSoftwareRenderer.h; sourceTree = "<group>"; };
 		091AA4BB439C1C4F99491AFF /* UDFXModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFXModel.h; sourceTree = "<group>"; };
 		4373BA33DA044F471BEF3F84 /* UDARBProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDARBProgram.h; sourceTree = "<group>"; };
+		E5B38B30EC8C8B531C25578F /* idRenderWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idRenderWindow.h; sourceTree = "<group>"; };
+		A4D2E7EAF5309DC24CB4FC78 /* idMarkerWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idMarkerWindow.h; sourceTree = "<group>"; };
+		F108086491DE24B19C0EEAC4 /* idFieldWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idFieldWindow.h; sourceTree = "<group>"; };
+		A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idBindWindow.h; sourceTree = "<group>"; };
+		56E78D01ADB0C5CD2073E4FB /* idListWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idListWindow.h; sourceTree = "<group>"; };
+		49448419A78E96B080ED7EB0 /* idChoiceWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idChoiceWindow.h; sourceTree = "<group>"; };
+		48D4A6A4B535E92C7C4E63BE /* idEditWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idEditWindow.h; sourceTree = "<group>"; };
+		2EB5F1B522125C48A8E51171 /* idSliderWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idSliderWindow.h; sourceTree = "<group>"; };
+		733E795D12B9FE65BC2D3275 /* idUserInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idUserInterface.h; sourceTree = "<group>"; };
+		D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeviceContext.h; sourceTree = "<group>"; };
+		A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiModel.h; sourceTree = "<group>"; };
+		FFBE249827AAF111537E815F /* idWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindow.h; sourceTree = "<group>"; };
+		7CB740118B731208062C3B6B /* idGuiScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiScript.h; sourceTree = "<group>"; };
+		53049CA0968E0953B66F23CE /* idRegExp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idRegExp.h; sourceTree = "<group>"; };
+		9B34F3D384DF609685676F89 /* idWinVar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWinVar.h; sourceTree = "<group>"; };
+		18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idCVarSystem.h; sourceTree = "<group>"; };
+		C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idLangDict.h; sourceTree = "<group>"; };
+		3C8B3721B67B69644503E42C /* idDict.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDict.h; sourceTree = "<group>"; };
+		40202AC4B23060A21F17842D /* idStrPool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idStrPool.h; sourceTree = "<group>"; };
+		1476EE829F45453D38F3147C /* idMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idMath.h; sourceTree = "<group>"; };
 		5D7A3E79A627C2E068122604 /* UDParticleModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDParticleModel.h; sourceTree = "<group>"; };
 		C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSourceTokens.h; sourceTree = "<group>"; };
 		A1003F1D0030C0B804080444 /* UDMD5Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDMD5Mesh.h; sourceTree = "<group>"; };
@@ -1032,6 +1095,27 @@
 		A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSoftwareRenderer.m; sourceTree = "<group>"; };
 		2D8A25610E5A2219107B5F20 /* UDFXModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFXModel.m; sourceTree = "<group>"; };
 		C58B4F2531625A19ACA0B306 /* UDARBProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDARBProgram.m; sourceTree = "<group>"; };
+		593DBD1A5667D3799D5895EF /* idRenderWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idRenderWindow.m; sourceTree = "<group>"; };
+		6EF1E7C7C58971DFDA752CF9 /* idMarkerWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idMarkerWindow.m; sourceTree = "<group>"; };
+		4926E895F515C0C7E959BBEE /* idFieldWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFieldWindow.m; sourceTree = "<group>"; };
+		48492ACABB8B95DD179FB9D8 /* idBindWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idBindWindow.m; sourceTree = "<group>"; };
+		9FA67773CCD26C1673783B39 /* idListWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idListWindow.m; sourceTree = "<group>"; };
+		4C49CF5D2057311C7F2E5FCF /* idChoiceWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idChoiceWindow.m; sourceTree = "<group>"; };
+		CF82039C1BDC7D0AC7D258E0 /* idEditWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idEditWindow.m; sourceTree = "<group>"; };
+		31C6D584F9E7158C5A57DA5C /* idSliderWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idSliderWindow.m; sourceTree = "<group>"; };
+		1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idUserInterface.m; sourceTree = "<group>"; };
+		CD05ED608716DD1F61442CE3 /* idDeviceContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeviceContext.m; sourceTree = "<group>"; };
+		EDFA4996907856A58FD832BB /* idGuiModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiModel.m; sourceTree = "<group>"; };
+		D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idSimpleWindow.m; sourceTree = "<group>"; };
+		CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWindow.m; sourceTree = "<group>"; };
+		F08015F811AF8060B27F068B /* idGuiScript.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiScript.m; sourceTree = "<group>"; };
+		CAC3D29085F68079F61091E9 /* idRegExp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idRegExp.m; sourceTree = "<group>"; };
+		D20D58546873E10F1A43336C /* idWinVar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWinVar.m; sourceTree = "<group>"; };
+		BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idCVarSystem.m; sourceTree = "<group>"; };
+		0A0DD1C51B1D932B49224CDC /* idLangDict.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idLangDict.m; sourceTree = "<group>"; };
+		106FB3A2BE4BE631C4F88A33 /* idDict.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDict.m; sourceTree = "<group>"; };
+		31854F6DA3A3B3F7D25191B0 /* idStrPool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idStrPool.m; sourceTree = "<group>"; };
+		4BAE08FD19BF8E859D320005 /* idMath.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idMath.m; sourceTree = "<group>"; };
 		1835DE984890C47029638F55 /* UDParticleModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDParticleModel.m; sourceTree = "<group>"; };
 		4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSourceTokens.m; sourceTree = "<group>"; };
 		C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDMD5Mesh.m; sourceTree = "<group>"; };
@@ -1235,6 +1319,27 @@
 				A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */,
 				2D8A25610E5A2219107B5F20 /* UDFXModel.m */,
 				C58B4F2531625A19ACA0B306 /* UDARBProgram.m */,
+				593DBD1A5667D3799D5895EF /* idRenderWindow.m */,
+				6EF1E7C7C58971DFDA752CF9 /* idMarkerWindow.m */,
+				4926E895F515C0C7E959BBEE /* idFieldWindow.m */,
+				48492ACABB8B95DD179FB9D8 /* idBindWindow.m */,
+				9FA67773CCD26C1673783B39 /* idListWindow.m */,
+				4C49CF5D2057311C7F2E5FCF /* idChoiceWindow.m */,
+				CF82039C1BDC7D0AC7D258E0 /* idEditWindow.m */,
+				31C6D584F9E7158C5A57DA5C /* idSliderWindow.m */,
+				1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */,
+				CD05ED608716DD1F61442CE3 /* idDeviceContext.m */,
+				EDFA4996907856A58FD832BB /* idGuiModel.m */,
+				D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */,
+				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
+				F08015F811AF8060B27F068B /* idGuiScript.m */,
+				CAC3D29085F68079F61091E9 /* idRegExp.m */,
+				D20D58546873E10F1A43336C /* idWinVar.m */,
+				BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */,
+				0A0DD1C51B1D932B49224CDC /* idLangDict.m */,
+				106FB3A2BE4BE631C4F88A33 /* idDict.m */,
+				31854F6DA3A3B3F7D25191B0 /* idStrPool.m */,
+				4BAE08FD19BF8E859D320005 /* idMath.m */,
 				1835DE984890C47029638F55 /* UDParticleModel.m */,
 				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
 				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
@@ -1257,6 +1362,26 @@
 				61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */,
 				091AA4BB439C1C4F99491AFF /* UDFXModel.h */,
 				4373BA33DA044F471BEF3F84 /* UDARBProgram.h */,
+				E5B38B30EC8C8B531C25578F /* idRenderWindow.h */,
+				A4D2E7EAF5309DC24CB4FC78 /* idMarkerWindow.h */,
+				F108086491DE24B19C0EEAC4 /* idFieldWindow.h */,
+				A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */,
+				56E78D01ADB0C5CD2073E4FB /* idListWindow.h */,
+				49448419A78E96B080ED7EB0 /* idChoiceWindow.h */,
+				48D4A6A4B535E92C7C4E63BE /* idEditWindow.h */,
+				2EB5F1B522125C48A8E51171 /* idSliderWindow.h */,
+				733E795D12B9FE65BC2D3275 /* idUserInterface.h */,
+				D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */,
+				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
+				FFBE249827AAF111537E815F /* idWindow.h */,
+				7CB740118B731208062C3B6B /* idGuiScript.h */,
+				53049CA0968E0953B66F23CE /* idRegExp.h */,
+				9B34F3D384DF609685676F89 /* idWinVar.h */,
+				18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */,
+				C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */,
+				3C8B3721B67B69644503E42C /* idDict.h */,
+				40202AC4B23060A21F17842D /* idStrPool.h */,
+				1476EE829F45453D38F3147C /* idMath.h */,
 				5D7A3E79A627C2E068122604 /* UDParticleModel.h */,
 				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
 				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
@@ -1374,6 +1499,7 @@
 			isa = PBXGroup;
 			children = (
 				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
+				D940108D00B900E3722F5781 /* idUserInterfaceTests.m */,
 				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
 				71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */,
 				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
@@ -1646,6 +1772,26 @@
 				BAE673DC0103B476A1F7AFB7 /* UDSoftwareRenderer.h in Headers */,
 				C825B09B3DCB4352E26E1E78 /* UDFXModel.h in Headers */,
 				5CE0592AB3401285E17CB225 /* UDARBProgram.h in Headers */,
+				FE7248A09DAE35AC620A94AB /* idRenderWindow.h in Headers */,
+				D2D4F78A62053FBC28232E4D /* idMarkerWindow.h in Headers */,
+				C13E0FB5FAD30F00FD3933D4 /* idFieldWindow.h in Headers */,
+				E9F64CBFD29F81F570A3392E /* idBindWindow.h in Headers */,
+				9D6354400A7E6CD43AE55093 /* idListWindow.h in Headers */,
+				4DEB17C0D26961ED197CB455 /* idChoiceWindow.h in Headers */,
+				48115E435BF7661989F7EAB6 /* idEditWindow.h in Headers */,
+				4E18C44BB393C597DD30E954 /* idSliderWindow.h in Headers */,
+				EB8CF2D704CB991D53084636 /* idUserInterface.h in Headers */,
+				E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */,
+				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
+				14CC3EF91B74FD716076483C /* idWindow.h in Headers */,
+				CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */,
+				F7591715089EA88330F0827A /* idRegExp.h in Headers */,
+				1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */,
+				713E5322772E5EE5B5728E38 /* idCVarSystem.h in Headers */,
+				DDE31DC5AAD1756E9C22D4B5 /* idLangDict.h in Headers */,
+				EF88F042BC708D757173477B /* idDict.h in Headers */,
+				07292F50A723010BDA7A8E1C /* idStrPool.h in Headers */,
+				E8FEA4EE1F8DDB31EC7792F9 /* idMath.h in Headers */,
 				CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */,
 				50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */,
 				47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */,
@@ -2020,6 +2166,7 @@
 				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
 				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
 				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
+				CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */,
 				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
 				A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */,
 				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
@@ -2055,6 +2202,27 @@
 				2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */,
 				D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */,
 				149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */,
+				91248DA27F7CA4220E9D63D7 /* idRenderWindow.m in Sources */,
+				F24A6957E5F442C60BF8E56F /* idMarkerWindow.m in Sources */,
+				34B1A9DC85F136BD6B35AEEF /* idFieldWindow.m in Sources */,
+				C9BD31CF9AE1D310DF6E2CB0 /* idBindWindow.m in Sources */,
+				9AA57244A4FE73A088C91CF7 /* idListWindow.m in Sources */,
+				D6F21723F3E8F85DFDCADB12 /* idChoiceWindow.m in Sources */,
+				792114C24F6E4AC3141E6FE4 /* idEditWindow.m in Sources */,
+				62CE3F6A1DF351D2F2F77942 /* idSliderWindow.m in Sources */,
+				EBBBE57818273C42978114C9 /* idUserInterface.m in Sources */,
+				CA2E02DD33B1C11CF37A185B /* idDeviceContext.m in Sources */,
+				21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */,
+				71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */,
+				FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */,
+				300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */,
+				8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */,
+				5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */,
+				3C670BBE25910D48BAC6BC1E /* idCVarSystem.m in Sources */,
+				9AD721BAAC3F29C3E9E2C99B /* idLangDict.m in Sources */,
+				A127A7D61121CD580996284B /* idDict.m in Sources */,
+				14D8F6216E794E9563A7A255 /* idStrPool.m in Sources */,
+				00910D7B86E6E51C370F1408 /* idMath.m in Sources */,
 				A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */,
 				61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */,
 				C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */,

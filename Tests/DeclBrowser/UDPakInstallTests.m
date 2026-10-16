@@ -253,6 +253,8 @@ static NSString *const UDEventsScript =
     XCTAssertNotNil(settings, @"a new workspace asks for its settings");
     XCTAssertTrue(settings.window.isVisible);
     XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
+    XCTAssertFalse(settings.window.isReleasedWhenClosed,
+                   @"its window is its controller's: not released when closed (GNUstep's controllers release a document's)");
     return settings;
 }
 
@@ -290,6 +292,8 @@ static NSString *const UDEventsScript =
     XCTAssertNotNil(settings);
     XCTAssertTrue(settings.window.isVisible);
     XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
+    XCTAssertFalse(settings.window.isReleasedWhenClosed,
+                   @"its window is its controller's: not released when closed (GNUstep's controllers release a document's)");
     return settings;
 }
 
@@ -549,6 +553,31 @@ static NSString *const UDEventsScript =
     NSString *text = textView.string;
     for (NSUInteger i = 0; i < textView.selectedRange.location; i++) if ([text characterAtIndex:i] == '\n') line++;
     XCTAssertEqual((NSInteger)line, error.line, @"a click goes to the error's line");
+}
+
+/// Find, and Jump to Line, in a script, from the menu (its items' selectors
+/// by name, as the XIB has them): UDCodeKit's find bar and line field, as
+/// in UDCode.
+- (void)testFindAndJumpToLineInAScript {
+    UDWorkspaceWindowController *controller = [self openInstall];
+    if (controller == nil) return;
+    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
+    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
+    XCTAssertTrue([textView.window makeFirstResponder:textView]);
+    UDCodeEditorViewController *editor = [script valueForKey:@"editor"];
+
+    NSMenuItem *find = [[NSMenuItem alloc] initWithTitle:@"Find\u2026" action:NSSelectorFromString(@"performFindPanelAction:") keyEquivalent:@"f"];
+    find.tag = 1;
+    XCTAssertTrue([textView validateMenuItem:find], @"Find is on");
+    [textView performFindPanelAction:find];
+    XCTAssertTrue(editor.isFindBarVisible, @"the find bar shows");
+
+    NSMenuItem *jump = [[NSMenuItem alloc] initWithTitle:@"Jump to Line\u2026" action:NSSelectorFromString(@"jumpToLine:") keyEquivalent:@"l"];
+    XCTAssertTrue([textView validateMenuItem:jump], @"Jump to Line is on");
+    [textView jumpToLine:jump];
+    XCTAssertTrue(editor.isJumpToLineVisible, @"its field shows");
+    [editor selectLine:2];
+    XCTAssertEqualObjects([textView.string substringWithRange:textView.selectedRange], @"\tsys.println( \"udfix\" );");
 }
 
 /// A name being typed brings up what it can be, as Xcode does; typing in a

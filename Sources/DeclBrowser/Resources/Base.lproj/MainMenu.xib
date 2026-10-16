@@ -225,6 +225,11 @@
                                                 <action selector="centerSelectionInVisibleArea:" target="-1" id="IOG-6D-g5B"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Jump to Line…" keyEquivalent="l" id="JTL-mi-001">
+                                            <connections>
+                                                <action selector="jumpToLine:" target="-1" id="JTL-ac-001"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

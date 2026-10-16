@@ -378,6 +378,28 @@ void idStr_StripTrailingWhitespace(idStr *self) {
     }
 }
 
+BOOL idStr_IsNumericCString(const char *s) {
+    int     i;
+    BOOL    dot;
+
+    if ( *s == '-' ) {
+        s++;
+    }
+
+    dot = NO;
+    for ( i = 0; s[i]; i++ ) {
+        if ( !isdigit( (unsigned char)s[i] ) ) {
+            if ( ( s[ i ] == '.' ) && !dot ) {
+                dot = YES;
+                continue;
+            }
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
 void idStr_StripQuotes(idStr *self) {
     if (!self->len) {
         return;

@@ -167,10 +167,17 @@ In order of value against cost; LOC is the MFC original's size.
       lists; a sample the engine plays its default sound for, and an alt
       sound no shader defines, in the Issues tab. Play comes with sound
       playback through idFileSystem (Doom 3's samples are Ogg Vorbis).
-- [ ] **Particle editor** (1.7k) — decl editing over the existing stage
-      model (`UDParticleStage`): stages list, every stage parameter with
-      sliders, material picker; a 2D animated preview is possible, the 3D
-      one comes with the bridge.
+- [x] **Particle editor** (1.7k) — DialogParticleEditor's: the stages in a
+      list (AddStage's default stage, or a copy with Option), the selected
+      stage's every parameter with the dialog's sliders and their ranges,
+      the depth hack; a material the engine makes a default of and a table
+      no decl defines in the Issues tab. idDeclParticle's Parse and
+      ParseParticleStage are ported again, directly (one retail particle
+      they give up on: bfg_wallmark), and WriteStage writes it.
+- [ ] Particle preview: a 2D animated one is possible
+      (idParticleStage::ParticleOrigin and friends, ported); the 3D one
+      comes with the bridge. The material picker comes with the lookup
+      dialogs.
 - [ ] **FX editor** — fx actions (sound, light, particle, decal, model…).
 - [ ] **AF editor** (8.1k) — bodies and constraints as data (the dialog
       pages map one-to-one to inspector sections); joints from the model's

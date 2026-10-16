@@ -233,6 +233,32 @@
     }
 }
 
+- (void)testEveryRetailParticleParses {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    NSUInteger particles = 0;
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    for (idDeclBase *decl in [declManager declsOfType:DECL_PARTICLE forceParse:NO]) {
+        NSMutableData *buffer = [NSMutableData data];
+        [decl text:buffer];
+        NSString *text = [[NSString alloc] initWithBytes:buffer.bytes length:buffer.length > 0 ? buffer.length - 1 : 0
+                                                encoding:NSUTF8StringEncoding] ?: @"";
+        for (UDDeclTextProblem *problem in [UDDeclParticle ud_problemsParsingText:text name:[decl name] fileSystem:nil]) {
+            [problems addObject:[NSString stringWithFormat:@"%@: %@", [decl name], problem]];
+        }
+        particles++;
+    }
+    XCTAssertGreaterThan(particles, 500U, @"the retail particles are indexed");
+    // The one idDeclParticle::Parse gives up on, and the engine makes a
+    // default: bfg_wallmark's stage says depthHack, which only a particle
+    // may; the stage ends there, and the particle meets its "10".
+    XCTAssertEqualObjects(problems, (@[@"bfg_wallmark: error line 3: unknown token depthHack\n",
+                                       @"bfg_wallmark: warning line 3: bad token 10"]), @"%@", problems);
+}
+
 #pragma mark - Editing
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {

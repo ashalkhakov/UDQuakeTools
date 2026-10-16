@@ -9,6 +9,7 @@
 #import "UDSkinEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
 #import "UDSoundEditorViewController.h"
+#import "UDParticleEditorViewController.h"
 #ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
 #else
@@ -72,7 +73,8 @@
                           : declItem.type == DECL_TABLE ? [UDTableEditorViewController class]
                           : declItem.type == DECL_SKIN ? [UDSkinEditorViewController class]
                           : declItem.type == DECL_ENTITYDEF || declItem.type == DECL_MAPDEF ? [UDEntityDefEditorViewController class]
-                          : declItem.type == DECL_SOUND ? [UDSoundEditorViewController class] : Nil;
+                          : declItem.type == DECL_SOUND ? [UDSoundEditorViewController class]
+                          : declItem.type == DECL_PARTICLE ? [UDParticleEditorViewController class] : Nil;
         if (editorClass != Nil) {
             UDBaseEditorViewController *vc = [[editorClass alloc] init];
             vc.item = item;

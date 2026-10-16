@@ -57,20 +57,6 @@ static UDDiagnosticSource const UDSkinReferencesSource = @"references";
 
 #pragma mark - References
 
-/// A material the engine finds: a decl, one of its own ("_default"), or an
-/// image of that name, which it makes a material of.
-- (BOOL)_materialExists:(NSString *)name {
-    if ([name hasPrefix:@"_"]) return YES;
-    idDeclManager *declManager = self.workspace.declManager;
-    if ([declManager findDeclWithoutParsing:DECL_MATERIAL name:name makeDefault:NO] != nil) return YES;
-    idFileSystem *fileSystem = self.workspace.fileSystem;
-    NSString *base = name.pathExtension.length > 0 ? name.stringByDeletingPathExtension : name;
-    for (NSString *extension in @[@"tga", @"png", @"jpg", @"dds"]) {
-        if ([fileSystem readFile:[base stringByAppendingPathExtension:extension] buffer:NULL timestamp:NULL error:NULL] >= 0) return YES;
-    }
-    return NO;
-}
-
 - (void)checkReferences {
     if (self.skin == nil || self.diagnosticStore == nil) return;
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
@@ -80,7 +66,7 @@ static UDDiagnosticSource const UDSkinReferencesSource = @"references";
     for (NSUInteger row = 0; row < mappings.count; row++) {
         UDSkinMapping *mapping = mappings[row];
         for (NSString *material in @[mapping.from ?: @"", mapping.to ?: @""]) {
-            if ([material isEqualToString:@"*"] || [self _materialExists:material]) continue;
+            if ([material isEqualToString:@"*"] || [self materialExists:material]) continue;
             UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:material] column:0
                 message:[NSString stringWithFormat:@"Material “%@” is neither a decl nor an image: the engine makes it a default material", material]
                 severity:UDDiagnosticSeverityWarning source:UDSkinReferencesSource];

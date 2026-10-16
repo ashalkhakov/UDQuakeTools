@@ -265,6 +265,7 @@ static inline void idStr_StripStr(idStr *self, const char *string) {
 
 void idStr_StripTrailingWhitespace(idStr *self);                // strip trailing white space characters
 void idStr_StripQuotes(idStr *self);                            // strip quotes around string
+BOOL idStr_IsNumericCString(const char *s);                     // idStr::IsNumeric( const char *s )
 
 int idStr_Replace(idStr *self, const char *old, const char *nw);
 

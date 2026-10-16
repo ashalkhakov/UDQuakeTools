@@ -37,6 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)targetForDiagnostic:(UDDiagnosticItem *)diagnostic;
 - (void)removeDiagnosticTargets;
 
+/// A material the engine finds: a decl, one of its own ("_default"), or an
+/// image of that name, which it makes a material of. (A skin's, a particle
+/// stage's.)
+- (BOOL)materialExists:(NSString *)name;
+
 /// The line of the decl's text (1-based) where @a text first is, case
 /// ignored; 1 when it is not there. Where a diagnostic about it points.
 - (NSInteger)lineOfDeclTextContaining:(NSString *)text;

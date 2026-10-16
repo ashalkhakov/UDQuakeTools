@@ -5,6 +5,7 @@
 #import "UDDeclTextChecker.h"
 #import "UDWorkspace.h"
 #import "idDeclManager.h"
+#import "idFileSystem.h"
 #import <UDCodeKit/UDCodeKit.h>
 
 @interface UDDeclEditorViewController ()
@@ -228,6 +229,18 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
         if ([declText characterAtIndex:i] == '\n') line++;
     }
     return line;
+}
+
+- (BOOL)materialExists:(NSString *)name {
+    if ([name hasPrefix:@"_"]) return YES;
+    idDeclManager *declManager = self.workspace.declManager;
+    if ([declManager findDeclWithoutParsing:DECL_MATERIAL name:name makeDefault:NO] != nil) return YES;
+    idFileSystem *fileSystem = self.workspace.fileSystem;
+    NSString *base = name.pathExtension.length > 0 ? name.stringByDeletingPathExtension : name;
+    for (NSString *extension in @[@"tga", @"png", @"jpg", @"dds"]) {
+        if ([fileSystem readFile:[base stringByAppendingPathExtension:extension] buffer:NULL timestamp:NULL error:NULL] >= 0) return YES;
+    }
+    return NO;
 }
 
 - (void)declDidLoad {

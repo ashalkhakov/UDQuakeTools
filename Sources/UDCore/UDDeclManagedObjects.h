@@ -324,14 +324,15 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 // ---------------------------------------------------------------------------
 // UDParticleStage — a single particle stage. Deliberately NOT a Core Data
 // entity: a stage has no identity outside its owning particle, so it lives
-// as a plain KVC/KVO-compliant object inside DeclParticle's transient
-// `stages` attribute (array order == stage order in the decl text).
+// as an element of DeclParticle's transient `stages` attribute (array order
+// == stage order in the decl text): a value set through KVC (a binding's
+// edit) puts an edited copy in its place, as a table's values do.
 // Vector-ish values are stored as space-separated float strings ("x y z w");
 // parametric values (speed/rotation/size/aspect) are a table decl name plus
 // from/to floats. -init installs the engine's parse-time stage defaults.
 // ---------------------------------------------------------------------------
 
-@interface UDParticleStage : NSObject
+@interface UDParticleStage : UDDeclElement
 
 @property (nonatomic, copy, nullable) NSString *material;
 @property (nonatomic) int32_t totalParticles;
@@ -391,9 +392,8 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 
 /// The particle's stages, in decl-text order. This is a TRANSIENT modeled
 /// attribute: it is populated from the decl text on fetch and unparsed back
-/// on save. Replace the array wholesale when editing (assigning a new array
-/// marks the object updated and registers with undo); mutating a
-/// UDParticleStage in place does not mark the decl dirty by itself.
+/// on save. A stage's value set through KVC is an edit of the particle;
+/// set as a property (as the parser does) it is not.
 @property (nonatomic, copy, nullable) NSArray<UDParticleStage *> *stages;
 
 @end

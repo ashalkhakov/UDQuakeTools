@@ -7,6 +7,7 @@
 #import "UDTextEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
 #import "UDSoundEditorViewController.h"
+#import "UDParticleEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -209,24 +210,24 @@ static NSString *const UDFixtureParticles =
             [NSPredicate predicateWithFormat:@"source == 'test'"]];
 }
 
-- (void)testTestHasTheDeclsParserReadItsText {
+- (void)testTestReportsWhatTheLexerSays {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     XCTAssertEqual([self testFindingsOf:editor].count, 0U);
 
-    // A line the particle's parser does not know, typed above its depthHack.
-    NSRange depthHack = [textView.string rangeOfString:@"\tdepthHack"];
-    NSInteger line = [[textView.string substringToIndex:depthHack.location] componentsSeparatedByString:@"\n"].count;
-    [textView setSelectedRange:NSMakeRange(depthHack.location, 0)];
-    [textView insertText:@"\tsparkle\t1\n"];
+    // A string left open, typed above its duration.
+    NSRange duration = [textView.string rangeOfString:@"\t\tduration"];
+    NSInteger line = [[textView.string substringToIndex:duration.location] componentsSeparatedByString:@"\n"].count;
+    [textView setSelectedRange:NSMakeRange(duration.location, 0)];
+    [textView insertText:@"\t\tname\t\"oops\n"];
     [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
-    NSArray<UDDiagnosticItem *> *findings = [self testFindingsOf:editor];
-    XCTAssertEqual(findings.count, 1U, @"the parser's warning: %@", findings);
+    // The lexer's error, at its line (and the braces it leaves open after it).
+    NSArray<UDDiagnosticItem *> *findings = [[self testFindingsOf:editor] filteredArrayUsingPredicate:
+        [NSPredicate predicateWithFormat:@"message CONTAINS 'newline inside string'"]];
+    XCTAssertEqual(findings.count, 1U, @"the lexer's error: %@", [self testFindingsOf:editor]);
     XCTAssertEqual(findings.firstObject.line, line, @"on the line it is about");
-    XCTAssertTrue([findings.firstObject.message containsString:@"sparkle"], @"%@", findings.firstObject.message);
-    XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityWarning);
 
     [textView insertText:@" "];
     XCTAssertEqual([self testFindingsOf:editor].count, 0U, @"an edit takes what a Test found away");
@@ -235,14 +236,14 @@ static NSString *const UDFixtureParticles =
 - (void)testTestFindsABraceNeverClosed {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     NSRange last = [textView.string rangeOfString:@"}" options:NSBackwardsSearch];
     [textView setSelectedRange:last];
     [textView insertText:@""];
     [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
     NSArray<UDDiagnosticItem *> *findings = [self testFindingsOf:editor];
-    XCTAssertEqual(findings.count, 1U, @"the brace, and no parse of a decl that does not hold together: %@", findings);
+    XCTAssertEqual(findings.count, 1U, @"the brace: %@", findings);
     XCTAssertEqual(findings.firstObject.line, 1, @"where it opened");
     XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityError);
 }
@@ -398,6 +399,64 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
     NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
     XCTAssertTrue([messages containsObject:@"unknown token 'wobble'"], @"%@", messages);
+}
+
+#pragma mark - The particle editor (DialogParticleEditor)
+
+- (UDParticleEditorViewController *)openSparkIn:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDParticleEditorViewController class]], @"a particle opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDParticleEditorViewController class]] ? (UDParticleEditorViewController *)editor : nil;
+}
+
+- (void)testAParticleOpensWithItsStages {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *editor = [self openSparkIn:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
+    XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"its first stage shown");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.view]).stringValue, @"4");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"material" inView:editor.view]).stringValue, @"textures/udtest/spark");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"depthHack" inView:editor.view]).stringValue, @"0.001");
+    XCTAssertEqual(((NSSlider *)[self viewWithToolTip:@"totalParticles slider" inView:editor.view]).doubleValue, 4.0, @"its slider too");
+
+    NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
+    XCTAssertEqualObjects(messages, (@[@"Stage 0: material “textures/udtest/spark” is neither a decl nor an image: the engine makes it a default material"]));
+}
+
+- (void)testEditingAStageIsAnEditOfTheParticle {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *editor = [self openSparkIn:controller];
+    if (editor == nil) return;
+
+    id selection = editor.stagesController.selection;
+    id value = @"many";
+    XCTAssertFalse([selection validateValue:&value forKey:@"totalParticles" error:NULL], @"not a number: refused");
+    value = @"8";
+    XCTAssertTrue([selection validateValue:&value forKey:@"totalParticles" error:NULL]);
+    [selection setValue:value forKey:@"totalParticles"];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqual(editor.particle.stages.firstObject.totalParticles, 8);
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited, @"the particle is edited");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.view]).stringValue, @"8");
+
+    [editor.editorDocument.undoManager undo];
+    XCTAssertEqual(editor.particle.stages.firstObject.totalParticles, 4, @"and undone");
+    [editor.editorDocument.undoManager redo];
+
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:@selector(addOrRemoveStage:) inView:editor.view];
+    [buttons setSelectedSegment:0];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    XCTAssertEqual(editor.particle.stages.count, 2U);
+    XCTAssertEqual(editor.stagesController.selectionIndex, 1U, @"the new stage shown");
+    XCTAssertEqual(editor.particle.stages[1].totalParticles, 100, @"idParticleStage::Default's");
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"particles/udtest.prt"];
+    XCTAssertTrue([saved containsString:@"particle udtest_spark {\n\tdepthHack\t0.001000\n\t{\n\t\tcount\t\t\t\t8\n\t\tmaterial\t\t\ttextures/udtest/spark\n"],
+                  @"as idDeclParticle::WriteStage writes it: %@", saved);
+    XCTAssertTrue([saved containsString:@"\t\tcount\t\t\t\t100\n\t\tmaterial\t\t\t_default\n"], @"%@", saved);
 }
 
 @end

@@ -14,6 +14,7 @@
 #import "UDDeclIncrementalStore.h"
 #import "idLexer.h"
 #import "idToken.h"
+#import "idStr.h"
 #import "UDDeclTextChecker.h"
 
 #pragma mark - Entity name convention
@@ -1947,314 +1948,313 @@ static int UDParticleDescIndex(const UDParticleParmDesc_t *table, int tableCount
     return self;
 }
 
-@end
-
-// Reads the remaining float parameters on the current line. Stops at (and
-// unreads) the first token that is not a number: real .prt files sometimes
-// put the stage's closing brace or the next keyword on the same line, and
-// consuming it here desynchronizes the stage parser — which is exactly how
-// spurious "unknown token depthHack" errors appear.
-static int UDParticleParseParms(idLexer *src, float *parms, int maxParms, NSError **error) {
-    memset(parms, 0, maxParms * sizeof(*parms));
-
-    idToken token;
-    idToken_Init(&token);
-
-    int count = 0;
-    while ([src readTokenOnLine:&token error:error]) {
-        if (!strcmp(token.text, "-")) {
-            if (![src readTokenOnLine:&token error:error]) {
-                break;
-            }
-            idToken_StripQuotes(&token);
-            if (count < maxParms) {
-                parms[count] = -atof(token.text);
-            }
-            count++;
-            continue;
+/// The stage's values: its declared properties.
++ (NSArray<NSString *> *)ud_valueKeys {
+    static NSArray<NSString *> *keys;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        NSMutableArray<NSString *> *names = [NSMutableArray array];
+        unsigned int count = 0;
+        objc_property_t *properties = class_copyPropertyList([UDParticleStage class], &count);
+        for (unsigned int i = 0; i < count; i++) {
+            [names addObject:[NSString stringWithUTF8String:property_getName(properties[i])]];
         }
-
-        // peek inside quotes for the numeric check, but unread the token
-        // untouched if it turns out not to be a parameter
-        char first = token.text[0];
-        if (first == '"' || first == '\'') {
-            first = token.text[1];
-        }
-        const BOOL numeric = (first >= '0' && first <= '9') || first == '.' || first == '+';
-        if (!numeric) {
-            [src unreadToken:&token error:error];
-            break;
-        }
-
-        idToken_StripQuotes(&token);
-        if (count < maxParms) {
-            parms[count] = atof(token.text);
-        }
-        count++;
-    }
-    return count < maxParms ? count : maxParms;
+        free(properties);
+        keys = [names copy];
+    });
+    return keys;
 }
 
-// Parses `<table>` or `<from> [to <to>]` into <prefix>Table / <prefix>From /
-// <prefix>To keys. Numbers are often quoted in .prt files written by the
-// particle editor, so quotes are stripped before classification.
-static BOOL UDParticleParseParametric(idLexer *src, UDParticleStage *stage, NSString *prefix, NSError **error) {
+- (id)copyWithZone:(NSZone *)zone {
+    UDParticleStage *copy = [[[self class] alloc] init];
+    for (NSString *key in [[self class] ud_valueKeys]) {
+        [copy ud_setValue:[self valueForKey:key] forKey:key];
+    }
+    return copy;
+}
+
+- (void)ud_setValue:(id)value forKey:(NSString *)key {
+    [super setValue:value forKey:key];
+}
+
+// A binding's edit: an edited copy in its place, so that it is the
+// particle's (undoable, the particle updated).
+- (void)setValue:(id)value forKey:(NSString *)key {
+    if (self.ud_owner == nil || ![[[self class] ud_valueKeys] containsObject:key]) {
+        [super setValue:value forKey:key];
+        return;
+    }
+    UDParticleStage *edited = [self copy];
+    [edited ud_setValue:value forKey:key];
+    if (![self ud_replaceInOwnerWith:edited]) {
+        [super setValue:value forKey:key];
+    }
+}
+
+// A number typed in: a number, not text that KVC would make 0.
+- (BOOL)validateValue:(id *)ioValue forKey:(NSString *)key error:(NSError **)error {
+    objc_property_t property = class_getProperty([UDParticleStage class], key.UTF8String);
+    const char *type = property != NULL ? property_getAttributes(property) : NULL;
+    BOOL number = type != NULL && (type[1] == 'f' || type[1] == 'i');
+    if (!number || ![*ioValue isKindOfClass:[NSString class]]) {
+        return [super validateValue:ioValue forKey:key error:error];
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:[*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+    double d = 0;
+    int i = 0;
+    BOOL scanned = type[1] == 'i' ? [scanner scanInt:&i] : [scanner scanDouble:&d];
+    if (scanned && scanner.isAtEnd) {
+        *ioValue = type[1] == 'i' ? @(i) : @((float)d);
+        return YES;
+    }
+    if (error != NULL) {
+        *error = [NSError errorWithDomain:@"UDParticleStage" code:1 userInfo:@{NSLocalizedDescriptionKey:
+            [NSString stringWithFormat:@"%@ is a %@number.", key, type[1] == 'i' ? @"whole " : @""]}];
+    }
+    return NO;
+}
+
+@end
+
+/// The floats @a parms holds, as a stage's parameter string.
+static NSString *UDParticleParmString(const float *parms, int count) {
+    NSMutableArray<NSString *> *values = [NSMutableArray arrayWithCapacity:count];
+    for (int i = 0; i < count; i++) {
+        [values addObject:[NSString stringWithFormat:@"%g", parms[i]]];
+    }
+    return [values componentsJoinedByString:@" "];
+}
+
+// idDeclParticle::ParseParms: every token left on the line, as atof reads it.
+static void UDParticleParseParms(idLexer *src, float *parms, int maxParms) {
     idToken token;
     idToken_Init(&token);
-
-    if (![src readToken:&token error:error]) {
-        return NO;
+    memset( parms, 0, maxParms * sizeof( *parms ) );
+    int count = 0;
+    while( 1 ) {
+        if ( ![src readTokenOnLine:&token error:NULL] ) {
+            return;
+        }
+        if ( count == maxParms ) {
+            [src error:NULL format:@"too many parms on line"];
+            return;
+        }
+        idToken_StripQuotes( &token );
+        parms[count] = atof( token.text );
+        count++;
     }
-    idToken_StripQuotes(&token);
+}
 
-    const char first = token.text[0];
-    const BOOL numeric = (first >= '0' && first <= '9') || first == '-' || first == '+' || first == '.';
-
+// idDeclParticle::ParseParametric, into <prefix>Table / From / To.
+static void UDParticleParseParametric(idLexer *src, UDParticleStage *stage, NSString *prefix) {
+    idToken token;
+    idToken_Init(&token);
     NSString *tableKey = [prefix stringByAppendingString:@"Table"];
     NSString *fromKey = [prefix stringByAppendingString:@"From"];
     NSString *toKey = [prefix stringByAppendingString:@"To"];
 
-    if (!numeric) {
-        [stage setValue:UDTokenString(&token) forKey:tableKey];
-        return YES;
+    [stage setValue:nil forKey:tableKey];
+    [stage setValue:@0.0f forKey:fromKey];
+    [stage setValue:@0.0f forKey:toKey];
+
+    if ( ![src readToken:&token error:NULL] ) {
+        [src error:NULL format:@"not enough parameters"];
+        return;
     }
 
-    float from = atof(token.text);
-    float to = from;
-    if ([src readToken:&token error:error]) {
-        if (!strcasecmp(token.text, "to")) {
-            if (![src readToken:&token error:error]) {
-                return NO;
+    if ( idStr_IsNumericCString( token.text ) ) {
+        // can have a to + 2nd parm
+        float from = atof( token.text );
+        [stage setValue:@(from) forKey:fromKey];
+        [stage setValue:@(from) forKey:toKey];
+        if ( [src readToken:&token error:NULL] ) {
+            if ( !strcasecmp( token.text, "to" ) ) {
+                if ( ![src readToken:&token error:NULL] ) {
+                    [src error:NULL format:@"missing second parameter"];
+                    return;
+                }
+                [stage setValue:@((float)atof( token.text )) forKey:toKey];
+            } else {
+                [src unreadToken:&token error:NULL];
             }
-            idToken_StripQuotes(&token);
-            to = atof(token.text);
-        } else {
-            [src unreadToken:&token error:error];
         }
+    } else {
+        // table
+        [stage setValue:UDTokenString(&token) forKey:tableKey];
     }
-    [stage setValue:nil forKey:tableKey];
-    [stage setValue:@(from) forKey:fromKey];
-    [stage setValue:@(to) forKey:toKey];
-    return YES;
 }
 
-static UDParticleStage *UDParticleParseStage(idLexer *src, NSString *name, NSError **error) {
-    UDParticleStage *stage = [[UDParticleStage alloc] init];
-
+// idDeclParticle::ParseParticleStage. It always gives a stage: an error
+// (an unknown token, a bad type) ends it with what it has read.
+static UDParticleStage *UDParticleParseStage(idLexer *src, NSString *name) {
     idToken token;
     idToken_Init(&token);
-
+    UDParticleStage *stage = [[UDParticleStage alloc] init];           // Default()
     float parms[8];
 
     while (1) {
-        if ([src hadError]) {
+        if ( [src hadError] ) {
             break;
         }
-        if (![src readToken:&token error:error]) {
+        if ( ![src readToken:&token error:NULL] ) {
             break;
         }
-        if (!strcasecmp(token.text, "}")) {
+        if ( !strcasecmp( token.text, "}" ) ) {
             break;
         }
-
-        if (!strcasecmp(token.text, "material")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
-            }
+        if ( !strcasecmp( token.text, "material" ) ) {
+            [src readToken:&token error:NULL];
             stage.material = UDTokenString(&token);
             continue;
         }
-        if (!strcasecmp(token.text, "count")) {
+        if ( !strcasecmp( token.text, "count" ) ) {
             int i = 0;
-            if (![src parseInt:&i error:error]) {
-                return nil;
-            }
+            [src parseInt:&i error:NULL];
             stage.totalParticles = i;
             continue;
         }
-
-        static const struct { const char *keyword; const char *key; } floatFields[] = {
-            { "time", "particleLife" },
-            { "cycles", "cycles" },
-            { "timeOffset", "timeOffset" },
-            { "deadTime", "deadTime" },
-            { "bunching", "spawnBunching" },
-            { "angle", "initialAngle" },
-            { "fadeIn", "fadeInFraction" },
-            { "fadeOut", "fadeOutFraction" },
-            { "fadeIndex", "fadeIndexFraction" },
-            { "animationRate", "animationRate" },
-            { "boundsExpansion", "boundsExpansion" },
-            { "softeningRadius", "softeningRadius" },
+        static const struct { const char *keyword; const char *key; } floats[] = {
+            { "time", "particleLife" }, { "cycles", "cycles" }, { "timeOffset", "timeOffset" },
+            { "deadTime", "deadTime" }, { "bunching", "spawnBunching" }, { "angle", "initialAngle" },
+            { "fadeIn", "fadeInFraction" }, { "fadeOut", "fadeOutFraction" }, { "fadeIndex", "fadeIndexFraction" },
+            { "animationRate", "animationRate" }, { "boundsExpansion", "boundsExpansion" },
         };
         BOOL matched = NO;
-        for (size_t i = 0; i < sizeof(floatFields) / sizeof(floatFields[0]); i++) {
-            if (!strcasecmp(token.text, floatFields[i].keyword)) {
+        for ( size_t i = 0; i < sizeof( floats ) / sizeof( floats[0] ); i++ ) {
+            if ( !strcasecmp( token.text, floats[i].keyword ) ) {
                 float f = 0.0f;
-                if (![src parseFloat:&f error:error]) {
-                    return nil;
-                }
-                [stage setValue:@(f) forKey:[NSString stringWithUTF8String:floatFields[i].key]];
+                [src parseFloat:&f error:NULL];
+                [stage setValue:@(f) forKey:[NSString stringWithUTF8String:floats[i].key]];
                 matched = YES;
                 break;
             }
         }
-        if (matched) {
+        if ( matched ) {
             continue;
         }
-
-        if (!strcasecmp(token.text, "animationFrames")) {
-            int i = 0;
-            if (![src parseInt:&i error:error]) {
-                return nil;
-            }
-            stage.animationFrames = i;
-            continue;
-        }
-        if (!strcasecmp(token.text, "randomDistribution")) {
+        if ( !strcasecmp( token.text, "randomDistribution" ) ) {
             BOOL b = NO;
-            if (![src parseBool:&b error:error]) {
-                return nil;
-            }
+            [src parseBool:&b error:NULL];
             stage.randomDistribution = b;
             continue;
         }
-        if (!strcasecmp(token.text, "entityColor")) {
+        if ( !strcasecmp( token.text, "entityColor" ) ) {
             BOOL b = NO;
-            if (![src parseBool:&b error:error]) {
-                return nil;
-            }
+            [src parseBool:&b error:NULL];
             stage.entityColor = b;
             continue;
         }
-
-        if (!strcasecmp(token.text, "distribution")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
-            }
-            int index = UDParticleDescIndex(UDParticleDistributionDesc, UDParticleDescCount(UDParticleDistributionDesc), token.text);
-            if (index < 0) {
-                [src warning:@"particle '%@': bad distribution type: %s", name, token.text];
-                index = 0;
-            }
-            stage.distributionType = index;
-            UDParticleParseParms(src, parms, 4, error);
-            stage.distributionParms = UDFloatsToString(parms, 4);
+        if ( !strcasecmp( token.text, "animationFrames" ) ) {
+            int i = 0;
+            [src parseInt:&i error:NULL];
+            stage.animationFrames = i;
             continue;
         }
-        if (!strcasecmp(token.text, "direction")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
+        if ( !strcasecmp( token.text, "distribution" ) ) {
+            [src readToken:&token error:NULL];
+            int type = UDParticleDescIndex( UDParticleDistributionDesc, UDParticleDescCount( UDParticleDistributionDesc ), token.text );
+            if ( type >= 0 ) {
+                stage.distributionType = type;
+            } else {
+                [src error:NULL format:@"bad distribution type: %s\n", token.text];
             }
-            int index = UDParticleDescIndex(UDParticleDirectionDesc, UDParticleDescCount(UDParticleDirectionDesc), token.text);
-            if (index < 0) {
-                [src warning:@"particle '%@': bad direction type: %s", name, token.text];
-                index = 0;
-            }
-            stage.directionType = index;
-            UDParticleParseParms(src, parms, 4, error);
-            stage.directionParms = UDFloatsToString(parms, 4);
+            UDParticleParseParms( src, parms, 4 );
+            stage.distributionParms = UDParticleParmString( parms, 4 );
             continue;
         }
-        if (!strcasecmp(token.text, "orientation")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
+        if ( !strcasecmp( token.text, "direction" ) ) {
+            [src readToken:&token error:NULL];
+            int type = UDParticleDescIndex( UDParticleDirectionDesc, UDParticleDescCount( UDParticleDirectionDesc ), token.text );
+            if ( type >= 0 ) {
+                stage.directionType = type;
+            } else {
+                [src error:NULL format:@"bad direction type: %s\n", token.text];
             }
-            int index = UDParticleDescIndex(UDParticleOrientationDesc, UDParticleDescCount(UDParticleOrientationDesc), token.text);
-            if (index < 0) {
-                [src warning:@"particle '%@': bad orientation type: %s", name, token.text];
-                index = 0;
-            }
-            stage.orientation = index;
-            UDParticleParseParms(src, parms, 4, error);
-            stage.orientationParms = UDFloatsToString(parms, 4);
+            UDParticleParseParms( src, parms, 4 );
+            stage.directionParms = UDParticleParmString( parms, 4 );
             continue;
         }
-        if (!strcasecmp(token.text, "customPath")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
+        if ( !strcasecmp( token.text, "orientation" ) ) {
+            [src readToken:&token error:NULL];
+            int type = UDParticleDescIndex( UDParticleOrientationDesc, UDParticleDescCount( UDParticleOrientationDesc ), token.text );
+            if ( type >= 0 ) {
+                stage.orientation = type;
+            } else {
+                [src error:NULL format:@"bad orientation type: %s\n", token.text];
             }
-            int index = UDParticleDescIndex(UDParticleCustomDesc, UDParticleDescCount(UDParticleCustomDesc), token.text);
-            if (index < 0 && !strcasecmp(token.text, "spherical")) {
-                index = 3; // orbit; legacy keyword
-            }
-            if (index < 0) {
-                [src warning:@"particle '%@': bad path type: %s", name, token.text];
-                index = 0;
-            }
-            stage.customPathType = index;
-            UDParticleParseParms(src, parms, 8, error);
-            stage.customPathParms = UDFloatsToString(parms, 8);
+            UDParticleParseParms( src, parms, 4 );
+            stage.orientationParms = UDParticleParmString( parms, 4 );
             continue;
         }
-
-        if (!strcasecmp(token.text, "speed")) {
-            if (!UDParticleParseParametric(src, stage, @"speed", error)) {
-                return nil;
+        if ( !strcasecmp( token.text, "customPath" ) ) {
+            [src readToken:&token error:NULL];
+            // The parser's names: "spherical" is PPATH_ORBIT (written as "orbit"), and no "drip".
+            if ( !strcasecmp( token.text, "standard" ) ) {
+                stage.customPathType = 0;
+            } else if ( !strcasecmp( token.text, "helix" ) ) {
+                stage.customPathType = 1;
+            } else if ( !strcasecmp( token.text, "flies" ) ) {
+                stage.customPathType = 2;
+            } else if ( !strcasecmp( token.text, "spherical" ) ) {
+                stage.customPathType = 3;
+            } else {
+                [src error:NULL format:@"bad path type: %s\n", token.text];
             }
+            UDParticleParseParms( src, parms, 8 );
+            stage.customPathParms = UDParticleParmString( parms, 8 );
             continue;
         }
-        if (!strcasecmp(token.text, "rotation")) {
-            if (!UDParticleParseParametric(src, stage, @"rotation", error)) {
-                return nil;
-            }
+        if ( !strcasecmp( token.text, "speed" ) ) {
+            UDParticleParseParametric( src, stage, @"speed" );
             continue;
         }
-        if (!strcasecmp(token.text, "size")) {
-            if (!UDParticleParseParametric(src, stage, @"size", error)) {
-                return nil;
-            }
+        if ( !strcasecmp( token.text, "rotation" ) ) {
+            UDParticleParseParametric( src, stage, @"rotation" );
             continue;
         }
-        if (!strcasecmp(token.text, "aspect")) {
-            if (!UDParticleParseParametric(src, stage, @"aspect", error)) {
-                return nil;
-            }
+        if ( !strcasecmp( token.text, "size" ) ) {
+            UDParticleParseParametric( src, stage, @"size" );
             continue;
         }
-
-        if (!strcasecmp(token.text, "color") || !strcasecmp(token.text, "fadeColor")) {
-            NSString *key = !strcasecmp(token.text, "color") ? @"color" : @"fadeColor";
+        if ( !strcasecmp( token.text, "aspect" ) ) {
+            UDParticleParseParametric( src, stage, @"aspect" );
+            continue;
+        }
+        if ( !strcasecmp( token.text, "color" ) || !strcasecmp( token.text, "fadeColor" ) ) {
             float c[4] = { 0, 0, 0, 0 };
-            for (int i = 0; i < 4; i++) {
-                if (![src parseFloat:&c[i] error:error]) {
-                    return nil;
-                }
+            for ( int i = 0; i < 4; i++ ) {
+                [src parseFloat:&c[i] error:NULL];
             }
-            [stage setValue:UDFloatsToString(c, 4) forKey:key];
+            [stage setValue:UDParticleParmString( c, 4 ) forKey:!strcasecmp( token.text, "color" ) ? @"color" : @"fadeColor"];
             continue;
         }
-        if (!strcasecmp(token.text, "offset")) {
+        if ( !strcasecmp( token.text, "offset" ) ) {
             float o[3] = { 0, 0, 0 };
-            for (int i = 0; i < 3; i++) {
-                if (![src parseFloat:&o[i] error:error]) {
-                    return nil;
-                }
+            for ( int i = 0; i < 3; i++ ) {
+                [src parseFloat:&o[i] error:NULL];
             }
-            stage.offset = UDFloatsToString(o, 3);
+            stage.offset = UDParticleParmString( o, 3 );
             continue;
         }
-        if (!strcasecmp(token.text, "gravity")) {
-            if (![src readToken:&token error:error]) {
-                return nil;
-            }
-            if (!strcasecmp(token.text, "world")) {
+        if ( !strcasecmp( token.text, "gravity" ) ) {
+            [src readToken:&token error:NULL];
+            if ( !strcasecmp( token.text, "world" ) ) {
                 stage.worldGravity = YES;
             } else {
-                [src unreadToken:&token error:error];
+                [src unreadToken:&token error:NULL];
             }
             float f = 0.0f;
-            if (![src parseFloat:&f error:error]) {
-                return nil;
-            }
+            [src parseFloat:&f error:NULL];
             stage.gravity = f;
             continue;
         }
-
-        [src warning:@"particle '%@': unknown token %s (skipping rest of line)", name, token.text];
-        [src skipRestOfLine:error];
+        if ( !strcasecmp( token.text, "softeningRadius" ) ) { // #3878 soft particles
+            // dhewm3 warns and ignores it (its value is read next, as a keyword)
+            [src warning:@"Particle %@ has stage with \"softeningRadius\" attribute, which is currently ignored (we soften all suitable particles)", name];
+            continue;
+        }
+        [src error:NULL format:@"unknown token %s\n", token.text];
     }
-
     return stage;
 }
 
@@ -2349,7 +2349,9 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
     UDParticleWriteParametric(out, stage, @"size", @"size");
     UDParticleWriteParametric(out, stage, @"aspect", @"aspect");
 
-    if (UDStringValue(stage, @"rotationTable").length > 0 || UDFloatValue(stage, @"rotationFrom")) {
+    // As WriteStage has it: only when rotationSpeed.from is not 0 (a
+    // rotation by a table is not written).
+    if (UDFloatValue(stage, @"rotationFrom")) {
         UDParticleWriteParametric(out, stage, @"rotation", @"rotation");
     }
 
@@ -2388,23 +2390,14 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
 
 @dynamic stages;
 
-// stages is transient, so the store never faults it in; build it here from
-// the freshly populated sourceText (same pattern as sourceText itself in
-// UDDeclBase).
+UD_ELEMENT_ARRAY_SETTER(setStages, @"stages")
+
+// stages is transient: read from the text here.
 - (void)awakeFromFetch {
     [super awakeFromFetch];
-
-    NSData *text = [self primitiveValueForKey:@"sourceText"];
-    if (text == nil) {
-        return;
-    }
-    NSDictionary *parsed = [[self class] ud_parseValuesFromText:text
-                                                           name:[self primitiveValueForKey:@"name"]
-                                                       fileName:nil
-                                                        lineNum:1
-                                                     fileSystem:nil
-                                                          error:NULL];
-    [self setPrimitiveValue:(parsed[@"stages"] ?: @[]) forKey:@"stages"];
+    NSArray *stages = UDParsedSourceText(self)[@"stages"] ?: @[];
+    [self setPrimitiveValue:stages forKey:@"stages"];
+    UDAdoptElements(stages, self, @"stages");
 }
 
 + (NSString *)ud_defaultDefinition {
@@ -2418,6 +2411,8 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
         @"}";
 }
 
+// idDeclParticle::Parse. Where it gives up, MakeDefault(): the values are
+// the default definition's.
 + (NSDictionary<NSString *, id> *)ud_parseValuesFromText:(NSData *)text
                                                     name:(NSString *)name
                                                 fileName:(NSString *)fileName
@@ -2428,48 +2423,39 @@ static void UDParticleWriteStage(NSMutableString *out, UDParticleStage *stage) {
     if (src == nil) {
         return nil;
     }
-
     idToken token;
     idToken_Init(&token);
 
     float depthHack = 0.0f;
     NSMutableArray<UDParticleStage *> *stages = [NSMutableArray array];
-
     while (1) {
-        if (![src readToken:&token error:error]) {
+        if ( ![src readToken:&token error:NULL] ) {
             break;
         }
-        if (!strcasecmp(token.text, "}")) {
+        if ( !strcasecmp( token.text, "}" ) ) {
             break;
         }
-
-        if (!strcasecmp(token.text, "{")) {
-            UDParticleStage *stage = UDParticleParseStage(src, name, error);
-            if (stage == nil) {
-                [src warning:@"particle '%@': stage parse failed", name];
-                break;
-            }
-            [stages addObject:stage];
+        if ( !strcasecmp( token.text, "{" ) ) {
+            [stages addObject:UDParticleParseStage( src, name )];
             continue;
         }
-
-        if (!strcasecmp(token.text, "depthHack")) {
-            float f = 0.0f;
-            if (![src parseFloat:&f error:error]) {
-                break;
-            }
-            depthHack = f;
+        if ( !strcasecmp( token.text, "depthHack" ) ) {
+            [src parseFloat:&depthHack error:NULL];
             continue;
         }
-
-        [src warning:@"particle '%@': bad token %s (skipping rest of line)", name, token.text];
-        [src skipRestOfLine:error];
+        [src warning:@"bad token %s", token.text];
+        return [self ud_defaultValuesNamed:name];
     }
-
     return @{
         @"depthHack": @(depthHack),
         @"stages": stages,
     };
+}
+
+/// MakeDefault()'s values: the default definition, parsed.
++ (NSDictionary<NSString *, id> *)ud_defaultValuesNamed:(NSString *)name {
+    NSData *text = [[self ud_defaultDefinition] dataUsingEncoding:NSUTF8StringEncoding];
+    return [self ud_parseValuesFromText:text name:name fileName:nil lineNum:1 fileSystem:nil error:NULL];
 }
 
 + (NSData *)ud_textByUnparsingName:(NSString *)name

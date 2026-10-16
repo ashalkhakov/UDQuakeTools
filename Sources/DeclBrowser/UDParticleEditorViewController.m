@@ -1,0 +1,98 @@
+#import "UDParticleEditorViewController.h"
+#import "UDDeclManagedObjects.h"
+#import "UDWorkspace.h"
+#import "idDeclManager.h"
+
+static UDDiagnosticSource const UDParticleReferencesSource = @"references";
+
+@implementation UDParticleEditorViewController
+
+- (instancetype)init {
+    return [super initWithNibName:@"UDParticleEditorView" bundle:[NSBundle bundleForClass:[UDParticleEditorViewController class]]];
+}
+
+- (UDDeclParticle *)particle {
+    return (UDDeclParticle *)self.declObject;
+}
+
+- (void)declDidLoad {
+    if (self.particle.stages.count > 0) {
+        [self.stagesController setSelectionIndex:0];
+    }
+}
+
+- (void)editingContextDidChange {
+    [self checkReferences];
+}
+
+#pragma mark - The stages (AddStage, RemoveStage)
+
+- (IBAction)addOrRemoveStage:(id)sender {
+    NSInteger segment = [sender respondsToSelector:@selector(selectedSegment)] ? [sender selectedSegment] : 0;
+    NSMutableArray<UDParticleStage *> *stages = [self.particle.stages mutableCopy] ?: [NSMutableArray array];
+    NSUInteger selected = self.stagesController.selectionIndex;
+    if (segment == 0) {
+        UDParticleStage *source = selected != NSNotFound && selected < stages.count ? stages[selected] : nil;
+        BOOL copying = ([NSEvent modifierFlags] & NSEventModifierFlagOption) != 0;
+        if (copying && source == nil) {
+            NSBeep();
+            return;
+        }
+        UDParticleStage *stage = copying ? [source copy] : [[UDParticleStage alloc] init];   // Default()
+        NSUInteger at = selected != NSNotFound ? selected + 1 : stages.count;
+        [stages insertObject:stage atIndex:at];
+        self.particle.stages = stages;
+        [self.stagesController setSelectionIndex:at];
+    } else if (selected != NSNotFound && selected < stages.count) {
+        [stages removeObjectAtIndex:selected];
+        self.particle.stages = stages;
+    } else {
+        NSBeep();
+    }
+}
+
+#pragma mark - References
+
+- (void)checkReferences {
+    UDDeclParticle *particle = self.particle;
+    if (particle == nil || self.diagnosticStore == nil) return;
+    NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
+    [self removeDiagnosticTargets];
+
+    NSArray<UDParticleStage *> *stages = particle.stages;
+    for (NSUInteger row = 0; row < stages.count; row++) {
+        UDParticleStage *stage = stages[row];
+        NSString *material = stage.material ?: @"";
+        if (![self materialExists:material]) {
+            UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:material] column:0
+                message:[NSString stringWithFormat:@"Stage %lu: material “%@” is neither a decl nor an image: the engine makes it a default material",
+                         (unsigned long)row, material]
+                severity:UDDiagnosticSeverityWarning source:UDParticleReferencesSource];
+            [items addObject:item];
+            [self setTarget:@(row) forDiagnostic:item];
+        }
+        // ParseParametric's FindType( DECL_TABLE, token, false ): no table, from and to 0.
+        for (NSString *prefix in @[@"speed", @"rotation", @"size", @"aspect"]) {
+            NSString *table = [stage valueForKey:[prefix stringByAppendingString:@"Table"]];
+            if (table.length == 0 ||
+                [self.workspace.declManager findDeclWithoutParsing:DECL_TABLE name:table makeDefault:NO] != nil) continue;
+            UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:table] column:0
+                message:[NSString stringWithFormat:@"Stage %lu: no table “%@” for its %@: the engine takes it as 0",
+                         (unsigned long)row, table, prefix]
+                severity:UDDiagnosticSeverityWarning source:UDParticleReferencesSource];
+            [items addObject:item];
+            [self setTarget:@(row) forDiagnostic:item];
+        }
+    }
+    [self.diagnosticStore setDiagnostics:items forSource:UDParticleReferencesSource];
+}
+
+- (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
+    NSNumber *row = [self targetForDiagnostic:diagnostic];
+    if (row == nil || row.unsignedIntegerValue >= self.particle.stages.count) return;
+    [self.stagesController setSelectionIndex:row.unsignedIntegerValue];
+    [self.stagesTable scrollRowToVisible:row.integerValue];
+    [self.view.window makeFirstResponder:self.stagesTable];
+}
+
+@end

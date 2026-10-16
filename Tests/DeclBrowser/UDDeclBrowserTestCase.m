@@ -359,7 +359,11 @@ NSString *UDDoom3InstallPath(void) {
 - (void)typeText:(NSString *)text intoField:(NSTextField *)field {
     NSWindow *window = field.window;
     XCTAssertNotNil(window, @"the field must be in a window to be typed into");
-    XCTAssertTrue([window makeFirstResponder:field], @"the field should take focus");
+    // A field the window started in is being edited already, and GNUstep's
+    // refuses to become first responder again while it is.
+    if ([field currentEditor] == nil) {
+        XCTAssertTrue([window makeFirstResponder:field], @"the field should take focus");
+    }
     NSText *editor = [field currentEditor];
     XCTAssertNotNil(editor, @"a focused text field should have a field editor");
     [editor selectAll:nil];

@@ -119,9 +119,11 @@ Built when the first editor needs each one, not up front:
 
 In order of value against cost; LOC is the MFC original's size.
 
-- [ ] **PDA** (0.7k) — finish: video editor covered by tests, editing an
-      existing email/audio/video (double-click opens the sheet; untested),
-      reference validation, creating a new PDA with its file.
+- [x] **PDA** (0.7k) — fields, emails, audio logs and videos added, edited
+      (double-click) and taken off through their sheets, with undo; what the
+      PDA references but no decl defines, as errors in the Issues tab before
+      saving (a click shows the row); File > New PDA… makes one in a file of
+      its own (`newpdas/<name>.pda`).
 - [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
       diagnostics, per-type templates for New.
 - [ ] **Table** and **Skin** — small structured editors (values/clamp/snap;
@@ -156,13 +158,14 @@ In order of value against cost; LOC is the MFC original's size.
       leads to) side by side with what moves between them, and
       move/size/align/group on it; navigator, inspector, state/event script
       editing, edits with undo.
-- [ ] **Script editor** (0.9k) — `.script` editing with highlighting,
+- [x] **Script editor** (0.9k) — `.script` editing with highlighting,
       completion of events and functions, go to definition across the mod.
-      Done: the editor is UDCodeKit's, highlighting `.script` with its
-      idScript grammar (a port of idCompiler's); and the helpers of the
-      tools' script editor, ported: the events of doom_events.script after
-      a '.', an event's parameters from its '(' to its ')', its help on
-      Option-click. Left: go to definition across the mod.
+      UDCodeKit's editor with its idScript grammar (a port of idCompiler's,
+      its parse errors in the Issues tab), and the old tools' helpers over a
+      language server of our own (`udscript-lsp`, on LSPServerKit): names
+      complete as they are typed, calls with their arguments as
+      placeholders; an event's parameters from its '(' to its ')'; help on
+      hover; Jump to Definition across the mod (v0.2.0).
 
 ## 3. Script debugger
 

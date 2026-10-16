@@ -1,4 +1,6 @@
 #import "UDWorkspaceWindowController.h"
+#import "UDDeclManagedObjects.h"
+#import "UDPDAEditorViewController.h"
 #import "UDWorkspaceDocument.h"
 #import "UDDeclBrowser.h"
 #import "UDEditorTabManager.h"
@@ -159,7 +161,9 @@
     NSString *typeName = [self.workspace.declManager declNameFromType:type];
     NSString *originalName = declDocument.declObject.name;
 
-    NSString *newName = [self _runSaveAsPromptForTypeName:typeName type:type originalName:originalName];
+    NSString *newName = [self _runNamePromptWithTitle:[NSString stringWithFormat:@"Save %@ \u201C%@\u201D As", typeName, originalName]
+        message:@"The current content is saved as a new decl with this name, in the same file. The original decl keeps its last saved state."
+        okButtonTitle:@"Save" typeName:typeName type:type initialValue:originalName];
     if (newName == nil) {
         return; // cancelled
     }
@@ -183,20 +187,21 @@
     [self.declBrowser reset];
 }
 
-/// Asks for the new decl name. Returns nil on cancel; keeps asking while the
+/// Asks for a new decl's name. Returns nil on cancel; keeps asking while the
 /// name is empty or already taken.
-- (NSString *)_runSaveAsPromptForTypeName:(NSString *)typeName
-                                      type:(declType_t)type
-                              originalName:(NSString *)originalName {
-    NSString *title = [NSString stringWithFormat:@"Save %@ “%@” As", typeName, originalName];
-    NSString *message = @"The current content is saved as a new decl with this name, in the same file. The original decl keeps its last saved state.";
-    NSString *value = originalName ?: @"";
+- (NSString *)_runNamePromptWithTitle:(NSString *)title
+                              message:(NSString *)message
+                        okButtonTitle:(NSString *)okButtonTitle
+                             typeName:(NSString *)typeName
+                                 type:(declType_t)type
+                         initialValue:(NSString *)initialValue {
+    NSString *value = initialValue ?: @"";
 
     while (YES) {
         NSString *entered = [UDTextPromptPanel runModalPromptWithTitle:title
                                                                message:message
                                                           initialValue:value
-                                                         okButtonTitle:@"Save"];
+                                                         okButtonTitle:okButtonTitle];
         if (entered == nil) {
             return nil; // cancelled
         }
@@ -207,8 +212,7 @@
         if (candidate.length == 0) {
             continue;
         }
-        if ([candidate caseInsensitiveCompare:originalName] == NSOrderedSame ||
-            [self.workspace.declManager findDeclWithoutParsing:type name:candidate makeDefault:NO] != nil) {
+        if ([self.workspace.declManager findDeclWithoutParsing:type name:candidate makeDefault:NO] != nil) {
             NSAlert *taken = [[NSAlert alloc] init];
             taken.messageText = @"Name already in use";
             taken.informativeText = [NSString stringWithFormat:@"A %@ decl named “%@” already exists. Choose a different name.", typeName, candidate];
@@ -217,6 +221,39 @@
         }
         return candidate;
     }
+}
+
+#pragma mark - New PDA
+
+// File > New PDA…: a PDA of its own name, in a file of its own
+// (newpdas/<name>.pda, where the store puts a new PDA), opened in the PDA
+// editor; Save writes the file.
+- (IBAction)newPDA:(id)sender {
+    idDeclManager *declManager = self.workspace.declManager;
+    declType_t type = [declManager declTypeFromName:@"pda"];
+    NSString *name = [self _runNamePromptWithTitle:@"New PDA"
+        message:@"The PDA gets a file of its own, newpdas/<name>.pda, written when it is saved."
+        okButtonTitle:@"Create" typeName:@"pda" type:type initialValue:[declManager newName:type base:@"pda_"]];
+    if (name == nil) return;
+
+    NSError *error = nil;
+    if (![self _createPDANamed:name error:&error]) {
+        [self presentError:error];
+        return;
+    }
+    [self.declBrowser reset];
+    [self.tabManager openEditorForWorkspaceItem:[[UDDeclItem alloc] initWithType:type declName:name path:name]];
+}
+
+- (BOOL)_createPDANamed:(NSString *)name error:(NSError **)error {
+    NSManagedObjectContext *context = [self.workspace newDeclEditingContextWithError:error];
+    if (context == nil) return NO;
+    NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:@"pda"
+                                                              inModel:context.persistentStoreCoordinator.managedObjectModel];
+    if (entityName == nil) return NO;
+    UDDeclPDA *pda = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+    pda.name = name;
+    return [context save:error];
 }
 
 #pragma mark - Workspace settings
@@ -305,8 +342,9 @@
     NSMutableArray<UDDiagnosticStore *> *stores = [NSMutableArray array];
     NSMutableArray<NSString *> *names = [NSMutableArray array];
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
-        if (![editor isKindOfClass:[UDTextEditorViewController class]]) continue;
-        UDDiagnosticStore *store = ((UDTextEditorViewController *)editor).diagnosticStore;
+        // A script's errors, a PDA's missing references: any editor's store.
+        if (![editor respondsToSelector:@selector(diagnosticStore)]) continue;
+        UDDiagnosticStore *store = [(id)editor diagnosticStore];
         if (store == nil) continue;
         [stores addObject:store];
         [names addObject:editor.item.name ?: editor.item.path ?: @""];
@@ -318,6 +356,12 @@
          didSelectDiagnostic:(UDDiagnosticItem *)diagnostic
                      inStore:(UDDiagnosticStore *)store {
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if ([editor isKindOfClass:[UDPDAEditorViewController class]] &&
+            ((UDPDAEditorViewController *)editor).diagnosticStore == store) {
+            [self.tabManager openEditorForWorkspaceItem:editor.item];
+            [(UDPDAEditorViewController *)editor revealDiagnostic:diagnostic];
+            return;
+        }
         if (![editor isKindOfClass:[UDTextEditorViewController class]] ||
             ((UDTextEditorViewController *)editor).diagnosticStore != store) continue;
         [self.tabManager openEditorForWorkspaceItem:editor.item];
@@ -383,6 +427,9 @@
             }
         }
         return NO;
+    }
+    if (action == @selector(newPDA:)) {
+        return self.workspace.declManager != nil;
     }
     if (action == @selector(saveDocumentAs:)) {
         UDBaseDocument *document = [self.tabManager selectedEditor].editorDocument;

@@ -95,6 +95,9 @@
          "\t}\n"
          "}\n";
     [self writeGameFile:@"newpdas/test.pda" contents:pdaFixture];
+    // A PDA naming an email no file defines.
+    [self writeGameFile:@"newpdas/dangling.pda"
+               contents:@"pda test/dangling {\n\tname \"Dangling\"\n\tpda_email test/no_such_email\n}\n"];
 
     NSString *particleFixture =
         @"particle testfx {\n"
@@ -207,6 +210,29 @@
     XCTAssertEqualObjects(email.subject, @"Hello");
     XCTAssertEqualObjects(email.from, @"me");
     XCTAssertEqualObjects(email.body, @"line one");
+}
+
+/// A child decl another names but no file defines: its name, and nothing
+/// else — not a fault that cannot be fulfilled (Apple's Core Data raises on
+/// one) — and the reference can be taken off and saved.
+- (void)testAChildNoFileDefinesHasOnlyItsName {
+    UDDeclPDA *pda = [self declWithTypeName:@"pda" name:@"test/dangling"];
+    XCTAssertNotNil(pda);
+    XCTAssertEqual(pda.emails.count, (NSUInteger)1);
+    UDDeclEmail *missing = nil;
+    for (UDDeclEmail *email in pda.emails) {
+        if ([email.name isEqualToString:@"test/no_such_email"]) missing = email;
+    }
+    XCTAssertNotNil(missing, @"%@", [pda.emails valueForKey:@"name"]);
+    XCTAssertNil(missing.subject);
+
+    [[pda mutableSetValueForKey:@"emails"] removeObject:missing];
+    NSError *error = nil;
+    XCTAssertTrue([self.context save:&error], @"%@", error);
+    NSString *written = [NSString stringWithContentsOfFile:[self.fullGameDirPath stringByAppendingPathComponent:@"newpdas/dangling.pda"]
+                                                  encoding:NSUTF8StringEncoding error:NULL];
+    XCTAssertFalse([written containsString:@"no_such_email"], @"%@", written);
+    XCTAssertTrue([written containsString:@"Dangling"], @"the rest of the PDA stays:\n%@", written);
 }
 
 - (void)testFetchParticleStages {

@@ -26,6 +26,7 @@
 #import "UDParticleModel.h"
 #import "UDSoftwareRenderer.h"
 #import "UDFXModel.h"
+#import "UDARBProgram.h"
 
 @interface UDDeclIncrementalStoreTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
@@ -1176,6 +1177,114 @@ static NSString *const UDMaterialFixture =
     for (int v = 0; v < here[0].numVerts; v++) {
         XCTAssertEqualWithAccuracy(there[0].verts[v].xyz[2] - here[0].verts[v].xyz[2], 100.0f, 1e-3);
     }
+}
+
+#pragma mark - The lit pass
+
+static UDVec4 UDTestTexture(void *context, int unit, BOOL cube, UDVec4 coord) {
+    UDVec4 out = { { coord.v[0], coord.v[1], unit, cube ? 1 : 0 } };
+    return out;
+}
+
+- (void)testAnARBProgramRunsAsTheSpecificationHasIt {
+    NSString *file =
+        @"!!ARBvp1.0 OPTION ARB_position_invariant ;\n"
+         "TEMP R0;\n"
+         "PARAM half = { 0.5, 0.25, 2, 4 };\n"
+         "DP3 R0, vertex.attrib[8], half;   # a comment\n"
+         "MOV result.texcoord[0].xy, R0;\n"
+         "MAD result.texcoord[1], vertex.attrib[8].yxzw, half, -program.env[3];\n"
+         "RSQ result.texcoord[2].x, half.w;\n"
+         "END\n"
+         "!!ARBfp1.0\n"
+         "TEMP C;\n"
+         "TXP C, fragment.texcoord[0], texture[5], 2D;\n"
+         "ADD_SAT result.color, C, fragment.color.x;\n"
+         "END\n";
+    NSError *error = nil;
+    UDARBProgram *vp = [UDARBProgram programFromFileText:file vertex:YES error:&error];
+    XCTAssertNotNil(vp, @"%@", error);
+    vp.env[3] = (UDVec4){ { 1, 1, 1, 1 } };
+    UDARBState state;
+    memset(&state, 0, sizeof(state));
+    state.attrib[8] = (UDVec4){ { 2, 4, 0, 1 } };
+    [vp run:&state texture:NULL context:NULL];
+    XCTAssertEqualWithAccuracy(state.texcoord[0].v[0], 2 * 0.5f + 4 * 0.25f, 1e-6, @"DP3, to all four");
+    XCTAssertEqualWithAccuracy(state.texcoord[0].v[1], 2.0f, 1e-6);
+    XCTAssertEqual(state.texcoord[0].v[2], 0.0f, @"the write mask: .xy only");
+    XCTAssertEqualWithAccuracy(state.texcoord[1].v[0], 4 * 0.5f - 1, 1e-6, @"a swizzle, a negation");
+    XCTAssertEqualWithAccuracy(state.texcoord[1].v[1], 2 * 0.25f - 1, 1e-6);
+    XCTAssertEqualWithAccuracy(state.texcoord[2].v[0], 0.5f, 1e-6, @"RSQ of 4");
+
+    UDARBProgram *fp = [UDARBProgram programFromFileText:file vertex:NO error:&error];
+    XCTAssertNotNil(fp, @"%@", error);
+    memset(&state, 0, sizeof(state));
+    state.texcoord[0] = (UDVec4){ { 1, 0.5, 0, 2 } };
+    state.color = (UDVec4){ { 0.25, 0, 0, 0 } };
+    [fp run:&state texture:UDTestTexture context:NULL];
+    XCTAssertEqualWithAccuracy(state.resultColor.v[0], 0.5f + 0.25f, 1e-6, @"TXP divides by q; ADD of a scalar");
+    XCTAssertEqualWithAccuracy(state.resultColor.v[2], 1.0f, 1e-6, @"_SAT: unit 5 clamped");
+
+    XCTAssertNil([UDARBProgram programFromFileText:@"!!ARBfp1.0\nLRP result.color, a, b, c;\nEND" vertex:NO error:&error]);
+    XCTAssertEqualObjects(error.localizedDescription, @"unsupported instruction: LRP");
+}
+
+/// The lit pass's parts, with a program of our own in place of the game's
+/// interaction.vfp: the diffuse image, by the diffuse color.
+- (void)testTheLitPassHandsTheEngineItsParametersAndImages {
+    const float axis[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+    UDDrawVert quad[4];
+    memset(quad, 0, sizeof(quad));
+    const float ys[4] = { 32, -32, 32, -32 }, zs[4] = { 32, 32, -32, -32 };
+    for (int k = 0; k < 4; k++) {
+        quad[k].xyz[1] = ys[k];
+        quad[k].xyz[2] = zs[k];
+        quad[k].normal[0] = -1;
+        quad[k].color[0] = quad[k].color[1] = quad[k].color[2] = quad[k].color[3] = 255;
+    }
+    float parms[12] = { 1, 1, 1, 1 };
+    UDParticleSurface *square = [UDParticleSurface surfaceWithMaterial:@"test/lit" verts:quad numVerts:4 shaderParms:parms];
+    UDPointLight *light = [[UDPointLight alloc] init];
+    light.material = @"test/light";
+    light.origin[0] = -20;
+    const float black[4] = { 0, 0, 0, 1 }, origin[3] = { -40, 0, 0 };
+
+    UDSoftwareRenderer *renderer = [[UDSoftwareRenderer alloc] initWithWidth:32 height:32 declManager:self.workspace.declManager
+                                                                  fileSystem:self.workspace.fileSystem];
+    [renderer setViewOrigin:origin axis:axis fovX:90];
+    [renderer setMaterialText:@"{ diffusemap _white }" forName:@"test/lit"];
+    [renderer setMaterialText:@"{ lightFalloffImage _white { map _white zeroclamp colored } }" forName:@"test/light"];
+    [renderer clearToColor:black];
+    [renderer drawInteractionsOfSurfaces:@[square] light:light time:0];
+    XCTAssertEqualObjects(renderer.interactionProblem, @"glprogs/interaction.vfp: File not found", @"no program, nothing lit");
+    XCTAssertEqual(((const uint8_t *)[renderer image].pixels.bytes)[(16 * 32 + 16) * 4], 0);
+
+    [[NSFileManager defaultManager] createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"glprogs"]
+                              withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"glprogs/interaction.vfp" contents:
+        @"!!ARBvp1.0 OPTION ARB_position_invariant ;\n"
+         "MOV result.texcoord[4], vertex.attrib[8];\n"
+         "END\n"
+         "!!ARBfp1.0\n"
+         "TEMP D;\n"
+         "TEX D, fragment.texcoord[4], texture[4], 2D;\n"
+         "MUL result.color, D, program.env[0];\n"
+         "END\n"];
+    renderer = [[UDSoftwareRenderer alloc] initWithWidth:32 height:32 declManager:self.workspace.declManager
+                                              fileSystem:self.workspace.fileSystem];
+    [renderer setViewOrigin:origin axis:axis fovX:90];
+    [renderer setMaterialText:@"{ diffusemap _white }" forName:@"test/lit"];
+    [renderer setMaterialText:@"{ lightFalloffImage _white { map _white zeroclamp colored } }" forName:@"test/light"];
+    light.shaderParms[0] = 0.25f;           // SHADERPARM_RED: its color, by the light scale, 2
+    light.shaderParms[1] = 0;
+    light.shaderParms[2] = 0.5f;
+    [renderer clearToColor:black];
+    [renderer drawInteractionsOfSurfaces:@[square] light:light time:0];
+    XCTAssertNil(renderer.interactionProblem);
+    const uint8_t *center = (const uint8_t *)[renderer image].pixels.bytes + (16 * 32 + 16) * 4;
+    XCTAssertEqual(center[0], 128, @"_white × the diffuse color: the light's 0.25 × r_lightScale 2");
+    XCTAssertEqual(center[1], 0);
+    XCTAssertEqual(center[2], 255);
 }
 
 @end

@@ -2,6 +2,7 @@
 
 #import "UDDeclManagedObjects.h"
 #import "UDMaterialParser.h"
+#import "UDParticlePreview.h"
 #import "UDDeclTextChecker.h"
 #import "UDMD5Mesh.h"
 #import "idFileSystem.h"
@@ -162,6 +163,20 @@
     XCTAssertGreaterThan(material.material.stages.count, 0U);
     XCTAssertNotNil(material.previewView.image, @"its first stage's image, from the paks: %@", material.previewLabel.stringValue);
     XCTAssertEqual(material.diagnosticStore.allDiagnostics.count, 0U, @"%@", [material.diagnosticStore.allDiagnostics valueForKey:@"message"]);
+
+    // Lit by the game's own interaction.vfp: its bump, diffuse and specular.
+    [material.tabView selectTabViewItemWithIdentifier:@"preview"];
+    [material.materialPreview renderAtTime:0];
+    XCTAssertEqualObjects(material.lightingLabel.stringValue, @"", @"interaction.vfp from pak000, run");
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)material.materialPreviewView.image.representations.firstObject;
+    NSUInteger pixel[4], lit = 0;
+    for (NSInteger y = 0; y < rep.pixelsHigh; y += 4) {
+        for (NSInteger x = 0; x < rep.pixelsWide; x += 4) {
+            [rep getPixel:pixel atX:x y:y];
+            if (pixel[0] + pixel[1] + pixel[2] > 150) lit++;
+        }
+    }
+    XCTAssertGreaterThan(lit, 50U, @"the wall, lit (lfwall27d has no ambient stage)");
 }
 
 - (void)testAPDAOpensInThePDAEditor {

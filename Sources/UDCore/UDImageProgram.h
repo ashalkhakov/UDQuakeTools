@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int height;
 @property (nonatomic, readonly) NSData *pixels;
 - (instancetype)initWithWidth:(int)width height:(int)height pixels:(NSData *)pixels NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
 @end
 
 @interface UDImageProgram : NSObject
@@ -45,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// files its program names (R_LoadImageProgram for timestamps), or its
 /// precompressed .dds (ImageProgramStringToCompressedFileName).
 + (BOOL)imageExistsNamed:(NSString *)name fileSystem:(idFileSystem *)fileSystem;
+
+/// The cube map ImageFromFunction generates for @a name ("_normalCubeMap",
+/// "_ambient"): its six faces, +X −X +Y −Y +Z −Z; nil for any other name.
++ (nullable NSArray<UDImage *> *)cubeImageNamed:(NSString *)name;
 
 /// The names idImageManager::Init generates images for, lowercase.
 + (NSSet<NSString *> *)builtInImageNames;

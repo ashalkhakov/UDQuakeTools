@@ -508,6 +508,7 @@
 		0C1B7D75C686DFDFE9C30645 /* UDDeclMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E32547818FF7EE756D3C7BB /* UDDeclMaterial.h */; };
 		BAE673DC0103B476A1F7AFB7 /* UDSoftwareRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */; };
 		C825B09B3DCB4352E26E1E78 /* UDFXModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 091AA4BB439C1C4F99491AFF /* UDFXModel.h */; };
+		5CE0592AB3401285E17CB225 /* UDARBProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 4373BA33DA044F471BEF3F84 /* UDARBProgram.h */; };
 		CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D7A3E79A627C2E068122604 /* UDParticleModel.h */; };
 		50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */ = {isa = PBXBuildFile; fileRef = C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */; };
 		47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = A1003F1D0030C0B804080444 /* UDMD5Mesh.h */; };
@@ -527,6 +528,7 @@
 		6917835E62C48088D4186043 /* UDDeclMaterial.m in Sources */ = {isa = PBXBuildFile; fileRef = 45588CCC0F2C1F6D4249AC39 /* UDDeclMaterial.m */; };
 		2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */; };
 		D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A25610E5A2219107B5F20 /* UDFXModel.m */; };
+		149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = C58B4F2531625A19ACA0B306 /* UDARBProgram.m */; };
 		A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1835DE984890C47029638F55 /* UDParticleModel.m */; };
 		61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */; };
 		C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */ = {isa = PBXBuildFile; fileRef = C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */; };
@@ -1009,6 +1011,7 @@
 		1E32547818FF7EE756D3C7BB /* UDDeclMaterial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclMaterial.h; sourceTree = "<group>"; };
 		61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSoftwareRenderer.h; sourceTree = "<group>"; };
 		091AA4BB439C1C4F99491AFF /* UDFXModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFXModel.h; sourceTree = "<group>"; };
+		4373BA33DA044F471BEF3F84 /* UDARBProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDARBProgram.h; sourceTree = "<group>"; };
 		5D7A3E79A627C2E068122604 /* UDParticleModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDParticleModel.h; sourceTree = "<group>"; };
 		C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSourceTokens.h; sourceTree = "<group>"; };
 		A1003F1D0030C0B804080444 /* UDMD5Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDMD5Mesh.h; sourceTree = "<group>"; };
@@ -1028,6 +1031,7 @@
 		45588CCC0F2C1F6D4249AC39 /* UDDeclMaterial.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclMaterial.m; sourceTree = "<group>"; };
 		A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSoftwareRenderer.m; sourceTree = "<group>"; };
 		2D8A25610E5A2219107B5F20 /* UDFXModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFXModel.m; sourceTree = "<group>"; };
+		C58B4F2531625A19ACA0B306 /* UDARBProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDARBProgram.m; sourceTree = "<group>"; };
 		1835DE984890C47029638F55 /* UDParticleModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDParticleModel.m; sourceTree = "<group>"; };
 		4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSourceTokens.m; sourceTree = "<group>"; };
 		C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDMD5Mesh.m; sourceTree = "<group>"; };
@@ -1230,6 +1234,7 @@
 				45588CCC0F2C1F6D4249AC39 /* UDDeclMaterial.m */,
 				A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */,
 				2D8A25610E5A2219107B5F20 /* UDFXModel.m */,
+				C58B4F2531625A19ACA0B306 /* UDARBProgram.m */,
 				1835DE984890C47029638F55 /* UDParticleModel.m */,
 				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
 				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
@@ -1251,6 +1256,7 @@
 				1E32547818FF7EE756D3C7BB /* UDDeclMaterial.h */,
 				61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */,
 				091AA4BB439C1C4F99491AFF /* UDFXModel.h */,
+				4373BA33DA044F471BEF3F84 /* UDARBProgram.h */,
 				5D7A3E79A627C2E068122604 /* UDParticleModel.h */,
 				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
 				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
@@ -1639,6 +1645,7 @@
 				0C1B7D75C686DFDFE9C30645 /* UDDeclMaterial.h in Headers */,
 				BAE673DC0103B476A1F7AFB7 /* UDSoftwareRenderer.h in Headers */,
 				C825B09B3DCB4352E26E1E78 /* UDFXModel.h in Headers */,
+				5CE0592AB3401285E17CB225 /* UDARBProgram.h in Headers */,
 				CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */,
 				50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */,
 				47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */,
@@ -2047,6 +2054,7 @@
 				6917835E62C48088D4186043 /* UDDeclMaterial.m in Sources */,
 				2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */,
 				D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */,
+				149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */,
 				A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */,
 				61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */,
 				C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */,

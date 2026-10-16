@@ -857,4 +857,29 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqualObjects(editor.playButton.title, @"Pause");
 }
 
+- (void)testTheMaterialPreviewDrawsItAsTheEngineDoes {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+    XCTAssertNotNil(editor.materialPreview);
+    [editor.tabView selectTabViewItemWithIdentifier:@"preview"];
+    [editor.materialPreview renderAtTime:0];
+    XCTAssertEqualObjects(editor.lightingLabel.stringValue, @"glprogs/interaction.vfp: File not found",
+                          @"no game program here: not lit, and why");
+    // Its ambient stage: "blend add" of the red and green glow, on the square.
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)editor.materialPreviewView.image.representations.firstObject;
+    NSUInteger pixel[4];
+    [rep getPixel:pixel atX:rep.pixelsWide / 2 y:rep.pixelsHigh / 4];
+    XCTAssertGreaterThan(pixel[0] + pixel[1], 200U, @"the glow added onto the background");
+
+    // An unsaved edit: drawn as edited.
+    [editor.stagesController setSelectionIndex:0];
+    [editor.stagesController setValue:@"none" forKeyPath:@"selection.blend"];
+    [editor.editingContext processPendingChanges];
+    [editor.materialPreview renderAtTime:0];
+    rep = (NSBitmapImageRep *)editor.materialPreviewView.image.representations.firstObject;
+    [rep getPixel:pixel atX:rep.pixelsWide / 2 y:rep.pixelsHigh / 4];
+    XCTAssertLessThan(pixel[0] + pixel[1], 120U, @"blend none: the ambient pass skips it");
+}
+
 @end

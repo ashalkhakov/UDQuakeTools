@@ -4,6 +4,7 @@
 #import "UDImageProgram.h"
 #import "UDMaterialParser.h"
 #import "UDWorkspace.h"
+#import "UDParticlePreview.h"
 
 static UDDiagnosticSource const UDMaterialParseSource = @"parse";
 static UDDiagnosticSource const UDMaterialImagesSource = @"references";
@@ -12,6 +13,7 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
 /// idMaterial::Parse of the text as it is now.
 @property (nonatomic, strong, nullable) UDMaterialParser *parser;
 @property (nonatomic) BOOL observingSelection;
+@property (nonatomic, strong, readwrite, nullable) UDParticlePreview *materialPreview;
 @end
 
 @implementation UDMaterialEditorViewController
@@ -44,6 +46,33 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
     if (self.material.stages.count > 0) {
         [self.stagesController setSelectionIndex:0];
     }
+    if (self.materialPreviewView != nil) {
+        self.materialPreview = [[UDParticlePreview alloc] initWithImageView:self.materialPreviewView workspace:self.workspace];
+        self.materialPreview.materialName = self.material.name;
+        self.materialPreview.timeSlider = self.timeSlider;
+        self.materialPreview.timeLabel = self.timeLabel;
+        self.materialPreview.playButton = self.playButton;
+        self.materialPreview.target = self;
+        self.materialPreview.action = @selector(previewDidDraw:);
+    }
+}
+
+- (IBAction)restartPreview:(id)sender {
+    [self.materialPreview restart];
+}
+
+- (IBAction)scrubPreview:(id)sender {
+    [self.materialPreview showTime:[sender intValue]];
+}
+
+- (IBAction)togglePreview:(id)sender {
+    self.materialPreview.playing = !self.materialPreview.playing;
+    self.playButton.title = self.materialPreview.playing ? @"Pause" : @"Play";
+}
+
+/// The preview's frame drawn: why it is not lit, if it is not.
+- (void)previewDidDraw:(UDParticlePreview *)preview {
+    self.lightingLabel.stringValue = preview.lightingProblem ?: @"";
 }
 
 - (void)editingContextDidChange {
@@ -173,6 +202,7 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
     NSString *text = data != nil ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] : nil;
     if (text == nil) return;
     self.parser = [[UDMaterialParser alloc] initWithText:text name:material.name declManager:self.workspace.declManager];
+    self.materialPreview.materialText = text;
 
     [self removeDiagnosticTargets];
     NSMutableArray<UDDiagnosticItem *> *parsed = [NSMutableArray array];

@@ -16,6 +16,8 @@
 #import "UDSoftwareRenderer.h"
 #import "UDImageProgram.h"
 #import "UDMaterialParser.h"
+#import "UDARBProgram.h"
+#import "idFileSystem.h"
 #import "idDeclManager.h"
 
 typedef struct {
@@ -24,6 +26,28 @@ typedef struct {
     float s, t;          // texture coordinates, over the depth
     float r, g, b, a;    // vertex color 0–1, over the depth
 } UDScreenVert;
+
+@implementation UDPointLight {
+    float lightOrigin[3];
+    float lightRadius[3];
+    float parms[12];
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        lightRadius[0] = lightRadius[1] = lightRadius[2] = 300;
+        // SHADERPARM_RED, _GREEN, _BLUE, _TIMESCALE
+        parms[0] = parms[1] = parms[2] = parms[3] = 1;
+    }
+    return self;
+}
+
+- (float *)origin { return lightOrigin; }
+- (float *)radius { return lightRadius; }
+- (float *)shaderParms { return parms; }
+
+@end
 
 @interface UDSoftwareRenderer () {
     float *pixels;           // RGBA, 0–1, the top row first
@@ -35,6 +59,10 @@ typedef struct {
 @property (nonatomic, strong, nullable) idFileSystem *fileSystem;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UDMaterialParser *> *materials;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id> *images;
+@property (nonatomic, strong, nullable) UDARBProgram *interactionVertexProgram;
+@property (nonatomic, strong, nullable) UDARBProgram *interactionFragmentProgram;
+@property (nonatomic, copy, readwrite, nullable) NSString *interactionProblem;
+@property (nonatomic) BOOL interactionLoaded;
 @end
 
 @implementation UDSoftwareRenderer
@@ -85,6 +113,10 @@ typedef struct {
 }
 
 #pragma mark - Materials and images
+
+- (void)setMaterialText:(NSString *)text forName:(NSString *)name {
+    self.materials[name] = [[UDMaterialParser alloc] initWithText:text name:name declManager:self.declManager];
+}
 
 - (UDMaterialParser *)materialNamed:(NSString *)name {
     UDMaterialParser *material = self.materials[name];
@@ -138,11 +170,11 @@ idMaterial::SetDefaultText
 
 #pragma mark - GL's part
 
-/// A texel of @a image at ( @a s, @a t ), bilinear, as @a repeat has the
-/// coordinates outside 0–1 (GL_REPEAT, or GL_CLAMP_TO_EDGE for the clamps).
-static void UDSample( UDImage *image, int repeat, float s, float t, float out[4] ) {
-    int w = image.width, h = image.height;
-    const uint8_t *data = image.pixels.bytes;
+/// A texel of @a w × @a h RGBA @a data at ( @a s, @a t ), bilinear, as
+/// @a repeat has the coordinates outside 0–1 (GL_REPEAT, or GL_CLAMP_TO_EDGE
+/// for the clamps; TR_CLAMP_TO_ZERO's 0 0 0 255 and …_ALPHA's alpha 0
+/// beyond the edge).
+static void UDSampleRaw( const uint8_t *data, int w, int h, int repeat, float s, float t, float out[4] ) {
     float u = s * w - 0.5f, v = t * h - 0.5f;
     int x0 = (int)floorf( u ), y0 = (int)floorf( v );
     float fx = u - x0, fy = v - y0;
@@ -163,7 +195,6 @@ static void UDSample( UDImage *image, int repeat, float s, float t, float out[4]
             const uint8_t *p = data + ( y * w + x ) * 4;
             for ( int k = 0; k < 4; k++ ) {
                 float value = p[k] / 255.0f;
-                // TR_CLAMP_TO_ZERO: 0 0 0 255 beyond the edge; …_ALPHA: alpha 0
                 if ( outside && repeat == 3 ) value = k == 3 ? 1.0f : 0.0f;
                 if ( outside && repeat == 4 && k == 3 ) value = 0.0f;
                 c[k] += value * weight;
@@ -171,6 +202,10 @@ static void UDSample( UDImage *image, int repeat, float s, float t, float out[4]
         }
     }
     memcpy( out, c, sizeof( c ) );
+}
+
+static void UDSample( UDImage *image, int repeat, float s, float t, float out[4] ) {
+    UDSampleRaw( image.pixels.bytes, image.width, image.height, repeat, s, t, out );
 }
 
 /// glBlendFunc's factor for the bits of drawStateBits.
@@ -247,7 +282,9 @@ static float UDEdge( const UDScreenVert *a, const UDScreenVert *b, float x, floa
     int srcBits = drawStateBits & UDGLSSrcBlendBits, dstBits = drawStateBits & UDGLSDstBlendBits;
     for ( int y = minY; y <= maxY; y++ ) {
         for ( int x = minX; x <= maxX; x++ ) {
-            float px = x + 0.5f, py = y + 0.5f;
+            // the pixel's center, a hair off: a pixel on an edge two
+            // triangles share is in exactly one of them
+            float px = x + 0.5f + 1.0e-4f, py = y + 0.5f + 1.7e-4f;
             float w0 = UDEdge( v1, v2, px, py ) / area;
             float w1 = UDEdge( v2, v0, px, py ) / area;
             float w2 = UDEdge( v0, v1, px, py ) / area;
@@ -397,6 +434,590 @@ static void UDGetShaderTextureMatrix( const float *shaderRegisters, UDMaterialSt
             if ( !visible ) continue;
             [self drawTriangle:&sv[0] :&sv[2] :&sv[3] image:image repeat:pStage.repeat constant:color drawStateBits:pStage.drawStateBits];
             [self drawTriangle:&sv[0] :&sv[3] :&sv[1] image:image repeat:pStage.repeat constant:color drawStateBits:pStage.drawStateBits];
+        }
+    }
+}
+
+#pragma mark - The interaction pass
+
+/// A texture unit, its pixels: a 2D image or a cube map's six faces.
+typedef struct {
+    const uint8_t *data;
+    int width, height;
+    int repeat;
+    BOOL cube;
+    const uint8_t *faces[6];
+    int faceSize;
+} UDTextureUnit;
+
+/// The GL cube map lookup: the major axis's face, its s and t.
+static UDVec4 UDSampleCube( const UDTextureUnit *unit, UDVec4 coord ) {
+    float rx = coord.v[0], ry = coord.v[1], rz = coord.v[2];
+    float ax = fabsf( rx ), ay = fabsf( ry ), az = fabsf( rz );
+    int face;
+    float sc, tc, ma;
+    if ( ax >= ay && ax >= az ) {
+        face = rx >= 0 ? 0 : 1; ma = ax;
+        sc = rx >= 0 ? -rz : rz; tc = -ry;
+    } else if ( ay >= az ) {
+        face = ry >= 0 ? 2 : 3; ma = ay;
+        sc = rx; tc = ry >= 0 ? rz : -rz;
+    } else {
+        face = rz >= 0 ? 4 : 5; ma = az;
+        sc = rz >= 0 ? rx : -rx; tc = -ry;
+    }
+    UDVec4 out = { { 0, 0, 0, 0 } };
+    if ( ma == 0 ) return out;
+    float s = ( sc / ma + 1 ) * 0.5f, t = ( tc / ma + 1 ) * 0.5f;
+    UDSampleRaw( unit->faces[face], unit->faceSize, unit->faceSize, 1, s, t, out.v );
+    return out;
+}
+
+static UDVec4 UDInteractionTexture( void *context, int unit, BOOL cube, UDVec4 coord ) {
+    const UDTextureUnit *units = context;
+    UDVec4 out = { { 0, 0, 0, 0 } };
+    if ( unit < 0 || unit > 6 ) return out;
+    const UDTextureUnit *u = &units[unit];
+    if ( cube || u->cube ) {
+        if ( !u->cube ) return out;
+        return UDSampleCube( u, coord );
+    }
+    if ( u->data == NULL ) return out;
+    UDSampleRaw( u->data, u->width, u->height, u->repeat, coord.v[0], coord.v[1], out.v );
+    return out;
+}
+
+/// glprogs/interaction.vfp, as R_LoadARBProgram loads it for
+/// VPROG_INTERACTION and FPROG_INTERACTION (dhewm3's gamma injection, at
+/// r_gamma and r_brightness 1, changes nothing, and is left out).
+- (BOOL)loadInteractionPrograms {
+    if ( self.interactionLoaded ) return self.interactionVertexProgram != nil;
+    self.interactionLoaded = YES;
+    void *buffer = NULL;
+    int length = [self.fileSystem readFile:@"glprogs/interaction.vfp" buffer:&buffer timestamp:NULL error:NULL];
+    if ( length < 0 || buffer == NULL ) {
+        self.interactionProblem = @"glprogs/interaction.vfp: File not found";
+        return NO;
+    }
+    NSString *text = [[NSString alloc] initWithBytes:buffer length:(NSUInteger)length encoding:NSISOLatin1StringEncoding] ?: @"";
+    [self.fileSystem freeFile:buffer error:NULL];
+    NSError *error = nil;
+    self.interactionVertexProgram = [UDARBProgram programFromFileText:text vertex:YES error:&error];
+    if ( self.interactionVertexProgram != nil ) {
+        self.interactionFragmentProgram = [UDARBProgram programFromFileText:text vertex:NO error:&error];
+    }
+    if ( self.interactionFragmentProgram == nil ) {
+        self.interactionVertexProgram = nil;
+        self.interactionProblem = [NSString stringWithFormat:@"glprogs/interaction.vfp: %@", error.localizedDescription];
+        return NO;
+    }
+    return YES;
+}
+
+/// An image, its upload's: a bump map's red in its alpha (idImage::GenerateImage,
+/// image_useNormalCompression 2).
+- (UDImage *)uploadedImageNamed:(NSString *)name depth:(int)depth {
+    BOOL bump = depth == 3;          // TD_BUMP
+    NSString *key = bump ? [name stringByAppendingString:@"\n(bump)"] : name;
+    id image = self.images[key];
+    if ( image == nil ) {
+        UDImage *loaded = [self imageNamed:name] ?: [self imageNamed:@"_default"];
+        if ( bump && loaded != nil ) {
+            NSMutableData *swapped = [loaded.pixels mutableCopy];
+            uint8_t *p = swapped.mutableBytes;
+            for ( NSUInteger i = 0; i + 3 < swapped.length; i += 4 ) {
+                p[i + 3] = p[i];
+                p[i] = 0;
+            }
+            loaded = [[UDImage alloc] initWithWidth:loaded.width height:loaded.height pixels:swapped];
+        }
+        image = loaded ?: [NSNull null];
+        self.images[key] = image;
+    }
+    return image == [NSNull null] ? nil : image;
+}
+
+static void UDSetUnit( UDTextureUnit *unit, UDImage *image, int repeat ) {
+    memset( unit, 0, sizeof( *unit ) );
+    unit->data = image.pixels.bytes;
+    unit->width = image.width;
+    unit->height = image.height;
+    unit->repeat = repeat;
+}
+
+// drawInteraction_t
+typedef struct {
+    float               localLightOrigin[4];
+    float               localViewOrigin[4];
+    float               lightProjection[4][4];    // in local coordinates, possibly with a texture matrix baked in
+    __unsafe_unretained UDImage *lightImage;
+    int                 lightRepeat;
+    __unsafe_unretained UDImage *lightFalloffImage;
+    __unsafe_unretained UDImage *bumpImage;
+    int                 bumpRepeat;
+    __unsafe_unretained UDImage *diffuseImage;
+    int                 diffuseRepeat;
+    __unsafe_unretained UDImage *specularImage;
+    int                 specularRepeat;
+    float               diffuseColor[4];          // may have a light color baked into it, will be < tr.backEndRendererMaxLight
+    float               specularColor[4];         // may have a light color baked into it, will be < tr.backEndRendererMaxLight
+    int                 vertexColor;              // applies to both diffuse and specular
+    BOOL                ambientLight;             // use tr.ambientNormalMap instead of normalization cube map
+    float               bumpMatrix[2][4];
+    float               diffuseMatrix[2][4];
+    float               specularMatrix[2][4];
+} drawInteraction_t;
+
+/*
+=================
+myGlMultMatrix
+=================
+*/
+static void myGlMultMatrix( const float a[16], const float b[16], float out[16] ) {
+    for ( int i = 0; i < 4; i++ ) {
+        for ( int j = 0; j < 4; j++ ) {
+            out[ i * 4 + j ] = a[ i * 4 + 0 ] * b[ 0 * 4 + j ] + a[ i * 4 + 1 ] * b[ 1 * 4 + j ] +
+                               a[ i * 4 + 2 ] * b[ 2 * 4 + j ] + a[ i * 4 + 3 ] * b[ 3 * 4 + j ];
+        }
+    }
+}
+
+/*
+==================
+RB_BakeTextureMatrixIntoTexgen
+==================
+*/
+static void RB_BakeTextureMatrixIntoTexgen( float lightProject[3][4], const float *textureMatrix ) {
+    float    genMatrix[16];
+    float    final[16];
+
+    genMatrix[0] = lightProject[0][0];
+    genMatrix[4] = lightProject[0][1];
+    genMatrix[8] = lightProject[0][2];
+    genMatrix[12] = lightProject[0][3];
+
+    genMatrix[1] = lightProject[1][0];
+    genMatrix[5] = lightProject[1][1];
+    genMatrix[9] = lightProject[1][2];
+    genMatrix[13] = lightProject[1][3];
+
+    genMatrix[2] = 0;
+    genMatrix[6] = 0;
+    genMatrix[10] = 0;
+    genMatrix[14] = 0;
+
+    genMatrix[3] = lightProject[2][0];
+    genMatrix[7] = lightProject[2][1];
+    genMatrix[11] = lightProject[2][2];
+    genMatrix[15] = lightProject[2][3];
+
+    myGlMultMatrix( genMatrix, textureMatrix, final );
+
+    lightProject[0][0] = final[0];
+    lightProject[0][1] = final[4];
+    lightProject[0][2] = final[8];
+    lightProject[0][3] = final[12];
+
+    lightProject[1][0] = final[1];
+    lightProject[1][1] = final[5];
+    lightProject[1][2] = final[9];
+    lightProject[1][3] = final[13];
+}
+
+/*
+=================
+R_SetDrawInteraction
+=================
+*/
+- (void)setDrawInteraction:(UDMaterialStageInfo *)surfaceStage regs:(const float *)surfaceRegs
+                     image:(__unsafe_unretained UDImage **)image repeat:(int *)repeat
+                    matrix:(float [2][4])matrix color:(float *)color {
+    *image = [self uploadedImageNamed:surfaceStage.imageName ?: @"_default" depth:surfaceStage.imageDepth];
+    *repeat = surfaceStage.repeat;
+    const int *m = surfaceStage.matrix;
+    if ( surfaceStage.hasMatrix ) {
+        matrix[0][0] = surfaceRegs[m[0]];
+        matrix[0][1] = surfaceRegs[m[1]];
+        matrix[0][2] = 0;
+        matrix[0][3] = surfaceRegs[m[2]];
+
+        matrix[1][0] = surfaceRegs[m[3]];
+        matrix[1][1] = surfaceRegs[m[4]];
+        matrix[1][2] = 0;
+        matrix[1][3] = surfaceRegs[m[5]];
+
+        // we attempt to keep scrolls from generating incredibly large texture values, but
+        // center rotations and center scales can still generate offsets that need to be > 1
+        if ( matrix[0][3] < -40 || matrix[0][3] > 40 ) {
+            matrix[0][3] -= (int)matrix[0][3];
+        }
+        if ( matrix[1][3] < -40 || matrix[1][3] > 40 ) {
+            matrix[1][3] -= (int)matrix[1][3];
+        }
+    } else {
+        matrix[0][0] = 1;
+        matrix[0][1] = 0;
+        matrix[0][2] = 0;
+        matrix[0][3] = 0;
+
+        matrix[1][0] = 0;
+        matrix[1][1] = 1;
+        matrix[1][2] = 0;
+        matrix[1][3] = 0;
+    }
+
+    if ( color ) {
+        for ( int i = 0 ; i < 4 ; i++ ) {
+            color[i] = surfaceRegs[surfaceStage.colorRegisters[i]];
+            // clamp here, so card with greater range don't look different.
+            // we could perform overbrighting like we do for lights, but
+            // it doesn't currently look worth it.
+            if ( color[i] < 0 ) {
+                color[i] = 0;
+            } else if ( color[i] > 1.0 ) {
+                color[i] = 1.0;
+            }
+        }
+    }
+}
+
+/*
+=================
+RB_SubmittInteraction
+=================
+*/
+- (void)submittInteraction:(drawInteraction_t *)din surface:(UDParticleSurface *)surf {
+    if ( !din->bumpImage ) {
+        return;
+    }
+
+    UDImage *blackImage = [self imageNamed:@"_black"];
+    if ( !din->diffuseImage ) {
+        din->diffuseImage = blackImage;
+    }
+    if ( !din->specularImage || din->ambientLight ) {
+        din->specularImage = blackImage;
+    }
+
+    // if we wouldn't draw anything, don't call the Draw function
+    if (
+        ( ( din->diffuseColor[0] > 0 ||
+        din->diffuseColor[1] > 0 ||
+        din->diffuseColor[2] > 0 ) && din->diffuseImage != blackImage )
+        || ( ( din->specularColor[0] > 0 ||
+        din->specularColor[1] > 0 ||
+        din->specularColor[2] > 0 ) && din->specularImage != blackImage ) ) {
+        [self drawInteraction:din surface:surf];
+    }
+}
+
+/*
+==================
+RB_ARB2_DrawInteraction
+==================
+*/
+- (void)drawInteraction:(const drawInteraction_t *)din surface:(UDParticleSurface *)surf {
+    UDARBProgram *vp = self.interactionVertexProgram, *fp = self.interactionFragmentProgram;
+    // load all the vertex program parameters
+    UDVec4 *venv = vp.env, *fenv = fp.env;
+    memcpy( venv[4].v, din->localLightOrigin, sizeof( float ) * 4 );       // PP_LIGHT_ORIGIN
+    memcpy( venv[5].v, din->localViewOrigin, sizeof( float ) * 4 );        // PP_VIEW_ORIGIN
+    memcpy( venv[6].v, din->lightProjection[0], sizeof( float ) * 4 );     // PP_LIGHT_PROJECT_S
+    memcpy( venv[7].v, din->lightProjection[1], sizeof( float ) * 4 );     // PP_LIGHT_PROJECT_T
+    memcpy( venv[8].v, din->lightProjection[2], sizeof( float ) * 4 );     // PP_LIGHT_PROJECT_Q
+    memcpy( venv[9].v, din->lightProjection[3], sizeof( float ) * 4 );     // PP_LIGHT_FALLOFF_S
+    memcpy( venv[10].v, din->bumpMatrix[0], sizeof( float ) * 4 );         // PP_BUMP_MATRIX_S
+    memcpy( venv[11].v, din->bumpMatrix[1], sizeof( float ) * 4 );         // PP_BUMP_MATRIX_T
+    memcpy( venv[12].v, din->diffuseMatrix[0], sizeof( float ) * 4 );      // PP_DIFFUSE_MATRIX_S
+    memcpy( venv[13].v, din->diffuseMatrix[1], sizeof( float ) * 4 );      // PP_DIFFUSE_MATRIX_T
+    memcpy( venv[14].v, din->specularMatrix[0], sizeof( float ) * 4 );     // PP_SPECULAR_MATRIX_S
+    memcpy( venv[15].v, din->specularMatrix[1], sizeof( float ) * 4 );     // PP_SPECULAR_MATRIX_T
+
+    static const UDVec4 zero = { { 0, 0, 0, 0 } };
+    static const UDVec4 one = { { 1, 1, 1, 1 } };
+    static const UDVec4 negOne = { { -1, -1, -1, -1 } };
+
+    switch ( din->vertexColor ) {
+    case 0:     // SVC_IGNORE
+        venv[16] = zero;                // PP_COLOR_MODULATE
+        venv[17] = one;                 // PP_COLOR_ADD
+        break;
+    case 1:     // SVC_MODULATE
+        venv[16] = one;
+        venv[17] = zero;
+        break;
+    case 2:     // SVC_INVERSE_MODULATE
+        venv[16] = negOne;
+        venv[17] = one;
+        break;
+    }
+
+    // set the constant colors
+    memcpy( fenv[0].v, din->diffuseColor, sizeof( float ) * 4 );
+    memcpy( fenv[1].v, din->specularColor, sizeof( float ) * 4 );
+
+    // set the textures (RB_ARB2_CreateDrawInteractions' 0 and 6, and these)
+    UDTextureUnit units[7];
+    NSArray<UDImage *> *cube = [UDImageProgram cubeImageNamed:din->ambientLight ? @"_ambient" : @"_normalCubeMap"];
+    memset( &units[0], 0, sizeof( units[0] ) );
+    units[0].cube = YES;
+    units[0].faceSize = cube[0].width;
+    for ( int f = 0; f < 6; f++ ) units[0].faces[f] = cube[(NSUInteger)f].pixels.bytes;
+    // texture 1 will be the per-surface bump map
+    UDSetUnit( &units[1], din->bumpImage, din->bumpRepeat );
+    // texture 2 will be the light falloff texture (TR_CLAMP)
+    UDSetUnit( &units[2], din->lightFalloffImage, 1 );
+    // texture 3 will be the light projection texture
+    UDSetUnit( &units[3], din->lightImage, din->lightRepeat );
+    // texture 4 is the per-surface diffuse map
+    UDSetUnit( &units[4], din->diffuseImage, din->diffuseRepeat );
+    // texture 5 is the per-surface specular map
+    UDSetUnit( &units[5], din->specularImage, din->specularRepeat );
+    // texture 6 is the specular lookup table (TR_CLAMP)
+    UDSetUnit( &units[6], [self imageNamed:@"_specularTable"], 1 );
+
+    // draw it: GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE, each quad as 0 2 3, 0 3 1
+    const UDDrawVert *verts = surf.verts;
+    for ( int i = 0; i + 3 < surf.numVerts; i += 4 ) {
+        UDARBState states[4];
+        UDScreenVert screen[4];
+        BOOL visible = YES;
+        for ( int k = 0; k < 4 && visible; k++ ) {
+            const UDDrawVert *vert = &verts[i + k];
+            UDARBState *state = &states[k];
+            memset( state, 0, sizeof( *state ) );
+            state->position = (UDVec4){ { vert->xyz[0], vert->xyz[1], vert->xyz[2], 1 } };
+            state->attrib[8] = (UDVec4){ { vert->st[0], vert->st[1], 0, 1 } };
+            state->attrib[9] = (UDVec4){ { vert->tangents[0][0], vert->tangents[0][1], vert->tangents[0][2], 1 } };
+            state->attrib[10] = (UDVec4){ { vert->tangents[1][0], vert->tangents[1][1], vert->tangents[1][2], 1 } };
+            state->attrib[11] = (UDVec4){ { vert->normal[0], vert->normal[1], vert->normal[2], 1 } };
+            state->color = (UDVec4){ { vert->color[0] / 255.0f, vert->color[1] / 255.0f, vert->color[2] / 255.0f, vert->color[3] / 255.0f } };
+            [vp run:state texture:NULL context:NULL];
+            float identity[6] = { 1, 0, 0, 0, 1, 0 };
+            visible = [self project:vert texture:identity vertexColor:0 into:&screen[k]];
+        }
+        if ( !visible ) continue;
+        [self drawInteractionTriangle:&screen[0] :&screen[2] :&screen[3] states:&states[0] :&states[2] :&states[3] fragment:fp units:units];
+        [self drawInteractionTriangle:&screen[0] :&screen[3] :&screen[1] states:&states[0] :&states[3] :&states[1] fragment:fp units:units];
+    }
+}
+
+/// A triangle of the interaction: the vertex program's outputs interpolated
+/// (perspective-correct), the fragment program run at each pixel, its color
+/// added (GL_ONE, GL_ONE).
+- (void)drawInteractionTriangle:(const UDScreenVert *)v0 :(const UDScreenVert *)v1 :(const UDScreenVert *)v2
+                         states:(const UDARBState *)s0 :(const UDARBState *)s1 :(const UDARBState *)s2
+                       fragment:(UDARBProgram *)fp units:(UDTextureUnit *)units {
+    float area = UDEdge( v0, v1, v2->x, v2->y );
+    if ( fabsf( area ) < 1e-6f ) return;
+    int minX = (int)floorf( MIN( v0->x, MIN( v1->x, v2->x ) ) ), maxX = (int)ceilf( MAX( v0->x, MAX( v1->x, v2->x ) ) );
+    int minY = (int)floorf( MIN( v0->y, MIN( v1->y, v2->y ) ) ), maxY = (int)ceilf( MAX( v0->y, MAX( v1->y, v2->y ) ) );
+    minX = MAX( minX, 0 ); minY = MAX( minY, 0 );
+    maxX = MIN( maxX, self.width - 1 ); maxY = MIN( maxY, self.height - 1 );
+    for ( int y = minY; y <= maxY; y++ ) {
+        for ( int x = minX; x <= maxX; x++ ) {
+            // the pixel's center, a hair off: a pixel on an edge two
+            // triangles share is in exactly one of them
+            float px = x + 0.5f + 1.0e-4f, py = y + 0.5f + 1.7e-4f;
+            float w0 = UDEdge( v1, v2, px, py ) / area;
+            float w1 = UDEdge( v2, v0, px, py ) / area;
+            float w2 = UDEdge( v0, v1, px, py ) / area;
+            if ( w0 < 0 || w1 < 0 || w2 < 0 ) continue;
+            float i0 = w0 * v0->invW, i1 = w1 * v1->invW, i2 = w2 * v2->invW;
+            float invW = i0 + i1 + i2;
+            if ( invW <= 0 ) continue;
+            float b0 = i0 / invW, b1 = i1 / invW, b2 = i2 / invW;
+            UDARBState fragment;
+            memset( &fragment, 0, sizeof( fragment ) );
+            for ( int t = 0; t < 8; t++ ) {
+                for ( int c = 0; c < 4; c++ ) {
+                    fragment.texcoord[t].v[c] = b0 * s0->texcoord[t].v[c] + b1 * s1->texcoord[t].v[c] + b2 * s2->texcoord[t].v[c];
+                }
+            }
+            for ( int c = 0; c < 4; c++ ) {
+                fragment.color.v[c] = b0 * s0->resultColor.v[c] + b1 * s1->resultColor.v[c] + b2 * s2->resultColor.v[c];
+                fragment.color.v[c] = fragment.color.v[c] < 0 ? 0 : fragment.color.v[c] > 1 ? 1 : fragment.color.v[c];
+            }
+            [fp run:&fragment texture:UDInteractionTexture context:units];
+            float *dst = pixels + ( y * self.width + x ) * 4;
+            for ( int c = 0; c < 4; c++ ) {
+                float src = fragment.resultColor.v[c];
+                src = src < 0 ? 0 : src > 1 ? 1 : src;
+                float value = src + dst[c];
+                dst[c] = value > 1 ? 1 : value;
+            }
+        }
+    }
+}
+
+/*
+=================
+RB_CreateSingleDrawInteractions
+
+This can be used by different draw_* backends to decompose a complex light / surface
+interaction into primitive interactions
+=================
+*/
+- (void)drawInteractionsOfSurfaces:(NSArray<UDParticleSurface *> *)surfaces light:(UDPointLight *)light time:(float)time {
+    if ( ![self loadInteractionPrograms] ) {
+        return;
+    }
+
+    // R_DeriveLightData, for a point light: its shader (lights/defaultPointLight
+    // for none), its falloff image (the default one's for none), its projection
+    UDMaterialParser *lightShader = [self materialNamed:light.material.length > 0 ? light.material : @"lights/defaultPointLight"];
+    NSString *falloffName = lightShader.lightFalloffImageName ?: [self materialNamed:@"lights/defaultPointLight"].lightFalloffImageName;
+    UDImage *falloffImage = falloffName != nil ? [self imageNamed:falloffName] : nil;
+    if ( lightShader.fogLight || lightShader.blendLight || falloffImage == nil ) {
+        return;                                 // other passes', or no falloff to light with
+    }
+    float lightProject[4][4];
+    memset( lightProject, 0, sizeof( lightProject ) );
+    lightProject[0][0] = 0.5f / light.radius[0];
+    lightProject[1][1] = 0.5f / light.radius[1];
+    lightProject[3][2] = 0.5f / light.radius[2];
+    lightProject[0][3] = 0.5f;
+    lightProject[1][3] = 0.5f;
+    lightProject[2][3] = 1.0f;
+    lightProject[3][3] = 0.5f;
+    // R_LocalPlaneToGlobal by its model matrix (its axis the identity, its origin)
+    for ( int i = 0; i < 4; i++ ) {
+        lightProject[i][3] -= lightProject[i][0] * light.origin[0] + lightProject[i][1] * light.origin[1] + lightProject[i][2] * light.origin[2];
+    }
+
+    // RB_DetermineLightScale: backEndRendererMaxLight is 999 for ARB2, so
+    // the light scale is r_lightScale's 2
+    const float lightScale = 2.0f;
+
+    NSData *lightRegisterData = [lightShader registersAtTime:time shaderParms:light.shaderParms];
+    const float *lightRegs = lightRegisterData.bytes;
+
+    for ( UDParticleSurface *surf in surfaces ) {
+        UDMaterialParser *surfaceShader = [self materialNamed:surf.material];
+        NSData *surfaceRegisterData = [surfaceShader registersAtTime:time shaderParms:surf.shaderParms];
+        const float *surfaceRegs = surfaceRegisterData.bytes;
+
+        drawInteraction_t inter;
+        memset( &inter, 0, sizeof( inter ) );
+
+        inter.lightFalloffImage = falloffImage;
+
+        // the surfaces are in the world: local is global
+        memcpy( inter.localLightOrigin, light.origin, sizeof( float ) * 3 );
+        memcpy( inter.localViewOrigin, viewOrigin, sizeof( float ) * 3 );
+        inter.localLightOrigin[3] = 0;
+        inter.localViewOrigin[3] = 1;
+        inter.ambientLight = lightShader.ambientLight;
+
+        for ( UDMaterialStageInfo *lightStage in lightShader.stages ) {
+            // ignore stages that fail the condition
+            if ( !lightRegs[ lightStage.conditionRegister ] ) {
+                continue;
+            }
+
+            inter.lightImage = [self uploadedImageNamed:lightStage.imageName ?: @"_default" depth:lightStage.imageDepth];
+            inter.lightRepeat = lightStage.repeat;
+
+            memcpy( inter.lightProjection, lightProject, sizeof( inter.lightProjection ) );
+            // now multiply the texgen by the light texture matrix
+            if ( lightStage.hasMatrix ) {
+                const int *m = lightStage.matrix;
+                float lightTextureMatrix[16];
+                // RB_GetShaderTextureMatrix
+                memset( lightTextureMatrix, 0, sizeof( lightTextureMatrix ) );
+                lightTextureMatrix[0] = lightRegs[ m[0] ];
+                lightTextureMatrix[4] = lightRegs[ m[1] ];
+                lightTextureMatrix[12] = lightRegs[ m[2] ];
+                if ( lightTextureMatrix[12] < -40 || lightTextureMatrix[12] > 40 ) {
+                    lightTextureMatrix[12] -= (int)lightTextureMatrix[12];
+                }
+                lightTextureMatrix[1] = lightRegs[ m[3] ];
+                lightTextureMatrix[5] = lightRegs[ m[4] ];
+                lightTextureMatrix[13] = lightRegs[ m[5] ];
+                if ( lightTextureMatrix[13] < -40 || lightTextureMatrix[13] > 40 ) {
+                    lightTextureMatrix[13] -= (int)lightTextureMatrix[13];
+                }
+                lightTextureMatrix[10] = 1;
+                lightTextureMatrix[15] = 1;
+                RB_BakeTextureMatrixIntoTexgen( inter.lightProjection, lightTextureMatrix );
+            }
+
+            inter.bumpImage = nil;
+            inter.specularImage = nil;
+            inter.diffuseImage = nil;
+            inter.diffuseColor[0] = inter.diffuseColor[1] = inter.diffuseColor[2] = inter.diffuseColor[3] = 0;
+            inter.specularColor[0] = inter.specularColor[1] = inter.specularColor[2] = inter.specularColor[3] = 0;
+
+            float lightColor[4];
+
+            // backEnd.lightScale is calculated so that lightColor[] will never exceed
+            // tr.backEndRendererMaxLight
+            lightColor[0] = lightScale * lightRegs[ lightStage.colorRegisters[0] ];
+            lightColor[1] = lightScale * lightRegs[ lightStage.colorRegisters[1] ];
+            lightColor[2] = lightScale * lightRegs[ lightStage.colorRegisters[2] ];
+            lightColor[3] = lightRegs[ lightStage.colorRegisters[3] ];
+
+            // go through the individual stages
+            for ( UDMaterialStageInfo *surfaceStage in surfaceShader.stages ) {
+                switch( surfaceStage.lighting ) {
+                    case UDStageLightingAmbient: {
+                        // ignore ambient stages while drawing interactions
+                        break;
+                    }
+                    case UDStageLightingBump: {
+                        // ignore stage that fails the condition
+                        if ( !surfaceRegs[ surfaceStage.conditionRegister ] ) {
+                            break;
+                        }
+                        // draw any previous interaction
+                        [self submittInteraction:&inter surface:surf];
+                        inter.diffuseImage = nil;
+                        inter.specularImage = nil;
+                        [self setDrawInteraction:surfaceStage regs:surfaceRegs image:&inter.bumpImage repeat:&inter.bumpRepeat
+                                          matrix:inter.bumpMatrix color:NULL];
+                        break;
+                    }
+                    case UDStageLightingDiffuse: {
+                        // ignore stage that fails the condition
+                        if ( !surfaceRegs[ surfaceStage.conditionRegister ] ) {
+                            break;
+                        }
+                        if ( inter.diffuseImage ) {
+                            [self submittInteraction:&inter surface:surf];
+                        }
+                        [self setDrawInteraction:surfaceStage regs:surfaceRegs image:&inter.diffuseImage repeat:&inter.diffuseRepeat
+                                          matrix:inter.diffuseMatrix color:inter.diffuseColor];
+                        inter.diffuseColor[0] *= lightColor[0];
+                        inter.diffuseColor[1] *= lightColor[1];
+                        inter.diffuseColor[2] *= lightColor[2];
+                        inter.diffuseColor[3] *= lightColor[3];
+                        inter.vertexColor = surfaceStage.vertexColor;
+                        break;
+                    }
+                    case UDStageLightingSpecular: {
+                        // ignore stage that fails the condition
+                        if ( !surfaceRegs[ surfaceStage.conditionRegister ] ) {
+                            break;
+                        }
+                        if ( inter.specularImage ) {
+                            [self submittInteraction:&inter surface:surf];
+                        }
+                        // (r_supportNoSpecular's default, -1, honors a light's noSpecular
+                        // only where a map's worldspawn allows it: no map here)
+                        [self setDrawInteraction:surfaceStage regs:surfaceRegs image:&inter.specularImage repeat:&inter.specularRepeat
+                                          matrix:inter.specularMatrix color:inter.specularColor];
+                        inter.specularColor[0] *= lightColor[0];
+                        inter.specularColor[1] *= lightColor[1];
+                        inter.specularColor[2] *= lightColor[2];
+                        inter.specularColor[3] *= lightColor[3];
+                        inter.vertexColor = surfaceStage.vertexColor;
+                        break;
+                    }
+                }
+            }
+
+            // draw the final interaction
+            [self submittInteraction:&inter surface:surf];
         }
     }
 }

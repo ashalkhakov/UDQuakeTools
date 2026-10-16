@@ -15,6 +15,11 @@
                 <outlet property="stagesTable" destination="MTE-stages" id="UDM-o-stagesTable"/>
                 <outlet property="previewView" destination="MTE-preview" id="UDM-o-previewView"/>
                 <outlet property="previewLabel" destination="MTE-previewlabel" id="UDM-o-previewLabel"/>
+                <outlet property="materialPreviewView" destination="MTE-matpreview" id="UDM-o-materialPreviewView"/>
+                <outlet property="lightingLabel" destination="MTE-lighting" id="UDM-o-lightingLabel"/>
+                <outlet property="timeSlider" destination="MTE-time" id="UDM-o-timeSlider"/>
+                <outlet property="timeLabel" destination="MTE-timelabel" id="UDM-o-timeLabel"/>
+                <outlet property="playButton" destination="MTE-play" id="UDM-o-playButton"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -1834,6 +1839,67 @@
                     </buttonCell>
                     <connections>
                         <binding destination="MTE-sac" name="value" keyPath="selection.glassWarp" id="MTE-c135-b"/>
+                    </connections>
+                </button>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Preview" identifier="preview" id="MTE-pp">
+                            <view key="view" id="MTE-pp-v">
+                                <rect key="frame" x="10" y="33" width="854" height="574"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                <imageView toolTip="material preview" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-matpreview">
+                    <rect key="frame" x="20" y="80" width="440" height="440"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="MTE-matpreview-c"/>
+                </imageView>
+                <textField toolTip="lighting problem" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-lighting">
+                    <rect key="frame" x="480" y="440" width="340" height="80"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" title="" id="MTE-lighting-c">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button toolTip="restart preview" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-restart">
+                    <rect key="frame" x="14" y="12" width="100" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Restart" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-restart-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="restartPreview:" target="-2" id="MTE-restart-a"/>
+                    </connections>
+                </button>
+                <slider toolTip="preview time" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-time">
+                    <rect key="frame" x="20" y="52" width="380" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1000" tickMarkPosition="above" sliderType="linear" id="MTE-time-c"/>
+                    <connections>
+                        <action selector="scrubPreview:" target="-2" id="MTE-time-a"/>
+                    </connections>
+                </slider>
+                <textField toolTip="preview time label" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-timelabel">
+                    <rect key="frame" x="402" y="54" width="52" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="0.00 s" id="MTE-timelabel-c">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button toolTip="play or pause preview" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-play">
+                    <rect key="frame" x="118" y="12" width="100" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Pause" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-play-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="togglePreview:" target="-2" id="MTE-play-a"/>
                     </connections>
                 </button>
                                 </subviews>

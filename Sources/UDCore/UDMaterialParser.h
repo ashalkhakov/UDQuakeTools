@@ -50,6 +50,9 @@ extern const int UDGLSDstBlendZero, UDGLSDstBlendOne, UDGLSDstBlendSrcColor, UDG
 @property (nonatomic, readonly) int vertexColor;
 /// textureRepeat_t: 0 repeat, 1 clamp, 2 clamp to border, 3 clamp to zero, 4 clamp to zero alpha.
 @property (nonatomic, readonly) int repeat;
+/// textureDepth_t: 0 specular, 1 diffuse, 2 default, 3 bump, 4 high quality
+/// (a bump one's red goes to its alpha on its upload).
+@property (nonatomic, readonly) int imageDepth;
 /// The stage's place in the text (ParseStage from it, a shortcut counted),
 /// -1 for one AddImplicitStages adds.
 @property (nonatomic, readonly) NSInteger textIndex;
@@ -105,6 +108,12 @@ typedef NS_ENUM(NSInteger, UDMaterialTextKind) {
 @property (nonatomic, readonly) int contentFlags;
 @property (nonatomic, readonly) int surfaceFlags;
 @property (nonatomic, readonly) int materialFlags;
+/// A light material's: its lightFalloffImage (nil for none), and whether it
+/// is an ambient, fog or blend light.
+@property (nonatomic, copy, readonly, nullable) NSString *lightFalloffImageName;
+@property (nonatomic, readonly) BOOL ambientLight;
+@property (nonatomic, readonly) BOOL fogLight;
+@property (nonatomic, readonly) BOOL blendLight;
 /// The stages in the engine's order (SortInteractionStages').
 @property (nonatomic, copy, readonly) NSArray<UDMaterialStageInfo *> *stages;
 

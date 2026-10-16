@@ -21,6 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSArray<UDParticleStage *> *stages;
 /// Or an FX's actions.
 @property (nonatomic, copy, nullable) NSArray<UDFXAction *> *fxActions;
+/// Or a material, its name and its text (an editor's, unsaved): drawn on a
+/// square facing the view, lit by a point light (the interaction pass, the
+/// game's glprogs/interaction.vfp), then its ambient stages.
+@property (nonatomic, copy, nullable) NSString *materialName;
+@property (nonatomic, copy, nullable) NSString *materialText;
+/// Why the lit part is not drawn, if it is not (no interaction.vfp, or one
+/// that does not run).
+@property (nonatomic, copy, readonly, nullable) NSString *lightingProblem;
 /// Plays from the start again.
 - (void)restart;
 /// Whether it plays (YES at first); paused, it shows the time it is at.

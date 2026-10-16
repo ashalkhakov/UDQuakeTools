@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class idDeclManager, UDFXAction, UDParticleSurface;
+@class idDeclManager, UDFXAction, UDParticleSurface, UDPointLight;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,8 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// particle decl) at @a msec, in the world, seen along @a viewAxis.
 - (NSArray<UDParticleSurface *> *)surfacesAtTime:(int)msec viewAxis:(const float [_Nonnull 3][3])viewAxis;
 
-/// The bounds of the particle systems its actions can add, at their
-/// offsets: min x y z, max x y z (zero when it has none).
+/// The lights its actions have added at @a msec (R_DeriveLightData's point
+/// lights: at their offsets, their radius, their material, their parms as
+/// Run and ApplyFade left them).
+- (NSArray<UDPointLight *> *)lightsAtTime:(int)msec;
+
+/// The bounds of the particle systems its actions can add, and of its
+/// lights' radiuses, at their offsets: min x y z, max x y z (zero when it
+/// has none).
 - (void)getBounds:(float [_Nonnull 6])bounds;
 
 @end

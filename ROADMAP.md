@@ -184,7 +184,8 @@ In order of value against cost; LOC is the MFC original's size.
 - [x] FX preview: idEntityFx's Setup, Start, Run, ApplyFade and CleanUp,
       ported and stepped at the game's frames; its particle systems in the
       particle preview, its actions on a timeline. Its lights and other
-      models come with the bridge.
+      models come with the bridge. Its lights light a wall behind it
+      (the material preview's lit pass).
 - [x] **FX editor** — idDeclFX::Parse and ParseSingleFXAction ported (every
       retail FX parses): the joint it binds to, its actions in a list, the
       selected action's every keyword; in the Issues tab, what the engine
@@ -213,7 +214,13 @@ In order of value against cost; LOC is the MFC original's size.
       each stage's keywords; a 2D preview of its image, as the renderer
       loads it (R_LoadImage's TGA/BMP/JPG, image programs); Issues from the
       parse and "Couldn't load image".
-- [ ] **Material 3D preview** — through the bridge.
+- [x] Material preview: the material on a square, lit by a point light as
+      the ARB2 interaction pass lights it (RB_CreateSingleDrawInteractions,
+      RB_ARB2_DrawInteraction, R_DeriveLightData's point light, the
+      normalization cube map and specular table, ported; the game's own
+      glprogs/interaction.vfp run by an ARB program interpreter that knows
+      just what it uses), then its ambient stages; its time on a slider.
+- [ ] **Material 3D preview** — on models, through the bridge.
 - [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser

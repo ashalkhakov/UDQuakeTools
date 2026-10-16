@@ -57,6 +57,7 @@ UDCore_OBJC_FILES = \
     UDParticleModel.m \
     UDSoftwareRenderer.m \
     UDFXModel.m \
+    UDARBProgram.m \
     UDMaterialParser.m \
     UDImageProgram.m \
     UDDeclPDA.m \
@@ -106,6 +107,7 @@ UDCore_HEADER_FILES = \
     UDParticleModel.h \
     UDSoftwareRenderer.h \
     UDFXModel.h \
+    UDARBProgram.h \
     UDMaterialParser.h \
     UDImageProgram.h \
     UDDeclPDA.h \

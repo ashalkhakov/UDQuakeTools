@@ -39,6 +39,10 @@ static const int UDImageUseNormalCompression = 2;
 
 @implementation UDImage
 
+- (instancetype)init {
+    return [self initWithWidth:0 height:0 pixels:[NSData data]];
+}
+
 - (instancetype)initWithWidth:(int)width height:(int)height pixels:(NSData *)pixels {
     self = [super init];
     if (self) {
@@ -1473,7 +1477,157 @@ static UDImage *R_FlatNormalImage( void ) {
     return UDImageWithBytes( (byte *)data, 2, 2 );
 }
 
+/*
+================
+R_SpecularTableImage
+
+Creates a ramp that matches our fudged specular calculation
+================
+*/
+static UDImage *R_SpecularTableImage( void ) {
+    int        x;
+    byte    data[256][4];
+
+    for (x=0 ; x<256 ; x++) {
+        float f = x/255.f;
+        // this is the behavior of the hacked up fragment programs that
+        // can't really do a power function
+        f = (f-0.75)*4;
+        if ( f < 0 ) {
+            f = 0;
+        }
+        f = f * f;
+        int        b = (int)(f * 255);
+
+        data[x][0] =
+        data[x][1] =
+        data[x][2] =
+        data[x][3] = b;
+    }
+
+    return UDImageWithBytes( (byte *)data, 256, 1 );
+}
+
+#define    NORMAL_MAP_SIZE        32
+
+/*
+================
+getCubeVector
+================
+*/
+static void getCubeVector(int i, int cubesize, int x, int y, float *vector) {
+  float s, t, sc, tc, mag;
+
+  s = ((float)x + 0.5) / (float)cubesize;
+  t = ((float)y + 0.5) / (float)cubesize;
+  sc = s*2.0 - 1.0;
+  tc = t*2.0 - 1.0;
+
+  switch (i) {
+  case 0:
+    vector[0] = 1.0;
+    vector[1] = -tc;
+    vector[2] = -sc;
+    break;
+  case 1:
+    vector[0] = -1.0;
+    vector[1] = -tc;
+    vector[2] = sc;
+    break;
+  case 2:
+    vector[0] = sc;
+    vector[1] = 1.0;
+    vector[2] = tc;
+    break;
+  case 3:
+    vector[0] = sc;
+    vector[1] = -1.0;
+    vector[2] = -tc;
+    break;
+  case 4:
+    vector[0] = sc;
+    vector[1] = -tc;
+    vector[2] = 1.0;
+    break;
+  case 5:
+    vector[0] = -sc;
+    vector[1] = -tc;
+    vector[2] = -1.0;
+    break;
+  default:
+    return;
+  }
+
+  mag = 1.0f / sqrtf(vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2]);     // idMath::InvSqrt
+  vector[0] *= mag;
+  vector[1] *= mag;
+  vector[2] *= mag;
+}
+
+/*
+=================
+makeNormalizeVectorCubeMap
+
+Creates a cube map to normalize the vector towards the light
+=================
+*/
+static NSArray<UDImage *> *makeNormalizeVectorCubeMap( void ) {
+    float vector[3] = { 0, 0, 0 };
+    int i, x, y;
+    int        size = NORMAL_MAP_SIZE;
+    NSMutableArray<UDImage *> *faces = [NSMutableArray arrayWithCapacity:6];
+    byte *pixels = malloc( size*size*4 );
+
+    for (i = 0; i < 6; i++) {
+        for (y = 0; y < size; y++) {
+          for (x = 0; x < size; x++) {
+            getCubeVector(i, size, x, y, vector);
+            pixels[4*(y*size+x) + 0] = (byte)(128 + 127*vector[0]);
+            pixels[4*(y*size+x) + 1] = (byte)(128 + 127*vector[1]);
+            pixels[4*(y*size+x) + 2] = (byte)(128 + 127*vector[2]);
+            pixels[4*(y*size+x) + 3] = 255;
+          }
+        }
+        [faces addObject:UDImageWithBytes( pixels, size, size )];
+    }
+
+    free( pixels );
+    return faces;
+}
+
+/*
+================
+R_AmbientNormalImage
+================
+*/
+static NSArray<UDImage *> *R_AmbientNormalImage( void ) {
+    byte    data[DEFAULT_SIZE][DEFAULT_SIZE][4];
+    int        i;
+    // tr.ambientLightVector, as idRenderSystemLocal::Init sets it
+    const float ambientLightVector[3] = { 0.5f, 0.5f - 0.385f, 0.8925f };
+
+    int red = ( UDImageUseNormalCompression == 1 ) ? 0 : 3;
+    int alpha = ( red == 0 ) ? 3 : 0;
+    // flat normal map for default bunp mapping
+    for ( i = 0 ; i < 4 ; i++ ) {
+        data[0][i][red] = (byte)(255 * ambientLightVector[0]);
+        data[0][i][1] = (byte)(255 * ambientLightVector[1]);
+        data[0][i][2] = (byte)(255 * ambientLightVector[2]);
+        data[0][i][alpha] = 255;
+    }
+    // this must be a cube map for fragment programs to simply substitute for the normalization cube map
+    UDImage *face = UDImageWithBytes( (byte *)data, 2, 2 );
+    return @[face, face, face, face, face, face];
+}
+
 @implementation UDImageProgram
+
++ (NSArray<UDImage *> *)cubeImageNamed:(NSString *)name {
+    NSString *lower = name.lowercaseString;
+    if ( [lower isEqualToString:@"_normalcubemap"] ) return makeNormalizeVectorCubeMap();
+    if ( [lower isEqualToString:@"_ambient"] ) return R_AmbientNormalImage();
+    return nil;
+}
 
 + (NSSet<NSString *> *)builtInImageNames {
     static NSSet<NSString *> *names;
@@ -1511,6 +1665,7 @@ static UDImage *R_FlatNormalImage( void ) {
     if ( [lower isEqualToString:@"_white"] ) return R_WhiteImage();
     if ( [lower isEqualToString:@"_black"] ) return R_BlackImage();
     if ( [lower isEqualToString:@"_flat"] ) return R_FlatNormalImage();
+    if ( [lower isEqualToString:@"_speculartable"] ) return R_SpecularTableImage();
     if ( [[self builtInImageNames] containsObject:lower] ) {
         if ( problem != NULL ) *problem = [NSString stringWithFormat:@"%@ is generated by the renderer as it draws", name];
         return nil;

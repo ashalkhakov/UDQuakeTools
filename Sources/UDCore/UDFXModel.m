@@ -15,6 +15,7 @@
 #import "UDDeclFX.h"
 #import "UDDeclParticle.h"
 #import "UDParticleModel.h"
+#import "UDSoftwareRenderer.h"
 #import "idDeclManager.h"
 
 #define MAX_ENTITY_SHADER_PARMS     12
@@ -573,11 +574,38 @@ idEntityFx::Run
     return surfaces;
 }
 
+- (NSArray<UDPointLight *> *)lightsAtTime:(int)msec {
+    [self simulateTo:msec];
+    NSMutableArray<UDPointLight *> *lights = [NSMutableArray array];
+    for ( int i = 0; i < numEvents; i++ ) {
+        // the light is the action's own (a uselight's is its sibling's)
+        const idFXSingleAction *fxaction = &events[i];
+        idFXLocalAction *laction = &actions[i];
+        if ( !laction->lightDef ) continue;
+        UDPointLight *light = [[UDPointLight alloc] init];
+        light.material = fxaction->data;
+        for ( int k = 0; k < 3; k++ ) {
+            light.origin[k] = fxaction->offset[k];
+            light.radius[k] = fxaction->lightRadius;
+        }
+        memcpy( light.shaderParms, laction->lightShaderParms, sizeof( laction->lightShaderParms ) );
+        [lights addObject:light];
+    }
+    return lights;
+}
+
 - (void)getBounds:(float [6])bounds {
     bounds[0] = bounds[1] = bounds[2] = INFINITY;
     bounds[3] = bounds[4] = bounds[5] = -INFINITY;
     for ( int i = 0; i < numEvents; i++ ) {
         const idFXSingleAction *fxaction = &events[i];
+        if ( fxaction->type == FX_LIGHT && fxaction->sibling == -1 && fxaction->lightRadius > 0 ) {
+            for ( int k = 0; k < 3; k++ ) {
+                bounds[k] = MIN( bounds[k], fxaction->offset[k] - fxaction->lightRadius );
+                bounds[3 + k] = MAX( bounds[3 + k], fxaction->offset[k] + fxaction->lightRadius );
+            }
+            continue;
+        }
         if ( fxaction->type != FX_PARTICLE && fxaction->type != FX_MODEL && fxaction->type != FX_ATTACHENTITY ) continue;
         UDParticleModel *model = [self particleModelFor:fxaction->data];
         if ( model == nil ) continue;

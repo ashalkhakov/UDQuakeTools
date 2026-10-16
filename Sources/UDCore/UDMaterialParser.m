@@ -529,6 +529,7 @@ static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
 - (BOOL)newStage { return stage.hasNewStage; }
 - (int)vertexColor { return stage.vertexColor; }
 - (int)repeat { return stage.texture.image.repeat; }
+- (int)imageDepth { return stage.texture.image.depth; }
 - (NSInteger)textIndex { return stage.textIndex; }
 
 @end
@@ -655,6 +656,10 @@ static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
 - (int)contentFlags { return contentFlags; }
 - (int)surfaceFlags { return surfaceFlags; }
 - (int)materialFlags { return materialFlags; }
+- (NSString *)lightFalloffImageName { return hasLightFalloffImage ? @(lightFalloffImage.name) : nil; }
+- (BOOL)ambientLight { return ambientLight; }
+- (BOOL)fogLight { return fogLight; }
+- (BOOL)blendLight { return blendLight; }
 
 - (NSArray<UDMaterialStageInfo *> *)stages {
     NSMutableArray<UDMaterialStageInfo *> *infos = [NSMutableArray array];

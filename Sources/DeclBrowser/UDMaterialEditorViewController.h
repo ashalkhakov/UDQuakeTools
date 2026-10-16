@@ -1,6 +1,6 @@
 #import "UDDeclEditorViewController.h"
 
-@class UDDeclMaterial;
+@class UDDeclMaterial, UDParticlePreview;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTableView *stagesTable;
 @property (weak) IBOutlet NSImageView *previewView;
 @property (weak) IBOutlet NSTextField *previewLabel;
+/// The Preview tab: the material lit, as the engine draws it
+/// (UDParticlePreview), its time, and why it is not lit, if it is not.
+@property (weak) IBOutlet NSImageView *materialPreviewView;
+@property (weak) IBOutlet NSTextField *lightingLabel;
+@property (weak) IBOutlet NSSlider *timeSlider;
+@property (weak) IBOutlet NSTextField *timeLabel;
+@property (weak) IBOutlet NSButton *playButton;
+@property (nonatomic, strong, readonly, nullable) UDParticlePreview *materialPreview;
 
 /// + adds a stage, last, as MaterialDoc::AddStage does ("Stage N"); - takes
 /// the selected one off.
@@ -31,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)addLightingStage:(nullable id)sender;
 /// The selected stage's text to the pasteboard; a stage's text from it,
 /// after the selection.
+- (IBAction)restartPreview:(nullable id)sender;
+- (IBAction)scrubPreview:(nullable id)sender;
+- (IBAction)togglePreview:(nullable id)sender;
 - (IBAction)copy:(nullable id)sender;
 - (IBAction)paste:(nullable id)sender;
 

@@ -11,11 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// idDrawVert's part a particle sets: its place, its texture coordinates,
-/// its color.
+/// idDrawVert: its place, its texture coordinates, its normal and tangents
+/// (a lit surface's; a particle's are 0), its color.
 typedef struct {
     float   xyz[3];
     float   st[2];
+    float   normal[3];
+    float   tangents[2][3];
     uint8_t color[4];
 } UDDrawVert;
 
@@ -28,6 +30,10 @@ typedef struct {
 @property (nonatomic, readonly) const UDDrawVert *verts;
 /// Its entity's shader parms (MAX_ENTITY_SHADER_PARMS of them).
 @property (nonatomic, readonly) const float *shaderParms;
+/// A surface of @a numVerts @a verts (quads), its material @a material, its
+/// entity's @a shaderParms.
++ (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts
+                        shaderParms:(const float *)shaderParms;
 @end
 
 @interface UDParticleModel : NSObject

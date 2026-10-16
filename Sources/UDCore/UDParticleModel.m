@@ -275,6 +275,17 @@ typedef struct {
     return parms;
 }
 
++ (instancetype)surfaceWithMaterial:(NSString *)material verts:(const UDDrawVert *)verts numVerts:(int)numVerts
+                        shaderParms:(const float *)shaderParms {
+    UDParticleSurface *surf = [[UDParticleSurface alloc] init];
+    surf.material = material;
+    surf.stageIndex = -1;
+    surf->vertData = [NSMutableData dataWithBytes:verts length:(NSUInteger)numVerts * sizeof( UDDrawVert )];
+    surf.numVerts = numVerts;
+    memcpy( surf->parms, shaderParms, sizeof( surf->parms ) );
+    return surf;
+}
+
 @end
 
 @interface UDParticleModel () {

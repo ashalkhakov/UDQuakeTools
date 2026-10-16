@@ -74,6 +74,8 @@ NSString * _Nullable UDDoom3InstallPath(void);
 - (nullable NSButton *)buttonTitled:(NSString *)title inView:(NSView *)view;
 - (nullable __kindof NSView *)firstSubviewOfClass:(Class)cls inView:(NSView *)view;
 - (nullable NSSegmentedControl *)segmentedControlWithAction:(SEL)action inView:(NSView *)view;
+/// Every view under @a view, breadth first, while @a visit says YES.
+- (void)forEachViewUnder:(NSView *)view do:(BOOL (^)(NSView *view))visit;
 /// A control by its tool tip (the settings' and New Declaration's name what
 /// they set).
 - (nullable __kindof NSView *)viewWithToolTip:(NSString *)toolTip inView:(NSView *)view;

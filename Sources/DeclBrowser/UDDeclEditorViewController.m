@@ -2,6 +2,7 @@
 #import "UDDeclItem.h"
 #import "UDDeclDocument.h"
 #import "UDDeclManagedObjects.h"
+#import "UDDeclTextChecker.h"
 #import "UDWorkspace.h"
 #import "idDeclManager.h"
 #import <UDCodeKit/UDCodeKit.h>
@@ -70,8 +71,25 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidSave:)
                                                  name:NSManagedObjectContextDidSaveNotification
                                                object:self.editingContext];
+    [self _checkParse];
     [self declDidLoad];
     [self editingContextDidChange];
+}
+
+/// What the decl's parser says of its text, as the decl manager read it:
+/// where the engine would give up on it and make it a default, say.
+- (void)_checkParse {
+    NSData *source = self.declObject.sourceText;
+    NSString *text = source != nil ? [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding] : nil;
+    if (text == nil) return;
+    NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
+    for (UDDeclTextProblem *problem in [[self.declObject class] ud_problemsParsingText:text name:self.declObject.name
+                                                                             fileSystem:self.workspace.fileSystem]) {
+        [items addObject:[[UDDiagnosticItem alloc] initWithLine:problem.line column:0 message:problem.message
+                                                       severity:problem.isError ? UDDiagnosticSeverityError : UDDiagnosticSeverityWarning
+                                                         source:@"parse"]];
+    }
+    [self.diagnosticStore setDiagnostics:items forSource:@"parse"];
 }
 
 - (void)dealloc {

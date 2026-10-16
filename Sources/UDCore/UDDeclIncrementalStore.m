@@ -664,7 +664,10 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 
 - (NSData *)ud_textForDeclObject:(NSManagedObject *)object error:(NSError **)error {
     Class cls = NSClassFromString(object.entity.managedObjectClassName);
-    if (![cls isSubclassOfClass:[UDDeclBase class]] || ((UDDeclBase *)object).ud_sourceTextEdited) {
+    // Unedited, it is its text as the file has it, comments and all (and
+    // as it is, where its parser gave up and made it a default).
+    if (![cls isSubclassOfClass:[UDDeclBase class]] || ((UDDeclBase *)object).ud_sourceTextEdited ||
+        (!object.hasChanges && !object.isInserted)) {
         return [object valueForKey:@"sourceText"];
     }
     // As -_applyChangesForDeclObject:isInserted:error: writes it.

@@ -1,6 +1,7 @@
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclManagedObjects.h"
+#import "UDDeclTextChecker.h"
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
@@ -201,6 +202,35 @@
     XCTAssertGreaterThan([[NSSet setWithArray:froms] count], 1U, @"and further up its chain: %@", [NSSet setWithArray:froms]);
     XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"every entityDef it inherits is there: %@",
                    editor.diagnosticStore.allDiagnostics);
+}
+
+- (void)testEveryRetailSoundShaderParses {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    NSUInteger shaders = 0;
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    for (idDeclBase *decl in [declManager declsOfType:DECL_SOUND forceParse:NO]) {
+        NSMutableData *buffer = [NSMutableData data];
+        [decl text:buffer];
+        NSString *text = [[NSString alloc] initWithBytes:buffer.bytes length:buffer.length > 0 ? buffer.length - 1 : 0
+                                                encoding:NSUTF8StringEncoding] ?: @"";
+        for (UDDeclTextProblem *problem in [UDDeclSound ud_problemsParsingText:text name:[decl name] fileSystem:nil]) {
+            [problems addObject:[NSString stringWithFormat:@"%@: %@", [decl name], problem]];
+        }
+        shaders++;
+    }
+    XCTAssertGreaterThan(shaders, 1000U, @"the retail sound shaders are indexed");
+    // ParseShader gives up on these, and the engine makes them defaults:
+    // stereo_omni is no keyword of it, nor "if", nor a folder for a sample.
+    NSArray<NSString *> *rejected = [[problems valueForKey:@"description"] sortedArrayUsingSelector:@selector(compare:)];
+    XCTAssertEqual(rejected.count, 5U, @"%@", rejected);
+    for (NSString *expected in @[@"teleport_in: warning line 7: unknown token 'stereo_omni'",
+                                 @"teleport_lightning: warning line 5: unknown token 'stereo_omni'"]) {
+        XCTAssertTrue([rejected containsObject:expected], @"%@ in %@", expected, rejected);
+    }
 }
 
 #pragma mark - Editing

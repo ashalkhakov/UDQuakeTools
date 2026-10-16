@@ -56,7 +56,7 @@ typedef enum {
 
 /// The text @a object would save as now, its unsaved edits in it: what its
 /// codec writes from its attributes and children, as a save has it written,
-/// or its edited raw text.
+/// or its edited raw text; unedited, its text as the file has it.
 - (nullable NSData *)ud_textForDeclObject:(NSManagedObject *)object error:(NSError * _Nullable * _Nullable)error;
 
 /// @a text read into @a object, as a fetch reads a decl's text into one: its

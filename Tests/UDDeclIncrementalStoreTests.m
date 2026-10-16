@@ -19,6 +19,7 @@
 #import "idDeclManager.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclIncrementalStore.h"
+#import "UDDeclTextChecker.h"
 
 @interface UDDeclIncrementalStoreTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
@@ -126,6 +127,28 @@
          "\t}\n"
          "}\n";
     [self writeGameFile:@"particles/test.prt" contents:particleFixture];
+
+    // A sound shader using most of what ParseShader reads.
+    [fileManager createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"sound"]
+           withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"sound/test.sndshd" contents:
+        @"test_door {\n"
+         "\tdescription \"Door opening\"\n"
+         "\tminDistance 2\n"
+         "\tmaxDistance 30\n"
+         "\tvolume -4\n"
+         "\tshakes\n"
+         "\treverb 1, 2\n"
+         "\tno_dups\n"
+         "\tmask_left\n"
+         "\tleadin sound/test/door_start.wav\n"
+         "\tsound\\test\\door1.wav\n"
+         "\tsound/test/door2.ogg\n"
+         "}\n"
+         "\n"
+         "test_hum {\n"
+         "\tsound/test/hum.wav\n"
+         "}\n"];
 
     // An entityDef inheriting from one that inherits in turn.
     [fileManager createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"def"]
@@ -604,6 +627,53 @@
     XCTAssertFalse([pair validateValue:&value forKey:@"value" error:NULL], @"no quote in it");
     value = @"";
     XCTAssertTrue([pair validateValue:&value forKey:@"value" error:NULL], @"a value may be empty");
+}
+
+#pragma mark - Sound shaders
+
+- (void)testASoundShaderIsReadAsParseShaderReadsIt {
+    UDDeclSound *door = [self declWithTypeName:@"sound" name:@"test_door"];
+    XCTAssertEqualObjects(door.soundDescription, @"Door opening");
+    XCTAssertEqualObjects(door.minDistance, @2);
+    XCTAssertEqualObjects(door.maxDistance, @30);
+    XCTAssertEqualObjects(door.volume, @-4);
+    XCTAssertEqualObjects(door.shakes, @1, @"a bare shakes is 1");
+    XCTAssertNil(door.soundClass, @"what it does not set is unset");
+    XCTAssertEqualObjects(door.reverb, @"1, 2");
+    XCTAssertTrue(door.noDups);
+    XCTAssertTrue(door.maskLeft);
+    XCTAssertFalse(door.looping);
+    XCTAssertEqualObjects([door.leadins valueForKey:@"path"], (@[@"sound/test/door_start.wav"]));
+    XCTAssertEqualObjects([door.samples valueForKey:@"path"], (@[@"sound/test/door1.wav", @"sound/test/door2.ogg"]),
+                          @"backslashes to slashes");
+}
+
+- (void)testAnEditedSoundShaderIsWrittenBack {
+    UDDeclSound *hum = [self declWithTypeName:@"sound" name:@"test_hum"];
+    hum.looping = YES;
+    hum.volume = @-10;
+    NSMutableArray *samples = [hum.samples mutableCopy];
+    [samples addObject:[UDSoundSample sampleWithPath:@"sound/test/hum2.wav"]];
+    hum.samples = samples;
+    XCTAssertTrue([self saveContext]);
+
+    NSString *text = [self contentsOfGameFile:@"sound/test.sndshd"];
+    XCTAssertTrue([text containsString:@"sound test_hum\n{\n\tvolume\t\t-10\n\tlooping\n\tsound/test/hum.wav\n\tsound/test/hum2.wav\n}"], @"%@", text);
+    XCTAssertTrue([text containsString:@"test_door {"], @"the others as they were: %@", text);
+
+    UDDeclSound *door = [self declWithTypeName:@"sound" name:@"test_door"];
+    door.looping = YES;
+    XCTAssertTrue([self saveContext]);
+    text = [self contentsOfGameFile:@"sound/test.sndshd"];
+    XCTAssertTrue([text containsString:@"\treverb\t\t\t1, 2\n"], @"what the engine no longer reads is kept: %@", text);
+    XCTAssertTrue([text containsString:@"\tleadin sound/test/door_start.wav\n"], @"%@", text);
+}
+
+- (void)testWhatParseShaderGivesUpOnIsAProblem {
+    NSArray<UDDeclTextProblem *> *problems = [UDDeclSound ud_problemsParsingText:@"{\n\tminDistance 1\n\twobble\n}\n" name:@"test" fileSystem:nil];
+    XCTAssertEqual(problems.count, 1U);
+    XCTAssertEqual(problems.firstObject.line, 3);
+    XCTAssertTrue([problems.firstObject.message containsString:@"unknown token 'wobble'"], @"%@", problems.firstObject.message);
 }
 
 @end

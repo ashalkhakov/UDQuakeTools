@@ -6,6 +6,7 @@
 #import "UDNewDeclWindowController.h"
 #import "UDTextEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
+#import "UDSoundEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -27,13 +28,27 @@ static NSString *const UDFixtureDefs =
      "\t\"name\"\t\"Yard\"\n"
      "}\n";
 
+static NSString *const UDFixtureFX =
+    @"fx fx/udtest_spark {\n"
+     "\t// one spark\n"
+     "\t{\n"
+     "\t\tname\t\"spark\"\n"
+     "\t\tduration\t0.5\n"
+     "\t}\n"
+     "}\n";
+
 static NSString *const UDFixtureSounds =
     @"udtest_hum {\n"
-     "\t// heard everywhere\n"
      "\tdescription\t\"Low hum\"\n"
      "\tminDistance\t1\n"
      "\tmaxDistance\t12\n"
      "\tsound/udtest/hum.wav\n"
+     "\tsound/udtest/gone.wav\n"
+     "}\n"
+     "\n"
+     "udtest_broken {\n"
+     "\tminDistance\t1\n"
+     "\twobble\n"
      "}\n";
 
 static NSString *const UDFixtureParticles =
@@ -61,7 +76,7 @@ static NSString *const UDFixtureParticles =
     self.basePath = [self.scratchDirectory stringByAppendingPathComponent:@"install"];
     self.savePath = [self.scratchDirectory stringByAppendingPathComponent:@"save"];
     NSFileManager *files = [NSFileManager defaultManager];
-    for (NSString *folder in @[@"base/def", @"base/sound", @"base/particles"]) {
+    for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -70,6 +85,11 @@ static NSString *const UDFixtureParticles =
                     atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureParticles writeToFile:[self.basePath stringByAppendingPathComponent:@"base/particles/udtest.prt"]
                          atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureFX writeToFile:[self.basePath stringByAppendingPathComponent:@"base/fx/udtest.fx"]
+                  atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    // One of its samples, as an .ogg: the engine finds it by the .wav's name.
+    [@"" writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest/hum.ogg"]
+          atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureSounds writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest.sndshd"]
                       atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
@@ -168,19 +188,19 @@ static NSString *const UDFixtureParticles =
 - (void)testADeclIsHighlightedAsADecl {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"sound/udtest_hum" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a sound shader opens as text, not %@", editor);
+    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"an fx opens as text, not %@", editor);
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
 
     // Its comments and strings, each in a colour of their own.
     BOOL highlighted = [self spinUntil:^BOOL{
-        NSColor *comment = [self colorOf:@"// heard" inTextView:textView];
-        NSColor *string = [self colorOf:@"\"Low hum\"" inTextView:textView];
+        NSColor *comment = [self colorOf:@"// one" inTextView:textView];
+        NSColor *string = [self colorOf:@"\"spark\"" inTextView:textView];
         return comment != nil && string != nil && ![comment isEqual:string] &&
                ![comment isEqual:textView.textColor] && ![string isEqual:textView.textColor];
     } timeout:5.0];
     XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
-                  [self colorOf:@"// heard" inTextView:textView], [self colorOf:@"\"Low hum\"" inTextView:textView],
+                  [self colorOf:@"// one" inTextView:textView], [self colorOf:@"\"spark\"" inTextView:textView],
                   textView.textColor);
 }
 
@@ -307,6 +327,77 @@ static NSString *const UDFixtureParticles =
     UDBaseEditorViewController *editor = [self openOutlinePath:@"mapDef/udtest/yard" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"%@", editor);
     XCTAssertEqualObjects([((UDEntityDefEditorViewController *)editor).keyValuesController.arrangedObjects valueForKey:@"value"], (@[@"Yard"]));
+}
+
+#pragma mark - The sound shader editor
+
+- (UDSoundEditorViewController *)openSound:(NSString *)name in:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:[@"sound/" stringByAppendingString:name] inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDSoundEditorViewController class]], @"a sound shader opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDSoundEditorViewController class]] ? (UDSoundEditorViewController *)editor : nil;
+}
+
+- (void)testASoundShaderOpensWithItsParametersAndSamples {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDSoundEditorViewController *editor = [self openSound:@"udtest_hum" in:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"soundDescription" inView:editor.view]).stringValue, @"Low hum");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"maxDistance" inView:editor.view]).stringValue, @"12");
+    NSTextField *volume = [self viewWithToolTip:@"volume" inView:editor.view];
+    XCTAssertEqualObjects(volume.stringValue, @"", @"what it does not set is empty");
+    __block BOOL defaultShown = NO;
+    [self forEachViewUnder:editor.view do:^BOOL(NSView *view) {
+        defaultShown = defaultShown || ([view isKindOfClass:[NSTextField class]] && [((NSTextField *)view).stringValue isEqualToString:@"default 10"]);
+        return YES;
+    }];
+    XCTAssertTrue(defaultShown, @"the engine's defaults shown beside the fields");
+    XCTAssertEqualObjects([editor.samplesController.arrangedObjects valueForKey:@"path"],
+                          (@[@"sound/udtest/hum.wav", @"sound/udtest/gone.wav"]));
+
+    NSArray<UDDiagnosticItem *> *issues = editor.diagnosticStore.allDiagnostics;
+    XCTAssertEqual(issues.count, 1U, @"hum.wav is there as hum.ogg; gone.wav is not: %@", issues);
+    XCTAssertEqualObjects(issues.firstObject.message, @"Couldn't load sound 'sound/udtest/gone.wav' using default");
+    [controller errorsViewController:nil didSelectDiagnostic:issues.firstObject inStore:editor.diagnosticStore];
+    XCTAssertEqual(editor.samplesController.selectionIndex, 1U, @"a click shows the row");
+}
+
+- (void)testEditingASoundShaderSavesIt {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDSoundEditorViewController *editor = [self openSound:@"udtest_hum" in:controller];
+    if (editor == nil) return;
+
+    id value = @"-6";
+    XCTAssertTrue([editor.sound validateValue:&value forKey:@"volume" error:NULL]);
+    editor.sound.volume = value;
+    value = @"loud";
+    XCTAssertFalse([editor.sound validateValue:&value forKey:@"volume" error:NULL], @"not a number: refused");
+    value = @"7";
+    XCTAssertFalse([editor.sound validateValue:&value forKey:@"soundClass" error:NULL], @"SOUND_MAX_CLASSES");
+    value = @"";
+    XCTAssertTrue([editor.sound validateValue:&value forKey:@"maxDistance" error:NULL]);
+    editor.sound.maxDistance = value;
+    [[self buttonTitled:@"Looping" inView:editor.view] performClick:nil];
+
+    [editor.samplesController setSelectionIndex:1];
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:@selector(addOrRemoveSample:) inView:editor.view];
+    [buttons setSelectedSegment:1];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"the missing sample taken off");
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"sound/udtest.sndshd"];
+    XCTAssertTrue([saved containsString:@"sound udtest_hum\n{\n\tdescription\t\t\"Low hum\"\n\tminDistance\t\t1\n\tvolume\t\t-6\n\tlooping\n\tsound/udtest/hum.wav\n}"], @"%@", saved);
+}
+
+- (void)testWhereTheEngineGivesUpOnAShaderIsAnIssue {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDSoundEditorViewController *editor = [self openSound:@"udtest_broken" in:controller];
+    if (editor == nil) return;
+    NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
+    XCTAssertTrue([messages containsObject:@"unknown token 'wobble'"], @"%@", messages);
 }
 
 @end

@@ -160,8 +160,13 @@ In order of value against cost; LOC is the MFC original's size.
       key's help from the `editor_*` keys, as Radiant's EClass_InitFromDict
       reads them; an unknown inherit and a key set twice in the Issues tab.
       Its model, skin and sound pickers come with the lookup dialogs.
-- [ ] **Sound shader editor** — the decl side of the MFC sound editor:
-      parameters, sample list, play.
+- [x] **Sound shader editor** — idSoundShader::ParseShader ported (where
+      it gives up, MakeDefault's values, as the engine has them; five retail
+      shaders it gives up on): description and parameters (unset is the
+      engine's default, shown), flags and speakers, samples and leadins in
+      lists; a sample the engine plays its default sound for, and an alt
+      sound no shader defines, in the Issues tab. Play comes with sound
+      playback through idFileSystem (Doom 3's samples are Ogg Vorbis).
 - [ ] **Particle editor** (1.7k) — decl editing over the existing stage
       model (`UDParticleStage`): stages list, every stage parameter with
       sliders, material picker; a 2D animated preview is possible, the 3D

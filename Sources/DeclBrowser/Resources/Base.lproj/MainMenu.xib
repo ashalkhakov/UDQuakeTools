@@ -254,6 +254,11 @@
                                     <action selector="jumpToDefinition:" target="-1" id="jTD-ef-0a2"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Test Declaration" id="TDC-mi-001">
+                                <connections>
+                                    <action selector="testDecl:" target="-1" id="TDC-ac-001"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Spelling and Grammar" id="Dv1-io-Yv7">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Spelling" id="3IN-sU-3Bg">

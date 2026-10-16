@@ -6,6 +6,8 @@
 #import "UDWorkspace.h"
 #import "UDScriptServer.h"
 #import "UDWorkspaceWindowController.h"
+#import "UDDeclTextChecker.h"
+#import "UDDeclManagedObjects.h"
 #import <UDCodeKit/UDCodeKit.h>
 
 @interface UDTextEditorViewController () <UDDiagnosticTextViewDelegate>
@@ -45,6 +47,7 @@
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_session close];
 }
 
@@ -109,6 +112,10 @@
     // from after the filling, which is no edit.
     [self.document setTextView:self.editor.textView];
     self.session.textStorage.textModel.undoManager = self.document.undoManager;
+    if (self.item.kind == UDWorkspaceItemKindDecl) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_declTextDidChange:)
+                                                     name:NSTextDidChangeNotification object:self.editor.textView];
+    }
 
     // A script's tab opens it on the workspace's language server, by its
     // path in the file system, once its text is in.
@@ -139,7 +146,47 @@
     if (menuItem.action == @selector(jumpToDefinition:)) {
         return self.session.lspCoordinator != nil;
     }
+    if (menuItem.action == @selector(testDecl:)) {
+        return self.item.kind == UDWorkspaceItemKindDecl && self.diagnosticStore != nil;
+    }
     return YES;
+}
+
+#pragma mark - Test (DialogDeclEditor's)
+
+static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
+
+- (IBAction)testDecl:(id)sender {
+    if (self.item.kind != UDWorkspaceItemKindDecl || self.diagnosticStore == nil) {
+        NSBeep();
+        return;
+    }
+    // TestDecl's braces, and the lexer as the decl manager has it; then, as
+    // OnBnClickedTest has the decl parse its new text, the type's parser.
+    NSString *text = self.editor.textView.string;
+    NSMutableArray<UDDeclTextProblem *> *problems =
+        [[UDDeclTextChecker problemsInDeclText:text fileSystem:self.workspace.fileSystem] mutableCopy];
+    BOOL bracesHold = [problems indexOfObjectPassingTest:^BOOL(UDDeclTextProblem *problem, NSUInteger i, BOOL *stop) {
+        return problem.isError;
+    }] == NSNotFound;
+    UDDeclBase *decl = [self.document isKindOfClass:[UDDeclDocument class]] ? ((UDDeclDocument *)self.document).declObject : nil;
+    if (bracesHold && decl != nil) {
+        [problems addObjectsFromArray:[[decl class] ud_problemsParsingText:text name:decl.name
+                                                                fileSystem:self.workspace.fileSystem]];
+    }
+
+    NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
+    for (UDDeclTextProblem *problem in problems) {
+        [items addObject:[[UDDiagnosticItem alloc] initWithLine:problem.line column:0 message:problem.message
+                                                       severity:problem.isError ? UDDiagnosticSeverityError : UDDiagnosticSeverityWarning
+                                                         source:UDDiagnosticSourceDeclTest]];
+    }
+    [self.diagnosticStore setDiagnostics:items forSource:UDDiagnosticSourceDeclTest];
+}
+
+/// What a Test found is the text's as it was: an edit takes it away.
+- (void)_declTextDidChange:(NSNotification *)notification {
+    [self.diagnosticStore clearSource:UDDiagnosticSourceDeclTest];
 }
 
 /// The definition's place: the first location, in its file's tab.

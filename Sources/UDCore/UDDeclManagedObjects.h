@@ -26,6 +26,7 @@
 #import "idDeclManager.h"
 
 @class idFileSystem;
+@class UDDeclTextProblem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,6 +92,14 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
                                                           lineNum:(int)lineNum
                                                        fileSystem:(nullable idFileSystem *)fileSystem
                                                             error:(NSError * _Nullable * _Nullable)error;
+
+/// What this entity's parser says of @a text (DialogDeclEditor's Test, which
+/// has the decl parse its edited text): its lexer's errors and warnings, by
+/// line from the text's first, and the parse's own error. None for a
+/// raw-text-only entity, which has no parser.
++ (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text
+                                                    name:(NSString *)name
+                                              fileSystem:(nullable idFileSystem *)fileSystem;
 
 /// Produces the full decl text (including the "type name" header) from a
 /// codec values dictionary. Returns nil when this entity has no structured

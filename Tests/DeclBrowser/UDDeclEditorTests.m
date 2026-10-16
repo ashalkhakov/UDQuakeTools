@@ -2,6 +2,7 @@
 
 #import "UDDeclDocument.h"
 #import "UDEditorTabManager.h"
+#import <UDCodeKit/UDCodeKit.h>
 #import "UDNewDeclWindowController.h"
 #import "UDTextEditorViewController.h"
 #import "UDWorkspaceWindowController.h"
@@ -20,6 +21,15 @@ static NSString *const UDFixtureSounds =
      "\tsound/udtest/hum.wav\n"
      "}\n";
 
+static NSString *const UDFixtureParticles =
+    @"particle udtest_spark {\n"
+     "\tdepthHack\t0.001\n"
+     "\t{\n"
+     "\t\tcount\t\t4\n"
+     "\t\tmaterial\ttextures/udtest/spark\n"
+     "\t}\n"
+     "}\n";
+
 /**
  * The decl editor, MFC's DialogDeclEditor and DialogDeclNew, driven against
  * loose decl files written for the test (no game data).
@@ -36,13 +46,15 @@ static NSString *const UDFixtureSounds =
     self.basePath = [self.scratchDirectory stringByAppendingPathComponent:@"install"];
     self.savePath = [self.scratchDirectory stringByAppendingPathComponent:@"save"];
     NSFileManager *files = [NSFileManager defaultManager];
-    for (NSString *folder in @[@"base/def", @"base/sound"]) {
+    for (NSString *folder in @[@"base/def", @"base/sound", @"base/particles"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
     [files createDirectoryAtPath:self.savePath withIntermediateDirectories:YES attributes:nil error:NULL];
     [UDFixtureDefs writeToFile:[self.basePath stringByAppendingPathComponent:@"base/def/udtest.def"]
                     atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureParticles writeToFile:[self.basePath stringByAppendingPathComponent:@"base/particles/udtest.prt"]
+                         atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureSounds writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest.sndshd"]
                       atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
@@ -155,6 +167,49 @@ static NSString *const UDFixtureSounds =
     XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
                   [self colorOf:@"// lit" inTextView:textView], [self colorOf:@"\"inherit\"" inTextView:textView],
                   textView.textColor);
+}
+
+- (NSArray<UDDiagnosticItem *> *)testFindingsOf:(UDTextEditorViewController *)editor {
+    return [editor.diagnosticStore.allDiagnostics filteredArrayUsingPredicate:
+            [NSPredicate predicateWithFormat:@"source == 'test'"]];
+}
+
+- (void)testTestHasTheDeclsParserReadItsText {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    if (controller == nil) return;
+    UDTextEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
+    NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
+    XCTAssertEqual([self testFindingsOf:editor].count, 0U);
+
+    // A line the particle's parser does not know, typed above its depthHack.
+    NSRange depthHack = [textView.string rangeOfString:@"\tdepthHack"];
+    NSInteger line = [[textView.string substringToIndex:depthHack.location] componentsSeparatedByString:@"\n"].count;
+    [textView setSelectedRange:NSMakeRange(depthHack.location, 0)];
+    [textView insertText:@"\tsparkle\t1\n"];
+    [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
+    NSArray<UDDiagnosticItem *> *findings = [self testFindingsOf:editor];
+    XCTAssertEqual(findings.count, 1U, @"the parser's warning: %@", findings);
+    XCTAssertEqual(findings.firstObject.line, line, @"on the line it is about");
+    XCTAssertTrue([findings.firstObject.message containsString:@"sparkle"], @"%@", findings.firstObject.message);
+    XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityWarning);
+
+    [textView insertText:@" "];
+    XCTAssertEqual([self testFindingsOf:editor].count, 0U, @"an edit takes what a Test found away");
+}
+
+- (void)testTestFindsABraceNeverClosed {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    if (controller == nil) return;
+    UDTextEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
+    NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
+    NSRange last = [textView.string rangeOfString:@"}" options:NSBackwardsSearch];
+    [textView setSelectedRange:last];
+    [textView insertText:@""];
+    [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
+    NSArray<UDDiagnosticItem *> *findings = [self testFindingsOf:editor];
+    XCTAssertEqual(findings.count, 1U, @"the brace, and no parse of a decl that does not hold together: %@", findings);
+    XCTAssertEqual(findings.firstObject.line, 1, @"where it opened");
+    XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityError);
 }
 
 @end

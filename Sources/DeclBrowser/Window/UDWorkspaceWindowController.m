@@ -418,6 +418,17 @@
     }
 }
 
+#pragma mark - Test Declaration
+
+- (IBAction)testDecl:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor testDecl:sender];
+    } else {
+        NSBeep();
+    }
+}
+
 #pragma mark - Jump to Definition
 
 - (IBAction)jumpToDefinition:(id)sender {
@@ -453,7 +464,7 @@
         return NO;
     }
 
-    if (action == @selector(jumpToDefinition:)) {
+    if (action == @selector(jumpToDefinition:) || action == @selector(testDecl:)) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
         return [editor isKindOfClass:[UDTextEditorViewController class]] &&
                [(UDTextEditorViewController *)editor validateMenuItem:menuItem];

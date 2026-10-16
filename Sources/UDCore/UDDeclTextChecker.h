@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger line;        // 1-based
 @property (nonatomic, readonly, copy) NSString *message;
 @property (nonatomic, readonly) BOOL isError;          // NO: a warning
+- (instancetype)initWithLine:(NSInteger)line message:(NSString *)message isError:(BOOL)isError;
 @end
 
 @interface UDDeclTextChecker : NSObject

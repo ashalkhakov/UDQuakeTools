@@ -14,6 +14,7 @@
 #import "UDDeclIncrementalStore.h"
 #import "idLexer.h"
 #import "idToken.h"
+#import "UDDeclTextChecker.h"
 
 #pragma mark - Entity name convention
 
@@ -53,6 +54,9 @@ NSString *UDDeclTypeNameForDeclEntityName(NSString *entityName) {
                                 LEXFL_ALLOWBACKSLASHSTRINGCONCAT | \
                                 LEXFL_NOFATALERRORS)
 
+// While a parse is tested, the diagnostics its lexers collect into.
+static NSString *const UDDeclCodecDiagnosticsKey = @"UDDeclCodecDiagnostics";
+
 // Builds a lexer over raw decl text, positioned right after the opening
 // brace of the decl body (the text may or may not carry a "type name"
 // header in front of it).
@@ -67,6 +71,8 @@ static idLexer *UDDeclCodecLexerWithFlags(NSData *text, NSString *name, NSString
     [buffer appendBytes:"" length:1];
 
     idLexer *src = [[idLexer alloc] initWithFileSystem:fileSystem];
+    // A Test of the text collects what the lexer says (+ud_problemsParsingText:...).
+    src.diagnostics = [NSThread currentThread].threadDictionary[UDDeclCodecDiagnosticsKey];
     if (![src loadMemory:buffer.bytes
                   length:(int)text.length
                     name:(fileName.length > 0 ? fileName : (name ?: @"decl"))
@@ -236,6 +242,31 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
                             values:(NSDictionary<NSString *, id> *)values
                              error:(NSError **)error {
     return nil; // raw-text-only entity
+}
+
++ (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text
+                                                    name:(NSString *)name
+                                              fileSystem:(idFileSystem *)fileSystem {
+    NSMutableArray<NSDictionary *> *diagnostics = [NSMutableArray array];
+    NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
+    threadDictionary[UDDeclCodecDiagnosticsKey] = diagnostics;
+    NSError *error = nil;
+    NSDictionary *values = [self ud_parseValuesFromText:[text dataUsingEncoding:NSUTF8StringEncoding] ?: [NSData data]
+                                                   name:name fileName:nil lineNum:1
+                                             fileSystem:fileSystem error:&error];
+    [threadDictionary removeObjectForKey:UDDeclCodecDiagnosticsKey];
+
+    NSMutableArray<UDDeclTextProblem *> *problems = [NSMutableArray array];
+    for (NSDictionary *diagnostic in diagnostics) {
+        [problems addObject:[[UDDeclTextProblem alloc] initWithLine:[diagnostic[@"line"] integerValue]
+                                                            message:diagnostic[@"message"]
+                                                            isError:[diagnostic[@"error"] boolValue]]];
+    }
+    // A parser's own failure, when its lexer said nothing of it.
+    if (values == nil && error != nil && diagnostics.count == 0) {
+        [problems addObject:[[UDDeclTextProblem alloc] initWithLine:1 message:error.localizedDescription isError:YES]];
+    }
+    return problems;
 }
 
 + (NSString *)ud_entityNameForDeclTypeName:(NSString *)declTypeName inModel:(NSManagedObjectModel *)model {

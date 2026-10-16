@@ -461,6 +461,14 @@ idFile_Memory
 
 @implementation idFile_Memory
 
+-(NSString *)name {
+    return name;
+}
+
+-(NSString *)fullPath {
+    return name;
+}
+
 -(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
@@ -719,6 +727,14 @@ idFile_Permanent
 
 @implementation idFile_Permanent
 
+-(NSString *)name {
+    return name;
+}
+
+-(NSString *)fullPath {
+    return fullPath;
+}
+
 -(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
     self = [super init];
     if (self) {
@@ -949,6 +965,14 @@ idFile_InZip
 */
 
 @implementation idFile_InZip
+
+-(NSString *)name {
+    return name;
+}
+
+-(NSString *)fullPath {
+    return fullPath;
+}
 
 -(instancetype)initWithUnzipInfo:(void *)z name:(NSString *)name pakFilename:(NSString *)pakFilename fileSystem:(idFileSystem *)fileSystem {
     self = [super init];

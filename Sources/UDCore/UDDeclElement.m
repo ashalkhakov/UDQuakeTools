@@ -14,6 +14,9 @@
 #import "idToken.h"
 #import "idStr.h"
 
+NSNotificationName const UDDeclElementWillBeReplacedNotification = @"UDDeclElementWillBeReplacedNotification";
+NSNotificationName const UDDeclElementWasReplacedNotification = @"UDDeclElementWasReplacedNotification";
+
 @implementation UDDeclElement
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -34,7 +37,9 @@
         return NO;
     }
     elements[index] = edited;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDDeclElementWillBeReplacedNotification object:owner];
     [owner setValue:elements forKey:key];
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDDeclElementWasReplacedNotification object:owner];
     return YES;
 }
 

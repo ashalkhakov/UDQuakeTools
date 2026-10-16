@@ -7,6 +7,7 @@
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 #import <UDCodeKit/UDCodeKit.h>
+#import <objc/runtime.h>
 
 @interface UDDeclEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDDiagnosticStore *diagnosticStore;
@@ -17,6 +18,8 @@
 @property (nonatomic, strong, nullable) UDCodeEditorViewController *sourceEditor;
 @property (nonatomic, copy, nullable) NSString *shownSourceText;
 @property (nonatomic, copy, nullable) NSArray<NSView *> *coveredViews;
+// The selections of the editor's lists while an element is being replaced.
+@property (nonatomic, copy, nullable) NSArray<NSIndexSet *> *keptSelections;
 @end
 
 static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
@@ -72,9 +75,53 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidSave:)
                                                  name:NSManagedObjectContextDidSaveNotification
                                                object:self.editingContext];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_elementWillBeReplaced:)
+                                                 name:UDDeclElementWillBeReplacedNotification object:self.declObject];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_elementWasReplaced:)
+                                                 name:UDDeclElementWasReplacedNotification object:self.declObject];
     [self _checkParse];
     [self declDidLoad];
     [self editingContextDidChange];
+}
+
+#pragma mark - The selection across an element's edit
+
+/// The editor's lists: its NSArrayController properties.
+- (NSArray<NSArrayController *> *)_arrayControllers {
+    NSMutableArray<NSArrayController *> *controllers = [NSMutableArray array];
+    for (Class cls = [self class]; cls != Nil && cls != [UDDeclEditorViewController class]; cls = class_getSuperclass(cls)) {
+        unsigned int count = 0;
+        objc_property_t *properties = class_copyPropertyList(cls, &count);
+        for (unsigned int i = 0; i < count; i++) {
+            const char *attributes = property_getAttributes(properties[i]);
+            static const char type[] = "T@\"NSArrayController\"";
+            if (attributes == NULL || strncmp(attributes, type, sizeof type - 1) != 0) continue;
+            id controller = [self valueForKey:@(property_getName(properties[i]))];
+            if (controller != nil) [controllers addObject:controller];
+        }
+        free(properties);
+    }
+    return controllers;
+}
+
+- (void)_elementWillBeReplaced:(NSNotification *)notification {
+    NSArray<NSArrayController *> *controllers = [self _arrayControllers];
+    self.keptSelections = [controllers valueForKey:@"selectionIndexes"];
+}
+
+/// The selection the edit found, back: the controller's own is gone with
+/// the element it replaced.
+- (void)_elementWasReplaced:(NSNotification *)notification {
+    NSArray<NSArrayController *> *controllers = [self _arrayControllers];
+    NSArray<NSIndexSet *> *kept = self.keptSelections;
+    self.keptSelections = nil;
+    if (kept.count != controllers.count) return;
+    for (NSUInteger i = 0; i < controllers.count; i++) {
+        NSArrayController *controller = controllers[i];
+        if ([controller.selectionIndexes isEqualToIndexSet:kept[i]]) continue;
+        if (kept[i].count > 0 && kept[i].lastIndex >= [controller.arrangedObjects count]) continue;
+        [controller setSelectionIndexes:kept[i]];
+    }
 }
 
 /// What the decl's parser says of its text, as the decl manager read it:

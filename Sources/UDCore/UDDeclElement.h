@@ -16,6 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 // decl updated) and undo brings the element back as it was.
 // ---------------------------------------------------------------------------
 
+/// Posted, its object the decl, around an element's edited copy taking its
+/// place: an array controller loses the selection of the element it replaces
+/// (an edited copy is not equal to it), and an editor keeps it across.
+FOUNDATION_EXPORT NSNotificationName const UDDeclElementWillBeReplacedNotification;
+FOUNDATION_EXPORT NSNotificationName const UDDeclElementWasReplacedNotification;
+
 @interface UDDeclElement : NSObject <NSCopying>
 /// The decl and its attribute holding this element; nil until it is in one.
 @property (nonatomic, weak, nullable) UDDeclBase *ud_owner;

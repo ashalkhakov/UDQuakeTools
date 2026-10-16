@@ -12,9 +12,6 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 }
 
 @interface UDPDAEditorViewController ()
-@property (nonatomic, strong, readwrite, nullable) UDDiagnosticStore *diagnosticStore;
-/// Each diagnostic's list and child, for -revealDiagnostic:.
-@property (nonatomic, strong) NSMapTable<UDDiagnosticItem *, NSArray *> *diagnosticTargets;
 @end
 
 @implementation UDPDAEditorViewController
@@ -24,86 +21,22 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
     return self;
 }
 
-- (void)setDocument:(UDDeclDocument *)document {
-    _document = document;
-    // No `viewLoaded` check: GNUstep's NSViewController doesn't have it, and
-    // none is needed — the objectController outlet is nil until the view nib
-    // has loaded (reading it does NOT trigger loading), so this assignment is
-    // a harmless no-op before then; -viewDidLoad sets the content itself.
-    if (document != nil) {
-        self.objectController.content = document.declObject;
-    }
-}
-
 - (UDDeclPDA *)pda {
-    return (UDDeclPDA *)self.document.declObject;
+    return (UDDeclPDA *)self.declObject;
 }
 
-- (NSManagedObjectContext *)editingContext {
-    return self.document.editingContext;
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    if (self.item == nil) {
-        return;
-    }
-
-    if (self.item.kind != UDWorkspaceItemKindDecl) {
-        return;
-    }
-
-    UDDeclItem *declItem = (UDDeclItem *)self.item;
-    NSError *error = nil;
-
-    self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
-    if (self.document == nil) {
-        NSLog(@"UDPDAEditorViewController: failed to open decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
-        return;
-    }
-
-    if (![self.document readFromURL:[NSURL URLWithString:@"http://localhost/unused.txt"] ofType:@"" error:&error]) {
-        NSLog(@"UDPDAEditorViewController: failed to read decl of type %@ name %@: %@", [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
-    }
-
+- (void)declDidLoad {
     // Child decl relationships are unordered sets; present them sorted by name.
     NSArray *byName = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(caseInsensitiveCompare:)]];
     self.audioArrayController.sortDescriptors = byName;
     self.emailArrayController.sortDescriptors = byName;
     self.videoArrayController.sortDescriptors = byName;
-
-    self.objectController.content = self.pda;
-
-    self.diagnosticStore = [[UDDiagnosticStore alloc] init];
-    self.diagnosticTargets = [NSMapTable strongToStrongObjectsMapTable];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidChange:)
-                                                 name:NSManagedObjectContextObjectsDidChangeNotification
-                                               object:self.editingContext];
-    [self checkReferences];
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - References
 
-- (void)_editingContextDidChange:(NSNotification *)notification {
+- (void)editingContextDidChange {
     [self checkReferences];
-}
-
-/// The line of the PDA's text that names @a name, 1-based (1 when none).
-- (NSInteger)_lineNaming:(NSString *)name {
-    NSData *source = self.pda.sourceText;
-    NSString *text = source != nil ? [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding] : nil;
-    NSRange found = [text rangeOfString:[NSString stringWithFormat:@"\"%@\"", name] options:NSCaseInsensitiveSearch];
-    if (found.location == NSNotFound) return 1;
-    NSInteger line = 1;
-    for (NSUInteger i = 0; i < found.location; i++) {
-        if ([text characterAtIndex:i] == '\n') line++;
-    }
-    return line;
 }
 
 /// A child the PDA names but no decl defines: not one added here and not
@@ -114,7 +47,7 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
     if (pda == nil || declManager == nil || self.diagnosticStore == nil) return;
 
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
-    [self.diagnosticTargets removeAllObjects];
+    [self removeDiagnosticTargets];
     for (NSArray<NSString *> *list in UDPDALists()) {
         declType_t type = [declManager declTypeFromName:list[1]];
         for (UDDeclBase *child in [pda valueForKey:list[0]]) {
@@ -123,18 +56,18 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
             NSString *name = [(NSIncrementalStore *)child.objectID.persistentStore referenceObjectForObjectID:child.objectID];
             if (![name isKindOfClass:[NSString class]] || name.length == 0) continue;
             if ([declManager declByName:name type:type forceParse:NO error:NULL] != nil) continue;
-            UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self _lineNaming:name] column:0
+            UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:[NSString stringWithFormat:@"\"%@\"", name]] column:0
                 message:[NSString stringWithFormat:@"%@ \u201C%@\u201D is not defined", list[2], name]
                 severity:UDDiagnosticSeverityError source:UDPDAReferencesSource];
             [items addObject:item];
-            [self.diagnosticTargets setObject:@[list[0], child] forKey:item];
+            [self setTarget:@[list[0], child] forDiagnostic:item];
         }
     }
     [self.diagnosticStore setDiagnostics:items forSource:UDPDAReferencesSource];
 }
 
 - (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
-    NSArray *target = [self.diagnosticTargets objectForKey:diagnostic];
+    NSArray *target = [self targetForDiagnostic:diagnostic];
     if (target == nil) return;
     [self.tabView selectTabViewItemWithIdentifier:target[0]];
     NSArrayController *controller = [target[0] isEqualToString:@"emails"] ? self.emailArrayController

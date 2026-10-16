@@ -25,6 +25,7 @@ APP_DIR = ../../Sources/DeclBrowser
 DeclBrowserTests_OBJC_FILES = \
     UDDeclBrowserTestCase.m \
     UDPDAEditorTests.m \
+    UDTableSkinEditorTests.m \
     UDDoom3WorkspaceTests.m \
     UDPakInstallTests.m \
     $(APP_DIR)/UDAppDocumentController.m \
@@ -35,6 +36,9 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDFolder.m \
     $(APP_DIR)/UDImageViewerViewController.m \
     $(APP_DIR)/UDPDAEditorViewController.m \
+    $(APP_DIR)/UDDeclEditorViewController.m \
+    $(APP_DIR)/UDTableEditorViewController.m \
+    $(APP_DIR)/UDSkinEditorViewController.m \
     $(APP_DIR)/UDPathTree.m \
     $(APP_DIR)/UDProject.m \
     $(APP_DIR)/UDScriptServer.m \
@@ -64,6 +68,8 @@ DeclBrowserTests_INCLUDE_DIRS = \
 DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/Base.lproj/UDWorkspaceWindow.xib \
     $(APP_DIR)/Resources/UDPDAEditorView.xib \
+    $(APP_DIR)/Resources/UDTableEditorView.xib \
+    $(APP_DIR)/Resources/UDSkinEditorView.xib \
     $(APP_DIR)/Resources/UDPDAAudioEditorView.xib \
     $(APP_DIR)/Resources/UDPDAEmailEditorView.xib \
     $(APP_DIR)/Resources/UDPDAVideoEditorView.xib \

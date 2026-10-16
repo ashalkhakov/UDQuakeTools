@@ -126,8 +126,11 @@ In order of value against cost; LOC is the MFC original's size.
       its own (`newpdas/<name>.pda`).
 - [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
       diagnostics, per-type templates for New.
-- [ ] **Table** and **Skin** — small structured editors (values/clamp/snap;
-      model and surface mappings) over the existing entities.
+- [x] **Table** and **Skin** — structured editors over the existing
+      entities, patterned on the PDA's: a table's Snap and Clamp, its values
+      in a list and the curve they make; a skin's mappings and models in
+      lists, what it names that is not there in the Issues tab, File > New
+      Skin…. Their codecs are the engine's parsers, ported.
 - [ ] **entityDef editor** — inherit chain, key/value table, spawnArg
       documentation from `editor_*` keys, model/skin/sound pickers.
 - [ ] **Sound shader editor** — the decl side of the MFC sound editor:

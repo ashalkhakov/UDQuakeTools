@@ -1,6 +1,7 @@
 #import "UDWorkspaceWindowController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDPDAEditorViewController.h"
+#import "UDDeclEditorViewController.h"
 #import "UDWorkspaceDocument.h"
 #import "UDDeclBrowser.h"
 #import "UDEditorTabManager.h"
@@ -223,21 +224,30 @@
     }
 }
 
-#pragma mark - New PDA
+#pragma mark - New PDA, New Skin
 
-// File > New PDA…: a PDA of its own name, in a file of its own
-// (newpdas/<name>.pda, where the store puts a new PDA), opened in the PDA
-// editor; Save writes the file.
+// File > New PDA…, New Skin…: a decl of its own name, in a file of its own
+// (newpdas/<name>.pda, skins/<name>.skin: the type's folder, where the store
+// puts a new decl), opened in its editor; Save writes the file.
 - (IBAction)newPDA:(id)sender {
+    [self _newDeclOfTypeName:@"pda" title:@"New PDA" fileName:@"newpdas/<name>.pda"];
+}
+
+- (IBAction)newSkin:(id)sender {
+    [self _newDeclOfTypeName:@"skin" title:@"New Skin" fileName:@"skins/<name>.skin"];
+}
+
+- (void)_newDeclOfTypeName:(NSString *)typeName title:(NSString *)title fileName:(NSString *)fileName {
     idDeclManager *declManager = self.workspace.declManager;
-    declType_t type = [declManager declTypeFromName:@"pda"];
-    NSString *name = [self _runNamePromptWithTitle:@"New PDA"
-        message:@"The PDA gets a file of its own, newpdas/<name>.pda, written when it is saved."
-        okButtonTitle:@"Create" typeName:@"pda" type:type initialValue:[declManager newName:type base:@"pda_"]];
+    declType_t type = [declManager declTypeFromName:typeName];
+    NSString *name = [self _runNamePromptWithTitle:title
+        message:[NSString stringWithFormat:@"It gets a file of its own, %@, written when it is saved.", fileName]
+        okButtonTitle:@"Create" typeName:typeName type:type
+        initialValue:[declManager newName:type base:[typeName stringByAppendingString:@"_"]]];
     if (name == nil) return;
 
     NSError *error = nil;
-    if (![self _createPDANamed:name error:&error]) {
+    if (![self _createDeclOfTypeName:typeName named:name error:&error]) {
         [self presentError:error];
         return;
     }
@@ -245,14 +255,14 @@
     [self.tabManager openEditorForWorkspaceItem:[[UDDeclItem alloc] initWithType:type declName:name path:name]];
 }
 
-- (BOOL)_createPDANamed:(NSString *)name error:(NSError **)error {
+- (BOOL)_createDeclOfTypeName:(NSString *)typeName named:(NSString *)name error:(NSError **)error {
     NSManagedObjectContext *context = [self.workspace newDeclEditingContextWithError:error];
     if (context == nil) return NO;
-    NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:@"pda"
+    NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:typeName
                                                               inModel:context.persistentStoreCoordinator.managedObjectModel];
     if (entityName == nil) return NO;
-    UDDeclPDA *pda = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
-    pda.name = name;
+    UDDeclBase *decl = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+    decl.name = name;
     return [context save:error];
 }
 
@@ -356,10 +366,10 @@
          didSelectDiagnostic:(UDDiagnosticItem *)diagnostic
                      inStore:(UDDiagnosticStore *)store {
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
-        if ([editor isKindOfClass:[UDPDAEditorViewController class]] &&
-            ((UDPDAEditorViewController *)editor).diagnosticStore == store) {
+        if ([editor isKindOfClass:[UDDeclEditorViewController class]] &&
+            ((UDDeclEditorViewController *)editor).diagnosticStore == store) {
             [self.tabManager openEditorForWorkspaceItem:editor.item];
-            [(UDPDAEditorViewController *)editor revealDiagnostic:diagnostic];
+            [(UDDeclEditorViewController *)editor revealDiagnostic:diagnostic];
             return;
         }
         if (![editor isKindOfClass:[UDTextEditorViewController class]] ||
@@ -428,7 +438,7 @@
         }
         return NO;
     }
-    if (action == @selector(newPDA:)) {
+    if (action == @selector(newPDA:) || action == @selector(newSkin:)) {
         return self.workspace.declManager != nil;
     }
     if (action == @selector(saveDocumentAs:)) {

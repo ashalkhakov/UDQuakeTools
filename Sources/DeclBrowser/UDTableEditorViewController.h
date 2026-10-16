@@ -6,13 +6,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A table decl's editor: Snap and Clamp, its values in a list (edited in
- * place; + adds one after the selection, - takes the selection off), and
- * the curve they make. Laid out in UDTableEditorView.xib.
+ * place; + adds a copy of the selected one after it, - takes the selection
+ * off), and the curve they make. Laid out in UDTableEditorView.xib, the list
+ * an array controller over the table's values.
  */
-@interface UDTableEditorViewController : UDDeclEditorViewController <NSTableViewDataSource, NSTableViewDelegate>
+@interface UDTableEditorViewController : UDDeclEditorViewController
 
 @property (nonatomic, readonly, nullable) UDDeclTable *table;
 
+@property (strong) IBOutlet NSArrayController *valuesController;
 @property (weak) IBOutlet NSTableView *valuesTable;
 @property (weak) IBOutlet UDTableGraphView *graphView;
 

@@ -10,6 +10,8 @@
             <connections>
                 <outlet property="view" destination="SKE-root" id="UDS-o-view"/>
                 <outlet property="objectController" destination="SKE-oc" id="UDS-o-objectController"/>
+                <outlet property="mappingsController" destination="SKE-mac" id="UDS-o-mappingsController"/>
+                <outlet property="modelsController" destination="SKE-dac" id="UDS-o-modelsController"/>
                 <outlet property="mappingsTable" destination="SKE-mappings" id="UDS-o-mappingsTable"/>
                 <outlet property="modelsTable" destination="SKE-models" id="UDS-o-modelsTable"/>
             </connections>
@@ -19,6 +21,18 @@
         <objectController objectClassName="UDDeclSkin" id="SKE-oc" userLabel="Object Controller">
             <classReference key="objectClass" className="UDDeclSkin"/>
         </objectController>
+        <arrayController objectClassName="UDSkinMapping" id="SKE-mac" userLabel="UDSkinMapping Array Controller">
+            <classReference key="objectClass" className="UDSkinMapping"/>
+            <connections>
+                <binding destination="SKE-oc" name="contentArray" keyPath="selection.mappings" id="SKE-mac-b"/>
+            </connections>
+        </arrayController>
+        <arrayController objectClassName="UDSkinModel" id="SKE-dac" userLabel="UDSkinModel Array Controller">
+            <classReference key="objectClass" className="UDSkinModel"/>
+            <connections>
+                <binding destination="SKE-oc" name="contentArray" keyPath="selection.associatedModels" id="SKE-dac-b"/>
+            </connections>
+        </arrayController>
         <customView id="SKE-root">
             <rect key="frame" x="0.0" y="0.0" width="640" height="440"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -57,6 +71,13 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="SKE-mac" name="value" keyPath="arrangedObjects.from" id="SKE-mappings-from-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
                                         </tableColumn>
                                         <tableColumn identifier="to" editable="YES" width="282" minWidth="30" maxWidth="1000" id="SKE-mappings-to">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To">
@@ -69,11 +90,18 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="SKE-mac" name="value" keyPath="arrangedObjects.to" id="SKE-mappings-to-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
                                         </tableColumn>
                                 </tableColumns>
                                 <connections>
-                                    <outlet property="dataSource" destination="-2" id="SKE-mappings-ds"/>
-                                    <outlet property="delegate" destination="-2" id="SKE-mappings-dg"/>
+                                    <binding destination="SKE-mac" name="content" keyPath="arrangedObjects" id="SKE-mappings-bc"/>
+                                    <binding destination="SKE-mac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="SKE-mappings-bc" id="SKE-mappings-bs"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -128,22 +156,29 @@
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                        <tableColumn identifier="model" editable="YES" width="581" minWidth="30" maxWidth="1000" id="SKE-models-model">
+                                        <tableColumn identifier="path" editable="YES" width="581" minWidth="30" maxWidth="1000" id="SKE-models-path">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Model">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="SKE-models-model-c">
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="SKE-models-path-c">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="SKE-dac" name="value" keyPath="arrangedObjects.path" id="SKE-models-path-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
                                         </tableColumn>
                                 </tableColumns>
                                 <connections>
-                                    <outlet property="dataSource" destination="-2" id="SKE-models-ds"/>
-                                    <outlet property="delegate" destination="-2" id="SKE-models-dg"/>
+                                    <binding destination="SKE-dac" name="content" keyPath="arrangedObjects" id="SKE-models-bc"/>
+                                    <binding destination="SKE-dac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="SKE-models-bc" id="SKE-models-bs"/>
                                 </connections>
                             </tableView>
                         </subviews>

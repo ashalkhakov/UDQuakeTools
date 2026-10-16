@@ -36,20 +36,26 @@
     NSDictionary *values = [self table:@"table t { snap clamp { 0, 0.5, -1, 1 } }"];
     XCTAssertEqualObjects(values[@"snap"], @YES);
     XCTAssertEqualObjects(values[@"clamp"], @YES);
-    XCTAssertEqualObjects(values[@"values"], @"0, 0.5, -1, 1");
+    XCTAssertEqualObjects([values[@"values"] valueForKey:@"number"], (@[@0, @0.5, @-1, @1]));
 
     values = [self table:@"table t { { 1, 2 } }"];
     XCTAssertEqualObjects(values[@"snap"], @NO);
-    XCTAssertEqualObjects(values[@"values"], @"1, 2");
+    XCTAssertEqualObjects([values[@"values"] valueForKey:@"number"], (@[@1, @2]));
 }
 
 /// What idDeclTable::Parse makes the default ({ { 0 } }), the codec does too.
+/// The default, as the codec reads it: neither snap nor clamp, one value, 0.
+- (void)assertDefault:(NSDictionary *)values because:(NSString *)because {
+    XCTAssertEqualObjects(values[@"snap"], @NO, @"%@", because);
+    XCTAssertEqualObjects(values[@"clamp"], @NO, @"%@", because);
+    XCTAssertEqualObjects([values[@"values"] valueForKey:@"number"], @[@0], @"%@", because);
+}
+
 - (void)testABrokenTableIsTheDefault {
-    NSDictionary *byDefault = @{ @"snap": @NO, @"clamp": @NO, @"values": @"0" };
-    XCTAssertEqualObjects([self table:@"table t { 1, 2, 3 }"], byDefault, @"values outside an inner brace pair");
-    XCTAssertEqualObjects([self table:@"table t { { } }"], byDefault, @"no values");
-    XCTAssertEqualObjects([self table:@"table t { { 1 2 } }"], byDefault, @"no comma between values");
-    XCTAssertEqualObjects([self table:@"table t { snap { 1, x } }"], byDefault, @"something non-numeric");
+    [self assertDefault:[self table:@"table t { 1, 2, 3 }"] because:@"values outside an inner brace pair"];
+    [self assertDefault:[self table:@"table t { { } }"] because:@"no values"];
+    [self assertDefault:[self table:@"table t { { 1 2 } }"] because:@"no comma between values"];
+    [self assertDefault:[self table:@"table t { snap { 1, x } }"] because:@"something non-numeric"];
 }
 
 - (void)testASkinsMappingsAndModels {
@@ -59,16 +65,32 @@
          "\t* textures/common/nodraw\n"
          "\tmodels/monsters/imp/imp models/monsters/imp/imp_burnt\n"
          "}\n"];
-    XCTAssertEqualObjects(values[@"associatedModels"], @"models/monsters/imp/imp.md5mesh");
-    XCTAssertEqualObjects(values[@"mappings"],
-                          @"* textures/common/nodraw\nmodels/monsters/imp/imp models/monsters/imp/imp_burnt");
+    XCTAssertEqualObjects([values[@"associatedModels"] valueForKey:@"path"], @[@"models/monsters/imp/imp.md5mesh"]);
+    XCTAssertEqualObjects([values[@"mappings"] valueForKey:@"from"], (@[@"*", @"models/monsters/imp/imp"]));
+    XCTAssertEqualObjects([values[@"mappings"] valueForKey:@"to"],
+                          (@[@"textures/common/nodraw", @"models/monsters/imp/imp_burnt"]));
 }
 
 /// A mapping cut short: idDeclSkin::Parse's MakeDefault().
 - (void)testASkinCutShortIsTheDefault {
     NSDictionary *values = [self skin:@"skin s { textures/a"];
-    XCTAssertEqualObjects(values[@"mappings"], @"* _default");
-    XCTAssertEqualObjects(values[@"associatedModels"], @"");
+    XCTAssertEqualObjects([values[@"mappings"] valueForKey:@"from"], @[@"*"]);
+    XCTAssertEqualObjects([values[@"mappings"] valueForKey:@"to"], @[@"_default"]);
+    XCTAssertEqual([values[@"associatedModels"] count], 0U);
+}
+
+/// An element in its decl: setting one of its properties puts an edited
+/// copy in its place, so the decl's setter runs (undo, the decl updated).
+- (void)testAnElementsEditIsItsDecls {
+    UDTableValue *loose = [UDTableValue valueWithNumber:1];
+    loose.number = 2;
+    XCTAssertEqual(loose.number, 2.0f, @"outside a decl it simply changes");
+
+    UDSkinMapping *mapping = [UDSkinMapping mappingFrom:@"*" to:@"a"];
+    id good = @" textures/b ", bad = @"two words";
+    XCTAssertTrue([mapping validateValue:&good forKey:@"to" error:NULL]);
+    XCTAssertEqualObjects(good, @"textures/b", @"trimmed");
+    XCTAssertFalse([mapping validateValue:&bad forKey:@"to" error:NULL], @"a name with a space is refused");
 }
 
 @end

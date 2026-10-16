@@ -1,22 +1,6 @@
 #import "UDTableEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 
-/// A table's values attribute ("0, 0.5, 1"), as numbers.
-static NSArray<NSNumber *> *UDTableValues(NSString *text) {
-    NSMutableArray<NSNumber *> *values = [NSMutableArray array];
-    for (NSString *part in [text componentsSeparatedByString:@","]) {
-        NSString *trimmed = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmed.length > 0) [values addObject:@(trimmed.floatValue)];
-    }
-    return values;
-}
-
-static NSString *UDTableText(NSArray<NSNumber *> *values) {
-    NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithCapacity:values.count];
-    for (NSNumber *value in values) [parts addObject:[NSString stringWithFormat:@"%g", value.floatValue]];
-    return [parts componentsJoinedByString:@", "];
-}
-
 @implementation UDTableEditorViewController
 
 - (instancetype)init {
@@ -28,66 +12,33 @@ static NSString *UDTableText(NSArray<NSNumber *> *values) {
 }
 
 - (NSArray<NSNumber *> *)values {
-    return UDTableValues(self.table.values);
-}
-
-/// The values written back: one edit, one undo, the tab edited.
-- (void)_setValues:(NSArray<NSNumber *> *)values {
-    self.table.values = UDTableText(values);
-    [self editingContextDidChange];                     // now: the context tells at the end of the event
+    return [self.table.values valueForKey:@"number"] ?: @[];
 }
 
 - (void)editingContextDidChange {
-    [self.valuesTable reloadData];
     self.graphView.values = self.values;
     self.graphView.snap = self.table.snap;
 }
 
-#pragma mark - The values
-
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return (NSInteger)self.values.count;
-}
-
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    NSArray<NSNumber *> *values = self.values;
-    if (row < 0 || row >= (NSInteger)values.count) return nil;
-    if ([column.identifier isEqualToString:@"index"]) return @(row);
-    return [NSString stringWithFormat:@"%g", values[(NSUInteger)row].floatValue];
-}
-
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    NSMutableArray<NSNumber *> *values = [self.values mutableCopy];
-    if (row < 0 || row >= (NSInteger)values.count) return;
-    NSScanner *scanner = [NSScanner scannerWithString:[object description]];
-    float value;
-    if (![scanner scanFloat:&value] || !scanner.isAtEnd) {
-        NSBeep();                                       // not a number: as it was
-        return;
-    }
-    values[(NSUInteger)row] = @(value);
-    [self _setValues:values];
-}
-
 - (IBAction)addOrRemoveValue:(NSSegmentedControl *)sender {
-    NSMutableArray<NSNumber *> *values = [self.values mutableCopy];
-    NSInteger selected = self.valuesTable.selectedRow;
+    NSMutableArray<UDTableValue *> *values = [self.table.values mutableCopy] ?: [NSMutableArray array];
+    NSUInteger selected = self.valuesController.selectionIndex;
     if (sender.selectedSegment == 0) {
         // After the selection (at the end without one), a copy of the value
         // before it.
-        NSUInteger at = selected >= 0 ? (NSUInteger)selected + 1 : values.count;
-        [values insertObject:(at > 0 ? values[at - 1] : @0) atIndex:at];
-        [self _setValues:values];
-        [self.valuesTable selectRowIndexes:[NSIndexSet indexSetWithIndex:at] byExtendingSelection:NO];
+        NSUInteger at = selected != NSNotFound ? selected + 1 : values.count;
+        [values insertObject:(at > 0 ? [values[at - 1] copy] : [UDTableValue valueWithNumber:0]) atIndex:at];
+        [self.table ud_setElements:values forKey:@"values"];
+        [self.valuesController setSelectionIndex:at];
     } else {
         // A table has a value at least: the engine reads one with none as
         // its default.
-        if (selected < 0 || values.count <= 1) {
+        if (selected == NSNotFound || values.count <= 1) {
             NSBeep();
             return;
         }
-        [values removeObjectAtIndex:(NSUInteger)selected];
-        [self _setValues:values];
+        [values removeObjectAtIndex:selected];
+        [self.table ud_setElements:values forKey:@"values"];
     }
 }
 

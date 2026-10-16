@@ -82,15 +82,20 @@ static NSString *const UDFixtureSkin =
     [NSApp sendAction:buttons.action to:buttons.target from:buttons];
 }
 
-/// A cell edited in a table, as typing into it and Return do.
-- (void)set:(NSString *)value row:(NSInteger)row column:(NSString *)identifier of:(NSTableView *)table {
-    NSTableColumn *column = [table tableColumnWithIdentifier:identifier];
-    XCTAssertNotNil(column, @"a %@ column", identifier);
-    [table.dataSource tableView:table setObjectValue:value forTableColumn:column row:row];
+/// A cell typed into, as its binding (NSValidatesImmediately) takes it: the
+/// element validates the value, then is given it. NO when it was refused.
+- (BOOL)set:(id)value row:(NSUInteger)row key:(NSString *)key of:(NSArrayController *)controller {
+    id element = [controller.arrangedObjects objectAtIndex:row];
+    NSError *error = nil;
+    if (![element validateValue:&value forKey:key error:&error]) {
+        return NO;
+    }
+    [element setValue:value forKey:key];
+    return YES;
 }
 
-- (id)valueAtRow:(NSInteger)row column:(NSString *)identifier of:(NSTableView *)table {
-    return [table.dataSource tableView:table objectValueForTableColumn:[table tableColumnWithIdentifier:identifier] row:row];
+- (id)valueAtRow:(NSUInteger)row key:(NSString *)key of:(NSArrayController *)controller {
+    return [[controller.arrangedObjects objectAtIndex:row] valueForKey:key];
 }
 
 #pragma mark - Tables
@@ -107,8 +112,8 @@ static NSString *const UDFixtureSkin =
 
     XCTAssertEqual([self buttonTitled:@"Snap" inView:editor.view].state, NSControlStateValueOn);
     XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOff);
-    XCTAssertEqual(editor.valuesTable.numberOfRows, 3);
-    XCTAssertEqualObjects([self valueAtRow:1 column:@"value" of:editor.valuesTable], @"0.5");
+    XCTAssertEqual(editor.valuesTable.numberOfRows, 3, @"the list shows them, through its array controller");
+    XCTAssertEqualObjects([self valueAtRow:1 key:@"number" of:editor.valuesController], @0.5);
     XCTAssertEqualObjects(editor.graphView.values, (@[@0, @0.5, @1]), @"the curve shows them");
     XCTAssertTrue(editor.graphView.snap, @"in steps");
     XCTAssertFalse(editor.editorDocument.isDocumentEdited);
@@ -119,12 +124,12 @@ static NSString *const UDFixtureSkin =
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
 
-    [self set:@"0.25" row:1 column:@"value" of:editor.valuesTable];
+    XCTAssertTrue([self set:@"0.25" row:1 key:@"number" of:editor.valuesController]);
     XCTAssertEqualObjects(editor.values, (@[@0, @0.25, @1]));
-    [self set:@"high" row:2 column:@"value" of:editor.valuesTable];
-    XCTAssertEqualObjects(editor.values, (@[@0, @0.25, @1]), @"not a number: refused");
+    XCTAssertFalse([self set:@"high" row:2 key:@"number" of:editor.valuesController], @"not a number: refused");
+    XCTAssertEqualObjects(editor.values, (@[@0, @0.25, @1]));
 
-    [editor.valuesTable selectRowIndexes:[NSIndexSet indexSetWithIndex:2] byExtendingSelection:NO];
+    [editor.valuesController setSelectionIndex:2];
     [self press:0 ofButtonsWithAction:@selector(addOrRemoveValue:) inView:editor.view];
     XCTAssertEqualObjects(editor.values, (@[@0, @0.25, @1, @1]), @"+ adds a copy after the selection");
     [self press:1 ofButtonsWithAction:@selector(addOrRemoveValue:) inView:editor.view];
@@ -141,19 +146,31 @@ static NSString *const UDFixtureSkin =
     XCTAssertTrue([text containsString:@"clamp"], @"%@", text);
     XCTAssertTrue([text containsString:@"textures/udtest/wall"], @"the material beside it stays:\n%@", text);
 
-    [self set:@"0.75" row:1 column:@"value" of:editor.valuesTable];
+    [self set:@"0.75" row:1 key:@"number" of:editor.valuesController];
     [editor.editingContext processPendingChanges];
     [[controller.window undoManager] undo];
     [self spinUntil:^BOOL{ return NO; } timeout:0.05];
     XCTAssertEqualObjects(editor.values, (@[@0, @0.25, @1]), @"Undo takes the edit back");
-    XCTAssertEqualObjects([self valueAtRow:1 column:@"value" of:editor.valuesTable], @"0.25", @"and the list shows it");
+    XCTAssertEqualObjects([self valueAtRow:1 key:@"number" of:editor.valuesController], @0.25, @"and the list shows it");
+
+    // The same row edited twice: each edit the decl's, each undone on its own.
+    [self set:@"0.75" row:1 key:@"number" of:editor.valuesController];
+    [editor.editingContext processPendingChanges];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.05];
+    [self set:@"0.8" row:1 key:@"number" of:editor.valuesController];
+    [editor.editingContext processPendingChanges];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.05];
+    XCTAssertEqualObjects([self valueAtRow:1 key:@"number" of:editor.valuesController], @0.8f);
+    [[controller.window undoManager] undo];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.05];
+    XCTAssertEqualObjects([self valueAtRow:1 key:@"number" of:editor.valuesController], @0.75f, @"the second edit undone");
 }
 
 - (void)testATablesLastValueStays {
     UDTableEditorViewController *editor = [self openTableIn:[self openFixtureWorkspace]];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
     for (NSInteger i = 0; i < 3; i++) {
-        [editor.valuesTable selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        [editor.valuesController setSelectionIndex:0];
         [self press:1 ofButtonsWithAction:@selector(addOrRemoveValue:) inView:editor.view];
     }
     XCTAssertEqual(editor.values.count, 1U, @"a table keeps a value: the engine reads one without as its default");
@@ -171,10 +188,11 @@ static NSString *const UDFixtureSkin =
     UDSkinEditorViewController *editor = [self openSkinIn:[self openFixtureWorkspace]];
     if (![editor isKindOfClass:[UDSkinEditorViewController class]]) return;
 
-    XCTAssertEqualObjects(editor.mappings, (@[@[@"textures/udtest/old", @"textures/udtest/wall"], @[@"*", @"textures/udtest/missing"]]));
-    XCTAssertEqualObjects(editor.models, @[@"models/udtest/crate.lwo"]);
-    XCTAssertEqual(editor.mappingsTable.numberOfRows, 2);
-    XCTAssertEqualObjects([self valueAtRow:1 column:@"from" of:editor.mappingsTable], @"*");
+    XCTAssertEqualObjects([editor.skin.mappings valueForKey:@"from"], (@[@"textures/udtest/old", @"*"]));
+    XCTAssertEqualObjects([editor.skin.mappings valueForKey:@"to"], (@[@"textures/udtest/wall", @"textures/udtest/missing"]));
+    XCTAssertEqualObjects([editor.skin.associatedModels valueForKey:@"path"], @[@"models/udtest/crate.lwo"]);
+    XCTAssertEqual(editor.mappingsTable.numberOfRows, 2, @"the lists show them, through their array controllers");
+    XCTAssertEqualObjects([self valueAtRow:1 key:@"from" of:editor.mappingsController], @"*");
     XCTAssertEqual(editor.modelsTable.numberOfRows, 1);
     XCTAssertFalse(editor.editorDocument.isDocumentEdited);
 }
@@ -184,15 +202,18 @@ static NSString *const UDFixtureSkin =
     UDSkinEditorViewController *editor = [self openSkinIn:controller];
     if (![editor isKindOfClass:[UDSkinEditorViewController class]]) return;
 
-    [self set:@"textures/udtest/wall" row:1 column:@"to" of:editor.mappingsTable];
-    [self set:@"two words" row:0 column:@"from" of:editor.mappingsTable];
-    XCTAssertEqualObjects(editor.mappings[0][0], @"textures/udtest/old", @"a name with a space would break the decl: refused");
+    XCTAssertTrue([self set:@"textures/udtest/wall" row:1 key:@"to" of:editor.mappingsController]);
+    XCTAssertFalse([self set:@"two words" row:0 key:@"from" of:editor.mappingsController],
+                   @"a name with a space would break the decl: refused");
+    XCTAssertEqualObjects(editor.skin.mappings[0].from, @"textures/udtest/old");
 
+    [editor.mappingsController setSelectionIndex:1];                // + adds after the selection
     [self press:0 ofButtonsWithAction:@selector(addOrRemoveMapping:) inView:editor.view];
-    XCTAssertEqualObjects(editor.mappings.lastObject, (@[@"*", @"_default"]), @"+ adds the default skin's mapping");
-    [editor.mappingsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    XCTAssertEqualObjects(editor.skin.mappings.lastObject.from, @"*", @"+ adds the default skin's mapping");
+    XCTAssertEqualObjects(editor.skin.mappings.lastObject.to, @"_default");
+    [editor.mappingsController setSelectionIndex:0];
     [self press:1 ofButtonsWithAction:@selector(addOrRemoveMapping:) inView:editor.view];
-    XCTAssertEqual(editor.mappings.count, 2U, @"- takes the selection off");
+    XCTAssertEqual(editor.skin.mappings.count, 2U, @"- takes the selection off");
 
     [self save:controller];
     NSString *text = [self savedText:@"skins/udtest.skin"];
@@ -203,7 +224,7 @@ static NSString *const UDFixtureSkin =
 
     [self closeWorkspace:controller];
     UDSkinEditorViewController *again = [self openSkinIn:[self openFixtureWorkspace]];
-    XCTAssertEqualObjects(again.mappings, (@[@[@"*", @"textures/udtest/wall"], @[@"*", @"_default"]]), @"and read back");
+    XCTAssertEqualObjects([again.skin.mappings valueForKey:@"to"], (@[@"textures/udtest/wall", @"_default"]), @"and read back");
 }
 
 /// A material the skin maps to that is neither a decl nor an image, and a
@@ -230,11 +251,11 @@ static NSString *const UDFixtureSkin =
     XCTAssertEqual(model.severity, UDDiagnosticSeverityError);
 
     UDErrorsViewController *issuesTab = [controller valueForKey:@"issuesNavigator"];
-    [editor.modelsTable deselectAll:nil];
+    [editor.modelsController setSelectionIndexes:[NSIndexSet indexSet]];
     [controller errorsViewController:issuesTab didSelectDiagnostic:model inStore:editor.diagnosticStore];
-    XCTAssertEqual(editor.modelsTable.selectedRow, 1, @"a click shows the row");
+    XCTAssertEqual(editor.modelsController.selectionIndex, 1U, @"a click shows the row");
 
-    [self set:@"models/udtest/crate.lwo" row:1 column:@"model" of:editor.modelsTable];
+    [self set:@"models/udtest/crate.lwo" row:1 key:@"path" of:editor.modelsController];
     [self spinUntil:^BOOL{ return editor.diagnosticStore.allDiagnostics.count == 2; } timeout:1.0];
     XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 2U, @"a model that is there is no issue");
 }

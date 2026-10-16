@@ -6,19 +6,6 @@
 
 static UDDiagnosticSource const UDSkinReferencesSource = @"references";
 
-/// The lines of a skin attribute (mappings, models), without empty ones.
-static NSArray<NSString *> *UDSkinLines(NSString *text) {
-    NSMutableArray<NSString *> *lines = [NSMutableArray array];
-    for (NSString *line in [text componentsSeparatedByString:@"\n"]) {
-        NSString *trimmed = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmed.length > 0) [lines addObject:trimmed];
-    }
-    return lines;
-}
-
-@interface UDSkinEditorViewController ()
-@end
-
 @implementation UDSkinEditorViewController
 
 - (instancetype)init {
@@ -29,114 +16,42 @@ static NSArray<NSString *> *UDSkinLines(NSString *text) {
     return (UDDeclSkin *)self.declObject;
 }
 
-- (NSArray<NSArray<NSString *> *> *)mappings {
-    NSMutableArray<NSArray<NSString *> *> *mappings = [NSMutableArray array];
-    for (NSString *line in UDSkinLines(self.skin.mappings)) {
-        NSRange space = [line rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]];
-        if (space.location == NSNotFound) continue;
-        NSString *to = [[line substringFromIndex:NSMaxRange(space)]
-                        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        [mappings addObject:@[[line substringToIndex:space.location], to]];
-    }
-    return mappings;
-}
-
-- (NSArray<NSString *> *)models {
-    return UDSkinLines(self.skin.associatedModels);
-}
-
-/// Written back: one edit, one undo, the tab edited.
-- (void)_setMappings:(NSArray<NSArray<NSString *> *> *)mappings {
-    NSMutableArray<NSString *> *lines = [NSMutableArray arrayWithCapacity:mappings.count];
-    for (NSArray<NSString *> *mapping in mappings) [lines addObject:[NSString stringWithFormat:@"%@ %@", mapping[0], mapping[1]]];
-    self.skin.mappings = [lines componentsJoinedByString:@"\n"];
-    [self editingContextDidChange];                     // now: the context tells at the end of the event
-}
-
-- (void)_setModels:(NSArray<NSString *> *)models {
-    self.skin.associatedModels = [models componentsJoinedByString:@"\n"];
-    [self editingContextDidChange];
-}
-
 - (void)editingContextDidChange {
-    [self.mappingsTable reloadData];
-    [self.modelsTable reloadData];
     [self checkReferences];
 }
 
 #pragma mark - The lists
 
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return (NSInteger)(tableView == self.mappingsTable ? self.mappings.count : self.models.count);
-}
-
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    if (tableView == self.mappingsTable) {
-        NSArray<NSArray<NSString *> *> *mappings = self.mappings;
-        if (row < 0 || row >= (NSInteger)mappings.count) return nil;
-        return mappings[(NSUInteger)row][[column.identifier isEqualToString:@"from"] ? 0 : 1];
-    }
-    NSArray<NSString *> *models = self.models;
-    return row >= 0 && row < (NSInteger)models.count ? models[(NSUInteger)row] : nil;
-}
-
-/// A name the decl can hold: one token, not empty.
-static BOOL UDSkinNameIsValid(NSString *name) {
-    return name.length > 0 && [name rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].location == NSNotFound;
-}
-
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    NSString *name = [[object description] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (!UDSkinNameIsValid(name)) {
-        NSBeep();                                       // it would break the decl: as it was
-        return;
-    }
-    if (tableView == self.mappingsTable) {
-        NSMutableArray<NSArray<NSString *> *> *mappings = [self.mappings mutableCopy];
-        if (row < 0 || row >= (NSInteger)mappings.count) return;
-        NSMutableArray<NSString *> *mapping = [mappings[(NSUInteger)row] mutableCopy];
-        mapping[[column.identifier isEqualToString:@"from"] ? 0 : 1] = name;
-        mappings[(NSUInteger)row] = mapping;
-        [self _setMappings:mappings];
+/// @a element added after the selection of @a controller (at the end without
+/// one), in the skin's @a key; or the selection taken off.
+- (void)_addOrRemove:(NSInteger)segment element:(UDDeclElement *)element key:(NSString *)key
+          controller:(NSArrayController *)controller {
+    NSMutableArray *elements = [[self.skin valueForKey:key] mutableCopy] ?: [NSMutableArray array];
+    NSUInteger selected = controller.selectionIndex;
+    if (segment == 0) {
+        NSUInteger at = selected != NSNotFound ? selected + 1 : elements.count;
+        [elements insertObject:element atIndex:at];
+        [self.skin ud_setElements:elements forKey:key];
+        [controller setSelectionIndex:at];
+    } else if (selected != NSNotFound && selected < elements.count) {
+        [elements removeObjectAtIndex:selected];
+        [self.skin ud_setElements:elements forKey:key];
     } else {
-        NSMutableArray<NSString *> *models = [self.models mutableCopy];
-        if (row < 0 || row >= (NSInteger)models.count) return;
-        models[(NSUInteger)row] = name;
-        [self _setModels:models];
+        NSBeep();
     }
 }
 
 - (IBAction)addOrRemoveMapping:(NSSegmentedControl *)sender {
-    NSMutableArray<NSArray<NSString *> *> *mappings = [self.mappings mutableCopy];
-    NSInteger selected = self.mappingsTable.selectedRow;
-    if (sender.selectedSegment == 0) {
-        // The engine's default skin's mapping, to be edited.
-        NSUInteger at = selected >= 0 ? (NSUInteger)selected + 1 : mappings.count;
-        [mappings insertObject:@[@"*", @"_default"] atIndex:at];
-        [self _setMappings:mappings];
-        [self.mappingsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:at] byExtendingSelection:NO];
-    } else if (selected >= 0 && selected < (NSInteger)mappings.count) {
-        [mappings removeObjectAtIndex:(NSUInteger)selected];
-        [self _setMappings:mappings];
-    } else {
-        NSBeep();
-    }
+    // The engine's default skin's mapping, to be edited.
+    [self _addOrRemove:sender.selectedSegment element:[UDSkinMapping mappingFrom:@"*" to:@"_default"]
+                   key:@"mappings" controller:self.mappingsController];
 }
 
 - (IBAction)addOrRemoveModel:(NSSegmentedControl *)sender {
-    NSMutableArray<NSString *> *models = [self.models mutableCopy];
-    NSInteger selected = self.modelsTable.selectedRow;
-    if (sender.selectedSegment == 0) {
-        NSUInteger at = selected >= 0 ? (NSUInteger)selected + 1 : models.count;
-        [models insertObject:@"models/" atIndex:at];
-        [self _setModels:models];
-        [self.modelsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:at] byExtendingSelection:NO];
-        [self.modelsTable editColumn:0 row:(NSInteger)at withEvent:nil select:YES];
-    } else if (selected >= 0 && selected < (NSInteger)models.count) {
-        [models removeObjectAtIndex:(NSUInteger)selected];
-        [self _setModels:models];
-    } else {
-        NSBeep();
+    [self _addOrRemove:sender.selectedSegment element:[UDSkinModel modelWithPath:@"models/"]
+                   key:@"associatedModels" controller:self.modelsController];
+    if (sender.selectedSegment == 0 && self.modelsController.selectionIndex != NSNotFound) {
+        [self.modelsTable editColumn:0 row:(NSInteger)self.modelsController.selectionIndex withEvent:nil select:YES];
     }
 }
 
@@ -161,39 +76,46 @@ static BOOL UDSkinNameIsValid(NSString *name) {
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
     [self removeDiagnosticTargets];
 
-    NSArray<NSArray<NSString *> *> *mappings = self.mappings;
+    NSArray<UDSkinMapping *> *mappings = self.skin.mappings;
     for (NSUInteger row = 0; row < mappings.count; row++) {
-        for (NSString *material in mappings[row]) {
+        UDSkinMapping *mapping = mappings[row];
+        for (NSString *material in @[mapping.from ?: @"", mapping.to ?: @""]) {
             if ([material isEqualToString:@"*"] || [self _materialExists:material]) continue;
             UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:material] column:0
                 message:[NSString stringWithFormat:@"Material “%@” is neither a decl nor an image: the engine makes it a default material", material]
                 severity:UDDiagnosticSeverityWarning source:UDSkinReferencesSource];
             [items addObject:item];
-            [self setTarget:@[self.mappingsTable ?: [NSNull null], @(row)] forDiagnostic:item];
+            [self setTarget:@[self.mappingsController, @(row)] forDiagnostic:item];
         }
     }
-    NSArray<NSString *> *models = self.models;
+    NSArray<UDSkinModel *> *models = self.skin.associatedModels;
     for (NSUInteger row = 0; row < models.count; row++) {
+        UDSkinModel *model = models[row];
         // A file, by its extension: the engine picks a model's loader by it
         // (and a folder opens as a file on macOS).
-        if (models[row].pathExtension.length > 0 && ![models[row] hasSuffix:@"/"] &&
-            [self.workspace.fileSystem readFile:models[row] buffer:NULL timestamp:NULL error:NULL] >= 0) continue;
-        UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:models[row]] column:0
-            message:[NSString stringWithFormat:@"Model “%@” is not found", models[row]]
+        NSString *path = model.path ?: @"";
+        if (path.pathExtension.length > 0 && ![path hasSuffix:@"/"] &&
+            [self.workspace.fileSystem readFile:path buffer:NULL timestamp:NULL error:NULL] >= 0) continue;
+        UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self lineOfDeclTextContaining:path] column:0
+            message:[NSString stringWithFormat:@"Model “%@” is not found", path]
             severity:UDDiagnosticSeverityError source:UDSkinReferencesSource];
         [items addObject:item];
-        [self setTarget:@[self.modelsTable ?: [NSNull null], @(row)] forDiagnostic:item];
+        [self setTarget:@[self.modelsController, @(row)] forDiagnostic:item];
     }
     [self.diagnosticStore setDiagnostics:items forSource:UDSkinReferencesSource];
 }
 
 - (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
     NSArray *target = [self targetForDiagnostic:diagnostic];
-    if (![target.firstObject isKindOfClass:[NSTableView class]]) return;
-    NSTableView *table = target[0];
-    NSInteger row = [target[1] integerValue];
-    [table selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
-    [table scrollRowToVisible:row];
+    if (target == nil) return;
+    NSArrayController *controller = target[0];
+    // By its row: an edit puts a copy of the element in its place, the row
+    // the same.
+    NSUInteger index = [target[1] unsignedIntegerValue];
+    if (index >= [[controller arrangedObjects] count]) return;
+    [controller setSelectionIndex:index];
+    NSTableView *table = controller == self.mappingsController ? self.mappingsTable : self.modelsTable;
+    [table scrollRowToVisible:(NSInteger)index];
     [table.window makeFirstResponder:table];
 }
 

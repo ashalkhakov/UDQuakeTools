@@ -103,6 +103,14 @@ Built when the first editor needs each one, not up front:
 - Reference checking and a Problems panel (a PDA's emails exist, a material's
   images exist, an entityDef's `inherit` resolves).
 - New / Delete / Duplicate / Rename decl in the browser (only Save As exists).
+- A decl's source beside its structured editor: the main pane switches
+  between the two representations of the decl (the PDA, table, skin and
+  later editors, and the text editor over the decl's source), each edit in
+  one showing in the other, one undo history and one dirty state for both.
+- Lookup dialogs wherever a decl refers to another: a PDA's emails, audio
+  logs and videos, a skin's materials, a particle stage's material and
+  tables, an entityDef's inherit, and so on. Find the decl by name and pick
+  it; today the name is typed, then checked.
 - Image loading through idFileSystem (TGA, DDS, JPG, PNG, inside pk4s) — the
   material, GUI and particle editors; the image viewer reads OS paths only.
 - Sound playback through idFileSystem — the sound shader editor, PDA audio.

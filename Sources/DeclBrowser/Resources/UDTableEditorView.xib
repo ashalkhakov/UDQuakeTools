@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="view" destination="TBE-root" id="UDT-o-view"/>
                 <outlet property="objectController" destination="TBE-oc" id="UDT-o-objectController"/>
+                <outlet property="valuesController" destination="TBE-ac" id="UDT-o-valuesController"/>
                 <outlet property="valuesTable" destination="TBE-values" id="UDT-o-valuesTable"/>
                 <outlet property="graphView" destination="TBE-graph" id="UDT-o-graphView"/>
             </connections>
@@ -19,6 +20,12 @@
         <objectController objectClassName="UDDeclTable" id="TBE-oc" userLabel="Object Controller">
             <classReference key="objectClass" className="UDDeclTable"/>
         </objectController>
+        <arrayController objectClassName="UDTableValue" id="TBE-ac" userLabel="UDTableValue Array Controller">
+            <classReference key="objectClass" className="UDTableValue"/>
+            <connections>
+                <binding destination="TBE-oc" name="contentArray" keyPath="selection.values" id="TBE-ac-b"/>
+            </connections>
+        </arrayController>
         <customView id="TBE-root">
             <rect key="frame" x="0.0" y="0.0" width="640" height="440"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -68,34 +75,29 @@
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                        <tableColumn identifier="index" editable="NO" width="40" minWidth="30" maxWidth="1000" id="TBE-values-index">
-                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="#">
-                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                            </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="TBE-values-index-c">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                        </tableColumn>
-                                        <tableColumn identifier="value" editable="YES" width="160" minWidth="30" maxWidth="1000" id="TBE-values-value">
+                                        <tableColumn identifier="number" editable="YES" width="221" minWidth="30" maxWidth="1000" id="TBE-values-number">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Value">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="TBE-values-value-c">
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="TBE-values-number-c">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="TBE-ac" name="value" keyPath="arrangedObjects.number" id="TBE-values-number-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
                                         </tableColumn>
                                 </tableColumns>
                                 <connections>
-                                    <outlet property="dataSource" destination="-2" id="TBE-values-ds"/>
-                                    <outlet property="delegate" destination="-2" id="TBE-values-dg"/>
+                                    <binding destination="TBE-ac" name="content" keyPath="arrangedObjects" id="TBE-values-bc"/>
+                                    <binding destination="TBE-ac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="TBE-values-bc" id="TBE-values-bs"/>
                                 </connections>
                             </tableView>
                         </subviews>

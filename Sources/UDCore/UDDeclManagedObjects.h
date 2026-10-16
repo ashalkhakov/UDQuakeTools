@@ -117,22 +117,62 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 @interface UDDeclMaterial : UDDeclBase
 @end
 
+// ---------------------------------------------------------------------------
+// A table's values and a skin's mappings and models: like particle stages,
+// plain KVO-compliant objects in transient attributes of their decl, read
+// from its text on fetch and written back on save. An element belongs to its
+// decl: setting a property of one asks the decl to put an edited copy in its
+// place, in a new array, so a bound cell's edit is the decl's (undoable, the
+// decl updated) and undo brings the element back as it was.
+// ---------------------------------------------------------------------------
+
+@interface UDDeclBase (UDDeclElements)
+/// @a elements as the decl's @a key, each element the decl's: a new array,
+/// so the decl is updated and the change undoable.
+- (void)ud_setElements:(NSArray *)elements forKey:(NSString *)key;
+@end
+
+@interface UDDeclElement : NSObject <NSCopying>
+/// The decl and its attribute holding this element; nil until it is in one.
+@property (nonatomic, weak, nullable) UDDeclBase *ud_owner;
+@property (nonatomic, copy, nullable) NSString *ud_ownerKey;
+@end
+
+/// One of a table's values.
+@interface UDTableValue : UDDeclElement
+@property (nonatomic) float number;
++ (instancetype)valueWithNumber:(float)number;
+@end
+
+/// One of a skin's mappings: from a material ("*" for all) to another.
+@interface UDSkinMapping : UDDeclElement
+@property (nonatomic, copy) NSString *from;
+@property (nonatomic, copy) NSString *to;
++ (instancetype)mappingFrom:(NSString *)from to:(NSString *)to;
+@end
+
+/// One of the models a skin goes with.
+@interface UDSkinModel : UDDeclElement
+@property (nonatomic, copy) NSString *path;
++ (instancetype)modelWithPath:(NSString *)path;
+@end
+
 @interface UDDeclTable : UDDeclBase
 
 @property (nonatomic) BOOL clamp;
 @property (nonatomic) BOOL snap;
-/// The table values as comma-separated floats, e.g. @"0, 0.5, 1".
-@property (nonatomic, copy, nullable) NSString *values;
+/// The values, in order. TRANSIENT: read from the decl text on fetch and
+/// written back on save; a new array marks the decl updated.
+@property (nonatomic, copy, nullable) NSArray<UDTableValue *> *values;
 
 @end
 
 @interface UDDeclSkin : UDDeclBase
 
-/// One mapping per line: "<fromMaterial> <toMaterial>", with "*" as the
-/// wildcard from-material.
-@property (nonatomic, copy, nullable) NSString *mappings;
-/// Associated model asset paths, one per line (preview aid for editors).
-@property (nonatomic, copy, nullable) NSString *associatedModels;
+/// The mappings and the associated models, in order. TRANSIENT, as a
+/// table's values are.
+@property (nonatomic, copy, nullable) NSArray<UDSkinMapping *> *mappings;
+@property (nonatomic, copy, nullable) NSArray<UDSkinModel *> *associatedModels;
 
 @end
 

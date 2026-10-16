@@ -166,9 +166,10 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
     NSString *text = self.editor.textView.string;
     NSMutableArray<UDDeclTextProblem *> *problems =
         [[UDDeclTextChecker problemsInDeclText:text fileSystem:self.workspace.fileSystem] mutableCopy];
-    BOOL bracesHold = [problems indexOfObjectPassingTest:^BOOL(UDDeclTextProblem *problem, NSUInteger i, BOOL *stop) {
-        return problem.isError;
-    }] == NSNotFound;
+    BOOL bracesHold = YES;
+    for (UDDeclTextProblem *problem in problems) {
+        if (problem.isError) bracesHold = NO;
+    }
     UDDeclBase *decl = [self.document isKindOfClass:[UDDeclDocument class]] ? ((UDDeclDocument *)self.document).declObject : nil;
     if (bracesHold && decl != nil) {
         [problems addObjectsFromArray:[[decl class] ud_problemsParsingText:text name:decl.name

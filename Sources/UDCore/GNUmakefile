@@ -41,7 +41,17 @@ UDCore_OBJC_FILES = \
     idDeclManager.m \
     UDBitMsg.m \
     UDCrashReporter.m \
-    UDDeclManagedObjects.m \
+    UDDeclCodec.m \
+    UDDeclBase.m \
+    UDDeclRawText.m \
+    UDDeclElement.m \
+    UDDeclTable.m \
+    UDDeclSkin.m \
+    UDDeclEntityDef.m \
+    UDDeclSound.m \
+    UDDeclFX.m \
+    UDDeclPDA.m \
+    UDDeclParticle.m \
     UDDeclIncrementalStore.m \
     UDZipWriter.m \
     UDDeclTextChecker.m \
@@ -72,6 +82,16 @@ UDCore_HEADER_FILES = \
     idDeclManager.h \
     UDCrashReporter.h \
     UDDeclManagedObjects.h \
+    UDDeclBase.h \
+    UDDeclRawText.h \
+    UDDeclElement.h \
+    UDDeclTable.h \
+    UDDeclSkin.h \
+    UDDeclEntityDef.h \
+    UDDeclSound.h \
+    UDDeclFX.h \
+    UDDeclPDA.h \
+    UDDeclParticle.h \
     UDDeclIncrementalStore.h \
     UDZipWriter.h \
     UDDeclTextChecker.h

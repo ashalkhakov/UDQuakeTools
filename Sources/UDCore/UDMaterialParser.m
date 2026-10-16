@@ -485,26 +485,22 @@ static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
 
 @interface UDMaterialTextNode ()
 @property (nonatomic) UDMaterialTextKind kind;
-@property (nonatomic, copy) NSString *leading;
-@property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy, nullable) NSString *keyword;
 @property (nonatomic, copy, nullable) NSString *value;
 @property (nonatomic, copy, nullable) NSArray<UDMaterialTextNode *> *children;
-@property (nonatomic, copy, nullable) NSString *closing;
 @property (nonatomic) BOOL closed;
 // Where it is in the text's bytes, while the parse goes.
 @property (nonatomic) NSInteger leadingStart;
 @property (nonatomic) NSInteger start;
 @property (nonatomic) NSInteger keywordEnd;
 @property (nonatomic) NSInteger closingStart;
-@property (nonatomic) NSInteger closingEnd;
 @property (nonatomic, strong, nullable) NSMutableArray<UDMaterialTextNode *> *mutableChildren;
 @end
 
 @implementation UDMaterialTextNode
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%ld %@ %@>", (long)self.kind, self.keyword ?: @"", self.kind == UDMaterialTextStage ? self.children : self.text];
+    return [NSString stringWithFormat:@"<%ld %@ %@>", (long)self.kind, self.keyword ?: @"", self.kind == UDMaterialTextStage ? self.children : self.value];
 }
 
 @end
@@ -614,10 +610,8 @@ static BOOL UDTokenIcmp( const idToken *token, const char *text ) {
 @property (nonatomic, strong) NSMutableArray<UDMaterialTextNode *> *openStages;
 @property (nonatomic, strong, nullable) UDMaterialTextNode *lastNode;
 @property (nonatomic) NSInteger bodyClosingStart;
-@property (nonatomic) NSInteger bodyClosingEnd;
 @property (nonatomic) BOOL bodyClosed;
 @property (nonatomic, copy, readwrite) NSArray<UDMaterialTextNode *> *body;
-@property (nonatomic, copy, readwrite) NSString *closing;
 @end
 
 @implementation UDMaterialParser
@@ -779,37 +773,30 @@ static imageRef_t UDImageFromFile( const char *name, textureFilter_t tf, BOOL al
         return;
     }
     NSInteger closingStart = [self offsetOf:token->whiteSpaceStart_p inLexer:src];
-    NSInteger closingEnd = [self offsetOf:token->whiteSpaceEnd_p inLexer:src];
     if ( self.openStages.count > 0 && self.containers.count > 1 ) {
         UDMaterialTextNode *stage = self.openStages.lastObject;
         stage.closingStart = closingStart;
-        stage.closingEnd = closingEnd;
         stage.closed = YES;
         [self.openStages removeLastObject];
         [self.containers removeLastObject];
     } else {
         self.bodyClosingStart = closingStart;
-        self.bodyClosingEnd = closingEnd;
         self.bodyClosed = YES;
         [self.containers removeLastObject];
     }
 }
 
-/// The text of each node: from its keyword to where what follows it
-/// begins.
+/// What each keyword node read (a value the parse keeps none of: the text
+/// after its keyword, to where what follows it begins).
 - (void)finishNodes:(NSArray<UDMaterialTextNode *> *)nodes until:(NSInteger)end {
     for (NSUInteger i = 0; i < nodes.count; i++) {
         UDMaterialTextNode *node = nodes[i];
         NSInteger next = i + 1 < nodes.count ? nodes[i + 1].leadingStart : end;
-        node.leading = [self sliceFrom:node.leadingStart to:node.start];
         if ( node.kind == UDMaterialTextStage ) {
             NSInteger childrenEnd = node.closed ? node.closingStart : next;
             [self finishNodes:node.mutableChildren until:childrenEnd];
             node.children = node.mutableChildren;
-            node.closing = node.closed ? [self sliceFrom:node.closingStart to:node.closingEnd] : @"";
-            node.text = @"{";
         } else {
-            node.text = [self sliceFrom:node.start to:next];
             if ( node.value == nil && node.kind == UDMaterialTextKeyword ) {
                 node.value = [[self sliceFrom:node.keywordEnd to:next]
                               stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -854,17 +841,6 @@ static imageRef_t UDImageFromFile( const char *name, textureFilter_t tf, BOOL al
     self.lastNode = rest;
     // The levels it was in are left unclosed; the body's brace is the text's last.
     self.bodyClosingStart = bodyEnd;
-    self.bodyClosingEnd = bodyEnd;
-    self.restEnd = bodyEnd;
-}
-
-- (void)setRestEnd:(NSInteger)restEnd {
-    objc_setAssociatedObject(self, @selector(restEnd), @(restEnd), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSInteger)restEnd {
-    NSNumber *value = objc_getAssociatedObject(self, @selector(restEnd));
-    return value != nil ? value.integerValue : -1;
 }
 
 #pragma mark - Material.cpp
@@ -2793,7 +2769,6 @@ Parses the current material definition and finds all necessary images.
         [self commonInit];
         [self setMaterialFlag:MF_DEFAULTED];
         self.body = @[];
-        self.closing = @"";
         return NO;
     }
     src.diagnostics = self.diagnostics;
@@ -2972,11 +2947,10 @@ Parses the current material definition and finds all necessary images.
     free( parsingData );
 
     // the text it went through
-    NSInteger restEnd = self.restEnd;
-    NSInteger bodyEnd = self.bodyClosed || restEnd >= 0 ? self.bodyClosingStart : (NSInteger)textData.length;
+    BOOL gaveUp = [self testMaterialFlag:MF_DEFAULTED] && !self.bodyClosed && self.lastNode != nil;
+    NSInteger bodyEnd = self.bodyClosed || gaveUp ? self.bodyClosingStart : (NSInteger)textData.length;
     [self finishNodes:self.bodyNodes until:bodyEnd];
     self.body = self.bodyNodes;
-    self.closing = self.bodyClosed ? [self sliceFrom:self.bodyClosingStart to:self.bodyClosingEnd] : @"";
 
     // finish things up
     if ( [self testMaterialFlag:MF_DEFAULTED] ) {

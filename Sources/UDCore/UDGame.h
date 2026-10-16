@@ -37,6 +37,7 @@ typedef NS_ENUM(NSInteger, UDGameType) {
 + (NSArray<UDGame *> *)allGames;
 + (UDGame *)gameWithType:(UDGameType)type;
 + (nullable UDGame *)gameWithDisplayName:(NSString *)displayName;
++ (nullable UDGame *)gameWithIdentifier:(NSString *)identifier;
 
 @end
 

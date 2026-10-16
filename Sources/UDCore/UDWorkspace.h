@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+#import "UDGame.h"
+
 @class idFileSystem, idDeclManager;
 @class NSManagedObjectContext, NSPersistentStoreCoordinator;
 
@@ -15,6 +17,11 @@
 
 // The root folder on the user's drive (e.g., "/Users/bob/Games/Doom3/d3xp")
 @property (nonatomic, copy) NSString *rootDirectory;
+
+// The game whose files these are: it decides which decl types and folders
+// the decl manager registers (Doom 3's materials, Quake 3's shaders, ...).
+// Saved as UDGame's identifier; a workspace without one is Doom 3's.
+@property (assign, nonatomic) UDGameType game;
 
 // variables
 @property (strong, nonatomic) NSString *pakFileExtension; // "pk4"

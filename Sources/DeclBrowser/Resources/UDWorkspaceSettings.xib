@@ -34,8 +34,33 @@
                                     <rect key="frame" x="10" y="33" width="514" height="366"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-01-001">
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gam-lb-001">
                                             <rect key="frame" x="8" y="332" width="130" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Game:" id="gam-lb-002">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <popUpButton toolTip="game" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gam-pu-001">
+                                            <rect key="frame" x="144" y="326" width="286" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Doom 3" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="5" imageScaling="proportionallyDown" inset="2" selectedItem="gam-mi-001" id="gam-pu-002">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="message"/>
+                                                <menu key="menu" id="gam-mn-001">
+                                                    <items>
+                                                        <menuItem title="Doom 3" state="on" tag="5" id="gam-mi-001"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="wsC-on-trl" name="selectedTag" keyPath="selection.game" id="gam-bd-001"/>
+                                            </connections>
+                                        </popUpButton>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-01-001">
+                                            <rect key="frame" x="8" y="301" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Base Path:" id="gen-02-002">
                                                 <font key="font" metaFont="system"/>
@@ -44,7 +69,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_basepath" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-03-003">
-                                            <rect key="frame" x="146" y="330" width="250" height="21"/>
+                                            <rect key="frame" x="146" y="299" width="250" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_basepath" drawsBackground="YES" id="gen-04-004">
                                                 <font key="font" metaFont="system"/>
@@ -56,7 +81,7 @@
                                             </connections>
                                         </textField>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-06-006">
-                                            <rect key="frame" x="400" y="324" width="90" height="32"/>
+                                            <rect key="frame" x="400" y="293" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Browse…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gen-07-007">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -67,7 +92,7 @@
                                             </connections>
                                         </button>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-09-009">
-                                            <rect key="frame" x="8" y="301" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="270" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Save Path:" id="gen-10-010">
                                                 <font key="font" metaFont="system"/>
@@ -76,7 +101,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_savepath" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-11-011">
-                                            <rect key="frame" x="146" y="299" width="250" height="21"/>
+                                            <rect key="frame" x="146" y="268" width="250" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_savepath" drawsBackground="YES" id="gen-12-012">
                                                 <font key="font" metaFont="system"/>
@@ -88,7 +113,7 @@
                                             </connections>
                                         </textField>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-14-014">
-                                            <rect key="frame" x="400" y="293" width="90" height="32"/>
+                                            <rect key="frame" x="400" y="262" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Browse…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gen-15-015">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -99,7 +124,7 @@
                                             </connections>
                                         </button>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-17-017">
-                                            <rect key="frame" x="8" y="270" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="239" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Home Path:" id="gen-18-018">
                                                 <font key="font" metaFont="system"/>
@@ -108,7 +133,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_homepath" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-19-019">
-                                            <rect key="frame" x="146" y="268" width="250" height="21"/>
+                                            <rect key="frame" x="146" y="237" width="250" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_homepath" drawsBackground="YES" id="gen-20-020">
                                                 <font key="font" metaFont="system"/>
@@ -120,7 +145,7 @@
                                             </connections>
                                         </textField>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-22-022">
-                                            <rect key="frame" x="400" y="262" width="90" height="32"/>
+                                            <rect key="frame" x="400" y="231" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Browse…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gen-23-023">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -131,7 +156,7 @@
                                             </connections>
                                         </button>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-25-025">
-                                            <rect key="frame" x="8" y="239" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="208" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="CD Path:" id="gen-26-026">
                                                 <font key="font" metaFont="system"/>
@@ -140,7 +165,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_cdpath" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-27-027">
-                                            <rect key="frame" x="146" y="237" width="250" height="21"/>
+                                            <rect key="frame" x="146" y="206" width="250" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_cdpath" drawsBackground="YES" id="gen-28-028">
                                                 <font key="font" metaFont="system"/>
@@ -152,7 +177,7 @@
                                             </connections>
                                         </textField>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-30-030">
-                                            <rect key="frame" x="400" y="231" width="90" height="32"/>
+                                            <rect key="frame" x="400" y="200" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Browse…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gen-31-031">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -163,7 +188,7 @@
                                             </connections>
                                         </button>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-33-033">
-                                            <rect key="frame" x="8" y="208" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="177" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Game (mod):" id="gen-34-034">
                                                 <font key="font" metaFont="system"/>
@@ -172,7 +197,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_game" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-35-035">
-                                            <rect key="frame" x="146" y="206" width="330" height="21"/>
+                                            <rect key="frame" x="146" y="175" width="330" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_game" drawsBackground="YES" id="gen-36-036">
                                                 <font key="font" metaFont="system"/>
@@ -184,7 +209,7 @@
                                             </connections>
                                         </textField>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-38-038">
-                                            <rect key="frame" x="8" y="177" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="146" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Base Game:" id="gen-39-039">
                                                 <font key="font" metaFont="system"/>
@@ -193,7 +218,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="fs_game_base" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-40-040">
-                                            <rect key="frame" x="146" y="175" width="330" height="21"/>
+                                            <rect key="frame" x="146" y="144" width="330" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="fs_game_base" drawsBackground="YES" id="gen-41-041">
                                                 <font key="font" metaFont="system"/>
@@ -205,7 +230,7 @@
                                             </connections>
                                         </textField>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-43-043">
-                                            <rect key="frame" x="8" y="146" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="115" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Game Directory:" id="gen-44-044">
                                                 <font key="font" metaFont="system"/>
@@ -214,7 +239,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="gamedir" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-45-045">
-                                            <rect key="frame" x="146" y="144" width="330" height="21"/>
+                                            <rect key="frame" x="146" y="113" width="330" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="gamedir" drawsBackground="YES" id="gen-46-046">
                                                 <font key="font" metaFont="system"/>
@@ -226,7 +251,7 @@
                                             </connections>
                                         </textField>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-48-048">
-                                            <rect key="frame" x="8" y="115" width="130" height="16"/>
+                                            <rect key="frame" x="8" y="84" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Pak Extension:" id="gen-49-049">
                                                 <font key="font" metaFont="system"/>
@@ -235,7 +260,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField toolTip="pakFileExtension" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gen-50-050">
-                                            <rect key="frame" x="146" y="113" width="330" height="21"/>
+                                            <rect key="frame" x="146" y="82" width="330" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="pakFileExtension" drawsBackground="YES" id="gen-51-051">
                                                 <font key="font" metaFont="system"/>

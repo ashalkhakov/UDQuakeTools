@@ -61,4 +61,13 @@
     return nil;
 }
 
++ (nullable UDGame *)gameWithIdentifier:(NSString *)identifier {
+    for (UDGame *g in [self allGames]) {
+        if ([g.identifier isEqualToString:identifier]) {
+            return g;
+        }
+    }
+    return nil;
+}
+
 @end

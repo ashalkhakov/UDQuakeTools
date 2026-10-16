@@ -86,11 +86,13 @@ Core Data layer, tabs, undo, save). Two gaps block the editors after it:
       only), removals (with the comment attached to the decl), moves, new
       decls (appended in creation order). Refuses to overwrite a file changed
       outside the editor. `Tests/idDeclFileWriteTests.m`.
-- [ ] **Register the remaining Doom 3 decl types and folders** — commented
-      out today: `entityDef`, `mapDef`, `model` (`def/*.def`), `sound`
-      (`sound/*.sndshd`), `fx`, `articulatedFigure` (`af/*.af`),
-      `materialType`, `playback`, `lipSync` — so their editors have something
-      to open; a Core Data entity per type as its editor arrives.
+- [x] **Register the remaining Doom 3 decl types and folders** — as
+      dhewm3's `idDeclManagerLocal::Init` and `idGameLocal::Init` do:
+      `sound` (`sound/*.sndshd`), `entityDef`, `mapDef`, `model`, `export`
+      (`def/*.def`), `fx` (`fx/*.fx`), `articulatedFigure` (`af/*.af`), each
+      folder listed alone as `ListFiles` does. Which decls a workspace has is
+      its game's, a workspace setting (Doom 3's the only one so far). They
+      open as text; a Core Data entity per type as its editor arrives.
 
 ## Grown with the editors that need them
 

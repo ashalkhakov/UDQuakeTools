@@ -329,4 +329,92 @@
     XCTAssertNil([self.declManager findType:DECL_MATERIAL name:n2 makeDefault:NO error:&error]);
 }
 
+#pragma mark - The game's decls
+
+- (void)writeFixture:(NSString *)path contents:(NSString *)contents {
+    NSString *fullPath = [self.fullGameDirPath stringByAppendingPathComponent:path];
+    [[NSFileManager defaultManager] createDirectoryAtPath:[fullPath stringByDeletingLastPathComponent]
+                              withIntermediateDirectories:YES attributes:nil error:nil];
+    [contents writeToFile:fullPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
+- (UDWorkspace *)startedWorkspaceWithSettings:(NSDictionary *)extra error:(NSError **)error {
+    NSMutableDictionary *settings = [[self.workspace dictionaryRepresentation] mutableCopy];
+    [settings addEntriesFromDictionary:extra];
+    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:self.rootDir];
+    return [workspace startup:error] ? workspace : nil;
+}
+
+- (void)testDoom3RegistersTheGamesDeclTypesAndFolders {
+    [self writeFixture:@"def/ud_test.def" contents:
+        @"entityDef ud_test_crate {\n"
+         "\t\"inherit\" \"func_static\"\n"
+         "\t\"model\" \"ud_test_crate\"\n"
+         "}\n"
+         "model ud_test_crate {\n"
+         "\tmesh models/ud_test/crate.md5mesh\n"
+         "}\n"
+         "export ud_test {\n"
+         "\toptions -prefix UD_\n"
+         "}\n"
+         "mapDef ud_test/yard {\n"
+         "\t\"name\" \"Yard\"\n"
+         "}\n"];
+    [self writeFixture:@"sound/ud_test.sndshd" contents:
+        @"ud_test_hum {\n\tminDistance 1\n\tmaxDistance 12\n\tsound/ud_test/hum.wav\n}\n"];
+    [self writeFixture:@"fx/ud_test.fx" contents:
+        @"fx fx/ud_test_spark {\n\t{\n\t\tduration 0.5\n\t\tlight \"lights/ud_test\", 1, 0.5, 0, 48\n\t}\n}\n"];
+    [self writeFixture:@"af/ud_test.af" contents:
+        @"articulatedFigure ud_test_crate {\n\tsettings {\n\t\tmodel \"ud_test_crate\"\n\t}\n}\n"];
+    // idFileSystem::ListFiles lists the folder alone: Doom 3 never reads this.
+    [self writeFixture:@"materials/nested/ud_test.mtr" contents:@"textures/ud_test_nested {\n}\n"];
+
+    NSError *error = nil;
+    UDWorkspace *workspace = [self startedWorkspaceWithSettings:@{} error:&error];
+    for (NSString *folder in @[@"def", @"sound", @"fx", @"af", @"materials/nested"]) {
+        [[NSFileManager defaultManager] removeItemAtPath:[self.fullGameDirPath stringByAppendingPathComponent:folder] error:nil];
+    }
+    XCTAssertNotNil(workspace, @"%@", error);
+    idDeclManager *declManager = workspace.declManager;
+
+    NSDictionary<NSString *, NSNumber *> *types = @{
+        @"entityDef": @(DECL_ENTITYDEF), @"model": @(DECL_MODELDEF), @"export": @(DECL_MODELEXPORT),
+        @"mapDef": @(DECL_MAPDEF), @"sound": @(DECL_SOUND), @"fx": @(DECL_FX),
+        @"articulatedFigure": @(DECL_AF)
+    };
+    for (NSString *typeName in types) {
+        XCTAssertEqual([declManager declTypeFromName:typeName], (declType_t)types[typeName].intValue, @"%@", typeName);
+    }
+
+    NSDictionary<NSString *, NSNumber *> *decls = @{
+        @"ud_test_crate": @(DECL_ENTITYDEF), @"ud_test_hum": @(DECL_SOUND), @"fx/ud_test_spark": @(DECL_FX),
+        @"ud_test/yard": @(DECL_MAPDEF)
+    };
+    for (NSString *name in decls) {
+        idDeclBase *decl = [declManager findType:(declType_t)decls[name].intValue name:name makeDefault:NO error:&error];
+        XCTAssertNotNil(decl, @"%@ should be read from its folder: %@", name, error);
+    }
+    XCTAssertNotNil([declManager findType:DECL_MODELDEF name:@"ud_test_crate" makeDefault:NO error:&error]);
+    XCTAssertNotNil([declManager findType:DECL_AF name:@"ud_test_crate" makeDefault:NO error:&error]);
+    // As in idDeclFile::LoadAndParse, the model exporter's decls are skipped:
+    // the mapDef after it is still read.
+    XCTAssertNil([declManager findType:DECL_MODELEXPORT name:@"ud_test" makeDefault:NO error:&error]);
+    XCTAssertNil([declManager findType:DECL_MATERIAL name:@"textures/ud_test_nested" makeDefault:NO error:&error]);
+}
+
+- (void)testTheGameIsAWorkspaceSetting {
+    XCTAssertEqual(self.workspace.game, UDGameTypeDoom3, @"a workspace that names no game is Doom 3's");
+    XCTAssertEqualObjects(self.workspace.dictionaryRepresentation[@"game"], @"doom3");
+
+    UDWorkspace *quake3 = [[UDWorkspace alloc] initWithDictionary:@{@"game": @"quake3"} rootDirectory:self.rootDir];
+    XCTAssertEqual(quake3.game, UDGameTypeQuake3);
+    XCTAssertEqualObjects(quake3.dictionaryRepresentation[@"game"], @"quake3");
+}
+
+- (void)testOnlyDoom3sDeclsAreRead {
+    NSError *error = nil;
+    XCTAssertNil([self startedWorkspaceWithSettings:@{@"game": @"quake3"} error:&error]);
+    XCTAssertTrue([error.localizedDescription containsString:@"Quake 3"], @"%@", error);
+}
+
 @end

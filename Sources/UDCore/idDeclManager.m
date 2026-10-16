@@ -1038,15 +1038,28 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     [self parseGuides];
     // jmarshall end
 
+    // Which decls there are is the game's: Doom 3's are below, as dhewm3's
+    // idDeclManagerLocal::Init and idGameLocal::Init register them.
+    if (_workspace.game != UDGameTypeDoom3) {
+        if (error != NULL) {
+            NSString *message = [NSString stringWithFormat:@"%@ has no decls this version can read.",
+                                 [UDGame gameWithType:_workspace.game].displayName];
+            *error = [NSError errorWithDomain:@"idDeclManager" code:1
+                                     userInfo:@{NSLocalizedDescriptionKey: message}];
+        }
+        return NO;
+    }
+
     // decls used throughout the engine
     [self registerDeclType:DECL_TABLE typeName:@"table"];
     [self registerDeclType:DECL_MATERIAL typeName:@"material"];
     [self registerDeclType:DECL_SKIN typeName:@"skin"];
-    /*
-    [self registerDeclType:DECL_SOUND typeName:@"sound" allocator:NULL];
-    [self registerDeclType:DECL_ENTITYDEF typeName:@"entityDef" allocator:NULL];
-    [self registerDeclType:DECL_MAPDEF typeName:@"mapDef" allocator:NULL];
+    [self registerDeclType:DECL_SOUND typeName:@"sound"];
 
+    [self registerDeclType:DECL_ENTITYDEF typeName:@"entityDef"];
+    [self registerDeclType:DECL_MAPDEF typeName:@"mapDef"];
+    [self registerDeclType:DECL_FX typeName:@"fx"];
+    /*
      // jmarshall: Raven Decl Support
      RegisterDeclType(  "materialType",        DECL_MATERIALTYPE,  idDeclAllocator<rvDeclMatType>);
      RegisterDeclType(  "lipSync",            DECL_LIPSYNC,        idDeclAllocator<rvDeclLipSync>);
@@ -1055,11 +1068,8 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
      RegisterDeclType(    "effect",            DECL_EFFECT,        openQ4_AllocEffectDecl);
      // jmarshall end
      */
-     // jmarshall: Raven Decl Support
-     //RegisterDeclType( "fx",                    DECL_FX,            idDeclAllocator<idDeclFX> );
     [self registerDeclType:DECL_PARTICLE typeName:@"particle"];
-     // jmarshall end
-     //RegisterDeclType( "articulatedFigure",    DECL_AF,            idDeclAllocator<idDeclAF> );
+    [self registerDeclType:DECL_AF typeName:@"articulatedFigure"];
     [self registerDeclType:DECL_PDA typeName:@"pda"];
     [self registerDeclType:DECL_EMAIL typeName:@"email"];
     [self registerDeclType:DECL_VIDEO typeName:@"video"];
@@ -1067,6 +1077,10 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     /*
      RegisterDeclType( "playerModel",            DECL_PLAYER_MODEL,    idDeclAllocator<rvDeclPlayerModel> );
      */
+
+    // NOTE: in doom3, these are registered in the game dll
+    [self registerDeclType:DECL_MODELDEF typeName:@"model"];
+    [self registerDeclType:DECL_MODELEXPORT typeName:@"export"];
 
     if (_workspace.com_SingleDeclFile) {
         [self startLoadingDecls];
@@ -1078,14 +1092,18 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     } else {
         //cmdSystem->AddCommand( "writeDeclFile", WriteDeclFile_f, CMD_FL_SYSTEM, "writes parsed decls to a packed .decls file (optional mode: openq4 or retail)" );
         
-        if (![self registerDeclFolderWrapper:@"materials" extension:@".mtr" defaultType:DECL_MATERIAL error:error]) {
+        // Doom 3 lists each decl folder alone (idFileSystem::ListFiles), not
+        // its subfolders as openQ4 does.
+        if (![self registerDeclFolderWrapper:@"materials" extension:@".mtr" defaultType:DECL_MATERIAL nonrecursive:YES error:error]) {
             return NO;
         }
-        if (![self registerDeclFolderWrapper:@"skins" extension:@".skin" defaultType:DECL_SKIN error:error]) {
+        if (![self registerDeclFolderWrapper:@"skins" extension:@".skin" defaultType:DECL_SKIN nonrecursive:YES error:error]) {
             return NO;
         }
-         /*RegisterDeclFolderWrapper( "sound",            ".sndshd",        DECL_SOUND, false, true );
-         
+        if (![self registerDeclFolderWrapper:@"sound" extension:@".sndshd" defaultType:DECL_SOUND nonrecursive:YES error:error]) {
+            return NO;
+        }
+         /*
          // jmarshall: Raven Decl Support
          RegisterDeclFolderWrapper( "materials/types",    ".mtt",            DECL_MATERIALTYPE );
          RegisterDeclFolderWrapper( "lipsync",            ".lipsync",        DECL_LIPSYNC );
@@ -1093,17 +1111,23 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
          RegisterDeclFolderWrapper( "effects",            ".fx",            DECL_EFFECT, true );
          // jmarshall end
          */
-        
+
         // NOTE: in doom3, these are registered in the game dll
-        /*
-         declManager->RegisterDeclFolder( "def",                ".def",                DECL_ENTITYDEF );
-         declManager->RegisterDeclFolder( "fx",                ".fx",                DECL_FX );
-        */
-        [self registerDeclFolder:@"particles" extension:@".prt" declType:DECL_PARTICLE error:error];
-        /*
-         declManager->RegisterDeclFolder( "af",                ".af",                DECL_AF );
-        */
-        [self registerDeclFolder:@"newpdas" extension:@".pda" declType:DECL_PDA error:error];
+        if (![self registerDeclFolderWrapper:@"def" extension:@".def" defaultType:DECL_ENTITYDEF nonrecursive:YES error:error]) {
+            return NO;
+        }
+        if (![self registerDeclFolderWrapper:@"fx" extension:@".fx" defaultType:DECL_FX nonrecursive:YES error:error]) {
+            return NO;
+        }
+        if (![self registerDeclFolderWrapper:@"particles" extension:@".prt" defaultType:DECL_PARTICLE nonrecursive:YES error:error]) {
+            return NO;
+        }
+        if (![self registerDeclFolderWrapper:@"af" extension:@".af" defaultType:DECL_AF nonrecursive:YES error:error]) {
+            return NO;
+        }
+        if (![self registerDeclFolderWrapper:@"newpdas" extension:@".pda" defaultType:DECL_PDA nonrecursive:YES error:error]) {
+            return NO;
+        }
     }
     /*
      // add console commands

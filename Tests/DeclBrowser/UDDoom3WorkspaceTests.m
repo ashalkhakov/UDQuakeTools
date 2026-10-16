@@ -79,14 +79,14 @@
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
         [topLevel addObject:[[outline itemAtRow:row] name]];
     }
-    for (NSString *group in @[@"material", @"table", @"skin", @"particle", @"pda", @"email", @"audio", @"video", @"script", @"guis"]) {
+    for (NSString *group in @[@"material", @"table", @"skin", @"sound", @"entityDef", @"mapDef", @"model", @"fx", @"particle", @"articulatedFigure", @"pda", @"email", @"audio", @"video", @"script", @"guis"]) {
         XCTAssertTrue([topLevel containsObject:group], @"the outline should have a %@ group; it has %@", group, topLevel);
     }
 
     NSArray<NSString *> *paths = [self expandedOutlinePathsInController:controller];
     NSUInteger pdas = [[paths filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF BEGINSWITH 'pda/'"]] count];
     XCTAssertGreaterThanOrEqual(pdas, 60U, @"pak000.pk4 ships 68 PDA files; the outline lists %lu PDAs", (unsigned long)pdas);
-    for (NSString *path in @[@"pda/admin_moses", @"email/admin_moses_email_1", @"material/textures/base_wall/lfwall27d"]) {
+    for (NSString *path in @[@"pda/admin_moses", @"email/admin_moses_email_1", @"material/textures/base_wall/lfwall27d", @"entityDef/monster_zombie_fat", @"articulatedFigure/monster_zombie_fat", @"model/monster_zombie_fat", @"mapDef/game/mars_city1"]) {
         XCTAssertTrue([paths containsObject:path], @"the outline should list %@", path);
     }
 

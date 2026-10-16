@@ -275,6 +275,18 @@ static NSString *const UDEventsScript =
     if (workspace != nil) [self closeWorkspace:workspace];
 }
 
+- (void)testANewWorkspaceIsDoom3s {
+    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
+    [self selectTabLabeled:@"Game" inView:settings.window.contentView];
+    NSPopUpButton *game = [self firstSubviewOfClass:[NSPopUpButton class] inView:settings.window.contentView];
+    XCTAssertEqualObjects(game.toolTip, @"game", @"the Game tab starts with the game");
+    XCTAssertEqualObjects(game.itemTitles, @[@"Doom 3"], @"the one game whose decls are read");
+    XCTAssertEqualObjects(game.titleOfSelectedItem, @"Doom 3");
+    XCTAssertEqual(settings.scratchWorkspace.game, UDGameTypeDoom3);
+    [settings cancel:nil];
+}
+
 - (void)testCancellingANewWorkspaceOpensNothing {
     UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
     UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];

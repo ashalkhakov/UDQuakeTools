@@ -29,6 +29,9 @@
 }
 
 - (void)applySettingsFromDictionary:(NSDictionary *)dict {
+    UDGame *game = dict[@"game"] != nil ? [UDGame gameWithIdentifier:dict[@"game"]] : nil;
+    self.game = game != nil ? game.type : UDGameTypeDoom3;
+
     self.pakFileExtension = dict[@"pakFileExtension"] ?: @"pk4";
     self.gamedir = dict[@"gamedir"] ?: @"base";
 
@@ -65,6 +68,7 @@
 
 - (NSDictionary *)dictionaryRepresentation {
     return @{
+        @"game": [UDGame gameWithType:self.game].identifier,
         @"pakFileExtension": self.pakFileExtension ?: @"",
         @"gamedir": self.gamedir ?: @"",
         @"fs_basepath": self.fs_basepath ?: @"",

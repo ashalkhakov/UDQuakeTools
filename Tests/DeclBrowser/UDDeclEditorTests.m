@@ -410,6 +410,9 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
 
     XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
+    NSTableColumn *stageColumn = [editor.stagesTable tableColumnWithIdentifier:@"stage"];
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:stageColumn row:0], @"stage 0",
+                          @"numbered as DialogParticleEditor listed them");
     XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"its first stage shown");
     XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.view]).stringValue, @"4");
     XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"material" inView:editor.view]).stringValue, @"textures/udtest/spark");
@@ -444,6 +447,7 @@ static NSString *const UDFixtureParticles =
     [buttons setSelectedSegment:0];
     [NSApp sendAction:buttons.action to:buttons.target from:buttons];
     XCTAssertEqual(editor.particle.stages.count, 2U);
+    XCTAssertEqual(editor.stagesTable.numberOfRows, 2);
     XCTAssertEqual(editor.stagesController.selectionIndex, 1U, @"the new stage shown");
     XCTAssertEqual(editor.particle.stages[1].totalParticles, 100, @"idParticleStage::Default's");
 

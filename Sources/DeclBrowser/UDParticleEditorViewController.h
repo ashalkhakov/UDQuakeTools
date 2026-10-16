@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  * not there is in the Issues tab: a material the engine makes a default of,
  * a table no decl defines. Laid out in UDParticleEditorView.xib.
  */
-@interface UDParticleEditorViewController : UDDeclEditorViewController
+@interface UDParticleEditorViewController : UDDeclEditorViewController <NSTableViewDataSource>
 
 @property (nonatomic, readonly, nullable) UDDeclParticle *particle;
 

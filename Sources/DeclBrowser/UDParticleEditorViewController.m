@@ -51,6 +51,18 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
     }
 }
 
+#pragma mark - The stage list's numbers
+
+// Its rows are its array controller's (the content binding); the Stage
+// column, unbound, is "stage <row>", as DialogParticleEditor listed them.
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    return (NSInteger)[self.stagesController.arrangedObjects count];
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    return [tableColumn.identifier isEqualToString:@"stage"] ? [NSString stringWithFormat:@"stage %ld", (long)row] : nil;
+}
+
 #pragma mark - References
 
 - (void)checkReferences {

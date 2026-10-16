@@ -9,6 +9,11 @@ GS_WITH_ARC = 1
 include $(GNUSTEP_MAKEFILES)/common.make
 
 UDQuakeToolsTests_OBJC_FILES = \
+    UDScriptEventsTests.m \
+    UDScriptIndexTests.m \
+    UDJSONRPCConnectionTests.m \
+    UDScriptLanguageServerTests.m \
+    ../Sources/Tools/udscript-lsp/UDScriptLanguageServer.m \
     UDArchiveEntryTests.m \
     UDArchiveEditorTests.m \
     UDArchiveWorkflowTests.m \
@@ -25,7 +30,9 @@ UDQuakeToolsTests_OBJC_FILES = \
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
     -I../Sources/UDCore \
-    -I../Sources/UDFormats
+    -I../Sources/UDFormats \
+    -I../Sources/LSPServerKit \
+    -I../Sources/Tools/udscript-lsp
 
 # The incremental-store tests need the compiled data model in the test
 # bundle's resources (Xcode does the same for the Mac test target).
@@ -35,9 +42,10 @@ UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/UDCore/DeclModel.xcdatamodeld
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-# UDCore from the tree, built first (the root GNUmakefile).
-ADDITIONAL_LIB_DIRS += -L../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore -lXCTest -lBlocksRuntime
+# UDCore and LSPServerKit from the tree, built first (the root GNUmakefile);
+# udscript-lsp's server is tested here, compiled in.
+ADDITIONAL_LIB_DIRS += -L../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME) -L../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
+ADDITIONAL_LDFLAGS += -lUDCore -lLSPServerKit -lXCTest -lBlocksRuntime
 
 XCTEST ?= xctest
 
@@ -45,7 +53,7 @@ XCTEST ?= xctest
 run-tests: all $(BUNDLE_NAME).bundle
 	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
-	LD_LIBRARY_PATH="$(CURDIR)/../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	LD_LIBRARY_PATH="$(CURDIR)/../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME):$(CURDIR)/../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 	$(XCTEST) "$(BUNDLE_NAME).bundle"
 
 # Compiles $(UDQuakeToolsTests_XCDATAMODELD_FILES) with momc and bundles

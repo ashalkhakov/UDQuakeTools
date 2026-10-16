@@ -8,12 +8,23 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import "UDWorkspaceOpeningController.h"
 #import <UDCodeKit/UDTabBarView.h>
+#import <UDCodeKit/UDErrorsViewController.h>
 #import "UDTextPromptPanel.h"
+#import "UDTextEditorViewController.h"
+#import "UDFileItem.h"
+#import "UDScriptServer.h"
 #import "idDeclManager.h"
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
+@property (nonatomic, weak) IBOutlet NSView *issuesHost;
+@property (nonatomic, strong) UDErrorsViewController *issuesNavigator;
+@property (nonatomic, strong, nullable) UDWorkspaceSettingsWindowController *settingsController;
+// "Opening…", while the workspace restarts with new settings.
+@property (nonatomic, strong, nullable) UDWorkspaceOpeningController *openingController;
+@property (nonatomic, readonly, getter=isRestarting) BOOL restarting;
 @end
 
 @implementation UDWorkspaceWindowController
@@ -43,6 +54,17 @@
     self.tabManager = [[UDEditorTabManager alloc] initWithTabView:self.tabView
                                                             tabBar:self.tabBarView
                                                          workspace:self.workspace];
+
+    // The Issues tab: UDCodeKit's navigator (UDCode's too), listing the open
+    // tabs' diagnostics; a click goes to one.
+    self.issuesNavigator = [[UDErrorsViewController alloc] init];
+    self.issuesNavigator.delegate = self;
+    self.issuesNavigator.view.frame = self.issuesHost.bounds;
+    self.issuesNavigator.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.issuesHost addSubview:self.issuesNavigator.view];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editorsDidChange:)
+                                                 name:UDEditorTabManagerEditorsDidChangeNotification
+                                               object:self.tabManager];
 
 }
 
@@ -78,17 +100,31 @@
         return;
     }
 
-    // Commit any in-flight field editing before saving.
-    [self.window makeFirstResponder:nil];
+    // Commit any in-flight field editing before saving; the keyboard goes
+    // back where it was.
+    NSResponder *responder = [self _endEditing];
 
     NSError *error = nil;
     if (![document ud_save:&error]) {
         [self presentError:error];
     }
+    [self.window makeFirstResponder:responder];
+}
+
+/// Ends the editing in progress (a field's), and says who had the keyboard:
+/// the text view, the text field (not its field editor), ...
+- (NSResponder *)_endEditing {
+    NSResponder *responder = self.window.firstResponder;
+    if ([responder isKindOfClass:[NSText class]] && ((NSText *)responder).isFieldEditor
+        && [((NSText *)responder).delegate isKindOfClass:[NSResponder class]]) {
+        responder = (NSResponder *)((NSText *)responder).delegate;
+    }
+    [self.window makeFirstResponder:nil];
+    return responder;
 }
 
 - (IBAction)saveAllDocuments:(id)sender {
-    [self.window makeFirstResponder:nil];
+    NSResponder *responder = [self _endEditing];
 
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
         UDBaseDocument *document = editor.editorDocument;
@@ -100,6 +136,7 @@
             [self presentError:error];
         }
     }
+    [self.window makeFirstResponder:responder];
 }
 
 - (IBAction)saveDocumentAs:(id)sender {
@@ -185,20 +222,28 @@
 #pragma mark - Workspace settings
 
 // File > Workspace Settings…: edit ALL workspace settings (paths, game,
-// file system flags, decl options) in the tabbed settings window. On OK the
-// workspace is restarted in place — the new paths/game invalidate the loaded
-// VFS and decls, so every tab is closed and the browser tree rebuilt.
+// file system flags, decl options) in the tabbed settings window, a plain
+// window (no modal session holding the menus); OK or Cancel come back to
+// -_settingsDidFinish:. On OK the workspace is restarted in place: the new
+// paths/game invalidate the loaded VFS and decls, so every tab is closed
+// and the browser tree rebuilt.
 - (IBAction)showWorkspaceSettings:(id)sender {
+    if (self.settingsController != nil) {
+        [self.settingsController showWindow:nil];
+        return;
+    }
     UDWorkspaceSettingsWindowController *settingsWC =
         [[UDWorkspaceSettingsWindowController alloc] initWithWindowNibName:@"UDWorkspaceSettings"];
     settingsWC.document = self.document;
+    settingsWC.target = self;
+    settingsWC.action = @selector(_settingsDidFinish:);
+    self.settingsController = settingsWC;
+    [settingsWC showWindow:nil];
+}
 
-    NSWindow *settingsWindow = [settingsWC window];
-    [settingsWindow makeKeyAndOrderFront:nil];
-    NSModalResponse result = [NSApp runModalForWindow:settingsWindow];
-    [settingsWindow orderOut:nil];
-
-    if (result != NSModalResponseOK) {
+- (void)_settingsDidFinish:(UDWorkspaceSettingsWindowController *)settingsWC {
+    self.settingsController = nil;
+    if (settingsWC.result != NSModalResponseOK) {
         return;
     }
 
@@ -228,19 +273,101 @@
     [self.document updateChangeCount:NSChangeDone];
 
     [self.tabManager closeAllTabs];
+    [self.declBrowser clear];
+    [UDScriptServer stopForWorkspace:workspace];
     [workspace shutdown];
 
-    NSError *error = nil;
-    if (![workspace startup:&error]) {
-        [self presentError:error];
+    // It starts again in the background, "Opening…" over the window, which
+    // offers nothing meanwhile (its outline empty, its commands off).
+    self.openingController = [[UDWorkspaceOpeningController alloc] initWithWorkspaceName:[(NSDocument *)self.document displayName]];
+    [self.openingController showOverWindow:self.window];
+    [workspace startupInBackgroundWithTarget:self action:@selector(_workspaceDidRestart:)];
+}
+
+- (void)_workspaceDidRestart:(UDWorkspace *)workspace {
+    [self.openingController close];
+    self.openingController = nil;
+    if (workspace.startupError != nil) {
+        [self presentError:workspace.startupError];
         return;
     }
-
     [self.declBrowser reset];
+}
+
+- (BOOL)isRestarting {
+    return self.openingController != nil;
+}
+
+#pragma mark - Issues
+
+/// The text tabs' stores, by their names, in the Issues navigator.
+- (void)_editorsDidChange:(NSNotification *)notification {
+    NSMutableArray<UDDiagnosticStore *> *stores = [NSMutableArray array];
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if (![editor isKindOfClass:[UDTextEditorViewController class]]) continue;
+        UDDiagnosticStore *store = ((UDTextEditorViewController *)editor).diagnosticStore;
+        if (store == nil) continue;
+        [stores addObject:store];
+        [names addObject:editor.item.name ?: editor.item.path ?: @""];
+    }
+    [self.issuesNavigator setStores:stores displayNames:names];
+}
+
+- (void)errorsViewController:(UDErrorsViewController *)vc
+         didSelectDiagnostic:(UDDiagnosticItem *)diagnostic
+                     inStore:(UDDiagnosticStore *)store {
+    for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if (![editor isKindOfClass:[UDTextEditorViewController class]] ||
+            ((UDTextEditorViewController *)editor).diagnosticStore != store) continue;
+        [self.tabManager openEditorForWorkspaceItem:editor.item];
+        // The diagnostic's line is 1-based, its column 0-based.
+        [(UDTextEditorViewController *)editor selectLine:MAX(diagnostic.line - 1, 0)
+                                               character:MAX(diagnostic.column, 0) length:0];
+        return;
+    }
+}
+
+#pragma mark - Jump to Definition
+
+- (IBAction)jumpToDefinition:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor jumpToDefinition:sender];
+    } else {
+        NSBeep();
+    }
+}
+
+- (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length {
+    UDBaseEditorViewController *editor = [self.tabManager openEditorForWorkspaceItem:[[UDFileItem alloc] initWithPath:path]];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor selectLine:line character:character length:length];
+    }
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UDEditorTabManagerEditorsDidChangeNotification
+                                                  object:self.tabManager];
+    // The settings go with the workspace, unapplied.
+    self.settingsController.target = nil;
+    [self.settingsController close];
+    self.settingsController = nil;
+    [self.tabManager closeAllTabs];
+    [UDScriptServer stopForWorkspace:self.workspace];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     SEL action = menuItem.action;
+    if (self.isRestarting) {
+        return NO;
+    }
+
+    if (action == @selector(jumpToDefinition:)) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] &&
+               [(UDTextEditorViewController *)editor validateMenuItem:menuItem];
+    }
 
     if (action == @selector(showWorkspaceSettings:)) {
         return self.workspace != nil;

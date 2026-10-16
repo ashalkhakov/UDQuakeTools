@@ -11,6 +11,7 @@ UDCore_C_FILES = \
     ioapi.c
 
 UDCore_OBJC_FILES = \
+    UDScriptEvents.m UDScriptIndex.m \
     UDArchive.m \
     UDArchiveEditor.m \
     UDArchiveEntry.m \
@@ -50,6 +51,7 @@ UDCore_INCLUDE_DIRS = -I../UDFormats
 
 UDCore_HEADER_FILES_DIR = .
 UDCore_HEADER_FILES = \
+    UDScriptEvents.h UDScriptIndex.h \
     UDArchive.h \
     UDArchiveEditor.h \
     UDArchiveEntry.h \

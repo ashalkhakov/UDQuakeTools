@@ -92,7 +92,6 @@
         _numListedDecls = 0;
         _findNameString = @"";
         _findTextString = @"";
-        [self reset];
     }
     return self;
 }
@@ -266,6 +265,16 @@
     
     // status
     // self.statusLabel.stringValue = [NSString stringWithFormat:@"%ld decls listed", (long)self.numListedDecls];
+}
+
+- (void)clear {
+    self.baseDeclTree = [[UDPathTree alloc] init];
+    self.declTree = [[UDPathTree alloc] init];
+    self.rootNodes = @[];
+    self.numListedDecls = 0;
+    self.searchFileGroups = @[];
+    [self.outlineView reloadData];
+    [self.searchOutlineView reloadData];
 }
 
 - (void)findByName:(NSString *)name {

@@ -11,7 +11,9 @@
  */
 @class UDTabBarView;
 
-@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate>
+@protocol UDErrorsViewControllerDelegate;
+
+@interface UDWorkspaceWindowController : NSWindowController <UDDeclBrowserDelegate, NSWindowDelegate, UDErrorsViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSOutlineView *outlineView;
 @property (weak, nonatomic) IBOutlet NSSearchField *nameFilterField;
@@ -31,7 +33,14 @@
 - (IBAction)saveAllDocuments:(id)sender; // Save every dirty open tab
 - (IBAction)saveDocumentAs:(id)sender;   // Save the current decl as a new decl
 
-// File > Workspace Settings…: edit all workspace settings; applying them
-// restarts the workspace in place (closes tabs, reloads decls).
+// File > Workspace Settings…: edit all workspace settings in a plain window;
+// applying them restarts the workspace in place (closes tabs, reloads decls).
 - (IBAction)showWorkspaceSettings:(id)sender;
+
+// Edit > Jump to Definition: the current tab's, when it is a script's.
+- (IBAction)jumpToDefinition:(id)sender;
+
+// Opens the file at @a path (in the workspace's file system) in its tab,
+// selecting @a length characters from @a line's @a character (0-based).
+- (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
 @end

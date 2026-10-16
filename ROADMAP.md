@@ -34,12 +34,10 @@ These shape everything after them; each has a recommendation.
    script debugger already uses, with a client in UDCore. The editors stay
    portable, and the game stays the preview.
 3. **2D previews in AppKit, 3D in the engine.** Materials get a 2D
-   stage/image preview natively and a 3D one through the bridge. The GUI
-   editor starts with its tree, inspector and "show in game" through the
-   bridge; Raven's editor drew `.gui`s with the engine renderer itself
-   (`renderSystem->BeginFrame`, `idWindow` redraw: `tools/guied/
-   GEWorkspace.cpp:319-325`), so a native canvas is new code, added later
-   for layout work. A renderer of our own is the last resort, not the plan.
+   stage/image preview natively and a 3D one through the bridge. GUIs are
+   2D, so they are drawn here, by dhewm3's own GUI code (`neo/ui`) ported
+   to Objective-C with the render system replaced (see the GUI editor). A
+   3D renderer of our own is the last resort, not the plan.
 4. **No map editing here.** Maps are edited in DarkRadiant (GPL-2.0-or-
    later, wxWidgets, Windows/macOS/Linux; edits Doom 3 and Quake 4 maps) and
    compiled by an existing dmap (dhewm3's, or RBDOOM's `rbdmap`); this
@@ -144,24 +142,45 @@ In order of value against cost; LOC is the MFC original's size.
       (add bump/diffuse/specular, reorder, copy/paste), inspector driven by
       material keywords, source view kept in sync, 2D preview of stage
       images; 3D preview through the bridge.
-- [ ] **GUI editor** (12.8k) — parse `.gui` into a windowDef tree (the
-      removed `UDGuiDocument` work is in git history, 0cf9912), navigator,
-      inspector, item types (windowDef, editDef, choiceDef, sliderDef,
-      bindDef, listDef, renderDef), state/event script editing, edits with
-      undo; preview by showing the GUI in the running game through the bridge
-      (4). Later, a native canvas for move/size/align/group (decision 3).
+- [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
+      20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
+      GUI scripts) to Objective-C, in the style of the file system, parser
+      and decl manager already ported in UDCore. The render system is
+      replaced: `idDeviceContext` draws with AppKit, its images loaded
+      through idFileSystem; a renderDef's 3D view comes through the bridge
+      (4). The port interprets as well as draws: GUI scripts, named events,
+      `onTime` timelines, transitions, mouse and keys run as in the game,
+      so a GUI is fully interactive in the editor. Raven's editor only drew
+      them, and its users named that as its main shortcoming. On the port: a
+      canvas like a storyboard, the screens a GUI shows (and the GUIs it
+      leads to) side by side with what moves between them, and
+      move/size/align/group on it; navigator, inspector, state/event script
+      editing, edits with undo.
 - [ ] **Script editor** (0.9k) — `.script` editing with highlighting,
       completion of events and functions, go to definition across the mod.
       Done: the editor is UDCodeKit's, highlighting `.script` with its
-      idScript grammar (a port of idCompiler's). Left: completion and go
-      to definition.
+      idScript grammar (a port of idCompiler's); and the helpers of the
+      tools' script editor, ported: the events of doom_events.script after
+      a '.', an event's parameters from its '(' to its ')', its help on
+      Option-click. Left: go to definition across the mod.
 
 ## 3. Script debugger
 
 The debugger speaks the Debug Adapter Protocol, so VS Code (and any DAP
-client) debugs idScript; this toolkit's own script editor can drive the same
-adapter later.
+client) debugs idScript, and so does this toolkit's own script editor,
+through UDCodeKit.
 
+- [ ] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
+      gutter, the debug bar (continue, step over/in/out), the debug navigator
+      (threads and their call stacks), the variables view and the console.
+      A grammar bundle brings its own debug adapter the way it brings its
+      language server, as VS Code's extensions do, and the UI is the same
+      for every language.
+- [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
+      its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
+      language server (clangd), with build and run from the editor.
+- [ ] idScript's bundle brings the adapter below, and Decl Browser debugs
+      scripts with UDCodeKit's debugger UI.
 - [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
       `idBitMsg`, `DBMSG_*` — documented only by the source:
       `neo/tools/debugger/DebuggerMessages.h`, `DebuggerClient.cpp`):

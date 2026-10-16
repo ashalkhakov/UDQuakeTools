@@ -5,6 +5,341 @@
 	};
 	objectVersion = 56;
 	objects = {
+		ED2000000000000000000001 /* UDJSONRPCConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDJSONRPCConnection.h; sourceTree = "<group>"; };
+		ED2000000000000000000002 /* UDJSONRPCConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDJSONRPCConnection.m; sourceTree = "<group>"; };
+		ED2000000000000000000003 /* UDLanguageServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDLanguageServer.h; sourceTree = "<group>"; };
+		ED2000000000000000000004 /* UDLanguageServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDLanguageServer.m; sourceTree = "<group>"; };
+		ED2000000000000000000005 /* LSPServerKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LSPServerKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED2000000000000000000006 /* LSPServerKit */ = {
+			isa = PBXGroup;
+			children = (
+				ED2000000000000000000001 /* UDJSONRPCConnection.h */,
+				ED2000000000000000000002 /* UDJSONRPCConnection.m */,
+				ED2000000000000000000003 /* UDLanguageServer.h */,
+				ED2000000000000000000004 /* UDLanguageServer.m */,
+			);
+			name = LSPServerKit;
+			path = Sources/LSPServerKit;
+			sourceTree = "<group>";
+		};
+		ED2000000000000000000007 /* UDJSONRPCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000002 /* UDJSONRPCConnection.m */; };
+		ED2000000000000000000008 /* UDLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000004 /* UDLanguageServer.m */; };
+		ED2000000000000000000009 /* UDJSONRPCConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000001 /* UDJSONRPCConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		ED200000000000000000000A /* UDLanguageServer.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000003 /* UDLanguageServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		ED200000000000000000000B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED2000000000000000000007 /* UDJSONRPCConnection.m in Sources */,
+				ED2000000000000000000008 /* UDLanguageServer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED200000000000000000000C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED2000000000000000000009 /* UDJSONRPCConnection.h in Headers */,
+				ED200000000000000000000A /* UDLanguageServer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED200000000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED200000000000000000000E /* LSPServerKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED200000000000000000000F /* Build configuration list for PBXNativeTarget "LSPServerKit" */;
+			buildPhases = (
+				ED200000000000000000000B /* Sources */,
+				ED200000000000000000000C /* Headers */,
+				ED200000000000000000000D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LSPServerKit;
+			productName = LSPServerKit;
+			productReference = ED2000000000000000000005 /* LSPServerKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		ED200000000000000000000F /* Build configuration list for PBXNativeTarget "LSPServerKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED2000000000000000000010 /* Debug */,
+				ED2000000000000000000011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED2000000000000000000010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/LSPServerKit";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.LSPServerKit;
+				PRODUCT_NAME = LSPServerKit;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		ED2000000000000000000011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Sources/LSPServerKit";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.LSPServerKit;
+				PRODUCT_NAME = LSPServerKit;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		ED2000000000000000000012 /* UDScriptLanguageServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptLanguageServer.h; sourceTree = "<group>"; };
+		ED2000000000000000000013 /* UDScriptLanguageServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptLanguageServer.m; sourceTree = "<group>"; };
+		ED2000000000000000000014 /* UDScriptLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000013 /* UDScriptLanguageServer.m */; };
+		ED2000000000000000000015 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		ED2000000000000000000016 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		ED2000000000000000000017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = ED2000000000000000000016 /* PBXContainerItemProxy */;
+		};
+		ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDJSONRPCConnectionTests.m; sourceTree = "<group>"; };
+		ED2000000000000000000019 /* UDScriptLanguageServerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptLanguageServerTests.m; sourceTree = "<group>"; };
+		ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */; };
+		ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000019 /* UDScriptLanguageServerTests.m */; };
+		ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000013 /* UDScriptLanguageServer.m */; };
+		ED200000000000000000001D /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		ED200000000000000000001E /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		ED200000000000000000001F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		ED2000000000000000000020 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = ED200000000000000000001F /* PBXContainerItemProxy */;
+		};
+		ED2000000000000000000021 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC1E00000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC1E0000000000000000000B;
+			remoteInfo = "udscript-lsp";
+		};
+		EC1E00000000000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC1E0000000000000000000B /* udscript-lsp */;
+			targetProxy = EC1E00000000000000000013 /* PBXContainerItemProxy */;
+		};
+		EC1E00000000000000000001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EC1E00000000000000000002 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1E00000000000000000001 /* main.m */; };
+		EC1E00000000000000000003 /* udscript-lsp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "udscript-lsp"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC1E00000000000000000004 /* udscript-lsp */ = {
+			isa = PBXGroup;
+			children = (
+				EC1E00000000000000000001 /* main.m */,
+				ED2000000000000000000012 /* UDScriptLanguageServer.h */,
+				ED2000000000000000000013 /* UDScriptLanguageServer.m */,
+			);
+			path = "udscript-lsp";
+			sourceTree = "<group>";
+		};
+		EC1E00000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC1E00000000000000000002 /* main.m in Sources */,
+				ED2000000000000000000014 /* UDScriptLanguageServer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1E00000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC1E00000000000000000007 /* Foundation.framework in Frameworks */,
+				EC1E00000000000000000008 /* UDCore.framework in Frameworks */,
+				ED2000000000000000000015 /* LSPServerKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1E00000000000000000007 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		EC1E00000000000000000008 /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
+		EC1E00000000000000000009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CC04000000000000000000AA;
+			remoteInfo = UDCore;
+		};
+		EC1E0000000000000000000A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CC04000000000000000000AA /* UDCore */;
+			targetProxy = EC1E00000000000000000009 /* PBXContainerItemProxy */;
+		};
+		EC1E0000000000000000000B /* udscript-lsp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC1E0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-lsp" */;
+			buildPhases = (
+				EC1E00000000000000000005 /* Sources */,
+				EC1E00000000000000000006 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC1E0000000000000000000A /* PBXTargetDependency */,
+				ED2000000000000000000017 /* PBXTargetDependency */,
+			);
+			name = "udscript-lsp";
+			productName = "udscript-lsp";
+			productReference = EC1E00000000000000000003 /* udscript-lsp */;
+			productType = "com.apple.product-type.tool";
+		};
+		EC1E0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-lsp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC1E0000000000000000000D /* Debug */,
+				EC1E0000000000000000000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC1E0000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/LSPServerKit",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-lsp";
+			};
+			name = Debug;
+		};
+		EC1E0000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/LSPServerKit",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-lsp";
+			};
+			name = Release;
+		};
+		EC1E0000000000000000000F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC1E0000000000000000000B;
+			remoteInfo = "udscript-lsp";
+		};
+		EC1E00000000000000000010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC1E0000000000000000000B /* udscript-lsp */;
+			targetProxy = EC1E0000000000000000000F /* PBXContainerItemProxy */;
+		};
+		EC1E00000000000000000011 /* udscript-lsp in Embed udscript-lsp */ = {isa = PBXBuildFile; fileRef = EC1E00000000000000000003 /* udscript-lsp */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		EC1E00000000000000000012 /* Embed udscript-lsp */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				EC1E00000000000000000011 /* udscript-lsp in Embed udscript-lsp */,
+			);
+			name = "Embed udscript-lsp";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 
 /* Begin PBXBuildFile section */
 		AA01000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010000000000000000AA /* main.m */; };
@@ -60,7 +395,9 @@
 		CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
 		CE1CDC87301E48500037DBA5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC77301E41220037DBA5 /* MainMenu.xib */; };
 		CE1CDC8A301E4B660037DBA5 /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		FE0D68E334C6258CEF7DADD4 /* UDWorkspaceOpeningController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */; };
 		CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		6FE5148463EDE1D4BC0DAD26 /* UDWorkspaceOpening.xib in Resources */ = {isa = PBXBuildFile; fileRef = E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */; };
 		CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
 		CE3FA369300172100048F206 /* idParser.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA3683001720E0048F206 /* idParser.h */; };
@@ -107,6 +444,8 @@
 		CEFC65343027974B00157501 /* UDFileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652F3027974B00157501 /* UDFileItem.m */; };
 		CEFC653C3027987300157501 /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
 		CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
+		EC1F00000000000000000001 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
+		EC1F00000000000000000002 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
 		CEFC653E3027987300157501 /* UDBaseEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65373027987300157501 /* UDBaseEditorViewController.m */; };
 		CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
 		CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65413027994F00157501 /* UDWorkspaceDocument.m */; };
@@ -170,6 +509,7 @@
 		29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
 		FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */; };
 		52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
+		70C2C9088B14EFDB10B59F35 /* UDWorkspaceOpeningController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */; };
 		6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
 		070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
@@ -182,6 +522,7 @@
 		399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
 		D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
 		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
+		C83C9AE15BCE77BA1BC099C2 /* UDWorkspaceOpening.xib in Resources */ = {isa = PBXBuildFile; fileRef = E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */; };
 		30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6555302A07BC00157501 /* UDImageViewerView.xib */; };
 		67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
 		67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFC6552302A077100157501 /* UDTextEditorView.xib */; };
@@ -197,8 +538,14 @@
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
 		BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */; };
+		5C0E00000000000000000001 /* UDScriptEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000005 /* UDScriptEvents.m */; };
+		5C0F00000000000000000001 /* UDScriptIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000005 /* UDScriptIndex.m */; };
 		93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5C0E00000000000000000002 /* UDScriptEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000004 /* UDScriptEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5C0F00000000000000000002 /* UDScriptIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000004 /* UDScriptIndex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */; };
+		5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000006 /* UDScriptEventsTests.m */; };
+		5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000006 /* UDScriptIndexTests.m */; };
 		EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; };
 		EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; };
@@ -211,6 +558,7 @@
 		EC0D0000000000000000000D /* UDPieceTable.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; };
 		EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = EC1D00000000000000000005 /* TreeSitterIdScript.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -249,6 +597,27 @@
 			remoteGlobalIDString = CC04000000000000000000AA;
 			remoteInfo = UDCore;
 		};
+		EC1D00000000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdScript;
+		};
+		EC1D00000000000000000008 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D5CCC5EF57CC9085024BEEF;
+			remoteInfo = TreeSitterIdScript;
+		};
+		EC1D00000000000000000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D5C76BB13881D15A3714902;
+			remoteInfo = TreeSitterIdScript;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -271,6 +640,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				ED200000000000000000001E /* LSPServerKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +656,7 @@
 				EC0D00000000000000000009 /* LSPKit.xcframework in Embed Frameworks */,
 				91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */,
 				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				ED2000000000000000000021 /* LSPServerKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -313,6 +684,17 @@
 				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC1D0000000000000000000A /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -393,8 +775,11 @@
 		CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceWindowController.h; sourceTree = "<group>"; };
 		CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceWindowController.m; sourceTree = "<group>"; };
 		CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceSettingsWindowController.h; sourceTree = "<group>"; };
+		E3BD27A52F19203E7882A806 /* UDWorkspaceOpeningController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceOpeningController.h; sourceTree = "<group>"; };
 		CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceSettingsWindowController.m; sourceTree = "<group>"; };
+		6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceOpeningController.m; sourceTree = "<group>"; };
 		CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDWorkspaceSettings.xib; sourceTree = "<group>"; };
+		E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDWorkspaceOpening.xib; sourceTree = "<group>"; };
 		CE1CDC8D301E7E250037DBA5 /* UDPathTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPathTree.h; sourceTree = "<group>"; };
 		CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPathTree.m; sourceTree = "<group>"; };
 		CE1CDC90301E7EAB0037DBA5 /* UDDeclBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowser.h; sourceTree = "<group>"; };
@@ -453,6 +838,8 @@
 		CEFC65373027987300157501 /* UDBaseEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBaseEditorViewController.m; sourceTree = "<group>"; };
 		CEFC65383027987300157501 /* UDTextEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextEditorViewController.h; sourceTree = "<group>"; };
 		CEFC65393027987300157501 /* UDTextEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextEditorViewController.m; sourceTree = "<group>"; };
+		EC1F00000000000000000003 /* UDScriptServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptServer.m; sourceTree = "<group>"; };
+		EC1F00000000000000000004 /* UDScriptServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptServer.h; sourceTree = "<group>"; };
 		CEFC653A3027987300157501 /* UDImageViewerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDImageViewerViewController.h; sourceTree = "<group>"; };
 		CEFC653B3027987300157501 /* UDImageViewerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDImageViewerViewController.m; sourceTree = "<group>"; };
 		CEFC65403027994F00157501 /* UDWorkspaceDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceDocument.h; sourceTree = "<group>"; };
@@ -498,11 +885,18 @@
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
+		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
+		5C0F00000000000000000004 /* UDScriptIndex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptIndex.h; sourceTree = "<group>"; };
 		76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextChecker.m; sourceTree = "<group>"; };
+		5C0E00000000000000000005 /* UDScriptEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEvents.m; sourceTree = "<group>"; };
+		5C0F00000000000000000005 /* UDScriptIndex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptIndex.m; sourceTree = "<group>"; };
 		013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextCheckerTests.m; sourceTree = "<group>"; };
+		5C0E00000000000000000006 /* UDScriptEventsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEventsTests.m; sourceTree = "<group>"; };
+		5C0F00000000000000000006 /* UDScriptIndexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptIndexTests.m; sourceTree = "<group>"; };
 		EC0D00000000000000000001 /* UDCodeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDCodeKit.xcframework; path = .deps/UDCodeKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
+		EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdScript.xcodeproj; path = "tree-sitter-idscript/TreeSitterIdScript.xcodeproj"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -529,6 +923,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED200000000000000000001D /* LSPServerKit.framework in Frameworks */,
 				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
 				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
 				CC04050000000000000000AA /* UDCore.framework in Frameworks */,
@@ -585,11 +980,13 @@
 		AA00000200000000000000AA = {
 			isa = PBXGroup;
 			children = (
+				EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */,
 				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* PakManager */,
 				DD00000400000000000000AA /* DeclBrowser */,
 				FF00000400000000000000AA /* UDLauncher */,
 				AA00000500000000000000AA /* UDCore */,
+				ED2000000000000000000006 /* LSPServerKit */,
 				AA00000600000000000000AA /* UDFormats */,
 				AA00000700000000000000AA /* Tools */,
 				AA00000300000000000000AA /* Products */,
@@ -605,6 +1002,8 @@
 				AA00050000000000000000AA /* PakManager.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
+				ED2000000000000000000005 /* LSPServerKit.framework */,
+				EC1E00000000000000000003 /* udscript-lsp */,
 				FF00050000000000000000AA /* UDLauncher.app */,
 				CC00050000000000000000AA /* UDCore.framework */,
 				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
@@ -690,7 +1089,11 @@
 				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
 				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
 				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
+				5C0E00000000000000000004 /* UDScriptEvents.h */,
+				5C0F00000000000000000004 /* UDScriptIndex.h */,
 				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
+				5C0E00000000000000000005 /* UDScriptEvents.m */,
+				5C0F00000000000000000005 /* UDScriptIndex.m */,
 			);
 			name = UDCore;
 			path = Sources/UDCore;
@@ -727,6 +1130,7 @@
 			isa = PBXGroup;
 			children = (
 				AA00000800000000000000AA /* udpaktool */,
+				EC1E00000000000000000004 /* udscript-lsp */,
 			);
 			name = Tools;
 			path = Sources/Tools;
@@ -758,6 +1162,10 @@
 				37E65B3E596BA91969F42366 /* DeclBrowser */,
 				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
 				013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */,
+				5C0E00000000000000000006 /* UDScriptEventsTests.m */,
+				5C0F00000000000000000006 /* UDScriptIndexTests.m */,
+				ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */,
+				ED2000000000000000000019 /* UDScriptLanguageServerTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -784,7 +1192,9 @@
 			isa = PBXGroup;
 			children = (
 				CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */,
+				6A16919866073C206E218522 /* UDWorkspaceOpeningController.m */,
 				CE1CDC88301E4B340037DBA5 /* UDWorkspaceSettingsWindowController.h */,
+				E3BD27A52F19203E7882A806 /* UDWorkspaceOpeningController.h */,
 				CE1CDC84301E43A20037DBA5 /* UDWorkspaceWindowController.m */,
 				CE1CDC83301E437E0037DBA5 /* UDWorkspaceWindowController.h */,
 				DAD0000100000000000000AA /* UDTextPromptPanel.h */,
@@ -802,6 +1212,8 @@
 				CEFC65373027987300157501 /* UDBaseEditorViewController.m */,
 				CEFC65383027987300157501 /* UDTextEditorViewController.h */,
 				CEFC65393027987300157501 /* UDTextEditorViewController.m */,
+				EC1F00000000000000000004 /* UDScriptServer.h */,
+				EC1F00000000000000000003 /* UDScriptServer.m */,
 				CEFC653A3027987300157501 /* UDImageViewerViewController.h */,
 				CEFC653B3027987300157501 /* UDImageViewerViewController.m */,
 				CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */,
@@ -858,6 +1270,7 @@
 				CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */,
 				CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */,
 				CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */,
+				E107CC896C4D3A407D248964 /* UDWorkspaceOpening.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -922,6 +1335,14 @@
 			path = DeclBrowser;
 			sourceTree = "<group>";
 		};
+		EC1D00000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EC1D00000000000000000005 /* TreeSitterIdScript.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -966,6 +1387,8 @@
 				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
 				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
 				93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */,
+				5C0E00000000000000000002 /* UDScriptEvents.h in Headers */,
+				5C0F00000000000000000002 /* UDScriptIndex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1020,6 +1443,7 @@
 			);
 			dependencies = (
 				CC07050100000000000000AA /* PBXTargetDependency */,
+				ED2000000000000000000020 /* PBXTargetDependency */,
 			);
 			name = UDQuakeToolsTests;
 			productName = UDQuakeToolsTests;
@@ -1047,15 +1471,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */;
 			buildPhases = (
+				EC1D0000000000000000000A /* Embed PlugIns */,
 				DD03000000000000000000AA /* Sources */,
 				DD03000100000000000000AA /* Frameworks */,
 				DD03000200000000000000AA /* Resources */,
 				EC0D00000000000000000010 /* Copy UDCodeKit's grammars into PlugIns */,
 				DD09000000000000000000AA /* Embed Frameworks */,
+				EC1E00000000000000000012 /* Embed udscript-lsp */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				EC1D00000000000000000006 /* PBXTargetDependency */,
+				EC1E00000000000000000010 /* PBXTargetDependency */,
 				CC07020100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Decl Browser";
@@ -1093,6 +1521,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				EC1D00000000000000000007 /* PBXTargetDependency */,
+				EC1E00000000000000000014 /* PBXTargetDependency */,
 				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
 			);
 			name = DeclBrowserTests;
@@ -1134,18 +1564,36 @@
 			mainGroup = AA00000200000000000000AA;
 			productRefGroup = AA00000300000000000000AA /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EC1D00000000000000000002 /* Products */;
+					ProjectRef = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				CC04000000000000000000AA /* UDCore */,
+				ED200000000000000000000E /* LSPServerKit */,
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
 				DD04000000000000000000AA /* Decl Browser */,
 				AA04000100000000000000AA /* udpaktool */,
+				EC1E0000000000000000000B /* udscript-lsp */,
 				FF04000000000000000000AA /* UDLauncher */,
 				9D5D57CB7DB90240B958F42D /* DeclBrowserTests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EC1D00000000000000000005 /* TreeSitterIdScript.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TreeSitterIdScript.bundle;
+			remoteRef = EC1D00000000000000000004 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AA03000100000000000000AA /* Resources */ = {
@@ -1165,6 +1613,7 @@
 				CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */,
 				CE56D7A1302355B300099DF4 /* UDPDAEditorView.xib in Resources */,
 				CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */,
+				6FE5148463EDE1D4BC0DAD26 /* UDWorkspaceOpening.xib in Resources */,
 				CE1CDC81301E41500037DBA5 /* Assets.xcassets in Resources */,
 				CEFC6556302A07BC00157501 /* UDImageViewerView.xib in Resources */,
 				CE56D7A53024904200099DF4 /* UDPDAEmailEditorView.xib in Resources */,
@@ -1190,6 +1639,7 @@
 				399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */,
 				D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */,
 				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
+				C83C9AE15BCE77BA1BC099C2 /* UDWorkspaceOpening.xib in Resources */,
 				30A4CD6FD29F867A6593A825 /* UDImageViewerView.xib in Resources */,
 				67ACBBA040C93D7553BFFFD8 /* UDPDAEmailEditorView.xib in Resources */,
 				67FB71921431DC9ED81C2F01 /* UDTextEditorView.xib in Resources */,
@@ -1258,6 +1708,11 @@
 				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
 				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
 				88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */,
+				5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */,
+				5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */,
+				ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */,
+				ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */,
+				ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1300,6 +1755,8 @@
 				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
 				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
 				D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */,
+				5C0E00000000000000000001 /* UDScriptEvents.m in Sources */,
+				5C0F00000000000000000001 /* UDScriptIndex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1321,10 +1778,12 @@
 				CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */,
 				CEFC655B302A20B600157501 /* UDPDAEditorViewController.m in Sources */,
 				CE1CDC8A301E4B660037DBA5 /* UDWorkspaceSettingsWindowController.m in Sources */,
+				FE0D68E334C6258CEF7DADD4 /* UDWorkspaceOpeningController.m in Sources */,
 				CE1CDC8F301E7E6B0037DBA5 /* UDPathTree.m in Sources */,
 				CE1CDC80301E41450037DBA5 /* AppDelegate.m in Sources */,
 				CEFC653C3027987300157501 /* UDImageViewerViewController.m in Sources */,
 				CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */,
+				EC1F00000000000000000001 /* UDScriptServer.m in Sources */,
 				CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */,
 				CEFC654C3029E5FE00157501 /* UDDeclDocument.m in Sources */,
 				CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */,
@@ -1363,9 +1822,11 @@
 				29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */,
 				FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */,
 				52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */,
+				70C2C9088B14EFDB10B59F35 /* UDWorkspaceOpeningController.m in Sources */,
 				6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */,
 				7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */,
 				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
+				EC1F00000000000000000002 /* UDScriptServer.m in Sources */,
 				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,
 				F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */,
 				A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */,
@@ -1403,6 +1864,16 @@
 			isa = PBXTargetDependency;
 			target = CC04000000000000000000AA /* UDCore */;
 			targetProxy = EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */;
+		};
+		EC1D00000000000000000006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdScript;
+			targetProxy = EC1D00000000000000000003 /* PBXContainerItemProxy */;
+		};
+		EC1D00000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TreeSitterIdScript;
+			targetProxy = EC1D00000000000000000008 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1689,6 +2160,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1725,6 +2198,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDCore",
 					"$(SRCROOT)/Sources/UDFormats",
+					"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

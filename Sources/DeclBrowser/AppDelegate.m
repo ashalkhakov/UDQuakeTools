@@ -51,8 +51,10 @@ static const NSInteger UDCheckForUpdatesTag = 7100;
     return NO;
 }
 
+// No new workspace at launch: one is opened (File > Open) or created
+// (File > New, which asks for its settings).
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
-    return YES;
+    return NO;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {

@@ -11,6 +11,8 @@
 @property (nonatomic, strong, readwrite) UDTabBarView *tabBar;
 @end
 
+NSNotificationName const UDEditorTabManagerEditorsDidChangeNotification = @"UDEditorTabManagerEditorsDidChange";
+
 @implementation UDEditorTabManager
 
 - (instancetype)initWithTabView:(NSTabView *)tabView tabBar:(UDTabBarView *)tabBar workspace:(UDWorkspace *)workspace {
@@ -83,6 +85,7 @@
     [self.tabView setNeedsDisplay:YES];
 
     self.openEditors[path] = vc;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDEditorTabManagerEditorsDidChangeNotification object:self];
 
     // The visible tab in the bar.
     UDTabBarItem *barItem = [UDTabBarItem itemWithTitle:item.name representedObject:path];
@@ -108,6 +111,7 @@
     // NSTabView auto-selects a neighbor after a removal; mirror that in the bar.
     NSString *selectedPath = [self _selectedTabViewPath];
     self.tabBar.selectedItem = selectedPath != nil ? [self.tabBar itemWithRepresentedObject:selectedPath] : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDEditorTabManagerEditorsDidChangeNotification object:self];
 }
 
 - (void)closeAllTabs {

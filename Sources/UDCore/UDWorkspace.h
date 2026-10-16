@@ -71,4 +71,11 @@
 - (BOOL)startup:(NSError **)error;
 - (void)shutdown;
 
+// -startup: on a thread of its own, the paks and decls read off the main
+// thread; then @a action goes to @a target on the main thread, with this
+// workspace. Nothing else uses the workspace until then. -startupError says
+// why it did not start, or is nil.
+- (void)startupInBackgroundWithTarget:(id)target action:(SEL)action;
+@property (nonatomic, readonly) NSError *startupError;
+
 @end

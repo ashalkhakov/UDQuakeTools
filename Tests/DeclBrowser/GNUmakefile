@@ -37,6 +37,7 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDPDAEditorViewController.m \
     $(APP_DIR)/UDPathTree.m \
     $(APP_DIR)/UDProject.m \
+    $(APP_DIR)/UDScriptServer.m \
     $(APP_DIR)/UDTextEditorViewController.m \
     $(APP_DIR)/UDWorkspaceItem.m \
     $(APP_DIR)/Documents/UDBaseDocument.m \
@@ -47,6 +48,7 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/Window/UDEditorTabManager.m \
     $(APP_DIR)/Window/UDTextPromptPanel.m \
     $(APP_DIR)/Window/UDWorkspaceSettingsWindowController.m \
+    $(APP_DIR)/Window/UDWorkspaceOpeningController.m \
     $(APP_DIR)/Window/UDWorkspaceWindowController.m
 
 DeclBrowserTests_INCLUDE_DIRS = \
@@ -66,6 +68,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDPDAEmailEditorView.xib \
     $(APP_DIR)/Resources/UDPDAVideoEditorView.xib \
     $(APP_DIR)/Resources/UDWorkspaceSettings.xib \
+    $(APP_DIR)/Resources/UDWorkspaceOpening.xib \
     $(APP_DIR)/Resources/en.lproj/UDImageViewerView.xib \
     $(APP_DIR)/en.lproj/UDTextEditorView.xib
 
@@ -87,8 +90,9 @@ TEST_TIMEOUT ?= 900
 .PHONY: run-tests
 run-tests: all $(BUNDLE_NAME).bundle
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
-	LD_LIBRARY_PATH="$(CURDIR)/../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
-	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit" \
+	LD_LIBRARY_PATH="$(CURDIR)/../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit:$(CURDIR)/../../tree-sitter-idscript" \
+	UD_SCRIPT_LSP="$(CURDIR)/../../Sources/Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp" \
 	timeout -s ABRT $(TEST_TIMEOUT) $(XCTEST) "$(BUNDLE_NAME).bundle"
 
 include $(GNUSTEP_MAKEFILES)/coredata-model.make

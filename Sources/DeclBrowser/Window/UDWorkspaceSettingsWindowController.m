@@ -29,12 +29,21 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+    [self _keepWindowWhenClosed];
     [self _rebuildScratchWorkspace];
 }
 
 - (void)setDocument:(id)document {
     [super setDocument:document];
+    [self _keepWindowWhenClosed];
     [self _rebuildScratchWorkspace];
+}
+
+// GNUstep's NSWindowController has a document's window released when it
+// closes (Cocoa's does not), freeing it under this controller, which owns
+// it: closing the settings and letting the controller go later crashed.
+- (void)_keepWindowWhenClosed {
+    if (self.isWindowLoaded) self.window.releasedWhenClosed = NO;
 }
 
 #pragma mark - OK / Cancel
@@ -47,15 +56,37 @@
     [self.objectController commitEditing];
 
     if (![self _validateScratch]) {
-        return; // keep the modal session running so the user can fix it
+        return; // keep the dialog up so the user can fix it
     }
 
-    [NSApp stopModalWithCode:NSModalResponseOK];
+    [self _finishWithResult:NSModalResponseOK];
 }
 
 - (IBAction)cancel:(id)sender {
     [self.objectController discardEditing];
-    [NSApp stopModalWithCode:NSModalResponseCancel];
+    [self _finishWithResult:NSModalResponseCancel];
+}
+
+- (void)_finishWithResult:(NSModalResponse)result {
+    _result = result;
+    id target = self.target;
+    self.target = nil;          // once: closing the window below is no cancel
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:self.window];
+    [self.window orderOut:nil];
+    [NSApp sendAction:self.action to:target from:self];
+}
+
+- (void)setTarget:(id)target {
+    _target = target;
+    if (target != nil) {
+        // A plain window's close button is its Cancel.
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowWillClose:)
+                                                     name:NSWindowWillCloseNotification object:self.window];
+    }
+}
+
+- (void)_windowWillClose:(NSNotification *)notification {
+    if (self.target != nil) [self cancel:nil];
 }
 
 - (BOOL)_validateScratch {

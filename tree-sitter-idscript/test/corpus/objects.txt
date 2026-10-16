@@ -1,0 +1,65 @@
+=======
+Objects
+=======
+
+object lamp_base : base {
+	float brightness;
+	void flicker( float times );
+	boolean isLit() { return brightness > 0; }
+};
+
+void lamp_base::flicker( float times ) {
+	while ( times > 0 ) {
+		brightness = 1 - brightness;
+		times--;
+	}
+}
+
+---
+
+(source_file
+  (object_definition
+    name: (identifier)
+    parent: (type_identifier)
+    (field_declaration
+      type: (primitive_type)
+      name: (identifier))
+    (method_declaration
+      type: (primitive_type)
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          type: (primitive_type)
+          name: (identifier))))
+    (method_declaration
+      type: (primitive_type)
+      name: (identifier)
+      parameters: (parameter_list)
+      body: (block
+        (return_statement
+          (binary_expression
+            left: (identifier)
+            right: (number))))))
+  (method_definition
+    type: (primitive_type)
+    object: (identifier)
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter
+        type: (primitive_type)
+        name: (identifier)))
+    body: (block
+      (while_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (number))
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (number)
+                right: (identifier))))
+          (expression_statement
+            (update_expression
+              argument: (identifier))))))))

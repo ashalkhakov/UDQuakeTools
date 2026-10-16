@@ -34,6 +34,8 @@
 - (instancetype)initWithWorkspace:(UDWorkspace *)workspace;
 
 - (void)reset;
+/// Lists nothing, while the workspace restarts: nothing to open meanwhile.
+- (void)clear;
 - (void)findByName:(NSString *)name;
 - (void)findContaining:(NSString *)text;
 

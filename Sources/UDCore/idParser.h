@@ -83,13 +83,12 @@ typedef struct indent_s {
                         length:(int)length
                           name:(NSString *)name
                          flags:(int)flags
-                    fileSystem:(idFileSystem *)fileSystem
                          error:(NSError **)error;
 
 // load a source file
 - (BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error;
 // load a source from memory
-- (BOOL)loadMemory:(const char *)ptr length:(int)length name:(NSString *)name startLine:(int)startLine error:(NSError**)error;
+- (BOOL)loadMemory:(const char *)ptr length:(int)length name:(NSString *)name error:(NSError **)error;
 // free the current source
 - (void)freeSource:(BOOL)keepDefines;
 // returns true if a source is loaded
@@ -99,13 +98,13 @@ typedef struct indent_s {
 // expect a certain token, reads the token when available
 - (BOOL)expectTokenString:(NSString *)string error:(NSError **)error;
 // expect a certain token type
-- (BOOL)expectTokenType:(int)type subtype:(int)subtype into:(idToken *)token error:(NSError **)error;
+- (BOOL)expectTokenType:(int)type subtype:(int)subtype token:(idToken *)token error:(NSError **)error;
 // expect a token
 - (BOOL)expectAnyToken:(idToken *)token error:(NSError **)error;
 // returns true and reads the token when it is available
 - (BOOL)checkTokenString:(NSString *)string error:(NSError **)error;
 // returns true and reads the token when a token with the given type is available
-- (BOOL)checkTokenType:(int)type subtype:(int)subtype into:(idToken *)token error:(NSError **)error;
+- (BOOL)checkTokenType:(int)type subtype:(int)subtype token:(idToken *)token error:(NSError **)error;
 // skip tokens until the given token string is read
 - (BOOL)skipUntilString:(NSString *)string error:(NSError **)error;
 // skip the rest of the current line
@@ -122,7 +121,7 @@ typedef struct indent_s {
 // parse the rest of the line
 -(BOOL)parseRestOfLine:(NSMutableString *)str error:(NSError **)error;
 // unread the given token
--(BOOL)unreadToken:(idToken *)token error:(NSError **)error;
+-(void)unreadToken:(idToken *)token;
 // read a token only if on the current line
 -(BOOL)readTokenOnLine:(idToken *)token error:(NSError **)error;
 // read a signed integer
@@ -142,7 +141,7 @@ typedef struct indent_s {
 // Get the string from the marker to the current position
 -(void)stringFromMarker:(NSMutableString *)str clean:(BOOL)clean error:(NSError **)error;
 // add a define to the source
--(BOOL)addDefine:(NSString *)string error:(NSError **)error;
+-(BOOL)addDefine:(NSString *)string;
 // add builtin defines
 -(void)addBuiltinDefines;
 // set the source include path

@@ -1,0 +1,72 @@
+==========
+Statements
+==========
+
+void blink() {
+	float i;
+	for ( i = 0, j = 1; i < 4; i++, j++ ) {
+		if ( i == 2 ) continue; else sys.wait( 0.5f );
+	}
+	do { break; } while ( 1 );
+	eachFrame {
+		thread lamps::glow( $lamp_1 );
+	}
+	return;
+}
+
+---
+
+(source_file
+  (function_definition
+    type: (primitive_type)
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (variable_declaration
+        type: (primitive_type)
+        (variable_declarator
+          name: (identifier)))
+      (for_statement
+        initializer: (assignment_expression
+          left: (identifier)
+          right: (number))
+        initializer: (assignment_expression
+          left: (identifier)
+          right: (number))
+        condition: (binary_expression
+          left: (identifier)
+          right: (number))
+        update: (update_expression
+          argument: (identifier))
+        update: (update_expression
+          argument: (identifier))
+        body: (block
+          (if_statement
+            condition: (binary_expression
+              left: (identifier)
+              right: (number))
+            consequence: (continue_statement)
+            alternative: (expression_statement
+              (call_expression
+                function: (field_expression
+                  object: (identifier)
+                  field: (identifier))
+                arguments: (argument_list
+                  (number)))))))
+      (do_statement
+        body: (block
+          (break_statement))
+        condition: (number))
+      (macro_statement
+        macro: (identifier)
+        body: (block
+          (expression_statement
+            (thread_expression
+              (call_expression
+                function: (scoped_identifier
+                  namespace: (identifier)
+                  name: (identifier))
+                arguments: (argument_list
+                  (entity
+                    name: (identifier))))))))
+      (return_statement))))

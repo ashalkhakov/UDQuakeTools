@@ -451,6 +451,28 @@
     }
 }
 
+#pragma mark - Copy and Paste, an editor's own
+
+// What no view before the window takes (a text view copies its text): the
+// editor's, when it has its own (the material editor's stages).
+- (IBAction)copy:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor respondsToSelector:@selector(copy:)]) {
+        [(id)editor copy:sender];
+    } else {
+        NSBeep();
+    }
+}
+
+- (IBAction)paste:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor respondsToSelector:@selector(paste:)]) {
+        [(id)editor paste:sender];
+    } else {
+        NSBeep();
+    }
+}
+
 #pragma mark - Jump to Definition
 
 - (IBAction)jumpToDefinition:(id)sender {
@@ -490,6 +512,12 @@
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
         return [editor isKindOfClass:[UDTextEditorViewController class]] &&
                [(UDTextEditorViewController *)editor validateMenuItem:menuItem];
+    }
+
+    if (action == @selector(copy:) || action == @selector(paste:)) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor respondsToSelector:action] &&
+               (![editor respondsToSelector:@selector(validateMenuItem:)] || [(id)editor validateMenuItem:menuItem]);
     }
 
     if (action == @selector(showWorkspaceSettings:)) {

@@ -10,6 +10,7 @@
 #import "UDParticleEditorViewController.h"
 #import "UDFXEditorViewController.h"
 #import "UDAFEditorViewController.h"
+#import "UDMaterialEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -62,6 +63,8 @@ static NSString *const UDFixtureCrateMesh =
 
 static NSString *const UDFixtureCrateDef =
     @"model udtest_crate {\n"
+     "\t// the crate\n"
+     "\tskin\t\"skins/udtest/crate\"\n"
      "\tmesh\tmodels/udtest/crate.md5mesh\n"
      "}\n";
 
@@ -83,6 +86,14 @@ static NSString *const UDFixtureMaterials =
      "\t{\n"
      "\t\tblend\tadd\n"
      "\t\tmap\ttextures/udtest/glow.tga\n"
+     "\t}\n"
+     "}\n"
+     "\n"
+     "textures/udtest/lost\n"
+     "{\n"
+     "\t{\n"
+     "\t\tblend\tadd\n"
+     "\t\tmap\ttextures/udtest/missing\n"
      "\t}\n"
      "}\n";
 
@@ -126,7 +137,8 @@ static NSString *const UDFixtureParticles =
     self.savePath = [self.scratchDirectory stringByAppendingPathComponent:@"save"];
     NSFileManager *files = [NSFileManager defaultManager];
     for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx", @"base/materials",
-                               @"base/af", @"base/models/udtest"]) {
+                               @"base/af", @"base/models/udtest",
+                               @"base/textures/udtest"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -145,6 +157,13 @@ static NSString *const UDFixtureParticles =
                         atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureAF writeToFile:[self.basePath stringByAppendingPathComponent:@"base/af/udtest.af"]
                   atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    // The glow's image: a 2 × 2 TGA, red over green.
+    uint8_t tga[18 + 2 * 2 * 3] = { 0, 0, 2 };
+    tga[12] = 2; tga[14] = 2; tga[16] = 24;
+    const uint8_t green[3] = { 0, 255, 0 }, red[3] = { 0, 0, 255 };   // BGR, the bottom row first
+    memcpy(tga + 18, green, 3); memcpy(tga + 21, green, 3); memcpy(tga + 24, red, 3); memcpy(tga + 27, red, 3);
+    [[NSData dataWithBytes:tga length:sizeof(tga)] writeToFile:[self.basePath stringByAppendingPathComponent:@"base/textures/udtest/glow.tga"]
+                                                    atomically:YES];
     // One of its samples, as an .ogg: the engine finds it by the .wav's name.
     [@"" writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest/hum.ogg"]
           atomically:YES encoding:NSUTF8StringEncoding error:NULL];
@@ -246,19 +265,19 @@ static NSString *const UDFixtureParticles =
 - (void)testADeclIsHighlightedAsADecl {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a material opens as text, not %@", editor);
+    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a modelDef opens as text, not %@", editor);
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
 
     // Its comments and strings, each in a colour of their own.
     BOOL highlighted = [self spinUntil:^BOOL{
-        NSColor *comment = [self colorOf:@"// glows" inTextView:textView];
-        NSColor *string = [self colorOf:@"\"Glow\"" inTextView:textView];
+        NSColor *comment = [self colorOf:@"// the crate" inTextView:textView];
+        NSColor *string = [self colorOf:@"\"skins/udtest/crate\"" inTextView:textView];
         return comment != nil && string != nil && ![comment isEqual:string] &&
                ![comment isEqual:textView.textColor] && ![string isEqual:textView.textColor];
     } timeout:5.0];
     XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
-                  [self colorOf:@"// glows" inTextView:textView], [self colorOf:@"\"Glow\"" inTextView:textView],
+                  [self colorOf:@"// the crate" inTextView:textView], [self colorOf:@"\"skins/udtest/crate\"" inTextView:textView],
                   textView.textColor);
 }
 
@@ -270,12 +289,12 @@ static NSString *const UDFixtureParticles =
 - (void)testTestReportsWhatTheLexerSays {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     XCTAssertEqual([self testFindingsOf:editor].count, 0U);
 
     // A string left open, typed above its blend.
-    NSRange duration = [textView.string rangeOfString:@"\t\tblend"];
+    NSRange duration = [textView.string rangeOfString:@"\tmesh"];
     NSInteger line = [[textView.string substringToIndex:duration.location] componentsSeparatedByString:@"\n"].count;
     [textView setSelectedRange:NSMakeRange(duration.location, 0)];
     [textView insertText:@"\t\tname\t\"oops\n"];
@@ -293,7 +312,7 @@ static NSString *const UDFixtureParticles =
 - (void)testTestFindsABraceNeverClosed {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     NSRange last = [textView.string rangeOfString:@"}" options:NSBackwardsSearch];
     [textView setSelectedRange:last];
@@ -678,6 +697,94 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([saved containsString:@"hinge \"hinge\" {\n\tbody1 \"door\"\n\tbody2 \"crate\"\n"], @"%@", saved);
     XCTAssertTrue([saved containsString:@"universalJoint \"constraint1\" {\n\tbody1 \"crate\"\n\tbody2 \"world\"\n"], @"%@", saved);
     XCTAssertFalse([saved containsString:@"latch"], @"%@", saved);
+}
+
+#pragma mark - The material editor
+
+- (UDMaterialEditorViewController *)openMaterial:(NSString *)name in:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:[@"material/" stringByAppendingString:name] inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDMaterialEditorViewController class]], @"a material opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDMaterialEditorViewController class]] ? (UDMaterialEditorViewController *)editor : nil;
+}
+
+- (void)testAMaterialOpensWithItsKeywordsStagesAndImages {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"materialDescription" inView:editor.view]).stringValue, @"Glow");
+    [editor.tabView selectTabViewItemWithIdentifier:@"stages"];
+    XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
+    XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"its first stage shown");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"map" inView:editor.view]).stringValue, @"textures/udtest/glow.tga");
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:[editor.stagesTable tableColumnWithIdentifier:@"stage"] row:0],
+                          @"stage 0");
+
+    // Its image, as the renderer loads it.
+    XCTAssertNotNil(editor.previewView.image);
+    XCTAssertEqualObjects(editor.previewLabel.stringValue, @"textures/udtest/glow.tga (2 × 2)");
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"%@", [editor.diagnosticStore.allDiagnostics valueForKey:@"message"]);
+
+    UDMaterialEditorViewController *lost = [self openMaterial:@"textures/udtest/lost" in:controller];
+    XCTAssertEqualObjects([lost.diagnosticStore.allDiagnostics valueForKey:@"message"], (@[@"Couldn't load image: textures/udtest/missing"]));
+    XCTAssertEqualObjects(lost.previewLabel.stringValue, @"Couldn't load image: textures/udtest/missing");
+}
+
+- (void)testEditingAMaterialChangesOnlyWhatIsEdited {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+
+    // As a binding sets them: through the controllers' selections.
+    [editor.objectController setValue:@"Bright glow" forKeyPath:@"selection.materialDescription"];
+    [editor.objectController setValue:@YES forKeyPath:@"selection.twoSided"];
+    [editor.objectController setValue:@"metal" forKeyPath:@"selection.surfaceType"];
+    [editor.stagesController setValue:@"textures/udtest/glow2" forKeyPath:@"selection.map"];
+    [editor.stagesController setValue:@"(default)" forKeyPath:@"selection.clampMode"];
+    [editor.stagesController setValue:@"time, 0" forKeyPath:@"selection.scroll"];
+    [editor.editingContext processPendingChanges];
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+    XCTAssertEqualObjects([editor.diagnosticStore.allDiagnostics valueForKey:@"message"], (@[@"Couldn't load image: textures/udtest/glow2"]),
+                          @"the Issues follow the edits");
+
+    // A bump map, the stage copied and pasted after it, moved up.
+    [editor.tabView selectTabViewItemWithIdentifier:@"stages"];
+    NSPopUpButton *lighting = [self viewWithToolTip:@"add lighting stage" inView:editor.view];
+    [lighting selectItemWithTag:1];
+    [NSApp sendAction:@selector(addLightingStage:) to:editor from:lighting];
+    XCTAssertEqual(editor.material.stages.count, 2U);
+    XCTAssertEqual(editor.stagesController.selectionIndex, 1U, @"the new stage shown");
+    [NSApp sendAction:@selector(copy:) to:controller from:nil];
+    [NSApp sendAction:@selector(paste:) to:controller from:nil];
+    XCTAssertEqual(editor.material.stages.count, 3U, @"Edit ▸ Paste: the bump map again");
+    [editor.stagesController setSelectionIndex:0];
+    NSSegmentedControl *move = [self viewWithToolTip:@"move stage" inView:editor.view];
+    [move setSelectedSegment:1];
+    [NSApp sendAction:move.action to:move.target from:move];
+    XCTAssertEqual(editor.stagesController.selectionIndex, 1U);
+    [editor.stagesController setSelectionIndex:2];
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:@selector(addOrRemoveStage:) inView:editor.view];
+    [buttons setSelectedSegment:1];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    XCTAssertEqual(editor.material.stages.count, 2U);
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"materials/udtest.mtr"];
+    XCTAssertTrue([saved containsString:
+        @"textures/udtest/glow\n"
+         "{\n"
+         "\t// glows\n"
+         "\tdescription\t\"Bright glow\"\n"
+         "\ttwoSided\n"
+         "\tmetal\n"
+         "\tbumpmap\t_flat\n"
+         "\t{\n"
+         "\t\tblend\tadd\n"
+         "\t\tmap\ttextures/udtest/glow2\n"
+         "\t\tscroll\ttime, 0\n"
+         "\t}\n"
+         "}\n"], @"the comment kept, the edits made:\n%@", saved);
+    XCTAssertTrue([saved containsString:@"textures/udtest/lost\n{\n\t{\n\t\tblend\tadd\n"], @"the other material untouched:\n%@", saved);
 }
 
 @end

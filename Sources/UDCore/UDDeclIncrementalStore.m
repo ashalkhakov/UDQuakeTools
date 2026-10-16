@@ -48,6 +48,10 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     BOOL _debugLog;
 }
 
+- (idDeclManager *)declManager {
+    return _declManager;
+}
+
 #pragma mark - Stack building
 
 + (void)registerStoreType {

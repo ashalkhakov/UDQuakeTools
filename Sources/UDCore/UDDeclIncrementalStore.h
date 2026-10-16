@@ -42,6 +42,9 @@ typedef enum {
 /// VSCode-style "one dirty buffer per open document" model.
 + (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
+/// The decl manager the store reads and writes.
+@property (nonatomic, readonly, nullable) idDeclManager *declManager;
+
 /// Convenience: coordinator + one context in a single call (used by tests and
 /// one-shot tools).
 + (nullable NSManagedObjectContext *)newEditingContextForDeclManager:(idDeclManager *)declManager

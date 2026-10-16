@@ -3,6 +3,9 @@
  * UDDeclCodec.m — the decl codecs' shared helpers.
  */
 
+// AppKit (UDWorkspace.h) before Core Data: GNUstep's NSPredicateEditorRowTemplate.h
+// defines Core Data's attribute types when Core Data is not yet in.
+#import "UDWorkspace.h"
 #import "UDDeclManagedObjects.h"
 #import <objc/runtime.h>
 
@@ -179,6 +182,8 @@ NSDictionary *UDParsedSourceText(UDDeclBase *object) {
     if (text == nil) {
         return nil;
     }
+    // The store's file system: a material's parse looks its tables up.
     return [[object class] ud_parseValuesFromText:text name:[object primitiveValueForKey:@"name"]
-                                         fileName:nil lineNum:1 fileSystem:nil error:NULL];
+                                         fileName:nil lineNum:1 fileSystem:[object ud_store].declManager.workspace.fileSystem
+                                            error:NULL];
 }

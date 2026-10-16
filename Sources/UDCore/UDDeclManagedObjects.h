@@ -32,3 +32,4 @@
 #import "UDDeclAF.h"
 #import "UDDeclPDA.h"
 #import "UDDeclParticle.h"
+#import "UDDeclMaterial.h"

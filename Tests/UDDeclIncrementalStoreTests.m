@@ -20,6 +20,9 @@
 #import "UDDeclManagedObjects.h"
 #import "UDDeclIncrementalStore.h"
 #import "UDDeclTextChecker.h"
+#import "UDMaterialParser.h"
+#import "UDImageProgram.h"
+#import "UDSourceTokens.h"
 
 @interface UDDeclIncrementalStoreTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
@@ -27,6 +30,29 @@
 @property (nonatomic, strong) UDWorkspace *workspace;
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @end
+
+static NSString *const UDMaterialFixture =
+    @"table glowTable { { 0, 1 } }\n"
+     "table sinTable { { 0, 1, 0, -1 } }\n"
+     "table cosTable { { 1, 0, -1, 0 } }\n"
+     "\n"
+     "textures/test/wall\n"
+     "{\n"
+     "\t// a wall\n"
+     "\tqer_editorimage\ttextures/test/wall_ed\n"
+     "\tdescription \"A wall\"\n"
+     "\tmetal\n"
+     "\n"
+     "\tdiffusemap\ttextures/test/wall_d\n"
+     "\t{\n"
+     "\t\tblend\tadd\n"
+     "\t\tmap\ttextures/test/glow\n"
+     "\t\trgb\tglowTable[ time ]\n"
+     "\t\tscroll\ttime, 0\n"
+     "\t\tscroll\t0, time\n"
+     "\t}\n"
+     "\ttwoSided\n"
+     "}\n";
 
 @implementation UDDeclIncrementalStoreTests
 
@@ -44,6 +70,9 @@
            withIntermediateDirectories:YES attributes:nil error:nil];
     [fileManager createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"particles"]
            withIntermediateDirectories:YES attributes:nil error:nil];
+    [fileManager createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"materials"]
+           withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"materials/test.mtr" contents:UDMaterialFixture];
 
     NSString *pdaFixture =
         @"pda test/pda1 {\n"
@@ -814,6 +843,212 @@
     [figure ud_newConstraintNamed:@"hold"];
     XCTAssertEqualObjects(figure.constraints.lastObject.body1, @"lid", @"SetDefault: the first body");
     XCTAssertEqualObjects(figure.constraints.lastObject.type, @"universalJoint");
+}
+
+#pragma mark - Materials
+
+- (UDDeclMaterial *)fetchWall {
+    return [self declWithTypeName:@"material" name:@"textures/test/wall"];
+}
+
+- (void)testAMaterialIsKeptAsItsTokens {
+    UDDeclMaterial *wall = [self fetchWall];
+    NSString *body = [UDMaterialFixture substringFromIndex:[UDMaterialFixture rangeOfString:@"textures/test/wall\n"].location +
+                                                           @"textures/test/wall\n".length];
+    body = [body stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    XCTAssertEqualObjects(wall.tokens.text, body, @"every token with what is before it");
+    XCTAssertEqualObjects(wall.tokens.tokens[1].leading, @"\n\t// a wall\n\t", @"comments and all");
+    XCTAssertEqual(wall.stages.count, 2U);
+    XCTAssertEqualObjects(wall.stages[0].shortcut, @"diffusemap");
+    XCTAssertEqualObjects(wall.stages[0].text, @"diffusemap\ttextures/test/wall_d");
+    XCTAssertNil(wall.stages[1].shortcut);
+
+    XCTAssertEqualObjects([wall valueForKey:@"materialDescription"], @"A wall", @"the token the parse keeps");
+    XCTAssertEqualObjects([wall valueForKey:@"qerEditorImage"], @"textures/test/wall_ed");
+    XCTAssertEqualObjects([wall valueForKey:@"surfaceType"], @"metal");
+    XCTAssertEqualObjects([wall valueForKey:@"twoSided"], @YES);
+    XCTAssertEqualObjects([wall valueForKey:@"noShadows"], @NO);
+    XCTAssertEqualObjects([wall.stages[0] valueForKey:@"blend"], @"diffusemap", @"the stage ParseMaterial makes of it");
+    XCTAssertEqualObjects([wall.stages[0] valueForKey:@"map"], @"textures/test/wall_d");
+    XCTAssertEqualObjects([wall.stages[1] valueForKey:@"blend"], @"add");
+    XCTAssertEqualObjects([wall.stages[1] valueForKey:@"rgb"], @"glowTable[ time ]");
+    XCTAssertEqualObjects([wall.stages[1] valueForKey:@"scroll"], @"time, 0", @"its first");
+
+    // Written as it was read.
+    NSData *written = [UDDeclMaterial ud_textByUnparsingName:wall.name values:@{@"tokens": wall.tokens} error:NULL];
+    XCTAssertEqualObjects([[NSString alloc] initWithData:written encoding:NSUTF8StringEncoding], body);
+}
+
+- (void)testEditingAMaterialEditsItsLines {
+    UDDeclMaterial *wall = [self fetchWall];
+    [wall setValue:@"A metal wall" forKey:@"materialDescription"];
+    [wall setValue:@NO forKey:@"twoSided"];
+    [wall setValue:@YES forKey:@"noShadows"];
+    [wall setValue:@"stone" forKey:@"surfaceType"];
+    [wall.stages[1] setValue:@"textures/test/glow2" forKey:@"map"];
+    [wall.stages[1] setValue:@"1, time" forKey:@"scroll"];
+    [wall.stages[1] setValue:@"linear" forKey:@"filter"];
+    [wall.stages[0] setValue:@"textures/test/wall_d2" forKey:@"map"];
+    [self saveContext];
+
+    NSString *onDisk = [self contentsOfGameFile:@"materials/test.mtr"];
+    XCTAssertTrue([onDisk containsString:
+        @"textures/test/wall\n"
+         "{\n"
+         "\t// a wall\n"
+         "\tqer_editorimage\ttextures/test/wall_ed\n"
+         "\tdescription\t\"A metal wall\"\n"
+         "\tstone\n"
+         "\tnoShadows\n"
+         "\n"
+         "\tdiffusemap\ttextures/test/wall_d2\n"
+         "\t{\n"
+         "\t\tblend\tadd\n"
+         "\t\tmap\ttextures/test/glow2\n"
+         "\t\trgb\tglowTable[ time ]\n"
+         "\t\tscroll\t1, time\n"
+         "\t\tscroll\t0, time\n"
+         "\t\tlinear\n"
+         "\t}\n"
+         "}\n"], @"the header as it was, the rest as edited:\n%@", onDisk);
+    XCTAssertTrue([onDisk hasPrefix:@"table glowTable"], @"the tables before it untouched");
+
+    // A shortcut stage that is no longer one is written as a stage.
+    UDDeclMaterial *again = [self declWithTypeName:@"material" name:@"textures/test/wall"];
+    [again.stages[0] setValue:@YES forKey:@"nopicmip"];
+    [self saveContext];
+    onDisk = [self contentsOfGameFile:@"materials/test.mtr"];
+    XCTAssertTrue([onDisk containsString:@"\t{\n\t\tblend\tdiffusemap\n\t\tmap\ttextures/test/wall_d2\n\t\tnopicmip\n\t}\n"], @"%@", onDisk);
+}
+
+- (NSArray<NSString *> *)materialProblems:(NSString *)text {
+    UDMaterialParser *parser = [[UDMaterialParser alloc] initWithText:text name:@"textures/test/x" declManager:self.workspace.declManager];
+    return [parser.problems valueForKey:@"message"];
+}
+
+- (void)testIdMaterialParseSaysWhatTheEngineSays {
+    [self fetchWall];
+    NSString *wallText = [UDMaterialFixture substringFromIndex:[UDMaterialFixture rangeOfString:@"textures/test/wall"].location];
+    XCTAssertEqualObjects([self materialProblems:wallText], @[], @"its tables are there");
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\t{\n\t\tblend\tGL_ONE, GL_WRONG\n\t\tmap\ta\n\t}\n}"],
+                          @[@"unknown blend mode 'GL_WRONG' in material 'textures/test/x'"]);
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\twobble\n}"],
+                          @[@"unknown general material parameter 'wobble' in 'textures/test/x'"]);
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\t{\n\t\tblend\tadd\n\t}\n}"],
+                          @[@"material 'textures/test/x' had stage with no image"]);
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\t{\n\t\tmap\ta\n\t\trgb\tnoTable[ time ]\n\t}\n}"],
+                          @[@"Bad term 'noTable'"]);
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\t{\n\t\tmap\ta\n\t\trotate\ttime\n\t}\n}"], @[],
+                          @"sinTable and cosTable are there");
+    XCTAssertEqualObjects([self materialProblems:@"x {\n\t{\n\t\tmap\ta\n\t\tfrobnicate\n\t}\n}"],
+                          @[@"unknown token 'frobnicate' in material 'textures/test/x'"]);
+
+    UDMaterialParser *parser = [[UDMaterialParser alloc] initWithText:@"x {\n\t{\n\t\tblend\tadd\n\t}\n}" name:@"x"
+                                                          declManager:self.workspace.declManager];
+    XCTAssertEqual(parser.problems.firstObject.line, 4, @"common->Warning's at the line the parse is on");
+    XCTAssertFalse(parser.defaulted, @"a stage without an image is not a defaulted material");
+    XCTAssertTrue([[UDMaterialParser alloc] initWithText:@"x {\n\twobble\n}" name:@"x" declManager:nil].defaulted);
+
+    // The stages as the engine orders them: AddImplicitStages' _flat bump,
+    // then SortInteractionStages (ambient, bump, diffuse).
+    parser = [[UDMaterialParser alloc] initWithText:wallText name:@"textures/test/wall" declManager:self.workspace.declManager];
+    XCTAssertEqualObjects([parser.stages valueForKey:@"imageName"], (@[@"textures/test/glow", @"_flat", @"textures/test/wall_d"]));
+    XCTAssertEqualObjects([parser.stages valueForKey:@"textIndex"], (@[@1, @-1, @0]));
+    XCTAssertEqualObjects(parser.desc, @"A wall");
+    XCTAssertEqual(parser.surfaceFlags & 15, 1, @"SURFTYPE_METAL");
+
+    // EvaluateRegisters: rgb glowTable[ time ], idDeclTable::TableLookup's.
+    int red = parser.stages[0].colorRegisters[0];
+    const float *at = [parser registersAtTime:0.25f].bytes;
+    XCTAssertEqualWithAccuracy(at[red], 0.5f, 1e-5, @"halfway from 0 to 1");
+    at = [parser registersAtTime:0.5f].bytes;
+    XCTAssertEqualWithAccuracy(at[red], 1.0f, 1e-5);
+}
+
+- (void)testAMaterialTheParseGivesUpOnIsKeptAsItIs {
+    NSString *text = @"textures/test/broken\n{\n\tqer_editorimage\ta\n\twobble 1 2\n\t{\n\t\tmap\tb\n\t}\n}";
+    NSDictionary *values = [UDDeclMaterial ud_parseValuesFromText:[text dataUsingEncoding:NSUTF8StringEncoding] name:@"textures/test/broken"
+                                                         fileName:nil lineNum:1 fileSystem:self.workspace.fileSystem error:NULL];
+    NSString *body = [text substringFromIndex:[text rangeOfString:@"{"].location];
+    XCTAssertEqualObjects([values[@"tokens"] text], body);
+    NSData *written = [UDDeclMaterial ud_textByUnparsingName:@"" values:values error:NULL];
+    XCTAssertEqualObjects([[NSString alloc] initWithData:written encoding:NSUTF8StringEncoding], body);
+}
+
+#pragma mark - Images
+
+/// An uncompressed TGA of @a width × @a height, bottom row first as a TGA
+/// has it, each pixel's BGR(A) from @a pixel.
+- (void)writeTGA:(NSString *)relativePath width:(int)width height:(int)height bits:(int)bits
+           pixel:(void (^)(int x, int y, uint8_t *bgra))pixel {
+    NSMutableData *data = [NSMutableData dataWithLength:18];
+    uint8_t *header = data.mutableBytes;
+    header[2] = 2;
+    header[12] = width & 0xff; header[13] = width >> 8;
+    header[14] = height & 0xff; header[15] = height >> 8;
+    header[16] = bits;
+    for (int y = height - 1; y >= 0; y--) {
+        for (int x = 0; x < width; x++) {
+            uint8_t bgra[4] = { 0, 0, 0, 255 };
+            pixel(x, y, bgra);
+            [data appendBytes:bgra length:bits / 8];
+        }
+    }
+    NSString *path = [self.fullGameDirPath stringByAppendingPathComponent:relativePath];
+    [[NSFileManager defaultManager] createDirectoryAtPath:path.stringByDeletingLastPathComponent
+                              withIntermediateDirectories:YES attributes:nil error:nil];
+    XCTAssertTrue([data writeToFile:path atomically:YES]);
+}
+
+- (void)testImagesLoadAsTheRendererLoadsThem {
+    // A red top row over a blue one.
+    [self writeTGA:@"textures/test/rows.tga" width:4 height:2 bits:24 pixel:^(int x, int y, uint8_t *bgra) {
+        bgra[y == 0 ? 2 : 0] = 255;
+    }];
+    idFileSystem *fileSystem = self.workspace.fileSystem;
+    NSString *problem = nil;
+    UDImage *rows = [UDImageProgram imageNamed:@"textures/test/rows.tga" fileSystem:fileSystem problem:&problem];
+    XCTAssertNotNil(rows, @"%@", problem);
+    XCTAssertEqual(rows.width, 4);
+    XCTAssertEqual(rows.height, 2);
+    const uint8_t *pixels = rows.pixels.bytes;
+    XCTAssertEqual(pixels[0], 255, @"the top row first, red");
+    XCTAssertEqual(pixels[2], 0);
+    XCTAssertEqual(pixels[4 * 4 + 2], 255, @"then the blue one");
+    XCTAssertEqual(pixels[3], 255, @"24 bits: opaque");
+
+    // Not a power of two: resampled, rounded down (image_roundDown).
+    [self writeTGA:@"textures/test/odd.tga" width:3 height:3 bits:32 pixel:^(int x, int y, uint8_t *bgra) {}];
+    UDImage *odd = [UDImageProgram imageNamed:@"textures/test/odd" fileSystem:fileSystem problem:NULL];
+    XCTAssertEqual(odd.width, 2);
+    XCTAssertEqual(odd.height, 2);
+
+    // An image program: a flat height map is a normal map straight out.
+    [self writeTGA:@"textures/test/flat.tga" width:4 height:4 bits:24 pixel:^(int x, int y, uint8_t *bgra) {
+        bgra[0] = bgra[1] = bgra[2] = 100;
+    }];
+    UDImage *normals = [UDImageProgram imageNamed:@"heightmap( textures/test/flat, 4 )" fileSystem:fileSystem problem:&problem];
+    XCTAssertNotNil(normals, @"%@", problem);
+    pixels = normals.pixels.bytes;
+    XCTAssertEqual(pixels[0], 128);
+    XCTAssertEqual(pixels[1], 128);
+    XCTAssertEqual(pixels[2], 254, @"( 0, 0, 1 ) * 127 + 128, NormalizeFast's");
+    UDImage *inverted = [UDImageProgram imageNamed:@"invertColor( textures/test/rows )" fileSystem:fileSystem problem:NULL];
+    XCTAssertEqual(((const uint8_t *)inverted.pixels.bytes)[0], 0, @"red inverted");
+
+    // What is not there; what is only precompressed; the built-in ones.
+    XCTAssertNil([UDImageProgram imageNamed:@"textures/test/none" fileSystem:fileSystem problem:&problem]);
+    XCTAssertEqualObjects(problem, @"Couldn't load image: textures/test/none");
+    XCTAssertFalse([UDImageProgram imageExistsNamed:@"addnormals( textures/test/rows, textures/test/none )" fileSystem:fileSystem]);
+    XCTAssertTrue([UDImageProgram imageExistsNamed:@"addnormals( textures/test/rows, textures/test/flat )" fileSystem:fileSystem]);
+    [self writeGameFile:@"textures/test/pre.tga" contents:@""];
+    [[NSFileManager defaultManager] removeItemAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"textures/test/pre.tga"] error:NULL];
+    [[NSFileManager defaultManager] createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"dds/textures/test"]
+                              withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"dds/textures/test/pre.dds" contents:@"DDS "];
+    XCTAssertTrue([UDImageProgram imageExistsNamed:@"textures/test/pre" fileSystem:fileSystem], @"ImageProgramStringToCompressedFileName's");
+    XCTAssertTrue([UDImageProgram imageExistsNamed:@"_flat" fileSystem:fileSystem]);
+    XCTAssertEqual([UDImageProgram imageNamed:@"_white" fileSystem:fileSystem problem:NULL].width, 16);
 }
 
 @end

@@ -3,6 +3,9 @@
  * UDDeclBase.m — the decl entities' base class, and DeclFile and DeclType.
  */
 
+// AppKit (UDWorkspace.h) before Core Data: GNUstep's NSPredicateEditorRowTemplate.h
+// defines Core Data's attribute types when Core Data is not yet in.
+#import "UDWorkspace.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclBase.h"
 #import <objc/runtime.h>
@@ -158,6 +161,12 @@ NSString *UDDeclTypeNameForDeclEntityName(NSString *entityName) {
         [problems addObject:[[UDDeclTextProblem alloc] initWithLine:1 message:error.localizedDescription isError:YES]];
     }
     return problems;
+}
+
++ (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text
+                                                    name:(NSString *)name
+                                             declManager:(idDeclManager *)declManager {
+    return [self ud_problemsParsingText:text name:name fileSystem:declManager.workspace.fileSystem];
 }
 
 + (NSString *)ud_entityNameForDeclTypeName:(NSString *)declTypeName inModel:(NSManagedObjectModel *)model {

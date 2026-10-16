@@ -194,10 +194,19 @@ In order of value against cost; LOC is the MFC original's size.
       origin joint, no or a defaulted modelDef or model, a body on a joint
       the mesh lacks, a constraint on a body the figure lacks).
 - [ ] **AF simulation preview** — comes with the bridge.
-- [ ] **Material editor** (10.9k) — material tree by file, stage list
-      (add bump/diffuse/specular, reorder, copy/paste), inspector driven by
-      material keywords, source view kept in sync, 2D preview of stage
-      images; 3D preview through the bridge.
+- [x] **Material editor** — Material.cpp's parse ported literally
+      (idMaterial's state, expressions, EvaluateRegisters with
+      idDeclTable::TableLookup): every retail material goes through it, the
+      14 the engine itself defaults named. A material is its tokens as
+      idLexer reads them, with the whitespace and comments before each
+      (UDSourceTokens): written back, byte for byte; the parse says which
+      tokens are which keyword and stage, and an edit puts tokens in,
+      changes or takes them out. The editor: the material's keywords and
+      flags; its stages (add, bump/diffuse/specular, reorder, copy/paste),
+      each stage's keywords; a 2D preview of its image, as the renderer
+      loads it (R_LoadImage's TGA/BMP/JPG, image programs); Issues from the
+      parse and "Couldn't load image".
+- [ ] **Material 3D preview** — through the bridge.
 - [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser

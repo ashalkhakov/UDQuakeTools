@@ -1,6 +1,7 @@
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclManagedObjects.h"
+#import "UDMaterialParser.h"
 #import "UDDeclTextChecker.h"
 #import "UDMD5Mesh.h"
 #import "idFileSystem.h"
@@ -8,6 +9,7 @@
 #import "UDPDAEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
 #import "UDTextEditorViewController.h"
+#import "UDMaterialEditorViewController.h"
 #import "UDWorkspace.h"
 #import "UDWorkspaceDocument.h"
 #import "UDBaseDocument.h"
@@ -148,16 +150,18 @@
                   @"the email that mentions Martian Buddy should be found; got %@", names);
 }
 
-- (void)testAMaterialOpensInTheTextEditor {
+- (void)testARetailMaterialOpensInTheMaterialEditor {
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
 
     UDBaseEditorViewController *editor = [self openOutlinePath:@"material/textures/base_wall/lfwall27d" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a material opens in the text editor, not %@", editor);
-    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:editor.view];
-    XCTAssertTrue([textView.string containsString:@"textures/base_wall/lfwall27d"], @"the editor should show the material's source:\n%@", textView.string);
-    XCTAssertTrue([textView.string containsString:@"{"], @"%@", textView.string);
+    XCTAssertTrue([editor isKindOfClass:[UDMaterialEditorViewController class]], @"a material opens in its editor, not %@", editor);
+    if (![editor isKindOfClass:[UDMaterialEditorViewController class]]) return;
+    UDMaterialEditorViewController *material = (UDMaterialEditorViewController *)editor;
+    XCTAssertGreaterThan(material.material.stages.count, 0U);
+    XCTAssertNotNil(material.previewView.image, @"its first stage's image, from the paks: %@", material.previewLabel.stringValue);
+    XCTAssertEqual(material.diagnosticStore.allDiagnostics.count, 0U, @"%@", [material.diagnosticStore.allDiagnostics valueForKey:@"message"]);
 }
 
 - (void)testAPDAOpensInThePDAEditor {
@@ -281,6 +285,65 @@
     }
     XCTAssertGreaterThan(fxs, 50U, @"the retail FX are indexed");
     XCTAssertEqual(problems.count, 0U, @"idDeclFX::Parse reads them all: %@", problems);
+}
+
+- (void)testEveryRetailMaterialIsReadAsTheEngineReadsItAndWrittenAsItWas {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    idDeclManager *declManager = workspace.declManager;
+    NSUInteger materials = 0;
+    NSMutableArray<NSString *> *defaulted = [NSMutableArray array];
+    NSMutableArray<NSString *> *warnings = [NSMutableArray array];
+    NSMutableArray<NSString *> *changed = [NSMutableArray array];
+    for (idDeclBase *decl in [declManager declsOfType:DECL_MATERIAL forceParse:NO]) {
+        NSMutableData *buffer = [NSMutableData data];
+        [decl text:buffer];
+        NSData *text = [buffer subdataWithRange:NSMakeRange(0, buffer.length > 0 ? buffer.length - 1 : 0)];
+        NSString *string = [[NSString alloc] initWithData:text encoding:NSUTF8StringEncoding] ?:
+                           [[NSString alloc] initWithData:text encoding:NSISOLatin1StringEncoding] ?: @"";
+        UDMaterialParser *parser = [[UDMaterialParser alloc] initWithText:string name:[decl name] declManager:declManager];
+        if (parser.defaulted) [defaulted addObject:[decl name]];
+        for (UDDeclTextProblem *problem in parser.problems) {
+            [warnings addObject:[NSString stringWithFormat:@"%@: %@", [decl name], problem.message]];
+        }
+        // What the model keeps of it is what it was, byte for byte.
+        NSDictionary *values = [UDDeclMaterial ud_parseValuesFromText:text name:[decl name] fileName:nil lineNum:1
+                                                           fileSystem:workspace.fileSystem error:NULL];
+        NSData *written = [UDDeclMaterial ud_textByUnparsingName:[decl name] values:values error:NULL];
+        NSString *body = [string substringFromIndex:MIN([string rangeOfString:@"{"].location, string.length)];
+        NSString *writtenString = [[NSString alloc] initWithData:written encoding:NSUTF8StringEncoding];
+        if (![writtenString isEqualToString:body]) [changed addObject:[decl name]];
+        materials++;
+    }
+    XCTAssertGreaterThan(materials, 1000U, @"the retail materials are indexed");
+    // What the engine itself says of retail: these it draws as the default
+    // material.
+    XCTAssertEqualObjects([defaulted sortedArrayUsingSelector:@selector(compare:)], (@[
+        @"models/mapobjects/fuel_barrel/fbarrel", @"models/mapobjects/fuel_barrel/pbarrel_flare",
+        @"models/mapobjects/hellcages/hellcagechain_", @"shaderdemos/shadowdrawlight", @"textures/common/nodrop",
+        @"textures/decals/hellwind", @"textures/decals/wallsplat1", @"textures/hell/smokeblend",
+        @"textures/object/cdplayer", @"textures/particles/bfgball", @"textures/sfx/flare_toggle",
+        @"textures/sfx/flare_toggle2", @"textures/sfx/radiogoop_mix", @"video/noise"]));
+    XCTAssertEqualObjects([warnings sortedArrayUsingSelector:@selector(compare:)], (@[
+        @"models/mapobjects/fuel_barrel/fbarrel: unknown general material parameter 'flare' in 'models/mapobjects/fuel_barrel/fbarrel'",
+        @"models/mapobjects/fuel_barrel/pbarrel_flare: unknown general material parameter 'flare' in 'models/mapobjects/fuel_barrel/pbarrel_flare'",
+        @"models/mapobjects/hellcages/hellcagechain_: unknown token 'bumpmap' in material 'models/mapobjects/hellcages/hellcagechain_'",
+        @"shaderdemos/shadowdrawlight: unknown token 'shadowDraw' in material 'shaderdemos/shadowdrawlight'",
+        @"textures/common/nodrop: unknown general material parameter 'nodrop' in 'textures/common/nodrop'",
+        @"textures/decals/hellwind: unknown token 'bugwings' in material 'textures/decals/hellwind'",
+        @"textures/decals/wallsplat1: missing sort parameter",
+        @"textures/hell/smokeblend: unknown token 'vertexblend' in material 'textures/hell/smokeblend'",
+        @"textures/object/cdplayer: Bad term 'cdplayertable'",
+        @"textures/object/cdplayer: expected ',' but found '['",
+        @"textures/particles/bfgball: unknown general material parameter 'nomipmaps' in 'textures/particles/bfgball'",
+        @"textures/sfx/flare_toggle2: Bad term 'red'",
+        @"textures/sfx/flare_toggle: Bad term 'red'",
+        @"textures/sfx/radiogoop_mix: unknown token 'inverse' in material 'textures/sfx/radiogoop_mix'",
+        @"video/noise: unknown token 'noisemap' in material 'video/noise'"]));
+    XCTAssertEqual(changed.count, 0U, @"written as it was read: %@", changed);
 }
 
 - (void)testEveryRetailArticulatedFigureParsesAndIsWrittenTheSameTwice {

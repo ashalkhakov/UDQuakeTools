@@ -4,6 +4,8 @@
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDTextEditorViewController.h"
+#import "UDMaterialEditorViewController.h"
+#import "UDSourceTokens.h"
 #import "UDWorkspace.h"
 #import "UDWorkspaceDocument.h"
 #import "UDWorkspaceSettingsWindowController.h"
@@ -383,8 +385,9 @@ static NSString *const UDEventsScript =
     if (controller == nil) return;
 
     UDBaseEditorViewController *editor = [self openOutlinePath:@"material/textures/udfix/panel_a" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a material opens in the text editor, not %@", editor);
-    NSString *text = [[self firstSubviewOfClass:[NSTextView class] inView:editor.view] string];
+    XCTAssertTrue([editor isKindOfClass:[UDMaterialEditorViewController class]], @"a material opens in its editor, not %@", editor);
+    UDDeclMaterial *material = ((UDMaterialEditorViewController *)editor).material;
+    NSString *text = material.tokens.text;
     XCTAssertTrue([text containsString:@"panel_a_d_v2"], @"pak001's version of the material should win:\n%@", text);
     XCTAssertTrue([text containsString:@"specularmap"], @"%@", text);
 }

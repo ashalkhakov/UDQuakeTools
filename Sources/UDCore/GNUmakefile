@@ -52,6 +52,10 @@ UDCore_OBJC_FILES = \
     UDDeclFX.m \
     UDDeclAF.m \
     UDMD5Mesh.m \
+    UDSourceTokens.m \
+    UDDeclMaterial.m \
+    UDMaterialParser.m \
+    UDImageProgram.m \
     UDDeclPDA.m \
     UDDeclParticle.m \
     UDDeclIncrementalStore.m \
@@ -94,6 +98,10 @@ UDCore_HEADER_FILES = \
     UDDeclFX.h \
     UDDeclAF.h \
     UDMD5Mesh.h \
+    UDSourceTokens.h \
+    UDDeclMaterial.h \
+    UDMaterialParser.h \
+    UDImageProgram.h \
     UDDeclPDA.h \
     UDDeclParticle.h \
     UDDeclIncrementalStore.h \

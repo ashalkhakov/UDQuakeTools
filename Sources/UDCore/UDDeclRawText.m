@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
- * UDDeclRawText.m — the decls edited as text: materials, articulated figures, models, exports.
+ * UDDeclRawText.m — the decls edited as text: models, exports.
  */
 
 #import "UDDeclManagedObjects.h"
@@ -13,22 +13,6 @@
 #import "idLexer.h"
 #import "idToken.h"
 #import "idStr.h"
-
-#pragma mark - DeclMaterial (raw text only)
-
-@implementation UDDeclMaterial
-
-+ (NSString *)ud_defaultDefinition {
-    return
-        @"{\n"
-        @"\t"    @"{\n"
-        @"\t\t"        @"blend\tblend\n"
-        @"\t\t"        @"map\t\t_default\n"
-        @"\t"    @"}\n"
-        @"}";
-}
-
-@end
 
 #pragma mark - Raw text only, until their editors arrive
 

@@ -132,7 +132,7 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     if (text == nil) return;
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
     for (UDDeclTextProblem *problem in [[self.declObject class] ud_problemsParsingText:text name:self.declObject.name
-                                                                             fileSystem:self.workspace.fileSystem]) {
+                                                                            declManager:self.workspace.declManager]) {
         [items addObject:[[UDDiagnosticItem alloc] initWithLine:problem.line column:0 message:problem.message
                                                        severity:problem.isError ? UDDiagnosticSeverityError : UDDiagnosticSeverityWarning
                                                          source:@"parse"]];

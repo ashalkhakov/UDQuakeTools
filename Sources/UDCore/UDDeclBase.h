@@ -91,6 +91,11 @@ NSString * _Nullable UDDeclTypeNameForDeclEntityName(NSString * _Nullable entity
 + (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text
                                                     name:(NSString *)name
                                               fileSystem:(nullable idFileSystem *)fileSystem;
+/// The same, for a parser that looks other decls up (a material's tables):
+/// in @a declManager, its file system the one above.
++ (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text
+                                                    name:(NSString *)name
+                                             declManager:(nullable idDeclManager *)declManager;
 
 /// Produces the full decl text (including the "type name" header) from a
 /// codec values dictionary. Returns nil when this entity has no structured

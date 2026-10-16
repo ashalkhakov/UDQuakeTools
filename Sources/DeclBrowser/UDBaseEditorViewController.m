@@ -12,6 +12,7 @@
 #import "UDParticleEditorViewController.h"
 #import "UDFXEditorViewController.h"
 #import "UDAFEditorViewController.h"
+#import "UDMaterialEditorViewController.h"
 #ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
 #else
@@ -78,7 +79,8 @@
                           : declItem.type == DECL_SOUND ? [UDSoundEditorViewController class]
                           : declItem.type == DECL_PARTICLE ? [UDParticleEditorViewController class]
                           : declItem.type == DECL_FX ? [UDFXEditorViewController class]
-                          : declItem.type == DECL_AF ? [UDAFEditorViewController class] : Nil;
+                          : declItem.type == DECL_AF ? [UDAFEditorViewController class]
+                          : declItem.type == DECL_MATERIAL ? [UDMaterialEditorViewController class] : Nil;
         if (editorClass != Nil) {
             UDBaseEditorViewController *vc = [[editorClass alloc] init];
             vc.item = item;

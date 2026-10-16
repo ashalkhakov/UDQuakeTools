@@ -97,7 +97,9 @@
         <relationship name="decls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DeclBase" inverseName="sourceFile" inverseEntity="DeclBase"/>
         <relationship name="defaultType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeclType" inverseName="sources" inverseEntity="DeclType"/>
     </entity>
-    <entity name="DeclMaterial" representedClassName="UDDeclMaterial" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclMaterial" representedClassName="UDDeclMaterial" parentEntity="DeclBase" syncable="YES">
+        <attribute name="tokens" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
     <entity name="DeclParticle" representedClassName="UDDeclParticle" parentEntity="DeclBase" syncable="YES">
         <attribute name="depthHack" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="stages" optional="YES" transient="YES" attributeType="Undefined"/>

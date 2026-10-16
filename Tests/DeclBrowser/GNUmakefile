@@ -45,6 +45,7 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDParticleEditorViewController.m \
     $(APP_DIR)/UDFXEditorViewController.m \
     $(APP_DIR)/UDAFEditorViewController.m \
+    $(APP_DIR)/UDMaterialEditorViewController.m \
     $(APP_DIR)/UDPathTree.m \
     $(APP_DIR)/UDProject.m \
     $(APP_DIR)/UDScriptServer.m \
@@ -82,6 +83,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDParticleEditorView.xib \
     $(APP_DIR)/Resources/UDFXEditorView.xib \
     $(APP_DIR)/Resources/UDAFEditorView.xib \
+    $(APP_DIR)/Resources/UDMaterialEditorView.xib \
     $(APP_DIR)/Resources/UDPDAAudioEditorView.xib \
     $(APP_DIR)/Resources/UDPDAEmailEditorView.xib \
     $(APP_DIR)/Resources/UDPDAVideoEditorView.xib \

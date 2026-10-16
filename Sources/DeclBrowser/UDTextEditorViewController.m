@@ -173,7 +173,7 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
     UDDeclBase *decl = [self.document isKindOfClass:[UDDeclDocument class]] ? ((UDDeclDocument *)self.document).declObject : nil;
     if (bracesHold && decl != nil) {
         [problems addObjectsFromArray:[[decl class] ud_problemsParsingText:text name:decl.name
-                                                                fileSystem:self.workspace.fileSystem]];
+                                                               declManager:self.workspace.declManager]];
     }
 
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];

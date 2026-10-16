@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Edited as text until their editors arrive; each new one starts from its
 // engine class's DefaultDefinition.
 
-@interface UDDeclAF : UDDeclBase
-@end
 @interface UDDeclModel : UDDeclBase
 @end
 @interface UDDeclExport : UDDeclBase

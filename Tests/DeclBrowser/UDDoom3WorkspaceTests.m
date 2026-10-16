@@ -281,6 +281,39 @@
     XCTAssertEqual(problems.count, 0U, @"idDeclFX::Parse reads them all: %@", problems);
 }
 
+- (void)testEveryRetailArticulatedFigureParsesAndIsWrittenTheSameTwice {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    NSUInteger figures = 0;
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    NSMutableArray<NSString *> *unstable = [NSMutableArray array];
+    for (idDeclBase *decl in [declManager declsOfType:DECL_AF forceParse:NO]) {
+        NSMutableData *buffer = [NSMutableData data];
+        [decl text:buffer];
+        NSData *text = [buffer subdataWithRange:NSMakeRange(0, buffer.length > 0 ? buffer.length - 1 : 0)];
+        NSString *string = [[NSString alloc] initWithData:text encoding:NSUTF8StringEncoding] ?: @"";
+        for (UDDeclTextProblem *problem in [UDDeclAF ud_problemsParsingText:string name:[decl name] fileSystem:nil]) {
+            [problems addObject:[NSString stringWithFormat:@"%@: %@", [decl name], problem]];
+        }
+        // The writer's "%f" rounds what it writes (a 1.19e-08 is 0.000000),
+        // as the engine's does; what it wrote it writes again the same.
+        NSDictionary *values = [UDDeclAF ud_parseValuesFromText:text name:[decl name] fileName:nil lineNum:1 fileSystem:nil error:NULL];
+        NSData *written = [UDDeclAF ud_textByUnparsingName:[decl name] values:values error:NULL];
+        NSDictionary *again = [UDDeclAF ud_parseValuesFromText:written name:[decl name] fileName:nil lineNum:1 fileSystem:nil error:NULL];
+        NSData *rewritten = [UDDeclAF ud_textByUnparsingName:[decl name] values:again error:NULL];
+        if (![written isEqualToData:rewritten]) [unstable addObject:[decl name]];
+        XCTAssertEqual([values[@"bodies"] count], [again[@"bodies"] count], @"%@", [decl name]);
+        XCTAssertEqual([values[@"constraints"] count], [again[@"constraints"] count], @"%@", [decl name]);
+        figures++;
+    }
+    XCTAssertGreaterThan(figures, 20U, @"the retail articulated figures are indexed");
+    XCTAssertEqual(problems.count, 0U, @"idDeclAF::Parse reads them all: %@", problems);
+    XCTAssertEqual(unstable.count, 0U, @"what RebuildTextSource's writers write, they write again the same: %@", unstable);
+}
+
 #pragma mark - Editing
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {

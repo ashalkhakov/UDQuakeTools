@@ -725,4 +725,63 @@
     XCTAssertEqualObjects(again[@"bindTo"], @"muzzle");
 }
 
+#pragma mark - Articulated figures
+
+- (void)testAnArticulatedFigureIsReadAsIdDeclAFParseReadsIt {
+    NSString *text =
+        @"articulatedFigure test_crate {\n"
+         "settings {\n\tmodel \"test_crate\"\n\tfriction 0.02, 0.03, 0.7, 0.4\n\ttotalMass 80\n\tcontents corpse, body\n}\n"
+         "body \"lid\" {\n\tjoint \"lid\"\n\tmod both\n\tmodel bone( joint( \"lid\" ), bonedir( \"lid\", \"hinge\" ), 4 )\n"
+         "\torigin -bonecenter( \"lid\", \"hinge\" )\n\tdensity 0.3\n}\n"
+         "body \"crate\" {\n\tjoint \"origin\"\n\tmodel cylinder( ( -8, -8, 0 ), ( 8, 8, 16 ), 6 )\n\tangles ( 0, 90, 0 )\n\tclipMask solid\n}\n"
+         "ballAndSocketJoint \"hinge\" {\n\tbody1 \"lid\"\n\tbody2 \"crate\"\n\tanchor joint( \"hinge\" )\n"
+         "\tpyramidLimit ( 0, 0, 1 ), 30, 40, 50, ( 1, 0, 0 )\n}\n"
+         "spring \"strap\" {\n\tbody1 \"lid\"\n\tbody2 \"world\"\n\tanchor1 ( 0, 0, 8 )\n\tanchor2 ( 0, 0, 32 )\n\tstretch 50\n\tmaxLength 40\n}\n"
+         "}";
+    XCTAssertEqual([UDDeclAF ud_problemsParsingText:text name:@"test_crate" fileSystem:nil].count, 0U);
+    NSDictionary *values = [UDDeclAF ud_parseValuesFromText:[text dataUsingEncoding:NSUTF8StringEncoding]
+                                                       name:@"test_crate" fileName:nil lineNum:1 fileSystem:nil error:NULL];
+    XCTAssertEqualObjects(values[@"model"], @"test_crate");
+    XCTAssertEqualObjects(values[@"defaultConstraintFriction"], @0.4f);
+    XCTAssertEqualObjects(values[@"contents"], @"body, corpse", @"as ContentsToString writes it");
+    XCTAssertEqualObjects(values[@"noMoveTime"], @1.0f, @"FreeData's, unset");
+
+    NSArray<UDAFBody *> *bodies = values[@"bodies"];
+    XCTAssertEqualObjects([bodies valueForKey:@"name"], (@[@"crate", @"lid"]), @"the body on the origin first");
+    XCTAssertEqualObjects(bodies[0].modelType, @"cylinder");
+    XCTAssertEqual(bodies[0].numSides, 6);
+    XCTAssertEqualObjects(bodies[0].v2, @"( 8, 8, 16 )");
+    XCTAssertEqualObjects(bodies[0].linearFriction == 0.02f ? @YES : @NO, @YES, @"SetDefault's: the figure's friction");
+    XCTAssertEqualObjects(bodies[0].clipMask, @"solid");
+    XCTAssertEqualObjects(bodies[1].jointMod, @"both");
+    XCTAssertEqualObjects(bodies[1].v1, @"joint( \"lid\" )");
+    XCTAssertEqualObjects(bodies[1].v2, @"bonedir( \"lid\", \"hinge\" )");
+    XCTAssertEqualObjects(bodies[1].origin, @"-bonecenter( \"lid\", \"hinge\" )");
+    XCTAssertEqual(bodies[1].width, 4.0f);
+
+    NSArray<UDAFConstraint *> *constraints = values[@"constraints"];
+    XCTAssertEqualObjects(constraints[0].type, @"ballAndSocketJoint");
+    XCTAssertEqualObjects(constraints[0].limit, @"pyramid");
+    XCTAssertEqual(constraints[0].limitAngle3, 50.0f);
+    XCTAssertEqualObjects(constraints[0].shaft1, @"( 1, 0, 0 )");
+    XCTAssertEqual(constraints[0].friction, 0.5f, @"the parser's own default");
+    XCTAssertEqualObjects(constraints[1].type, @"spring");
+    XCTAssertEqual(constraints[1].maxLength, 40.0f);
+
+    NSString *written = [[NSString alloc] initWithData:[UDDeclAF ud_textByUnparsingName:@"test_crate" values:values error:NULL]
+                                              encoding:NSUTF8StringEncoding];
+    XCTAssertTrue([written containsString:@"\tmodel bone( joint( \"lid\" ), bonedir( \"lid\", \"hinge\" ), 4.000000 )\n"], @"%@", written);
+    XCTAssertTrue([written containsString:@"\tangles ( 0.000000, 90.000000, 0.000000 )\n"], @"%@", written);
+    XCTAssertTrue([written containsString:@"\tpyramidLimit ( 0.000000, 0.000000, 1.000000 ), 30.000000, 40.000000, 50.000000, ( 1.000000, 0.000000, 0.000000 )\n"], @"%@", written);
+    XCTAssertTrue([written containsString:@"\tcontents body, corpse\n"], @"%@", written);
+}
+
+- (void)testAVectorAndContentsAreValidatedAsTheEngineReadsThem {
+    XCTAssertEqualObjects([UDDeclAF ud_normalizedVector:@"(1,2,3)"], @"( 1, 2, 3 )");
+    XCTAssertEqualObjects([UDDeclAF ud_normalizedVector:@"bonecenter(\"a\", \"b\")"], @"bonecenter( \"a\", \"b\" )");
+    XCTAssertNil([UDDeclAF ud_normalizedVector:@"elbow"], @"not a vector");
+    XCTAssertEqualObjects([UDDeclAF ud_normalizedContents:@"monsterclip solid"], @"solid, monsterclip");
+    XCTAssertEqualObjects([UDDeclAF ud_normalizedContents:@""], @"none");
+}
+
 @end

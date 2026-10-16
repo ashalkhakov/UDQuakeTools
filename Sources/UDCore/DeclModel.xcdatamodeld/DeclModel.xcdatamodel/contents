@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="24G720" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
-    <entity name="DeclArticulatedFigure" representedClassName="UDDeclAF" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclArticulatedFigure" representedClassName="UDDeclAF" parentEntity="DeclBase" syncable="YES">
+        <attribute name="model" optional="YES" attributeType="String"/>
+        <attribute name="skin" optional="YES" attributeType="String"/>
+        <attribute name="contents" optional="YES" attributeType="String"/>
+        <attribute name="clipMask" optional="YES" attributeType="String"/>
+        <attribute name="defaultLinearFriction" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="defaultAngularFriction" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="defaultContactFriction" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="defaultConstraintFriction" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="totalMass" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="suspendVelocity1" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="suspendVelocity2" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="suspendAcceleration1" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="suspendAcceleration2" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="noMoveTime" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="noMoveTranslation" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="noMoveRotation" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="minMoveTime" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="maxMoveTime" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="selfCollision" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="bodies" optional="YES" transient="YES" attributeType="Undefined"/>
+        <attribute name="constraints" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
     <entity name="DeclEntityDef" representedClassName="UDDeclEntityDef" parentEntity="DeclBase" syncable="YES">
         <attribute name="keyValues" optional="YES" transient="YES" attributeType="Undefined"/>
     </entity>

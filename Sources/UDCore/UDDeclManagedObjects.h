@@ -29,5 +29,6 @@
 #import "UDDeclEntityDef.h"
 #import "UDDeclSound.h"
 #import "UDDeclFX.h"
+#import "UDDeclAF.h"
 #import "UDDeclPDA.h"
 #import "UDDeclParticle.h"

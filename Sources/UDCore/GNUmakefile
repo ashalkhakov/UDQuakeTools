@@ -50,6 +50,7 @@ UDCore_OBJC_FILES = \
     UDDeclEntityDef.m \
     UDDeclSound.m \
     UDDeclFX.m \
+    UDDeclAF.m \
     UDDeclPDA.m \
     UDDeclParticle.m \
     UDDeclIncrementalStore.m \
@@ -90,6 +91,7 @@ UDCore_HEADER_FILES = \
     UDDeclEntityDef.h \
     UDDeclSound.h \
     UDDeclFX.h \
+    UDDeclAF.h \
     UDDeclPDA.h \
     UDDeclParticle.h \
     UDDeclIncrementalStore.h \

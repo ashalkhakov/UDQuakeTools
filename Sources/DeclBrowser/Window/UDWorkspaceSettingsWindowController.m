@@ -29,12 +29,21 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+    [self _keepWindowWhenClosed];
     [self _rebuildScratchWorkspace];
 }
 
 - (void)setDocument:(id)document {
     [super setDocument:document];
+    [self _keepWindowWhenClosed];
     [self _rebuildScratchWorkspace];
+}
+
+// GNUstep's NSWindowController has a document's window released when it
+// closes (Cocoa's does not), freeing it under this controller, which owns
+// it: closing the settings and letting the controller go later crashed.
+- (void)_keepWindowWhenClosed {
+    if (self.isWindowLoaded) self.window.releasedWhenClosed = NO;
 }
 
 #pragma mark - OK / Cancel

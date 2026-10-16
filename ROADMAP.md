@@ -156,13 +156,14 @@ In order of value against cost; LOC is the MFC original's size.
       leads to) side by side with what moves between them, and
       move/size/align/group on it; navigator, inspector, state/event script
       editing, edits with undo.
-- [ ] **Script editor** (0.9k) — `.script` editing with highlighting,
+- [x] **Script editor** (0.9k) — `.script` editing with highlighting,
       completion of events and functions, go to definition across the mod.
-      Done: the editor is UDCodeKit's, highlighting `.script` with its
-      idScript grammar (a port of idCompiler's); and the helpers of the
-      tools' script editor, ported: the events of doom_events.script after
-      a '.', an event's parameters from its '(' to its ')', its help on
-      Option-click. Left: go to definition across the mod.
+      UDCodeKit's editor with its idScript grammar (a port of idCompiler's,
+      its parse errors in the Issues tab), and the old tools' helpers over a
+      language server of our own (`udscript-lsp`, on LSPServerKit): names
+      complete as they are typed, calls with their arguments as
+      placeholders; an event's parameters from its '(' to its ')'; help on
+      hover; Jump to Definition across the mod (v0.2.0).
 
 ## 3. Script debugger
 

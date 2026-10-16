@@ -5,6 +5,8 @@
 #import "UDTextEditorViewController.h"
 #import "UDImageViewerViewController.h"
 #import "UDPDAEditorViewController.h"
+#import "UDTableEditorViewController.h"
+#import "UDSkinEditorViewController.h"
 #ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
 #else
@@ -63,9 +65,12 @@
     if (item.kind == UDWorkspaceItemKindDecl) {
         UDDeclItem *declItem = (UDDeclItem *)item;
         
-        if (declItem.type == DECL_PDA) {
-            // PDA editor
-            UDPDAEditorViewController *vc = [[UDPDAEditorViewController alloc] init];
+        // The structured editors; the rest, as text.
+        Class editorClass = declItem.type == DECL_PDA ? [UDPDAEditorViewController class]
+                          : declItem.type == DECL_TABLE ? [UDTableEditorViewController class]
+                          : declItem.type == DECL_SKIN ? [UDSkinEditorViewController class] : Nil;
+        if (editorClass != Nil) {
+            UDBaseEditorViewController *vc = [[editorClass alloc] init];
             vc.item = item;
             vc.workspace = workspace;
             return vc;

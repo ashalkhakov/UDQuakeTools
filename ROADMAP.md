@@ -103,6 +103,14 @@ Built when the first editor needs each one, not up front:
 - Reference checking and a Problems panel (a PDA's emails exist, a material's
   images exist, an entityDef's `inherit` resolves).
 - New / Delete / Duplicate / Rename decl in the browser (only Save As exists).
+- A decl's source beside its structured editor: the main pane switches
+  between the two representations of the decl (the PDA, table, skin and
+  later editors, and the text editor over the decl's source), each edit in
+  one showing in the other, one undo history and one dirty state for both.
+- Lookup dialogs wherever a decl refers to another: a PDA's emails, audio
+  logs and videos, a skin's materials, a particle stage's material and
+  tables, an entityDef's inherit, and so on. Find the decl by name and pick
+  it; today the name is typed, then checked.
 - Image loading through idFileSystem (TGA, DDS, JPG, PNG, inside pk4s) — the
   material, GUI and particle editors; the image viewer reads OS paths only.
 - Sound playback through idFileSystem — the sound shader editor, PDA audio.
@@ -126,8 +134,11 @@ In order of value against cost; LOC is the MFC original's size.
       its own (`newpdas/<name>.pda`).
 - [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
       diagnostics, per-type templates for New.
-- [ ] **Table** and **Skin** — small structured editors (values/clamp/snap;
-      model and surface mappings) over the existing entities.
+- [x] **Table** and **Skin** — structured editors over the existing
+      entities, patterned on the PDA's: a table's Snap and Clamp, its values
+      in a list and the curve they make; a skin's mappings and models in
+      lists, what it names that is not there in the Issues tab, File > New
+      Skin…. Their codecs are the engine's parsers, ported.
 - [ ] **entityDef editor** — inherit chain, key/value table, spawnArg
       documentation from `editor_*` keys, model/skin/sound pickers.
 - [ ] **Sound shader editor** — the decl side of the MFC sound editor:

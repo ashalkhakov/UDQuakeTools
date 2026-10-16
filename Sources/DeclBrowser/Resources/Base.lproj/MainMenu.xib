@@ -80,6 +80,11 @@
                                     <action selector="newPDA:" target="-1" id="NPD-ac-001"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="New Skin…" id="NSK-mi-001">
+                                <connections>
+                                    <action selector="newSkin:" target="-1" id="NSK-ac-001"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
                                 <connections>
                                     <action selector="openDocument:" target="-1" id="bVn-NM-KNZ"/>

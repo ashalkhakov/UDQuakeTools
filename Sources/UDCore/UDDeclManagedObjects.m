@@ -336,6 +336,184 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 
 #pragma mark - DeclTable
 
+#pragma mark - Elements
+
+/// Each element of @a elements is @a owner's, under @a key.
+static void UDAdoptElements(NSArray *elements, UDDeclBase *owner, NSString *key) {
+    for (UDDeclElement *element in elements) {
+        if ([element isKindOfClass:[UDDeclElement class]]) {
+            element.ud_owner = owner;
+            element.ud_ownerKey = key;
+        }
+    }
+}
+
+/// A name a decl can hold: one token, not empty.
+static BOOL UDValidateName(id *ioValue, NSString *what, NSError **error) {
+    NSString *name = [*ioValue isKindOfClass:[NSString class]] ? *ioValue : [*ioValue description];
+    name = [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (name.length > 0 && [name rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].location == NSNotFound) {
+        *ioValue = name;
+        return YES;
+    }
+    if (error != NULL) {
+        *error = [NSError errorWithDomain:@"UDDeclElement" code:1 userInfo:@{
+            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"A %@ is one name, with no spaces.", what] }];
+    }
+    return NO;
+}
+
+@implementation UDDeclElement
+
+- (id)copyWithZone:(NSZone *)zone {
+    return [[[self class] allocWithZone:zone] init];
+}
+
+/// Its decl puts @a edited in this element's place, in a new array; NO when
+/// it is in none.
+- (BOOL)ud_replaceInOwnerWith:(UDDeclElement *)edited {
+    UDDeclBase *owner = self.ud_owner;
+    NSString *key = self.ud_ownerKey;
+    if (owner == nil || key == nil) {
+        return NO;
+    }
+    NSMutableArray *elements = [[owner valueForKey:key] mutableCopy];
+    NSUInteger index = [elements indexOfObjectIdenticalTo:self];
+    if (index == NSNotFound) {
+        return NO;
+    }
+    elements[index] = edited;
+    [owner setValue:elements forKey:key];
+    return YES;
+}
+
+@end
+
+@implementation UDTableValue
+
++ (instancetype)valueWithNumber:(float)number {
+    UDTableValue *value = [[self alloc] init];
+    value->_number = number;
+    return value;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return [[self class] valueWithNumber:_number];
+}
+
+- (void)setNumber:(float)number {
+    UDTableValue *edited = [self copy];
+    edited->_number = number;
+    if (![self ud_replaceInOwnerWith:edited]) {
+        _number = number;
+    }
+}
+
+/// A number, or text that is all of one ("0.25"); anything else is refused.
+- (BOOL)validateNumber:(id *)ioValue error:(NSError **)error {
+    if ([*ioValue isKindOfClass:[NSNumber class]]) {
+        return YES;
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:[*ioValue description] ?: @""];
+    float number;
+    if ([scanner scanFloat:&number] && scanner.isAtEnd) {
+        *ioValue = @(number);
+        return YES;
+    }
+    if (error != NULL) {
+        *error = [NSError errorWithDomain:@"UDDeclElement" code:2
+                                 userInfo:@{ NSLocalizedDescriptionKey: @"A table's value is a number." }];
+    }
+    return NO;
+}
+
+@end
+
+@implementation UDSkinMapping
+
++ (instancetype)mappingFrom:(NSString *)from to:(NSString *)to {
+    UDSkinMapping *mapping = [[self alloc] init];
+    mapping->_from = [from copy];
+    mapping->_to = [to copy];
+    return mapping;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return [[self class] mappingFrom:_from to:_to];
+}
+
+- (void)setFrom:(NSString *)from {
+    UDSkinMapping *edited = [self copy];
+    edited->_from = [from copy];
+    if (![self ud_replaceInOwnerWith:edited]) {
+        _from = [from copy];
+    }
+}
+
+- (void)setTo:(NSString *)to {
+    UDSkinMapping *edited = [self copy];
+    edited->_to = [to copy];
+    if (![self ud_replaceInOwnerWith:edited]) {
+        _to = [to copy];
+    }
+}
+
+- (BOOL)validateFrom:(id *)ioValue error:(NSError **)error {
+    return UDValidateName(ioValue, @"material", error);
+}
+
+- (BOOL)validateTo:(id *)ioValue error:(NSError **)error {
+    return UDValidateName(ioValue, @"material", error);
+}
+
+@end
+
+@implementation UDSkinModel
+
++ (instancetype)modelWithPath:(NSString *)path {
+    UDSkinModel *model = [[self alloc] init];
+    model->_path = [path copy];
+    return model;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return [[self class] modelWithPath:_path];
+}
+
+- (void)setPath:(NSString *)path {
+    UDSkinModel *edited = [self copy];
+    edited->_path = [path copy];
+    if (![self ud_replaceInOwnerWith:edited]) {
+        _path = [path copy];
+    }
+}
+
+- (BOOL)validatePath:(id *)ioValue error:(NSError **)error {
+    return UDValidateName(ioValue, @"model path", error);
+}
+
+@end
+
+/// A transient element array's setter, after the particle stages': it marks
+/// the decl updated (and registers with undo) and adopts the elements.
+#define UD_ELEMENT_ARRAY_SETTER(Setter, key) \
+- (void)Setter:(NSArray *)elements { \
+    [self willChangeValueForKey:key]; \
+    [self setPrimitiveValue:[elements copy] forKey:key]; \
+    [self didChangeValueForKey:key]; \
+    UDAdoptElements(elements, self, key); \
+}
+
+/// The values @a object's codec reads from its text, for -awakeFromFetch.
+static NSDictionary *UDParsedSourceText(UDDeclBase *object) {
+    NSData *text = [object primitiveValueForKey:@"sourceText"];
+    if (text == nil) {
+        return nil;
+    }
+    return [[object class] ud_parseValuesFromText:text name:[object primitiveValueForKey:@"name"]
+                                         fileName:nil lineNum:1 fileSystem:nil error:NULL];
+}
+
 @implementation UDDeclTable
 
 @dynamic clamp;
@@ -343,10 +521,34 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 
 @dynamic values;
 
+UD_ELEMENT_ARRAY_SETTER(setValues, @"values")
+
+// values is transient: read from the text here, as particle stages are.
+- (void)awakeFromFetch {
+    [super awakeFromFetch];
+    NSArray *values = UDParsedSourceText(self)[@"values"] ?: @[];
+    [self setPrimitiveValue:values forKey:@"values"];
+    UDAdoptElements(values, self, @"values");
+}
+
+- (void)awakeFromInsert {
+    [super awakeFromInsert];
+    [self setPrimitiveValue:@[] forKey:@"values"];
+}
+
 + (NSString *)ud_defaultDefinition {
     return @"{ { 0 } }";
 }
 
+/// What idDeclTable::MakeDefault leaves: the default definition, { { 0 } }.
+static NSDictionary<NSString *, id> *UDDefaultTableValues(void) {
+    return @{ @"snap": @NO, @"clamp": @NO, @"values": @[[UDTableValue valueWithNumber:0]] };
+}
+
+// A port of idDeclTable::Parse (neo/framework/DeclTable.cpp). Where it calls
+// MakeDefault(), the values are the default definition's, as the engine's
+// are. The copy of the 0 element it appends, for lerping, is not the decl's
+// text and is not kept.
 + (NSDictionary<NSString *, id> *)ud_parseValuesFromText:(NSData *)text
                                                     name:(NSString *)name
                                                 fileName:(NSString *)fileName
@@ -357,65 +559,58 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (src == nil) {
         return nil;
     }
-
     idToken token;
     idToken_Init(&token);
+    float v;
 
     BOOL snap = NO;
     BOOL clamp = NO;
-    NSMutableArray<NSString *> *numbers = [NSMutableArray array];
+    NSMutableArray<UDTableValue *> *values = [NSMutableArray array];
 
-    // Tolerant scanner over the table body. The game data is not uniform
-    // here: most tables wrap their values in an inner brace pair, some list
-    // values directly, and some lists are empty. Track brace depth and
-    // collect numbers wherever they appear; anything unrecognized is skipped
-    // with a warning instead of aborting the whole table.
-    int depth = 1; // the codec lexer already consumed the opening brace
-    while ([src readToken:&token error:error]) {
-        if (!strcmp(token.text, "{")) {
-            depth++;
-            continue;
+    while (1) {
+        if (![src readToken:&token error:NULL]) {
+            break;
         }
+
         if (!strcmp(token.text, "}")) {
-            if (--depth == 0) {
-                break;
-            }
-            continue;
+            break;
         }
-        if (!strcmp(token.text, ",")) {
-            continue;
-        }
+
         if (!strcasecmp(token.text, "snap")) {
             snap = YES;
-            continue;
-        }
-        if (!strcasecmp(token.text, "clamp")) {
+        } else if (!strcasecmp(token.text, "clamp")) {
             clamp = YES;
-            continue;
-        }
+        } else if (!strcasecmp(token.text, "{")) {
 
-        if (!strcmp(token.text, "-")) {
-            if ([src readToken:&token error:error]) {
-                idToken_StripQuotes(&token);
-                [numbers addObject:[NSString stringWithFormat:@"%g", -atof(token.text)]];
+            while (1) {
+                if (![src parseFloat:&v error:NULL]) {
+                    // we got something non-numeric
+                    return UDDefaultTableValues();
+                }
+
+                [values addObject:[UDTableValue valueWithNumber:v]];
+
+                [src readToken:&token error:NULL];
+                if (!strcmp(token.text, "}")) {
+                    break;
+                }
+                if (!strcmp(token.text, ",")) {
+                    continue;
+                }
+                [src warning:@"expected comma or brace"];
+                return UDDefaultTableValues();
             }
-            continue;
-        }
 
-        idToken_StripQuotes(&token);
-        const char first = token.text[0];
-        if ((first >= '0' && first <= '9') || first == '.' || first == '+') {
-            [numbers addObject:[NSString stringWithFormat:@"%g", atof(token.text)]];
-            continue;
+        } else {
+            [src warning:@"unknown token '%s'", token.text];
+            return UDDefaultTableValues();
         }
-
-        [src warning:@"table '%@': unknown token '%s'", name, token.text];
     }
 
     return @{
         @"snap": @(snap),
         @"clamp": @(clamp),
-        @"values": [numbers componentsJoinedByString:@", "],
+        @"values": values,
     };
 }
 
@@ -432,11 +627,8 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     }
 
     NSMutableArray<NSString *> *numbers = [NSMutableArray array];
-    for (NSString *part in [UDStringValue(values, @"values") componentsSeparatedByString:@","]) {
-        NSString *trimmed = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmed.length > 0) {
-            [numbers addObject:[NSString stringWithFormat:@"%g", trimmed.floatValue]];
-        }
+    for (UDTableValue *value in values[@"values"]) {
+        [numbers addObject:[NSString stringWithFormat:@"%g", value.number]];
     }
     [out appendFormat:@"\t{ %@ }\n", [numbers componentsJoinedByString:@", "]];
     [out appendString:@"}"];
@@ -452,6 +644,27 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
 @dynamic mappings;
 @dynamic associatedModels;
 
+UD_ELEMENT_ARRAY_SETTER(setMappings, @"mappings")
+UD_ELEMENT_ARRAY_SETTER(setAssociatedModels, @"associatedModels")
+
+// mappings and associatedModels are transient: read from the text here.
+- (void)awakeFromFetch {
+    [super awakeFromFetch];
+    NSDictionary *parsed = UDParsedSourceText(self);
+    NSArray *mappings = parsed[@"mappings"] ?: @[];
+    NSArray *models = parsed[@"associatedModels"] ?: @[];
+    [self setPrimitiveValue:mappings forKey:@"mappings"];
+    [self setPrimitiveValue:models forKey:@"associatedModels"];
+    UDAdoptElements(mappings, self, @"mappings");
+    UDAdoptElements(models, self, @"associatedModels");
+}
+
+- (void)awakeFromInsert {
+    [super awakeFromInsert];
+    [self setPrimitiveValue:@[] forKey:@"mappings"];
+    [self setPrimitiveValue:@[] forKey:@"associatedModels"];
+}
+
 + (NSString *)ud_defaultDefinition {
     return
     @"{\n"
@@ -459,6 +672,9 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     @"}";
 }
 
+// A port of idDeclSkin::Parse (neo/framework/DeclSkin.cpp): the mappings,
+// "from to" a line ("*" the wildcard from), and the associated models. Where
+// it calls MakeDefault(), the values are the default definition's.
 + (NSDictionary<NSString *, id> *)ud_parseValuesFromText:(NSData *)text
                                                     name:(NSString *)name
                                                 fileName:(NSString *)fileName
@@ -469,38 +685,38 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     if (src == nil) {
         return nil;
     }
-
     idToken token, token2;
     idToken_Init(&token);
     idToken_Init(&token2);
 
-    NSMutableArray<NSString *> *mappingLines = [NSMutableArray array];
-    NSMutableArray<NSString *> *modelLines = [NSMutableArray array];
+    NSMutableArray<UDSkinMapping *> *mappings = [NSMutableArray array];
+    NSMutableArray<UDSkinModel *> *associatedModels = [NSMutableArray array];
 
     while (1) {
-        if (![src readToken:&token error:error]) {
+        if (![src readToken:&token error:NULL]) {
             break;
         }
+
         if (!strcasecmp(token.text, "}")) {
             break;
         }
-        if (![src readToken:&token2 error:error]) {
-            [src warning:@"skin '%@': unexpected end of file", name];
-            break;
+        if (![src readToken:&token2 error:NULL]) {
+            [src warning:@"Unexpected end of file"];
+            return @{ @"mappings": @[[UDSkinMapping mappingFrom:@"*" to:@"_default"]], @"associatedModels": @[] };
         }
 
         if (!strcasecmp(token.text, "model")) {
-            [modelLines addObject:UDTokenString(&token2)];
+            [associatedModels addObject:[UDSkinModel modelWithPath:UDTokenString(&token2)]];
             continue;
         }
 
-        NSString *from = !strcasecmp(token.text, "*") ? @"*" : UDTokenString(&token);
-        [mappingLines addObject:[NSString stringWithFormat:@"%@ %@", from, UDTokenString(&token2)]];
+        NSString *from = !strcasecmp(token.text, "*") ? @"*" /* wildcard */ : UDTokenString(&token);
+        [mappings addObject:[UDSkinMapping mappingFrom:from to:UDTokenString(&token2)]];
     }
 
     return @{
-        @"mappings": [mappingLines componentsJoinedByString:@"\n"],
-        @"associatedModels": [modelLines componentsJoinedByString:@"\n"],
+        @"mappings": mappings,
+        @"associatedModels": associatedModels,
     };
 }
 
@@ -510,17 +726,15 @@ static void UDStringToFloats(NSString *string, float *v, int count) {
     NSMutableString *out = [NSMutableString string];
     [out appendFormat:@"skin %@ {\n", name];
 
-    for (NSString *line in [UDStringValue(values, @"associatedModels") componentsSeparatedByString:@"\n"]) {
-        NSString *model = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (model.length > 0) {
-            [out appendFormat:@"\tmodel %@\n", model];
+    for (UDSkinModel *model in values[@"associatedModels"]) {
+        if (model.path.length > 0) {
+            [out appendFormat:@"\tmodel %@\n", model.path];
         }
     }
 
-    for (NSString *line in [UDStringValue(values, @"mappings") componentsSeparatedByString:@"\n"]) {
-        NSString *mapping = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (mapping.length > 0) {
-            [out appendFormat:@"\t%@\n", mapping];
+    for (UDSkinMapping *mapping in values[@"mappings"]) {
+        if (mapping.from.length > 0 && mapping.to.length > 0) {
+            [out appendFormat:@"\t%@ %@\n", mapping.from, mapping.to];
         }
     }
 

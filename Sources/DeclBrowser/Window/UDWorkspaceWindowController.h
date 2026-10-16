@@ -37,6 +37,7 @@
 // applying them restarts the workspace in place (closes tabs, reloads decls).
 - (IBAction)showWorkspaceSettings:(id)sender;
 - (IBAction)newPDA:(id)sender;
+- (IBAction)newSkin:(id)sender;
 
 // Edit > Jump to Definition: the current tab's, when it is a script's.
 - (IBAction)jumpToDefinition:(id)sender;

@@ -1,30 +1,21 @@
-#import <UDCodeKit/UDDiagnosticStore.h>
-#import "UDBaseEditorViewController.h"
+#import "UDDeclEditorViewController.h"
 
-@class UDDeclDocument;
 @class UDDeclBase, UDDeclPDA, UDDeclEmail, UDDeclVideo, UDDeclAudio;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDPDAEditorViewController : UDBaseEditorViewController
-
-/** The backing NSDocument (handles undo/save/dirty). Created lazily in viewDidLoad. */
-@property (nonatomic, strong, nullable) UDDeclDocument *document;
+@interface UDPDAEditorViewController : UDDeclEditorViewController
 
 /** The managed PDA decl being edited (pulled from the workspace's decl editing context). */
 @property (nonatomic, readonly, nullable) UDDeclPDA *pda;
 
-@property (strong) IBOutlet NSObjectController *objectController;
 @property (strong) IBOutlet NSArrayController *audioArrayController;
 @property (strong) IBOutlet NSArrayController *videoArrayController;
 @property (strong) IBOutlet NSArrayController *emailArrayController;
 
-/// What the PDA references that no decl defines (an email, audio log or
-/// video), as errors in the Issues tab; checked as the PDA is opened and
-/// edited, before it is saved.
-@property (nonatomic, readonly, nullable) UDDiagnosticStore *diagnosticStore;
-/// Shows what @a diagnostic is about: its list's tab, its row selected.
-- (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic;
+/// Its diagnostics: what the PDA references that no decl defines (an email,
+/// audio log or video), as errors, checked as the PDA is opened and edited,
+/// before it is saved. -revealDiagnostic: shows the list's tab, its row.
 
 @property (weak) IBOutlet NSTabView *tabView;
 

@@ -58,6 +58,7 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.soundDescription" id="SDE-desc-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">&lt;no description&gt;</string>
                             </dictionary>
                         </binding>
                     </connections>
@@ -83,18 +84,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.minDistance" id="SDE-f0-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">1</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n0">
-                    <rect key="frame" x="212" y="494" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 1" id="SDE-n0-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l1">
                     <rect key="frame" x="310" y="493" width="100" height="16"/>
@@ -117,18 +110,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.maxDistance" id="SDE-f1-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">10</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n1">
-                    <rect key="frame" x="512" y="494" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 10" id="SDE-n1-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l2">
                     <rect key="frame" x="10" y="465" width="100" height="16"/>
@@ -151,18 +136,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.volume" id="SDE-f2-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">1</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n2">
-                    <rect key="frame" x="212" y="466" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 1" id="SDE-n2-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l3">
                     <rect key="frame" x="310" y="465" width="100" height="16"/>
@@ -185,18 +162,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.leadinVolume" id="SDE-f3-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">0</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n3">
-                    <rect key="frame" x="512" y="466" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 0" id="SDE-n3-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l4">
                     <rect key="frame" x="10" y="437" width="100" height="16"/>
@@ -219,18 +188,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.shakes" id="SDE-f4-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">0</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n4">
-                    <rect key="frame" x="212" y="438" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 0" id="SDE-n4-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l5">
                     <rect key="frame" x="310" y="437" width="100" height="16"/>
@@ -253,18 +214,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.soundClass" id="SDE-f5-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">0</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n5">
-                    <rect key="frame" x="512" y="438" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 0" id="SDE-n5-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l6">
                     <rect key="frame" x="10" y="409" width="100" height="16"/>
@@ -287,18 +240,10 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.minSamples" id="SDE-f6-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">32</string>
                             </dictionary>
                         </binding>
                     </connections>
-                </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-n6">
-                    <rect key="frame" x="212" y="410" width="90" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="default 32" id="SDE-n6-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-l7">
                     <rect key="frame" x="310" y="409" width="100" height="16"/>
@@ -321,6 +266,7 @@
                         <binding destination="SDE-oc" name="value" keyPath="selection.altSound" id="SDE-f7-b">
                             <dictionary key="options">
                                 <bool key="NSValidatesImmediately" value="YES"/>
+                                <string key="NSNullPlaceholder">none</string>
                             </dictionary>
                         </binding>
                     </connections>

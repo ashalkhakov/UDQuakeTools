@@ -347,12 +347,7 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"maxDistance" inView:editor.view]).stringValue, @"12");
     NSTextField *volume = [self viewWithToolTip:@"volume" inView:editor.view];
     XCTAssertEqualObjects(volume.stringValue, @"", @"what it does not set is empty");
-    __block BOOL defaultShown = NO;
-    [self forEachViewUnder:editor.view do:^BOOL(NSView *view) {
-        defaultShown = defaultShown || ([view isKindOfClass:[NSTextField class]] && [((NSTextField *)view).stringValue isEqualToString:@"default 10"]);
-        return YES;
-    }];
-    XCTAssertTrue(defaultShown, @"the engine's defaults shown beside the fields");
+    XCTAssertEqualObjects(volume.placeholderString, @"1", @"the engine's default, as the field's placeholder");
     XCTAssertEqualObjects([editor.samplesController.arrangedObjects valueForKey:@"path"],
                           (@[@"sound/udtest/hum.wav", @"sound/udtest/gone.wav"]));
 
@@ -457,6 +452,21 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([saved containsString:@"particle udtest_spark {\n\tdepthHack\t0.001000\n\t{\n\t\tcount\t\t\t\t8\n\t\tmaterial\t\t\ttextures/udtest/spark\n"],
                   @"as idDeclParticle::WriteStage writes it: %@", saved);
     XCTAssertTrue([saved containsString:@"\t\tcount\t\t\t\t100\n\t\tmaterial\t\t\t_default\n"], @"%@", saved);
+}
+
+- (void)testTheDepthHackStaysUnderTheStagesAsTheEditorResizes {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *editor = [self openSparkIn:controller];
+    if (editor == nil) return;
+    NSView *field = [self viewWithToolTip:@"depthHack" inView:editor.view];
+    NSView *list = editor.stagesTable.enclosingScrollView;
+    for (NSNumber *height in @[@400, @900, @640]) {
+        NSRect frame = editor.view.frame;
+        frame.size.height = height.doubleValue;
+        editor.view.frame = frame;
+        XCTAssertLessThanOrEqual(NSMaxY(field.frame), NSMinY(list.frame), @"at %@ high", height);
+        XCTAssertGreaterThanOrEqual(NSMinY(field.frame), 0.0, @"and in the view at %@ high", height);
+    }
 }
 
 @end

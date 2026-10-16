@@ -2,6 +2,8 @@
 
 #import "UDDeclManagedObjects.h"
 #import "UDDeclTextChecker.h"
+#import "UDMD5Mesh.h"
+#import "idFileSystem.h"
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
@@ -312,6 +314,43 @@
     XCTAssertGreaterThan(figures, 20U, @"the retail articulated figures are indexed");
     XCTAssertEqual(problems.count, 0U, @"idDeclAF::Parse reads them all: %@", problems);
     XCTAssertEqual(unstable.count, 0U, @"what RebuildTextSource's writers write, they write again the same: %@", unstable);
+}
+
+- (void)testEveryRetailFiguresBodiesAreOnItsModelsJoints {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    // Where the figure's model and its .md5mesh are there (retail lacks some
+    // of both: env_hellcage_long's mesh, char_npc's modelDef), its bodies
+    // are on the mesh's joints.
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    NSUInteger checked = 0;
+    NSMutableArray<NSString *> *missing = [NSMutableArray array];
+    for (idDeclBase *decl in [workspace.declManager declsOfType:DECL_AF forceParse:NO]) {
+        NSMutableData *buffer = [NSMutableData data];
+        [decl text:buffer];
+        NSData *text = [buffer subdataWithRange:NSMakeRange(0, buffer.length > 0 ? buffer.length - 1 : 0)];
+        NSDictionary *values = [UDDeclAF ud_parseValuesFromText:text name:[decl name] fileName:nil lineNum:1 fileSystem:nil error:NULL];
+        NSString *mesh = [UDMD5Mesh meshOfModelDef:values[@"model"] declManager:workspace.declManager];
+        if (mesh == nil || [workspace.fileSystem readFile:mesh buffer:NULL timestamp:NULL error:NULL] < 0) continue;
+        NSError *error = nil;
+        NSArray<NSString *> *joints = [UDMD5Mesh jointNamesOfMeshAtPath:mesh fileSystem:workspace.fileSystem error:&error];
+        if (joints == nil) {
+            [missing addObject:[NSString stringWithFormat:@"%@: %@", mesh, error.localizedDescription]];
+            continue;
+        }
+        // idRenderModelMD5::GetJointHandle's Icmp: any case.
+        NSArray *lower = [joints valueForKey:@"lowercaseString"];
+        for (UDAFBody *body in values[@"bodies"]) {
+            if (![lower containsObject:body.jointName.lowercaseString]) {
+                [missing addObject:[NSString stringWithFormat:@"%@: body %@'s joint %@", [decl name], body.name, body.jointName]];
+            }
+        }
+        checked++;
+    }
+    XCTAssertGreaterThan(checked, 10U, @"figures whose meshes retail has");
+    XCTAssertEqualObjects(missing, @[], @"the joints of each figure's model, as LoadModel reads them");
 }
 
 #pragma mark - Editing

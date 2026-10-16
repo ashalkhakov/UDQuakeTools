@@ -497,6 +497,7 @@
 		EB3587E5EB9A7C65FA21CD8F /* UDDeclPDA.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D548B522A704D623AF89BC /* UDDeclPDA.h */; };
 		CCFE5E80FEE39A83E8F3A886 /* UDDeclFX.h in Headers */ = {isa = PBXBuildFile; fileRef = 29DECCEECC66A5BADEBD9722 /* UDDeclFX.h */; };
 		988709565C2965097916B34C /* UDDeclAF.h in Headers */ = {isa = PBXBuildFile; fileRef = 299E1E8F0A6124814507B9D7 /* UDDeclAF.h */; };
+		47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = A1003F1D0030C0B804080444 /* UDMD5Mesh.h */; };
 		4B406E13D964DD9ED18B17F6 /* UDDeclSound.h in Headers */ = {isa = PBXBuildFile; fileRef = 51A824AF4E7FA37F86BFF686 /* UDDeclSound.h */; };
 		B64288C898E04A9E5C524230 /* UDDeclEntityDef.h in Headers */ = {isa = PBXBuildFile; fileRef = 130F4FF2B6EFCE779333B845 /* UDDeclEntityDef.h */; };
 		46308D1178A591454324C448 /* UDDeclSkin.h in Headers */ = {isa = PBXBuildFile; fileRef = A86A49ED756A7230953CE81C /* UDDeclSkin.h */; };
@@ -508,6 +509,7 @@
 		435824388359A714EB86E18F /* UDDeclPDA.m in Sources */ = {isa = PBXBuildFile; fileRef = BDEC315F03EDEC6704A9B20A /* UDDeclPDA.m */; };
 		C8E7760B682F983037F3AEF8 /* UDDeclFX.m in Sources */ = {isa = PBXBuildFile; fileRef = 79E5ACABD254048A07A649F7 /* UDDeclFX.m */; };
 		03FB7A3F029FE4C6804B278D /* UDDeclAF.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */; };
+		C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */ = {isa = PBXBuildFile; fileRef = C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */; };
 		DCF0B058CB138FA10817B4D2 /* UDDeclSound.m in Sources */ = {isa = PBXBuildFile; fileRef = D13274818FD835C4FE7668C1 /* UDDeclSound.m */; };
 		856DE3101B36AE841252ECCB /* UDDeclEntityDef.m in Sources */ = {isa = PBXBuildFile; fileRef = 816BA3DAD5D8919EDF6EDCC1 /* UDDeclEntityDef.m */; };
 		534739E42C22B612948EFC6D /* UDDeclSkin.m in Sources */ = {isa = PBXBuildFile; fileRef = 6146597D0478FD6CE0852DCE /* UDDeclSkin.m */; };
@@ -966,6 +968,7 @@
 		C8D548B522A704D623AF89BC /* UDDeclPDA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclPDA.h; sourceTree = "<group>"; };
 		29DECCEECC66A5BADEBD9722 /* UDDeclFX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclFX.h; sourceTree = "<group>"; };
 		299E1E8F0A6124814507B9D7 /* UDDeclAF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclAF.h; sourceTree = "<group>"; };
+		A1003F1D0030C0B804080444 /* UDMD5Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDMD5Mesh.h; sourceTree = "<group>"; };
 		51A824AF4E7FA37F86BFF686 /* UDDeclSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclSound.h; sourceTree = "<group>"; };
 		130F4FF2B6EFCE779333B845 /* UDDeclEntityDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclEntityDef.h; sourceTree = "<group>"; };
 		A86A49ED756A7230953CE81C /* UDDeclSkin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclSkin.h; sourceTree = "<group>"; };
@@ -977,6 +980,7 @@
 		BDEC315F03EDEC6704A9B20A /* UDDeclPDA.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclPDA.m; sourceTree = "<group>"; };
 		79E5ACABD254048A07A649F7 /* UDDeclFX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclFX.m; sourceTree = "<group>"; };
 		8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclAF.m; sourceTree = "<group>"; };
+		C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDMD5Mesh.m; sourceTree = "<group>"; };
 		D13274818FD835C4FE7668C1 /* UDDeclSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclSound.m; sourceTree = "<group>"; };
 		816BA3DAD5D8919EDF6EDCC1 /* UDDeclEntityDef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclEntityDef.m; sourceTree = "<group>"; };
 		6146597D0478FD6CE0852DCE /* UDDeclSkin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclSkin.m; sourceTree = "<group>"; };
@@ -1171,6 +1175,7 @@
 				BDEC315F03EDEC6704A9B20A /* UDDeclPDA.m */,
 				79E5ACABD254048A07A649F7 /* UDDeclFX.m */,
 				8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */,
+				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
 				D13274818FD835C4FE7668C1 /* UDDeclSound.m */,
 				816BA3DAD5D8919EDF6EDCC1 /* UDDeclEntityDef.m */,
 				6146597D0478FD6CE0852DCE /* UDDeclSkin.m */,
@@ -1184,6 +1189,7 @@
 				C8D548B522A704D623AF89BC /* UDDeclPDA.h */,
 				29DECCEECC66A5BADEBD9722 /* UDDeclFX.h */,
 				299E1E8F0A6124814507B9D7 /* UDDeclAF.h */,
+				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
 				51A824AF4E7FA37F86BFF686 /* UDDeclSound.h */,
 				130F4FF2B6EFCE779333B845 /* UDDeclEntityDef.h */,
 				A86A49ED756A7230953CE81C /* UDDeclSkin.h */,
@@ -1554,6 +1560,7 @@
 				EB3587E5EB9A7C65FA21CD8F /* UDDeclPDA.h in Headers */,
 				CCFE5E80FEE39A83E8F3A886 /* UDDeclFX.h in Headers */,
 				988709565C2965097916B34C /* UDDeclAF.h in Headers */,
+				47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */,
 				4B406E13D964DD9ED18B17F6 /* UDDeclSound.h in Headers */,
 				B64288C898E04A9E5C524230 /* UDDeclEntityDef.h in Headers */,
 				46308D1178A591454324C448 /* UDDeclSkin.h in Headers */,
@@ -1950,6 +1957,7 @@
 				435824388359A714EB86E18F /* UDDeclPDA.m in Sources */,
 				C8E7760B682F983037F3AEF8 /* UDDeclFX.m in Sources */,
 				03FB7A3F029FE4C6804B278D /* UDDeclAF.m in Sources */,
+				C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */,
 				DCF0B058CB138FA10817B4D2 /* UDDeclSound.m in Sources */,
 				856DE3101B36AE841252ECCB /* UDDeclEntityDef.m in Sources */,
 				534739E42C22B612948EFC6D /* UDDeclSkin.m in Sources */,

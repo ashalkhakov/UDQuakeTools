@@ -144,8 +144,10 @@ In order of value against cost; LOC is the MFC original's size.
       into its Issues; File > New Declaration… with a type, a name and a
       file, the decl starting from its engine class's DefaultDefinition.
 - [ ] Keywords from `editors/<type>.def`, as CSyntaxRichEditCtrl's
-      LoadKeyWordsFromFile reads them (a colour and a description each):
-      Quake 4 ships them, Doom 3 does not.
+      LoadKeyWordsFromFile reads them (a colour and a description each).
+      Neither Doom 3 nor Quake 4 ships them, so they are written here, from
+      what each type's ported parser reads, with descriptions of our own —
+      once the rest of the decls' editors (and so their parsers) are in.
 - [x] **Table** and **Skin** — structured editors over the existing
       entities, patterned on the PDA's: a table's Snap and Clamp, its values
       in a list and the curve they make; a skin's mappings and models in

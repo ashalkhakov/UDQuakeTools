@@ -1,3 +1,4 @@
+#import <UDCodeKit/UDDiagnosticStore.h>
 #import "UDBaseEditorViewController.h"
 
 @class UDDeclDocument;
@@ -17,6 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) IBOutlet NSArrayController *audioArrayController;
 @property (strong) IBOutlet NSArrayController *videoArrayController;
 @property (strong) IBOutlet NSArrayController *emailArrayController;
+
+/// What the PDA references that no decl defines (an email, audio log or
+/// video), as errors in the Issues tab; checked as the PDA is opened and
+/// edited, before it is saved.
+@property (nonatomic, readonly, nullable) UDDiagnosticStore *diagnosticStore;
+/// Shows what @a diagnostic is about: its list's tab, its row selected.
+- (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic;
+
+@property (weak) IBOutlet NSTabView *tabView;
 
 - (IBAction)generateId:(NSSegmentedControl *)sender;
 - (IBAction)addOrRemoveAudioLog:(NSSegmentedControl *)sender;

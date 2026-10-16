@@ -3,6 +3,20 @@
 #import "UDDeclDocument.h"
 #import "UDDeclManagedObjects.h"
 
+/// The diagnostics' source: what the PDA references.
+static UDDiagnosticSource const UDPDAReferencesSource = @"references";
+
+/// The PDA's lists: relationship, decl type, what one is called.
+static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
+    return @[ @[@"emails", @"email", @"Email"], @[@"audios", @"audio", @"Audio log"], @[@"videos", @"video", @"Video"] ];
+}
+
+@interface UDPDAEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDDiagnosticStore *diagnosticStore;
+/// Each diagnostic's list and child, for -revealDiagnostic:.
+@property (nonatomic, strong) NSMapTable<UDDiagnosticItem *, NSArray *> *diagnosticTargets;
+@end
+
 @implementation UDPDAEditorViewController
 
 - (instancetype)init {
@@ -60,6 +74,72 @@
     self.videoArrayController.sortDescriptors = byName;
 
     self.objectController.content = self.pda;
+
+    self.diagnosticStore = [[UDDiagnosticStore alloc] init];
+    self.diagnosticTargets = [NSMapTable strongToStrongObjectsMapTable];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_editingContextDidChange:)
+                                                 name:NSManagedObjectContextObjectsDidChangeNotification
+                                               object:self.editingContext];
+    [self checkReferences];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - References
+
+- (void)_editingContextDidChange:(NSNotification *)notification {
+    [self checkReferences];
+}
+
+/// The line of the PDA's text that names @a name, 1-based (1 when none).
+- (NSInteger)_lineNaming:(NSString *)name {
+    NSData *source = self.pda.sourceText;
+    NSString *text = source != nil ? [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding] : nil;
+    NSRange found = [text rangeOfString:[NSString stringWithFormat:@"\"%@\"", name] options:NSCaseInsensitiveSearch];
+    if (found.location == NSNotFound) return 1;
+    NSInteger line = 1;
+    for (NSUInteger i = 0; i < found.location; i++) {
+        if ([text characterAtIndex:i] == '\n') line++;
+    }
+    return line;
+}
+
+/// A child the PDA names but no decl defines: not one added here and not
+/// saved yet, nor one the decl manager has.
+- (void)checkReferences {
+    UDDeclPDA *pda = self.pda;
+    idDeclManager *declManager = self.workspace.declManager;
+    if (pda == nil || declManager == nil || self.diagnosticStore == nil) return;
+
+    NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
+    [self.diagnosticTargets removeAllObjects];
+    for (NSArray<NSString *> *list in UDPDALists()) {
+        declType_t type = [declManager declTypeFromName:list[1]];
+        for (UDDeclBase *child in [pda valueForKey:list[0]]) {
+            if (child.objectID.isTemporaryID) continue;
+            // A decl no file defines has no values: its name is in its ID.
+            NSString *name = [(NSIncrementalStore *)child.objectID.persistentStore referenceObjectForObjectID:child.objectID];
+            if (![name isKindOfClass:[NSString class]] || name.length == 0) continue;
+            if ([declManager declByName:name type:type forceParse:NO error:NULL] != nil) continue;
+            UDDiagnosticItem *item = [[UDDiagnosticItem alloc] initWithLine:[self _lineNaming:name] column:0
+                message:[NSString stringWithFormat:@"%@ \u201C%@\u201D is not defined", list[2], name]
+                severity:UDDiagnosticSeverityError source:UDPDAReferencesSource];
+            [items addObject:item];
+            [self.diagnosticTargets setObject:@[list[0], child] forKey:item];
+        }
+    }
+    [self.diagnosticStore setDiagnostics:items forSource:UDPDAReferencesSource];
+}
+
+- (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
+    NSArray *target = [self.diagnosticTargets objectForKey:diagnostic];
+    if (target == nil) return;
+    [self.tabView selectTabViewItemWithIdentifier:target[0]];
+    NSArrayController *controller = [target[0] isEqualToString:@"emails"] ? self.emailArrayController
+        : [target[0] isEqualToString:@"audios"] ? self.audioArrayController : self.videoArrayController;
+    [controller setSelectedObjects:@[target[1]]];
 }
 
 // Runs a modal child-editor session inside its own named undo group on the
@@ -91,6 +171,8 @@
 
     if (result != NSModalResponseOK) {
         [undoManager undoNestedGroup];
+        [context processPendingChanges];
+        [self.document clearChangeCountIfNothingUnsaved];
     }
     return result;
 }
@@ -246,14 +328,21 @@
     return result;
 }
 
+/// The row a double-click was on (none on empty space); sent otherwise (the
+/// keyboard, a test), the row selected.
+static NSInteger UDRowToEdit(NSTableView *tableView) {
+    NSEventType type = [NSApp currentEvent].type;
+    BOOL clicked = type == NSEventTypeLeftMouseDown || type == NSEventTypeLeftMouseUp;
+    return clicked ? tableView.clickedRow : tableView.selectedRow;
+}
+
 - (IBAction)audioLogEdit:(id)sender {
     if (![sender isKindOfClass:[NSTableView class]]) {
         return;
     }
 
-    NSTableView *tableView = (NSTableView *)sender;
-    NSInteger row = tableView.clickedRow;
-    if (row < 0) return; // clicked empty area
+    NSInteger row = UDRowToEdit((NSTableView *)sender);
+    if (row < 0) return;
 
     UDDeclAudio *selectedAudio = self.audioArrayController.arrangedObjects[row];
     [self runModalEditSession:^NSModalResponse{
@@ -266,9 +355,8 @@
         return;
     }
 
-    NSTableView *tableView = (NSTableView *)sender;
-    NSInteger row = tableView.clickedRow;
-    if (row < 0) return; // clicked empty area
+    NSInteger row = UDRowToEdit((NSTableView *)sender);
+    if (row < 0) return;
 
     UDDeclEmail *selectedEmail = self.emailArrayController.arrangedObjects[row];
     [self runModalEditSession:^NSModalResponse{
@@ -281,9 +369,8 @@
         return;
     }
 
-    NSTableView *tableView = (NSTableView *)sender;
-    NSInteger row = tableView.clickedRow;
-    if (row < 0) return; // clicked empty area
+    NSInteger row = UDRowToEdit((NSTableView *)sender);
+    if (row < 0) return;
 
     UDDeclVideo *selectedVideo = self.videoArrayController.arrangedObjects[row];
     [self runModalEditSession:^NSModalResponse{

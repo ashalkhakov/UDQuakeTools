@@ -1,6 +1,9 @@
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclManagedObjects.h"
+#import "UDWorkspaceWindowController.h"
+#import <UDCodeKit/UDDiagnosticStore.h>
+#import <UDCodeKit/UDErrorsViewController.h>
 #import "UDDeclDocument.h"
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
@@ -34,6 +37,15 @@ static NSString *const UDFixturePDA =
      "\tinfo\t\"Recorded at the start of the shift.\"\n"
      "}\n";
 
+// A PDA naming an email and a video that no decl file defines.
+static NSString *const UDDanglingPDA =
+    @"pda udtest_dangling {\n"
+     "\tname\t\t\"Nobody\"\n"
+     "\tpda_email\t\"udtest_pda_email_1\"\n"
+     "\tpda_email\t\"udtest_no_such_email\"\n"
+     "\tpda_video\t\"udtest_no_such_video\"\n"
+     "}\n";
+
 /**
  * The PDA editor, driven against a loose PDA decl file (no game data
  * needed, so these run everywhere). Each case opens the PDA from the
@@ -61,6 +73,8 @@ static NSString *const UDFixturePDA =
                               withIntermediateDirectories:YES attributes:nil error:NULL];
     [UDFixturePDA writeToFile:[pdaDirectory stringByAppendingPathComponent:@"udtest.pda"]
                    atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDDanglingPDA writeToFile:[pdaDirectory stringByAppendingPathComponent:@"udtest_dangling.pda"]
+                    atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
 - (UDWorkspaceWindowController *)openFixtureWorkspace {
@@ -298,6 +312,245 @@ static NSString *const UDFixturePDA =
     NSString *pdaDecl = [self declNamed:@"pda udtest_pda" inText:text];
     XCTAssertFalse([pdaDecl containsString:@"pda_email"], @"the PDA should no longer reference the email:\n%@", pdaDecl);
     XCTAssertTrue([pdaDecl containsString:@"pda_audio"], @"the audio log is untouched:\n%@", pdaDecl);
+}
+
+#pragma mark - Videos
+
+/// Its +/- buttons, sent as a click on one segment sends them.
+- (void)press:(NSInteger)segment ofButtonsWithAction:(SEL)action inView:(NSView *)view {
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:action inView:view];
+    XCTAssertNotNil(buttons, @"the list has +/- buttons");
+    [buttons setSelectedSegment:segment];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+}
+
+/// The table showing @a controller's rows, and its double-click sent, as a
+/// double-click on the selected row sends it.
+- (void)doubleClickSelectedRowOf:(NSArrayController *)controller inView:(NSView *)view {
+    NSTableView *table = nil;
+    NSMutableArray<NSView *> *queue = [NSMutableArray arrayWithObject:view];
+    while (queue.count > 0 && table == nil) {
+        NSView *next = queue.firstObject;
+        [queue removeObjectAtIndex:0];
+        if ([next isKindOfClass:[NSTableView class]] && [next infoForBinding:@"content"][NSObservedObjectKey] == controller) {
+            table = (NSTableView *)next;
+        }
+        [queue addObjectsFromArray:next.subviews];
+    }
+    if (table == nil) {
+        // Cell-based tables bind their columns, not themselves.
+        [queue addObject:view];
+        while (queue.count > 0 && table == nil) {
+            NSView *next = queue.firstObject;
+            [queue removeObjectAtIndex:0];
+            if ([next isKindOfClass:[NSTableView class]]) {
+                for (NSTableColumn *column in [(NSTableView *)next tableColumns]) {
+                    if ([column infoForBinding:@"value"][NSObservedObjectKey] == controller) table = (NSTableView *)next;
+                }
+            }
+            [queue addObjectsFromArray:next.subviews];
+        }
+    }
+    XCTAssertNotNil(table, @"a table shows the list");
+    [NSApp sendAction:table.doubleAction to:table.target from:table];
+}
+
+- (void)testAddingAVideoThroughItsEditorSavesItWithThePDA {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+
+    [self selectTabLabeled:@"Videos" inView:editor.view];
+    __block BOOL sawEditor = NO;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        sawEditor = YES;
+        [self typeText:@"Hangar Briefing" intoField:[self textFieldBoundTo:@"videoName" inView:window.contentView]];
+        [self typeText:@"video/udtest/briefing" intoField:[self textFieldBoundTo:@"video" inView:window.contentView]];
+        [self typeText:@"guis/assets/pda/videos/udtest" intoField:[self textFieldBoundTo:@"preview" inView:window.contentView]];
+        [[self buttonTitled:@"OK" inView:window.contentView] performClick:nil];
+    }];
+    [self press:0 ofButtonsWithAction:@selector(addOrRemoveVideo:) inView:editor.view];
+
+    XCTAssertTrue(sawEditor, @"+ on the video list should open the video editor");
+    NSArray *videos = editor.videoArrayController.arrangedObjects;
+    XCTAssertEqual(videos.count, 1U, @"OK should add the video to the PDA");
+    UDDeclVideo *added = videos.firstObject;
+    XCTAssertEqualObjects(added.videoName, @"Hangar Briefing");
+    XCTAssertTrue([added.name hasPrefix:@"udtest_pda_video_"], @"new videos are named after their PDA, not %@", added.name);
+
+    [self save:controller];
+    NSString *text = [self savedPDAFileText];
+    NSString *videoDecl = [NSString stringWithFormat:@"video %@", added.name];
+    XCTAssertTrue([text containsString:videoDecl], @"%@", text);
+    XCTAssertTrue([text containsString:@"video/udtest/briefing"], @"%@", text);
+    XCTAssertTrue([[self declNamed:@"pda udtest_pda" inText:text] containsString:@"pda_video"], @"the PDA references it:\n%@", text);
+
+    NSString *addedName = added.name;
+    [self closeWorkspace:controller];
+    UDPDAEditorViewController *again = [self openFixturePDAIn:[self openFixtureWorkspace]];
+    XCTAssertEqualObjects([again.videoArrayController.arrangedObjects valueForKey:@"name"], @[addedName]);
+    XCTAssertEqualObjects([[again.videoArrayController.arrangedObjects firstObject] valueForKey:@"videoName"], @"Hangar Briefing");
+}
+
+- (void)testCancellingTheVideoEditorAddsNothing {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+
+    [self selectTabLabeled:@"Videos" inView:editor.view];
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        [self typeText:@"Never shown" intoField:[self textFieldBoundTo:@"videoName" inView:window.contentView]];
+        [[self buttonTitled:@"Cancel" inView:window.contentView] performClick:nil];
+    }];
+    [self press:0 ofButtonsWithAction:@selector(addOrRemoveVideo:) inView:editor.view];
+
+    XCTAssertEqual([editor.videoArrayController.arrangedObjects count], 0U, @"Cancel should add no video");
+    XCTAssertEqual([editor.document.editingContext.insertedObjects count], 0U, @"nor leave the new video decl behind");
+}
+
+#pragma mark - Editing what is there
+
+- (void)testDoubleClickingAnEmailEditsIt {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+
+    [self selectTabLabeled:@"Emails" inView:editor.view];
+    [editor.emailArrayController setSelectionIndex:0];
+    __block NSString *shown = nil;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        NSTextField *subject = [self textFieldBoundTo:@"subject" inView:window.contentView];
+        shown = subject.stringValue;
+        [self typeText:@"Delta Labs, Sector 4" intoField:subject];
+        [[self buttonTitled:@"OK" inView:window.contentView] performClick:nil];
+    }];
+    [self doubleClickSelectedRowOf:editor.emailArrayController inView:editor.view];
+
+    XCTAssertEqualObjects(shown, @"Delta Labs", @"the email's editor opens on that email");
+    XCTAssertEqual([editor.emailArrayController.arrangedObjects count], 1U, @"editing adds nothing");
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+    [self save:controller];
+    NSString *email = [self declNamed:@"email udtest_pda_email_1" inText:[self savedPDAFileText]];
+    XCTAssertTrue([email containsString:@"Delta Labs, Sector 4"], @"%@", email);
+}
+
+- (void)testCancellingAnAudioLogsEditorKeepsItAsItWas {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+
+    [self selectTabLabeled:@"Audio Logs" inView:editor.view];
+    [editor.audioArrayController setSelectionIndex:0];
+    __block BOOL sawEditor = NO;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        sawEditor = YES;
+        [self typeText:@"Something else" intoField:[self textFieldBoundTo:@"audioName" inView:window.contentView]];
+        [[self buttonTitled:@"Cancel" inView:window.contentView] performClick:nil];
+    }];
+    [self doubleClickSelectedRowOf:editor.audioArrayController inView:editor.view];
+
+    XCTAssertTrue(sawEditor, @"a double-click on an audio log opens its editor");
+    XCTAssertEqualObjects([[editor.audioArrayController.arrangedObjects firstObject] valueForKey:@"audioName"], @"Shift Report",
+                          @"Cancel keeps it as it was");
+    [self spinUntil:^BOOL{ return !editor.editorDocument.isDocumentEdited; } timeout:1.0];
+    XCTAssertFalse(editor.editorDocument.isDocumentEdited, @"and the tab clean");
+}
+
+#pragma mark - References
+
+/// The PDA names an email and a video no decl defines: errors in the Issues
+/// tab before anything is saved; a click there shows the row; taking the
+/// email off the PDA takes its error away.
+- (void)testMissingReferencesAreIssues {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDBaseEditorViewController *opened = [self openOutlinePath:@"pda/udtest_dangling" inController:controller];
+    XCTAssertTrue([opened isKindOfClass:[UDPDAEditorViewController class]]);
+    UDPDAEditorViewController *editor = (UDPDAEditorViewController *)opened;
+
+    NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
+    XCTAssertEqualObjects([messages sortedArrayUsingSelector:@selector(compare:)],
+                          (@[@"Email \u201Cudtest_no_such_email\u201D is not defined",
+                             @"Video \u201Cudtest_no_such_video\u201D is not defined"]));
+    UDDiagnosticItem *video = nil;
+    for (UDDiagnosticItem *item in editor.diagnosticStore.allDiagnostics) {
+        if ([item.message hasPrefix:@"Video"]) video = item;
+    }
+    XCTAssertEqual(video.line, 5, @"on the line of the PDA that names it");
+
+    UDErrorsViewController *issues = [controller valueForKey:@"issuesNavigator"];
+    XCTAssertEqual([[issues valueForKey:@"entries"] count], 1U, @"the PDA is in the Issues tab");
+    [controller errorsViewController:issues didSelectDiagnostic:video inStore:editor.diagnosticStore];
+    XCTAssertEqualObjects(editor.tabView.selectedTabViewItem.identifier, @"videos", @"a click shows the videos");
+    XCTAssertEqualObjects([editor.videoArrayController.selectedObjects valueForKey:@"name"], @[@"udtest_no_such_video"]);
+
+    [self selectTabLabeled:@"Emails" inView:editor.view];
+    for (UDDeclEmail *email in editor.emailArrayController.arrangedObjects) {
+        if ([email.name isEqualToString:@"udtest_no_such_email"]) [editor.emailArrayController setSelectedObjects:@[email]];
+    }
+    [self press:1 ofButtonsWithAction:@selector(addOrRemoveEmail:) inView:editor.view];
+    XCTAssertEqual(editor.pda.emails.count, 1U, @"the missing email is off the PDA");
+    [self spinUntil:^BOOL{ return editor.diagnosticStore.allDiagnostics.count == 1; } timeout:1.0];
+    XCTAssertEqualObjects([editor.diagnosticStore.allDiagnostics valueForKey:@"message"],
+                          @[@"Video \u201Cudtest_no_such_video\u201D is not defined"], @"its error goes with it");
+}
+
+/// The fixture PDA's references all resolve, and an email added here is one
+/// even before it is saved.
+- (void)testAPDAWhoseReferencesResolveHasNoIssues {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U);
+
+    [self selectTabLabeled:@"Emails" inView:editor.view];
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        [self typeText:@"New" intoField:[self textFieldBoundTo:@"subject" inView:window.contentView]];
+        [[self buttonTitled:@"OK" inView:window.contentView] performClick:nil];
+    }];
+    [self press:0 ofButtonsWithAction:@selector(addOrRemoveEmail:) inView:editor.view];
+    XCTAssertEqual([editor.emailArrayController.arrangedObjects count], 2U);
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"a new, unsaved email is no missing one");
+}
+
+#pragma mark - New PDA
+
+- (void)testANewPDAGetsAFileOfItsOwn {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    if (controller == nil) return;
+
+    __block BOOL asked = NO;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        asked = YES;
+        NSTextField *field = nil;
+        NSMutableArray<NSView *> *queue = [NSMutableArray arrayWithObject:window.contentView];
+        while (queue.count > 0) {
+            NSView *next = queue.firstObject;
+            [queue removeObjectAtIndex:0];
+            if ([next isKindOfClass:[NSTextField class]] && [(NSTextField *)next isEditable]) field = (NSTextField *)next;
+            [queue addObjectsFromArray:next.subviews];
+        }
+        [self typeText:@"udtest_newcomer" intoField:field];
+        [[self buttonTitled:@"Create" inView:window.contentView] performClick:nil];
+    }];
+    [NSApp sendAction:@selector(newPDA:) to:controller from:nil];
+    XCTAssertTrue(asked, @"New PDA asks for its name");
+
+    UDBaseEditorViewController *selected = [[self tabManagerOf:controller] selectedEditor];
+    XCTAssertTrue([selected isKindOfClass:[UDPDAEditorViewController class]], @"and opens it in the PDA editor, not %@", selected);
+    UDPDAEditorViewController *editor = (UDPDAEditorViewController *)selected;
+    XCTAssertEqualObjects(editor.pda.name, @"udtest_newcomer");
+    [self typeText:@"Jonathan Ishii" intoField:[self textFieldBoundTo:@"fullName" inView:editor.view]];
+    [self save:controller];
+
+    NSString *path = [self.savePath stringByAppendingPathComponent:@"base/newpdas/udtest_newcomer.pda"];
+    NSString *text = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
+    XCTAssertTrue([text containsString:@"pda udtest_newcomer"], @"the PDA's own file is written:\n%@", text);
+    XCTAssertTrue([text containsString:@"Jonathan Ishii"], @"%@", text);
+
+    [self closeWorkspace:controller];
+    UDWorkspaceWindowController *reopened = [self openFixtureWorkspace];
+    UDBaseEditorViewController *again = [self openOutlinePath:@"pda/udtest_newcomer" inController:reopened];
+    XCTAssertEqualObjects([(UDPDAEditorViewController *)again pda].fullName, @"Jonathan Ishii", @"and read back");
 }
 
 @end

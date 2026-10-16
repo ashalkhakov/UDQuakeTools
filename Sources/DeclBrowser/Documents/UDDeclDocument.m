@@ -73,12 +73,24 @@
 }
 
 - (void)_reclearChangeCountIfSaved {
-    if (self.editingContext != nil && !self.editingContext.hasChanges) {
+    if (self.editingContext != nil && ![self _hasUnsavedChanges]) {
         [self updateChangeCount:NSChangeCleared];
     }
 }
 
-- (void)_scheduleDeferredChangeClear {
+/// Whether the context differs from what is saved. Not -hasChanges: an edit
+/// undone (a cancelled sheet) leaves its object among the updated ones, its
+/// changed values none.
+- (BOOL)_hasUnsavedChanges {
+    NSManagedObjectContext *context = self.editingContext;
+    if (context.insertedObjects.count > 0 || context.deletedObjects.count > 0) return YES;
+    for (NSManagedObject *object in context.updatedObjects) {
+        if (object.changedValues.count > 0) return YES;
+    }
+    return NO;
+}
+
+- (void)clearChangeCountIfNothingUnsaved {
     // GNUstep's NSDocument marks itself dirty whenever an undo group closes
     // (it observes NSUndoManagerWillCloseUndoGroupNotification). Saving
     // flushes the context's pending changes, which registers undo actions
@@ -151,7 +163,7 @@
         }
 
         [self updateChangeCount:NSChangeCleared];
-        [self _scheduleDeferredChangeClear];
+        [self clearChangeCountIfNothingUnsaved];
         return YES;
     }
 

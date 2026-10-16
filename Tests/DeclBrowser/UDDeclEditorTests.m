@@ -9,6 +9,7 @@
 #import "UDSoundEditorViewController.h"
 #import "UDParticleEditorViewController.h"
 #import "UDFXEditorViewController.h"
+#import "UDAFEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -46,6 +47,32 @@ static NSString *const UDFixtureFX =
      "\t\tduration\t1\n"
      "\t\tparticle\t\"udtest_missing.prt\"\n"
      "\t}\n"
+     "}\n";
+
+// A crate with a lid: its mesh's joints only, and the modelDef that gives it.
+static NSString *const UDFixtureCrateMesh =
+    @"MD5Version 10\n"
+     "commandline \"\"\n"
+     "numJoints 2\n"
+     "numMeshes 0\n"
+     "joints {\n"
+     "\t\"origin\"\t-1 ( 0 0 0 ) ( 0 0 0 )\n"
+     "\t\"Lid\"\t0 ( 0 0 16 ) ( 0 0 0 )\n"
+     "}\n";
+
+static NSString *const UDFixtureCrateDef =
+    @"model udtest_crate {\n"
+     "\tmesh\tmodels/udtest/crate.md5mesh\n"
+     "}\n";
+
+static NSString *const UDFixtureAF =
+    @"articulatedFigure udtest_crate {\n"
+     "settings {\n\tmodel \"udtest_crate\"\n\ttotalMass 40\n}\n"
+     "body \"crate\" {\n\tjoint \"origin\"\n\tmodel box( ( -8, -8, 0 ), ( 8, 8, 16 ) )\n}\n"
+     "body \"lid\" {\n\tjoint \"lid\"\n\tmodel box( ( -8, -8, 16 ), ( 8, 8, 18 ) )\n}\n"
+     "body \"latch\" {\n\tjoint \"latch\"\n\tmodel box( ( 7, -1, 14 ), ( 8, 1, 16 ) )\n}\n"
+     "hinge \"hinge\" {\n\tbody1 \"lid\"\n\tbody2 \"crate\"\n\tanchor ( -8, 0, 16 )\n\taxis ( 0, 1, 0 )\n}\n"
+     "fixed \"strap\" {\n\tbody1 \"latch\"\n\tbody2 \"post\"\n}\n"
      "}\n";
 
 static NSString *const UDFixtureMaterials =
@@ -98,7 +125,8 @@ static NSString *const UDFixtureParticles =
     self.basePath = [self.scratchDirectory stringByAppendingPathComponent:@"install"];
     self.savePath = [self.scratchDirectory stringByAppendingPathComponent:@"save"];
     NSFileManager *files = [NSFileManager defaultManager];
-    for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx", @"base/materials"]) {
+    for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx", @"base/materials",
+                               @"base/af", @"base/models/udtest"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -110,6 +138,12 @@ static NSString *const UDFixtureParticles =
     [UDFixtureMaterials writeToFile:[self.basePath stringByAppendingPathComponent:@"base/materials/udtest.mtr"]
                          atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureFX writeToFile:[self.basePath stringByAppendingPathComponent:@"base/fx/udtest.fx"]
+                  atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureCrateMesh writeToFile:[self.basePath stringByAppendingPathComponent:@"base/models/udtest/crate.md5mesh"]
+                         atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureCrateDef writeToFile:[self.basePath stringByAppendingPathComponent:@"base/def/udtest_crate.def"]
+                        atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureAF writeToFile:[self.basePath stringByAppendingPathComponent:@"base/af/udtest.af"]
                   atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     // One of its samples, as an .ogg: the engine finds it by the .wav's name.
     [@"" writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest/hum.ogg"]
@@ -561,6 +595,89 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([saved containsString:@"\t\tdelay 0.1\n\t\tuseLight \"spark\"\n\t\tfadeOut 0.2\n"], @"%@", saved);
     XCTAssertTrue([saved containsString:@"\t\tduration 5\n\t\tmodel \"_default\"\n"], @"%@", saved);
     XCTAssertFalse([saved containsString:@"udtest_missing.prt"], @"the action taken off: %@", saved);
+}
+
+#pragma mark - The AF editor
+
+- (UDAFEditorViewController *)openCrateIn:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"articulatedFigure/udtest_crate" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDAFEditorViewController class]], @"a figure opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDAFEditorViewController class]] ? (UDAFEditorViewController *)editor : nil;
+}
+
+- (void)testAnArticulatedFigureOpensWithItsBodiesAndConstraints {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDAFEditorViewController *editor = [self openCrateIn:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalMass" inView:editor.view]).stringValue, @"40");
+    XCTAssertEqual(editor.bodiesTable.numberOfRows, 3);
+    XCTAssertEqual(editor.constraintsTable.numberOfRows, 2);
+    XCTAssertEqual(editor.bodiesController.selectionIndex, 0U, @"its first body shown");
+    [editor.tabView selectTabViewItemWithIdentifier:@"bodies"];
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"jointName" inView:editor.view]).stringValue, @"origin");
+    [editor.tabView selectTabViewItemWithIdentifier:@"constraints"];
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"type" inView:editor.view]).titleOfSelectedItem, @"hinge");
+
+    // The mesh has a "Lid": idAnimator finds a joint by Icmp.
+    NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
+    XCTAssertEqualObjects(messages, (@[
+        @"Body 'latch' modifies unknown joint 'latch'",
+        @"Constraint 'strap' binds to the world: no body 'post'"]));
+    UDDiagnosticItem *latch = editor.diagnosticStore.allDiagnostics.firstObject;
+    XCTAssertEqual(latch.severity, UDDiagnosticSeverityError, @"idAF::AddBody's is a gameLocal.Error");
+    [controller errorsViewController:nil didSelectDiagnostic:latch inStore:editor.diagnosticStore];
+    XCTAssertEqualObjects(editor.tabView.selectedTabViewItem.identifier, @"bodies");
+    XCTAssertEqual(editor.bodiesController.selectionIndex, 2U, @"a click shows the body");
+}
+
+- (void)testEditingBodiesAndConstraintsIsAnEditOfTheFigure {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDAFEditorViewController *editor = [self openCrateIn:controller];
+    if (editor == nil) return;
+
+    id value = @"heavy";
+    XCTAssertFalse([editor.figure validateValue:&value forKey:@"totalMass" error:NULL], @"not a number: refused");
+    value = @" 50";
+    XCTAssertTrue([editor.figure validateValue:&value forKey:@"totalMass" error:NULL]);
+    XCTAssertEqualObjects(value, @50.0f);
+    // As a binding sets them: through the controller's selection each time.
+    [editor.objectController setValue:value forKeyPath:@"selection.totalMass"];
+    [editor.bodiesController setSelectionIndex:1];
+    [editor.bodiesController setValue:@"Lid" forKeyPath:@"selection.jointName"];
+    XCTAssertEqual(editor.bodiesController.selectionIndex, 1U, @"the body edited stays shown");
+    [editor.bodiesController setValue:@"door" forKeyPath:@"selection.name"];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects(editor.figure.constraints.firstObject.body1, @"door", @"RenameBody: its constraints follow");
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+
+    // The latch off, and the strap on it with it; a body and a constraint on.
+    [editor.bodiesController setSelectionIndex:2];
+    [editor.tabView selectTabViewItemWithIdentifier:@"bodies"];
+    NSSegmentedControl *bodyButtons = [self segmentedControlWithAction:@selector(addOrRemoveBody:) inView:editor.view];
+    [bodyButtons setSelectedSegment:1];
+    [NSApp sendAction:bodyButtons.action to:bodyButtons.target from:bodyButtons];
+    XCTAssertEqualObjects([editor.figure.bodies valueForKey:@"name"], (@[@"crate", @"door"]));
+    XCTAssertEqualObjects([editor.figure.constraints valueForKey:@"name"], (@[@"hinge"]), @"DeleteBody takes its constraints off");
+    [bodyButtons setSelectedSegment:0];
+    [NSApp sendAction:bodyButtons.action to:bodyButtons.target from:bodyButtons];
+    XCTAssertEqualObjects(editor.figure.bodies.lastObject.name, @"body1");
+    XCTAssertEqual(editor.bodiesController.selectionIndex, 2U, @"the new body shown");
+    [editor.tabView selectTabViewItemWithIdentifier:@"constraints"];
+    NSSegmentedControl *constraintButtons = [self segmentedControlWithAction:@selector(addOrRemoveConstraint:) inView:editor.view];
+    [constraintButtons setSelectedSegment:0];
+    [NSApp sendAction:constraintButtons.action to:constraintButtons.target from:constraintButtons];
+    XCTAssertEqualObjects(editor.figure.constraints.lastObject.name, @"constraint1");
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"%@", [editor.diagnosticStore.allDiagnostics valueForKey:@"message"]);
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"af/udtest.af"];
+    XCTAssertTrue([saved containsString:@"\ttotalMass 50.000000\n"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"body \"door\" {\n\tjoint \"Lid\"\n"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"hinge \"hinge\" {\n\tbody1 \"door\"\n\tbody2 \"crate\"\n"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"universalJoint \"constraint1\" {\n\tbody1 \"crate\"\n\tbody2 \"world\"\n"], @"%@", saved);
+    XCTAssertFalse([saved containsString:@"latch"], @"%@", saved);
 }
 
 @end

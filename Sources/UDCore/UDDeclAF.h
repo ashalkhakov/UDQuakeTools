@@ -99,6 +99,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSArray<UDAFBody *> *bodies;
 @property (nonatomic, copy, nullable) NSArray<UDAFConstraint *> *constraints;
 
+/// idDeclAF::NewBody and NewConstraint: a body or a constraint by SetDefault,
+/// named @a name, last; DeleteBody, which takes the constraints on the body
+/// off too, and DeleteConstraint; RenameBody, which renames it in the
+/// constraints too (a body's name set through KVC, a binding's edit, does).
+- (void)ud_newBodyNamed:(NSString *)name;
+- (void)ud_deleteBodyNamed:(NSString *)name;
+- (void)ud_renameBody:(NSString *)oldName to:(NSString *)newName;
+- (void)ud_newConstraintNamed:(NSString *)name;
+- (void)ud_deleteConstraintNamed:(NSString *)name;
+
 /// idDeclAF::ContentsToString( ContentsFromString( @a text ) ): the
 /// contents names it reads, as the writer writes them.
 + (NSString *)ud_normalizedContents:(NSString *)text;

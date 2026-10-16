@@ -26,6 +26,7 @@ DeclBrowser_OBJC_FILES = \
     UDSoundEditorViewController.m \
     UDParticleEditorViewController.m \
     UDFXEditorViewController.m \
+    UDAFEditorViewController.m \
     UDPathTree.m \
     UDProject.m \
     UDScriptServer.m \
@@ -66,6 +67,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDSoundEditorView.xib \
     Resources/UDParticleEditorView.xib \
     Resources/UDFXEditorView.xib \
+    Resources/UDAFEditorView.xib \
     Resources/UDPDAAudioEditorView.xib \
     Resources/UDPDAEmailEditorView.xib \
     Resources/UDPDAVideoEditorView.xib \

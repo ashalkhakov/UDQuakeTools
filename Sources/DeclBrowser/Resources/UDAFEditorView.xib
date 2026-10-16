@@ -1,0 +1,1806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDAFEditorViewController">
+            <connections>
+                <outlet property="view" destination="AFE-root" id="UDA-o-view"/>
+                <outlet property="objectController" destination="AFE-oc" id="UDA-o-objectController"/>
+                <outlet property="tabView" destination="AFE-tabs" id="UDA-o-tabView"/>
+                <outlet property="bodiesController" destination="AFE-bac" id="UDA-o-bodiesController"/>
+                <outlet property="bodiesTable" destination="AFE-bodies" id="UDA-o-bodiesTable"/>
+                <outlet property="constraintsController" destination="AFE-cac" id="UDA-o-constraintsController"/>
+                <outlet property="constraintsTable" destination="AFE-constraints" id="UDA-o-constraintsTable"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <objectController objectClassName="UDDeclAF" id="AFE-oc" userLabel="Object Controller">
+            <classReference key="objectClass" className="UDDeclAF"/>
+        </objectController>
+        <arrayController objectClassName="UDAFBody" id="AFE-bac" userLabel="UDAFBody Array Controller">
+            <classReference key="objectClass" className="UDAFBody"/>
+            <connections>
+                <binding destination="AFE-oc" name="contentArray" keyPath="selection.bodies" id="AFE-bac-b"/>
+            </connections>
+        </arrayController>
+        <arrayController objectClassName="UDAFConstraint" id="AFE-cac" userLabel="UDAFConstraint Array Controller">
+            <classReference key="objectClass" className="UDAFConstraint"/>
+            <connections>
+                <binding destination="AFE-oc" name="contentArray" keyPath="selection.constraints" id="AFE-cac-b"/>
+            </connections>
+        </arrayController>
+        <customView id="AFE-root">
+            <rect key="frame" x="0.0" y="0.0" width="900" height="600"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <tabView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-tabs">
+                    <rect key="frame" x="13" y="10" width="874" height="580"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <font key="font" metaFont="system"/>
+                    <tabViewItems>
+                        <tabViewItem label="Settings" identifier="settings" id="AFE-ps">
+                            <view key="view" id="AFE-ps-v">
+                                <rect key="frame" x="10" y="33" width="854" height="534"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l1">
+                    <rect key="frame" x="20" y="497" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Model:" id="AFE-l1-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="model" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f2">
+                    <rect key="frame" x="146" y="494" width="260" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f2-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.model" id="AFE-f2-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l3">
+                    <rect key="frame" x="420" y="497" width="50" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Skin:" id="AFE-l3-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="skin" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f4">
+                    <rect key="frame" x="476" y="494" width="260" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f4-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.skin" id="AFE-f4-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h5">
+                    <rect key="frame" x="40" y="460" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Friction" id="AFE-h5-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l6">
+                    <rect key="frame" x="20" y="439" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Linear:" id="AFE-l6-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="defaultLinearFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f7">
+                    <rect key="frame" x="146" y="436" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f7-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.defaultLinearFriction" id="AFE-f7-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l8">
+                    <rect key="frame" x="220" y="439" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angular:" id="AFE-l8-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="defaultAngularFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f9">
+                    <rect key="frame" x="296" y="436" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f9-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.defaultAngularFriction" id="AFE-f9-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l10">
+                    <rect key="frame" x="370" y="439" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Contact:" id="AFE-l10-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="defaultContactFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f11">
+                    <rect key="frame" x="446" y="436" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f11-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.defaultContactFriction" id="AFE-f11-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l12">
+                    <rect key="frame" x="520" y="439" width="80" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Constraint:" id="AFE-l12-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="defaultConstraintFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f13">
+                    <rect key="frame" x="606" y="436" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f13-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.defaultConstraintFriction" id="AFE-f13-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l14">
+                    <rect key="frame" x="20" y="405" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Total Mass:" id="AFE-l14-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="totalMass" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f15">
+                    <rect key="frame" x="146" y="402" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f15-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.totalMass" id="AFE-f15-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h16">
+                    <rect key="frame" x="40" y="368" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Suspend" id="AFE-h16-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l17">
+                    <rect key="frame" x="20" y="347" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Velocity:" id="AFE-l17-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="suspendVelocity1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f18">
+                    <rect key="frame" x="146" y="344" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f18-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.suspendVelocity1" id="AFE-f18-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l19">
+                    <rect key="frame" x="220" y="347" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angular:" id="AFE-l19-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="suspendVelocity2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f20">
+                    <rect key="frame" x="296" y="344" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f20-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.suspendVelocity2" id="AFE-f20-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l21">
+                    <rect key="frame" x="20" y="320" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Acceleration:" id="AFE-l21-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="suspendAcceleration1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f22">
+                    <rect key="frame" x="146" y="317" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f22-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.suspendAcceleration1" id="AFE-f22-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l23">
+                    <rect key="frame" x="220" y="320" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angular:" id="AFE-l23-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="suspendAcceleration2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f24">
+                    <rect key="frame" x="296" y="317" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f24-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.suspendAcceleration2" id="AFE-f24-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l25">
+                    <rect key="frame" x="20" y="293" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="No Move Time:" id="AFE-l25-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="noMoveTime" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f26">
+                    <rect key="frame" x="146" y="290" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f26-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.noMoveTime" id="AFE-f26-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l27">
+                    <rect key="frame" x="220" y="293" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Distance:" id="AFE-l27-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="noMoveTranslation" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f28">
+                    <rect key="frame" x="296" y="290" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f28-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.noMoveTranslation" id="AFE-f28-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l29">
+                    <rect key="frame" x="370" y="293" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Rotation:" id="AFE-l29-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="noMoveRotation" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f30">
+                    <rect key="frame" x="446" y="290" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f30-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.noMoveRotation" id="AFE-f30-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l31">
+                    <rect key="frame" x="20" y="266" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Move Time:" id="AFE-l31-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="minMoveTime" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f32">
+                    <rect key="frame" x="146" y="263" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f32-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.minMoveTime" id="AFE-f32-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l33">
+                    <rect key="frame" x="220" y="266" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="to" id="AFE-l33-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="maxMoveTime" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f34">
+                    <rect key="frame" x="296" y="263" width="70" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f34-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.maxMoveTime" id="AFE-f34-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h35">
+                    <rect key="frame" x="40" y="229" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Collision" id="AFE-h35-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l36">
+                    <rect key="frame" x="20" y="208" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Contents:" id="AFE-l36-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="contents" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f37">
+                    <rect key="frame" x="146" y="205" width="300" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f37-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.contents" id="AFE-f37-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l38">
+                    <rect key="frame" x="20" y="181" width="120" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Clip Mask:" id="AFE-l38-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="clipMask" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f39">
+                    <rect key="frame" x="146" y="178" width="300" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f39-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.clipMask" id="AFE-f39-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-c40">
+                    <rect key="frame" x="146" y="151" width="200" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Self collision" bezelStyle="regularSquare" imagePosition="left" inset="2" id="AFE-c40-c">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="AFE-oc" name="value" keyPath="selection.selfCollision" id="AFE-c40-b"/>
+                    </connections>
+                </button>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Bodies" identifier="bodies" id="AFE-pb">
+                            <view key="view" id="AFE-pb-v">
+                                <rect key="frame" x="10" y="33" width="854" height="534"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                <scrollView fixedFrame="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-bodies-s">
+                    <rect key="frame" x="10" y="37" width="280" height="487"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
+                    <clipView key="contentView" id="AFE-bodies-cv">
+                        <rect key="frame" x="1" y="1" width="278" height="485"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" headerView="AFE-bodies-h" id="AFE-bodies">
+                                <rect key="frame" x="0.0" y="0.0" width="278" height="457"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <size key="intercellSpacing" width="17" height="0.0"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                        <tableColumn identifier="name" editable="YES" width="75" minWidth="30" maxWidth="1000" id="AFE-bodies-name">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="AFE-bodies-name-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="AFE-bac" name="value" keyPath="arrangedObjects.name" id="AFE-bodies-name-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                        <tableColumn identifier="jointName" editable="NO" width="75" minWidth="30" maxWidth="1000" id="AFE-bodies-jointName">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Joint">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="AFE-bodies-jointName-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="AFE-bac" name="value" keyPath="arrangedObjects.jointName" id="AFE-bodies-jointName-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                        <tableColumn identifier="modelType" editable="NO" width="75" minWidth="30" maxWidth="1000" id="AFE-bodies-modelType">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Model">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="AFE-bodies-modelType-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="AFE-bac" name="value" keyPath="arrangedObjects.modelType" id="AFE-bodies-modelType-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <binding destination="AFE-bac" name="content" keyPath="arrangedObjects" id="AFE-bodies-bc"/>
+                                    <binding destination="AFE-bac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="AFE-bodies-bc" id="AFE-bodies-bs"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="AFE-bodies-hs">
+                        <rect key="frame" x="1" y="471" width="278" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="AFE-bodies-vs">
+                        <rect key="frame" x="264" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <tableHeaderView key="headerView" wantsLayer="YES" id="AFE-bodies-h">
+                        <rect key="frame" x="0.0" y="0.0" width="278" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tableHeaderView>
+                </scrollView>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-bodies-pm">
+                    <rect key="frame" x="10" y="12" width="69" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="selectOne" id="AFE-bodies-pm-c">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment label="+" width="32"/>
+                            <segment label="-" width="32" tag="1"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="addOrRemoveBody:" target="-2" id="AFE-bodies-pm-a"/>
+                    </connections>
+                </segmentedControl>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l41">
+                    <rect key="frame" x="300" y="497" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Name:" id="AFE-l41-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="name" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f42">
+                    <rect key="frame" x="396" y="494" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f42-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.name" id="AFE-f42-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l43">
+                    <rect key="frame" x="570" y="497" width="50" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Joint:" id="AFE-l43-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="jointName" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f44">
+                    <rect key="frame" x="626" y="494" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f44-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.jointName" id="AFE-f44-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l45">
+                    <rect key="frame" x="300" y="470" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Modifies:" id="AFE-l45-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton toolTip="jointMod" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-p46">
+                    <rect key="frame" x="396" y="464" width="130" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="orientation" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AFE-p46-i0" id="AFE-p46-c">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="message"/>
+                        <menu key="menu" id="AFE-p46-m">
+                            <items>
+                                <menuItem title="orientation" state="on" id="AFE-p46-i0"/>
+                                <menuItem title="position" id="AFE-p46-i1"/>
+                                <menuItem title="both" id="AFE-p46-i2"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="selectedValue" keyPath="selection.jointMod" id="AFE-p46-b"/>
+                    </connections>
+                </popUpButton>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h47">
+                    <rect key="frame" x="320" y="433" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Model" id="AFE-h47-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l48">
+                    <rect key="frame" x="300" y="412" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Type:" id="AFE-l48-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton toolTip="modelType" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-p49">
+                    <rect key="frame" x="396" y="406" width="130" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="box" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AFE-p49-i0" id="AFE-p49-c">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="message"/>
+                        <menu key="menu" id="AFE-p49-m">
+                            <items>
+                                <menuItem title="box" state="on" id="AFE-p49-i0"/>
+                                <menuItem title="octahedron" id="AFE-p49-i1"/>
+                                <menuItem title="dodecahedron" id="AFE-p49-i2"/>
+                                <menuItem title="cylinder" id="AFE-p49-i3"/>
+                                <menuItem title="cone" id="AFE-p49-i4"/>
+                                <menuItem title="bone" id="AFE-p49-i5"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="selectedValue" keyPath="selection.modelType" id="AFE-p49-b"/>
+                    </connections>
+                </popUpButton>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l50">
+                    <rect key="frame" x="300" y="385" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="From:" id="AFE-l50-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="v1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f51">
+                    <rect key="frame" x="396" y="382" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f51-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.v1" id="AFE-f51-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l52">
+                    <rect key="frame" x="300" y="358" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="To:" id="AFE-l52-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="v2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f53">
+                    <rect key="frame" x="396" y="355" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f53-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.v2" id="AFE-f53-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l54">
+                    <rect key="frame" x="300" y="331" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Sides:" id="AFE-l54-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="numSides" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f55">
+                    <rect key="frame" x="396" y="328" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f55-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.numSides" id="AFE-f55-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l56">
+                    <rect key="frame" x="470" y="331" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Width:" id="AFE-l56-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="width" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f57">
+                    <rect key="frame" x="546" y="328" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f57-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.width" id="AFE-f57-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l58">
+                    <rect key="frame" x="300" y="297" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Origin:" id="AFE-l58-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="origin" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f59">
+                    <rect key="frame" x="396" y="294" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f59-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.origin" id="AFE-f59-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l60">
+                    <rect key="frame" x="300" y="270" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angles:" id="AFE-l60-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="angles" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f61">
+                    <rect key="frame" x="396" y="267" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f61-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.angles" id="AFE-f61-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l62">
+                    <rect key="frame" x="300" y="243" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Density:" id="AFE-l62-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="density" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f63">
+                    <rect key="frame" x="396" y="240" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f63-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.density" id="AFE-f63-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l64">
+                    <rect key="frame" x="470" y="243" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Inertia:" id="AFE-l64-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="inertiaScale" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f65">
+                    <rect key="frame" x="546" y="240" width="240" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f65-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.inertiaScale" id="AFE-f65-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l66">
+                    <rect key="frame" x="300" y="216" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Friction:" id="AFE-l66-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="linearFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f67">
+                    <rect key="frame" x="396" y="213" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f67-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.linearFriction" id="AFE-f67-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l68">
+                    <rect key="frame" x="470" y="216" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angular:" id="AFE-l68-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="angularFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f69">
+                    <rect key="frame" x="546" y="213" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f69-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.angularFriction" id="AFE-f69-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l70">
+                    <rect key="frame" x="620" y="216" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Contact:" id="AFE-l70-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="contactFriction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f71">
+                    <rect key="frame" x="696" y="213" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f71-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.contactFriction" id="AFE-f71-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l72">
+                    <rect key="frame" x="300" y="182" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Contents:" id="AFE-l72-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="contents" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f73">
+                    <rect key="frame" x="396" y="179" width="240" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f73-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.contents" id="AFE-f73-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l74">
+                    <rect key="frame" x="300" y="155" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Clip Mask:" id="AFE-l74-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="clipMask" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f75">
+                    <rect key="frame" x="396" y="152" width="240" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f75-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.clipMask" id="AFE-f75-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-c76">
+                    <rect key="frame" x="650" y="152" width="140" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Self collision" bezelStyle="regularSquare" imagePosition="left" inset="2" id="AFE-c76-c">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.selfCollision" id="AFE-c76-b"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l77">
+                    <rect key="frame" x="300" y="128" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Contains:" id="AFE-l77-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="containedJoints" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f78">
+                    <rect key="frame" x="396" y="125" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f78-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.containedJoints" id="AFE-f78-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l79">
+                    <rect key="frame" x="300" y="94" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Friction Dir:" id="AFE-l79-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="frictionDirection" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f80">
+                    <rect key="frame" x="396" y="91" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f80-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.frictionDirection" id="AFE-f80-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l81">
+                    <rect key="frame" x="300" y="67" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Motor Dir:" id="AFE-l81-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="contactMotorDirection" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f82">
+                    <rect key="frame" x="396" y="64" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f82-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-bac" name="value" keyPath="selection.contactMotorDirection" id="AFE-f82-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Constraints" identifier="constraints" id="AFE-pc">
+                            <view key="view" id="AFE-pc-v">
+                                <rect key="frame" x="10" y="33" width="854" height="534"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                <scrollView fixedFrame="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-constraints-s">
+                    <rect key="frame" x="10" y="37" width="280" height="487"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
+                    <clipView key="contentView" id="AFE-constraints-cv">
+                        <rect key="frame" x="1" y="1" width="278" height="485"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" headerView="AFE-constraints-h" id="AFE-constraints">
+                                <rect key="frame" x="0.0" y="0.0" width="278" height="457"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <size key="intercellSpacing" width="17" height="0.0"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                        <tableColumn identifier="name" editable="YES" width="122" minWidth="30" maxWidth="1000" id="AFE-constraints-name">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="AFE-constraints-name-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="AFE-cac" name="value" keyPath="arrangedObjects.name" id="AFE-constraints-name-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                        <tableColumn identifier="type" editable="NO" width="122" minWidth="30" maxWidth="1000" id="AFE-constraints-type">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Type">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="AFE-constraints-type-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="AFE-cac" name="value" keyPath="arrangedObjects.type" id="AFE-constraints-type-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <binding destination="AFE-cac" name="content" keyPath="arrangedObjects" id="AFE-constraints-bc"/>
+                                    <binding destination="AFE-cac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="AFE-constraints-bc" id="AFE-constraints-bs"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="AFE-constraints-hs">
+                        <rect key="frame" x="1" y="471" width="278" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="AFE-constraints-vs">
+                        <rect key="frame" x="264" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <tableHeaderView key="headerView" wantsLayer="YES" id="AFE-constraints-h">
+                        <rect key="frame" x="0.0" y="0.0" width="278" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tableHeaderView>
+                </scrollView>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-constraints-pm">
+                    <rect key="frame" x="10" y="12" width="69" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="selectOne" id="AFE-constraints-pm-c">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment label="+" width="32"/>
+                            <segment label="-" width="32" tag="1"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="addOrRemoveConstraint:" target="-2" id="AFE-constraints-pm-a"/>
+                    </connections>
+                </segmentedControl>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l83">
+                    <rect key="frame" x="300" y="497" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Name:" id="AFE-l83-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="name" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f84">
+                    <rect key="frame" x="396" y="494" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f84-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.name" id="AFE-f84-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l85">
+                    <rect key="frame" x="570" y="497" width="50" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Type:" id="AFE-l85-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton toolTip="type" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-p86">
+                    <rect key="frame" x="626" y="491" width="160" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="fixed" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AFE-p86-i0" id="AFE-p86-c">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="message"/>
+                        <menu key="menu" id="AFE-p86-m">
+                            <items>
+                                <menuItem title="fixed" state="on" id="AFE-p86-i0"/>
+                                <menuItem title="ballAndSocketJoint" id="AFE-p86-i1"/>
+                                <menuItem title="universalJoint" id="AFE-p86-i2"/>
+                                <menuItem title="hinge" id="AFE-p86-i3"/>
+                                <menuItem title="slider" id="AFE-p86-i4"/>
+                                <menuItem title="spring" id="AFE-p86-i5"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="selectedValue" keyPath="selection.type" id="AFE-p86-b"/>
+                    </connections>
+                </popUpButton>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l87">
+                    <rect key="frame" x="300" y="470" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Body 1:" id="AFE-l87-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="body1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f88">
+                    <rect key="frame" x="396" y="467" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f88-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.body1" id="AFE-f88-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l89">
+                    <rect key="frame" x="570" y="470" width="50" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Body 2:" id="AFE-l89-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="body2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f90">
+                    <rect key="frame" x="626" y="467" width="160" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f90-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.body2" id="AFE-f90-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l91">
+                    <rect key="frame" x="300" y="443" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Friction:" id="AFE-l91-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="friction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f92">
+                    <rect key="frame" x="396" y="440" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f92-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.friction" id="AFE-f92-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l93">
+                    <rect key="frame" x="300" y="409" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Anchor:" id="AFE-l93-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="anchor" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f94">
+                    <rect key="frame" x="396" y="406" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f94-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.anchor" id="AFE-f94-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l95">
+                    <rect key="frame" x="300" y="382" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Anchor 2:" id="AFE-l95-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="anchor2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f96">
+                    <rect key="frame" x="396" y="379" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f96-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.anchor2" id="AFE-f96-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l97">
+                    <rect key="frame" x="300" y="355" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Shafts:" id="AFE-l97-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="shaft1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f98">
+                    <rect key="frame" x="396" y="352" width="190" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f98-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.shaft1" id="AFE-f98-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField toolTip="shaft2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f99">
+                    <rect key="frame" x="596" y="352" width="190" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f99-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.shaft2" id="AFE-f99-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l100">
+                    <rect key="frame" x="300" y="328" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Axis:" id="AFE-l100-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="axis" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f101">
+                    <rect key="frame" x="396" y="325" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f101-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.axis" id="AFE-f101-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h102">
+                    <rect key="frame" x="320" y="291" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Limit" id="AFE-h102-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l103">
+                    <rect key="frame" x="300" y="270" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Limit:" id="AFE-l103-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton toolTip="limit" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-p104">
+                    <rect key="frame" x="396" y="264" width="130" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="none" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AFE-p104-i0" id="AFE-p104-c">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="message"/>
+                        <menu key="menu" id="AFE-p104-m">
+                            <items>
+                                <menuItem title="none" state="on" id="AFE-p104-i0"/>
+                                <menuItem title="cone" id="AFE-p104-i1"/>
+                                <menuItem title="pyramid" id="AFE-p104-i2"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="selectedValue" keyPath="selection.limit" id="AFE-p104-b"/>
+                    </connections>
+                </popUpButton>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l105">
+                    <rect key="frame" x="300" y="243" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angles:" id="AFE-l105-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="limitAngle1" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f106">
+                    <rect key="frame" x="396" y="240" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f106-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.limitAngle1" id="AFE-f106-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField toolTip="limitAngle2" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f107">
+                    <rect key="frame" x="466" y="240" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f107-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.limitAngle2" id="AFE-f107-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField toolTip="limitAngle3" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f108">
+                    <rect key="frame" x="536" y="240" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f108-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.limitAngle3" id="AFE-f108-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l109">
+                    <rect key="frame" x="300" y="216" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Limit Axis:" id="AFE-l109-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="limitAxis" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f110">
+                    <rect key="frame" x="396" y="213" width="390" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f110-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.limitAxis" id="AFE-f110-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-h111">
+                    <rect key="frame" x="320" y="179" width="300" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Spring" id="AFE-h111-c">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l112">
+                    <rect key="frame" x="300" y="158" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Stretch:" id="AFE-l112-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="stretch" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f113">
+                    <rect key="frame" x="396" y="155" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f113-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.stretch" id="AFE-f113-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l114">
+                    <rect key="frame" x="470" y="158" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Compress:" id="AFE-l114-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="compress" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f115">
+                    <rect key="frame" x="546" y="155" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f115-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.compress" id="AFE-f115-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l116">
+                    <rect key="frame" x="620" y="158" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Damping:" id="AFE-l116-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="damping" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f117">
+                    <rect key="frame" x="696" y="155" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f117-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.damping" id="AFE-f117-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l118">
+                    <rect key="frame" x="300" y="131" width="90" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Rest Length:" id="AFE-l118-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="restLength" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f119">
+                    <rect key="frame" x="396" y="128" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f119-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.restLength" id="AFE-f119-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l120">
+                    <rect key="frame" x="470" y="131" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Min:" id="AFE-l120-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="minLength" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f121">
+                    <rect key="frame" x="546" y="128" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f121-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.minLength" id="AFE-f121-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-l122">
+                    <rect key="frame" x="620" y="131" width="70" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Max:" id="AFE-l122-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="maxLength" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-f123">
+                    <rect key="frame" x="696" y="128" width="60" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="AFE-f123-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="AFE-cac" name="value" keyPath="selection.maxLength" id="AFE-f123-b">
+                            <dictionary key="options">
+                                <bool key="NSValidatesImmediately" value="YES"/>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                    </tabViewItems>
+                </tabView>
+            </subviews>
+        </customView>
+    </objects>
+</document>

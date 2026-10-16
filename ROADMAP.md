@@ -184,9 +184,16 @@ In order of value against cost; LOC is the MFC original's size.
       would not find (a material, a model of a type it does not load — 52
       retail actions name a .particle or .ips model — a particle, entityDef
       or sound, a light or model to use no earlier action names).
-- [ ] **AF editor** (8.1k) — bodies and constraints as data (the dialog
-      pages map one-to-one to inspector sections); joints from the model's
-      `.md5mesh`. Simulation preview comes with the bridge.
+- [x] **AF editor** — idDeclAF's parser and writer ported (every retail
+      figure parses and writes the same twice): settings, bodies and
+      constraints in three tabs, each list with the selected one's every
+      keyword; + and − are NewBody/DeleteBody/NewConstraint/DeleteConstraint,
+      and a body renamed renames it in its constraints. Joints come from the
+      model's `.md5mesh`, found through its modelDef as idDeclModelDef::Parse
+      finds it; in the Issues tab, what idAF::Load refuses (no body on the
+      origin joint, no or a defaulted modelDef or model, a body on a joint
+      the mesh lacks, a constraint on a body the figure lacks).
+- [ ] **AF simulation preview** — comes with the bridge.
 - [ ] **Material editor** (10.9k) — material tree by file, stage list
       (add bump/diffuse/specular, reorder, copy/paste), inspector driven by
       material keywords, source view kept in sync, 2D preview of stage

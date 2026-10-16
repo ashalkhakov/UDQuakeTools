@@ -44,6 +44,7 @@ static idLexer *UDAFLexer(NSString *text) {
 
 @interface UDDeclAF (UDSettings)
 + (NSDictionary<NSString *, id> *)ud_defaultSettings;
+- (void)ud_renameConstraintsOnBody:(NSString *)oldName to:(NSString *)newName;
 @end
 
 #pragma mark - idAFVector
@@ -233,6 +234,17 @@ static NSString *UDAFParseContents(idLexer *src) {
 
 - (instancetype)init {
     return [self initWithSettings:[UDDeclAF ud_defaultSettings]];
+}
+
+// A binding's rename: RenameBody's, the constraints on it renamed too.
+- (void)setValue:(id)value forKey:(NSString *)key {
+    UDDeclAF *figure = (UDDeclAF *)self.ud_owner;
+    NSString *oldName = [key isEqualToString:@"name"] ? self.name : nil;
+    [super setValue:value forKey:key];
+    if (oldName != nil && [figure isKindOfClass:[UDDeclAF class]] && [value isKindOfClass:[NSString class]] &&
+        ![oldName isEqualToString:value]) {
+        [figure ud_renameConstraintsOnBody:oldName to:value];
+    }
 }
 
 - (BOOL)validateValue:(id *)ioValue forKey:(NSString *)key error:(NSError **)error {
@@ -656,6 +668,94 @@ UD_ELEMENT_ARRAY_SETTER(setConstraints, @"constraints")
     };
 }
 
+/// The figure's settings now, for SetDefault.
+- (NSDictionary<NSString *, id> *)ud_settings {
+    NSMutableDictionary *settings = [[UDDeclAF ud_defaultSettings] mutableCopy];
+    for (NSString *key in settings.allKeys) {
+        id value = [self valueForKey:key];
+        if (value != nil) settings[key] = value;
+    }
+    return settings;
+}
+
+- (void)ud_newBodyNamed:(NSString *)name {
+    UDAFBody *body = [[UDAFBody alloc] initWithSettings:[self ud_settings]];
+    body.name = name;
+    self.bodies = [(self.bodies ?: @[]) arrayByAddingObject:body];
+}
+
+- (void)ud_deleteBodyNamed:(NSString *)name {
+    NSMutableArray<UDAFBody *> *bodies = [self.bodies mutableCopy];
+    for (NSUInteger i = 0; i < bodies.count; i++) {
+        if ([bodies[i].name caseInsensitiveCompare:name] == NSOrderedSame) {
+            [bodies removeObjectAtIndex:i];
+            break;
+        }
+    }
+    NSMutableArray<UDAFConstraint *> *constraints = [self.constraints mutableCopy];
+    for (NSUInteger i = 0; i < constraints.count; i++) {
+        if ([constraints[i].body1 caseInsensitiveCompare:name] == NSOrderedSame ||
+            [constraints[i].body2 caseInsensitiveCompare:name] == NSOrderedSame) {
+            [constraints removeObjectAtIndex:i];
+            i--;
+        }
+    }
+    self.bodies = bodies;
+    if (constraints.count != self.constraints.count) self.constraints = constraints;
+}
+
+- (void)ud_renameBody:(NSString *)oldName to:(NSString *)newName {
+    NSMutableArray<UDAFBody *> *bodies = [self.bodies mutableCopy];
+    for (NSUInteger i = 0; i < bodies.count; i++) {
+        if ([bodies[i].name caseInsensitiveCompare:oldName] == NSOrderedSame) {
+            UDAFBody *renamed = [bodies[i] copy];
+            renamed.name = newName;
+            bodies[i] = renamed;
+            break;
+        }
+    }
+    self.bodies = bodies;
+    [self ud_renameConstraintsOnBody:oldName to:newName];
+}
+
+/// RenameBody's second half: the constraints' body1 and body2.
+- (void)ud_renameConstraintsOnBody:(NSString *)oldName to:(NSString *)newName {
+    NSMutableArray<UDAFConstraint *> *constraints = [self.constraints mutableCopy];
+    BOOL renamed = NO;
+    for (NSUInteger i = 0; i < constraints.count; i++) {
+        UDAFConstraint *c = constraints[i];
+        if ([c.body1 caseInsensitiveCompare:oldName] == NSOrderedSame) {
+            UDAFConstraint *edited = [c copy];
+            edited.body1 = newName;
+            constraints[i] = edited;
+            renamed = YES;
+        } else if ([c.body2 caseInsensitiveCompare:oldName] == NSOrderedSame) {
+            UDAFConstraint *edited = [c copy];
+            edited.body2 = newName;
+            constraints[i] = edited;
+            renamed = YES;
+        }
+    }
+    if (renamed) self.constraints = constraints;
+}
+
+- (void)ud_newConstraintNamed:(NSString *)name {
+    UDAFConstraint *constraint = [[UDAFConstraint alloc] initWithSettings:[self ud_settings] bodies:self.bodies ?: @[]];
+    constraint.name = name;
+    self.constraints = [(self.constraints ?: @[]) arrayByAddingObject:constraint];
+}
+
+- (void)ud_deleteConstraintNamed:(NSString *)name {
+    NSMutableArray<UDAFConstraint *> *constraints = [self.constraints mutableCopy];
+    for (NSUInteger i = 0; i < constraints.count; i++) {
+        if ([constraints[i].name caseInsensitiveCompare:name] == NSOrderedSame) {
+            [constraints removeObjectAtIndex:i];
+            break;
+        }
+    }
+    self.constraints = constraints;
+}
+
 + (NSString *)ud_normalizedContents:(NSString *)text {
     return UDAFContentsToString( UDAFContentsFromString( text ) );
 }
@@ -669,6 +769,26 @@ UD_ELEMENT_ARRAY_SETTER(setConstraints, @"constraints")
         return nil;                                                  // none, or more than one
     }
     return vector;
+}
+
+// A setting's number, as a field gives it: text ParseSettings would read
+// as one.
+- (BOOL)validateValue:(id *)ioValue forKey:(NSString *)key error:(NSError **)error {
+    if ([*ioValue isKindOfClass:[NSString class]] && [[UDDeclAF ud_defaultSettings][key] isKindOfClass:[NSNumber class]] &&
+        ![key isEqualToString:@"selfCollision"]) {
+        NSScanner *scanner = [NSScanner scannerWithString:[*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+        double d = 0;
+        if ([scanner scanDouble:&d] && scanner.isAtEnd) {
+            *ioValue = @((float)d);
+            return YES;
+        }
+        if (error != NULL) {
+            *error = [NSError errorWithDomain:@"UDDeclAF" code:1 userInfo:@{NSLocalizedDescriptionKey:
+                [NSString stringWithFormat:@"“%@” is not a number.", *ioValue]}];
+        }
+        return NO;
+    }
+    return [super validateValue:ioValue forKey:key error:error];
 }
 
 - (BOOL)validateContents:(id *)ioValue error:(NSError **)error {

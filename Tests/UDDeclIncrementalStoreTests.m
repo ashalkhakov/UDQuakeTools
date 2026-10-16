@@ -784,4 +784,36 @@
     XCTAssertEqualObjects([UDDeclAF ud_normalizedContents:@""], @"none");
 }
 
+- (void)testABodyRenamedOrDeletedTakesItsConstraintsWithIt {
+    [[NSFileManager defaultManager] createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"af"]
+                              withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"af/test.af" contents:
+        @"articulatedFigure test_pair {\n"
+         "body \"a\" {\n\tjoint \"origin\"\n\tmodel box( ( -1, -1, -1 ), ( 1, 1, 1 ) )\n}\n"
+         "body \"b\" {\n\tjoint \"b\"\n\tmodel box( ( -1, -1, -1 ), ( 1, 1, 1 ) )\n}\n"
+         "fixed \"ab\" {\n\tbody1 \"a\"\n\tbody2 \"b\"\n}\n"
+         "fixed \"aw\" {\n\tbody1 \"a\"\n\tbody2 \"world\"\n}\n"
+         "}\n"];
+    [self.workspace shutdown];
+    XCTAssertTrue([self.workspace startup:NULL]);
+    self.context = [self.workspace newDeclEditingContextWithError:NULL];
+    UDDeclAF *figure = [self declWithTypeName:@"articulatedFigure" name:@"test_pair"];
+
+    // A binding's rename of a body: RenameBody's.
+    [figure.bodies[1] setValue:@"lid" forKey:@"name"];
+    XCTAssertEqualObjects([figure.bodies valueForKey:@"name"], (@[@"a", @"lid"]));
+    XCTAssertEqualObjects(figure.constraints[0].body2, @"lid", @"the constraint on it renamed too");
+
+    [figure ud_deleteBodyNamed:@"A"];
+    XCTAssertEqualObjects([figure.bodies valueForKey:@"name"], (@[@"lid"]));
+    XCTAssertEqual(figure.constraints.count, 0U, @"DeleteBody takes the constraints on it off");
+
+    [figure ud_newBodyNamed:@"base"];
+    XCTAssertEqualObjects(figure.bodies.lastObject.name, @"base");
+    XCTAssertEqualObjects(figure.bodies.lastObject.contents, @"corpse", @"SetDefault: the figure's contents");
+    [figure ud_newConstraintNamed:@"hold"];
+    XCTAssertEqualObjects(figure.constraints.lastObject.body1, @"lid", @"SetDefault: the first body");
+    XCTAssertEqualObjects(figure.constraints.lastObject.type, @"universalJoint");
+}
+
 @end

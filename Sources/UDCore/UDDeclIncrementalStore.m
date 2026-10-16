@@ -138,7 +138,10 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 }
 
 + (NSManagedObjectContext *)newEditingContextForCoordinator:(NSPersistentStoreCoordinator *)coordinator {
-    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
+    // Main-queue, not confinement: a context can be a parent (the PDA
+    // editor's sheets edit a child of it) only so, on Apple's Core Data and
+    // FreeCoreData alike.
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     context.persistentStoreCoordinator = coordinator;
     context.undoManager = [[NSUndoManager alloc] init];
     return context;

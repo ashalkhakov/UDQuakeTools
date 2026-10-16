@@ -142,38 +142,31 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
     [controller setSelectedObjects:@[target[1]]];
 }
 
-// Runs a modal child-editor session inside its own named undo group on the
-// context's undo manager:
-//
-//   1. before the modal starts: beginUndoGrouping + setActionName
-//   2. after it ends (OK or Cancel): endUndoGrouping
-//   3. if the user cancelled: a single -undoNestedGroup reverts just that
-//      innermost group — everything the session did (field edits, inserts,
-//      relationship changes) in one step, leaving the rest of the stack
-//      intact.
-//
-// The processPendingChanges calls bracket the group so that (a) changes made
-// before the session are registered outside the group and (b) everything the
-// session did is registered inside it before it closes.
-- (NSModalResponse)runModalEditSession:(NSModalResponse (^)(void))session
+// Runs a modal child-editor session (a sheet) on a child of the editing
+// context: the sheet's edits stay there until OK saves them into the editing
+// context, in one undo group named for it; Cancel just lets the child go,
+// and the editing context never saw them.
+- (NSModalResponse)runModalEditSession:(NSModalResponse (^)(NSManagedObjectContext *sheetContext))session
                             actionName:(NSString *)actionName {
     NSManagedObjectContext *context = self.editingContext;
-    NSUndoManager *undoManager = context.undoManager;
+    NSManagedObjectContext *sheetContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    sheetContext.parentContext = context;
 
+    NSModalResponse result = session(sheetContext);
+    if (result != NSModalResponseOK || !sheetContext.hasChanges) {
+        return result;
+    }
+
+    NSUndoManager *undoManager = context.undoManager;
     [context processPendingChanges];
     [undoManager beginUndoGrouping];
     [undoManager setActionName:actionName];
-
-    NSModalResponse result = session();
-
+    NSError *error = nil;
+    if (![sheetContext save:&error]) {
+        NSLog(@"UDPDAEditorViewController: %@ did not reach the PDA: %@", actionName, error);
+    }
     [context processPendingChanges];
     [undoManager endUndoGrouping];
-
-    if (result != NSModalResponseOK) {
-        [undoManager undoNestedGroup];
-        [context processPendingChanges];
-        [self.document clearChangeCountIfNothingUnsaved];
-    }
     return result;
 }
 
@@ -182,12 +175,13 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 }
 
 /**
- * Inserts a new child decl managed object (email/audio/video) into the shared
- * editing context. The incremental store turns the insert into an
- * idDeclManager createNewDecl on save. The child starts out in the same
- * source file as the PDA itself.
+ * Inserts a new child decl (email/audio/video) into @a context, a sheet's.
+ * The incremental store turns the insert into an idDeclManager
+ * createNewDecl once it is saved down to the store. The child starts out in
+ * the same source file as the PDA itself.
  */
-- (__kindof UDDeclBase *)createChildDeclWithTypeName:(NSString *)typeName subname:(NSString *)subname {
+- (__kindof UDDeclBase *)createChildDeclWithTypeName:(NSString *)typeName subname:(NSString *)subname
+                                           inContext:(NSManagedObjectContext *)context {
     UDDeclPDA *pda = self.pda;
     idDeclManager *declManager = self.workspace.declManager;
 
@@ -195,7 +189,6 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
         return nil;
     }
 
-    NSManagedObjectContext *context = self.editingContext;
     NSString *entityName = [UDDeclBase ud_entityNameForDeclTypeName:typeName
                                                               inModel:context.persistentStoreCoordinator.managedObjectModel];
     if (entityName == nil) {
@@ -210,10 +203,33 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
     UDDeclBase *child = [NSEntityDescription insertNewObjectForEntityForName:entityName
                                                         inManagedObjectContext:context];
     child.name = name;
-    child.sourceFile = pda.sourceFile;
+    child.sourceFile = [(UDDeclPDA *)[context objectWithID:pda.objectID] sourceFile];
     return child;
 }
 
+/// A new child of @a typeName, edited in its sheet (@a open) and, on OK,
+/// added to the PDA's @a relationship: all in one sheet context.
+- (void)addChildOfType:(NSString *)typeName relationship:(NSString *)relationship
+            actionName:(NSString *)actionName open:(NSModalResponse (^)(id child))open {
+    [self runModalEditSession:^NSModalResponse(NSManagedObjectContext *sheetContext) {
+        UDDeclBase *child = [self createChildDeclWithTypeName:typeName subname:typeName inContext:sheetContext];
+        if (child == nil) {
+            return NSModalResponseCancel;
+        }
+        NSModalResponse result = open(child);
+        if (result == NSModalResponseOK) {
+            [[[sheetContext objectWithID:self.pda.objectID] mutableSetValueForKey:relationship] addObject:child];
+        }
+        return result;
+    } actionName:actionName];
+}
+
+/// @a child, as it is in a sheet context, edited in its sheet (@a open).
+- (void)editChild:(UDDeclBase *)child actionName:(NSString *)actionName open:(NSModalResponse (^)(id child))open {
+    [self runModalEditSession:^NSModalResponse(NSManagedObjectContext *sheetContext) {
+        return open([sheetContext objectWithID:child.objectID]);
+    } actionName:actionName];
+}
 
 /**
  * Detaches the array controller's selected child decls from one of the
@@ -238,20 +254,8 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 
 - (IBAction)addOrRemoveAudioLog:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        // The insert, the modal's edits and the relationship hookup all land
-        // in one "Add Audio Log" undo group; cancelling undoes that group,
-        // which removes the freshly inserted object again.
-        [self runModalEditSession:^NSModalResponse{
-            UDDeclAudio *newAudio = [self createChildDeclWithTypeName:@"audio" subname:@"audio"];
-            if (newAudio == nil) {
-                return NSModalResponseCancel;
-            }
-            NSModalResponse result = [self openAudioEditor:newAudio];
-            if (result == NSModalResponseOK) {
-                [[self.pda mutableSetValueForKey:@"audios"] addObject:newAudio];
-            }
-            return result;
-        } actionName:@"Add Audio Log"];
+        [self addChildOfType:@"audio" relationship:@"audios" actionName:@"Add Audio Log"
+                        open:^NSModalResponse(id child) { return [self openAudioEditor:child]; }];
     } else {
         [self detachSelectedFrom:self.audioArrayController relationship:@"audios"];
     }
@@ -271,17 +275,8 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 
 - (IBAction)addOrRemoveEmail:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        [self runModalEditSession:^NSModalResponse{
-            UDDeclEmail *newEmail = [self createChildDeclWithTypeName:@"email" subname:@"email"];
-            if (newEmail == nil) {
-                return NSModalResponseCancel;
-            }
-            NSModalResponse result = [self openEmailEditor:newEmail];
-            if (result == NSModalResponseOK) {
-                [[self.pda mutableSetValueForKey:@"emails"] addObject:newEmail];
-            }
-            return result;
-        } actionName:@"Add Email"];
+        [self addChildOfType:@"email" relationship:@"emails" actionName:@"Add Email"
+                        open:^NSModalResponse(id child) { return [self openEmailEditor:child]; }];
     } else {
         [self detachSelectedFrom:self.emailArrayController relationship:@"emails"];
     }
@@ -300,17 +295,8 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 
 - (IBAction)addOrRemoveVideo:(NSSegmentedControl *)sender {
     if (sender.selectedSegment == 0) {
-        [self runModalEditSession:^NSModalResponse{
-            UDDeclVideo *newVideo = [self createChildDeclWithTypeName:@"video" subname:@"video"];
-            if (newVideo == nil) {
-                return NSModalResponseCancel;
-            }
-            NSModalResponse result = [self openVideoEditor:newVideo];
-            if (result == NSModalResponseOK) {
-                [[self.pda mutableSetValueForKey:@"videos"] addObject:newVideo];
-            }
-            return result;
-        } actionName:@"Add Video"];
+        [self addChildOfType:@"video" relationship:@"videos" actionName:@"Add Video"
+                        open:^NSModalResponse(id child) { return [self openVideoEditor:child]; }];
     } else {
         [self detachSelectedFrom:self.videoArrayController relationship:@"videos"];
     }
@@ -340,42 +326,36 @@ static NSInteger UDRowToEdit(NSTableView *tableView) {
     if (![sender isKindOfClass:[NSTableView class]]) {
         return;
     }
-
     NSInteger row = UDRowToEdit((NSTableView *)sender);
     if (row < 0) return;
 
-    UDDeclAudio *selectedAudio = self.audioArrayController.arrangedObjects[row];
-    [self runModalEditSession:^NSModalResponse{
-        return [self openAudioEditor:selectedAudio];
-    } actionName:@"Edit Audio Log"];
+    UDDeclAudio *selected = self.audioArrayController.arrangedObjects[row];
+    [self editChild:selected actionName:@"Edit Audio Log"
+               open:^NSModalResponse(id child) { return [self openAudioEditor:child]; }];
 }
 
 - (IBAction)emailEdit:(id)sender {
     if (![sender isKindOfClass:[NSTableView class]]) {
         return;
     }
-
     NSInteger row = UDRowToEdit((NSTableView *)sender);
     if (row < 0) return;
 
-    UDDeclEmail *selectedEmail = self.emailArrayController.arrangedObjects[row];
-    [self runModalEditSession:^NSModalResponse{
-        return [self openEmailEditor:selectedEmail];
-    } actionName:@"Edit Email"];
+    UDDeclEmail *selected = self.emailArrayController.arrangedObjects[row];
+    [self editChild:selected actionName:@"Edit Email"
+               open:^NSModalResponse(id child) { return [self openEmailEditor:child]; }];
 }
 
 - (IBAction)videoEdit:(id)sender {
     if (![sender isKindOfClass:[NSTableView class]]) {
         return;
     }
-
     NSInteger row = UDRowToEdit((NSTableView *)sender);
     if (row < 0) return;
 
-    UDDeclVideo *selectedVideo = self.videoArrayController.arrangedObjects[row];
-    [self runModalEditSession:^NSModalResponse{
-        return [self openVideoEditor:selectedVideo];
-    } actionName:@"Edit Video"];
+    UDDeclVideo *selected = self.videoArrayController.arrangedObjects[row];
+    [self editChild:selected actionName:@"Edit Video"
+               open:^NSModalResponse(id child) { return [self openVideoEditor:child]; }];
 }
 
 @end

@@ -58,12 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 /** Wire the document's text storage into the given NSTextView. */
 - (void)setTextView:(NSTextView *)textView;
 
-/// The tab is clean again once the editing context has nothing unsaved:
-/// after a save, or an undone edit (a cancelled sheet). Later in the run
-/// loop, after GNUstep's NSDocument has marked it edited for the closing
-/// undo group.
-- (void)clearChangeCountIfNothingUnsaved;
-
 @end
 
 NS_ASSUME_NONNULL_END

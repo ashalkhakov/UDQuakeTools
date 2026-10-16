@@ -7,6 +7,7 @@
 #import "UDPDAEditorViewController.h"
 #import "UDTableEditorViewController.h"
 #import "UDSkinEditorViewController.h"
+#import "UDEntityDefEditorViewController.h"
 #ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
 #else
@@ -68,7 +69,8 @@
         // The structured editors; the rest, as text.
         Class editorClass = declItem.type == DECL_PDA ? [UDPDAEditorViewController class]
                           : declItem.type == DECL_TABLE ? [UDTableEditorViewController class]
-                          : declItem.type == DECL_SKIN ? [UDSkinEditorViewController class] : Nil;
+                          : declItem.type == DECL_SKIN ? [UDSkinEditorViewController class]
+                          : declItem.type == DECL_ENTITYDEF || declItem.type == DECL_MAPDEF ? [UDEntityDefEditorViewController class] : Nil;
         if (editorClass != Nil) {
             UDBaseEditorViewController *vc = [[editorClass alloc] init];
             vc.item = item;

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="24G720" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="DeclArticulatedFigure" representedClassName="UDDeclAF" parentEntity="DeclBase" syncable="YES"/>
-    <entity name="DeclEntityDef" representedClassName="UDDeclEntityDef" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclEntityDef" representedClassName="UDDeclEntityDef" parentEntity="DeclBase" syncable="YES">
+        <attribute name="keyValues" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
     <entity name="DeclExport" representedClassName="UDDeclExport" parentEntity="DeclBase" syncable="YES"/>
     <entity name="DeclFX" representedClassName="UDDeclFX" parentEntity="DeclBase" syncable="YES"/>
-    <entity name="DeclMapDef" representedClassName="UDDeclMapDef" parentEntity="DeclBase" syncable="YES"/>
+    <entity name="DeclMapDef" representedClassName="UDDeclMapDef" parentEntity="DeclBase" syncable="YES">
+        <attribute name="keyValues" optional="YES" transient="YES" attributeType="Undefined"/>
+    </entity>
     <entity name="DeclModel" representedClassName="UDDeclModel" parentEntity="DeclBase" syncable="YES"/>
     <entity name="DeclSound" representedClassName="UDDeclSound" parentEntity="DeclBase" syncable="YES"/>
     <entity name="DeclAudio" representedClassName="UDDeclAudio" parentEntity="DeclBase" syncable="YES">

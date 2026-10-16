@@ -153,8 +153,13 @@ In order of value against cost; LOC is the MFC original's size.
       in a list and the curve they make; a skin's mappings and models in
       lists, what it names that is not there in the Issues tab, File > New
       Skin…. Their codecs are the engine's parsers, ported.
-- [ ] **entityDef editor** — inherit chain, key/value table, spawnArg
-      documentation from `editor_*` keys, model/skin/sound pickers.
+- [x] **entityDef editor** — DialogEntityDefEditor's, for mapDefs too:
+      what it inherits, its own spawnArgs in a list edited in place, what
+      it inherits through the chain (resolved as idDeclEntityDef::Parse
+      merges it) read-only and overridable; the entity's and the selected
+      key's help from the `editor_*` keys, as Radiant's EClass_InitFromDict
+      reads them; an unknown inherit and a key set twice in the Issues tab.
+      Its model, skin and sound pickers come with the lookup dialogs.
 - [ ] **Sound shader editor** — the decl side of the MFC sound editor:
       parameters, sample list, play.
 - [ ] **Particle editor** (1.7k) — decl editing over the existing stage

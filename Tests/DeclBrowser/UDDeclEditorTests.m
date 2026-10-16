@@ -5,17 +5,32 @@
 #import <UDCodeKit/UDCodeKit.h>
 #import "UDNewDeclWindowController.h"
 #import "UDTextEditorViewController.h"
+#import "UDEntityDefEditorViewController.h"
+#import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
 static NSString *const UDFixtureDefs =
-    @"entityDef udtest_lamp {\n"
-     "\t// lit at spawn\n"
-     "\t\"inherit\"\t\"func_static\"\n"
+    @"entityDef udtest_fixture {\n"
+     "\t\"editor_usage\"\t\t\"Something fixed to a wall.\"\n"
+     "\t\"editor_var model\"\t\"The model it shows.\"\n"
+     "\t\"editor_bool solid\"\t\"Whether it blocks.\"\n"
+     "\t\"solid\"\t\t\t\"1\"\n"
+     "\t\"spawnclass\"\t\t\"idStaticEntity\"\n"
+     "}\n"
+     "\n"
+     "entityDef udtest_lamp {\n"
+     "\t\"inherit\"\t\"udtest_fixture\"\n"
      "\t\"model\"\t\"models/udtest/lamp.lwo\"\n"
+     "}\n"
+     "\n"
+     "mapDef udtest/yard {\n"
+     "\t\"name\"\t\"Yard\"\n"
      "}\n";
 
 static NSString *const UDFixtureSounds =
     @"udtest_hum {\n"
+     "\t// heard everywhere\n"
+     "\tdescription\t\"Low hum\"\n"
      "\tminDistance\t1\n"
      "\tmaxDistance\t12\n"
      "\tsound/udtest/hum.wav\n"
@@ -110,14 +125,14 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqualObjects(shownFile, @"def/udtest_fresh.def", @"the file follows the type's folder and the name");
 
     UDBaseEditorViewController *editor = [[self tabManagerOf:controller] selectedEditor];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"it opens as text, not %@", editor);
-    NSString *text = ((UDDeclDocument *)editor.editorDocument).textContent;
-    XCTAssertTrue([text containsString:@"entityDef udtest_fresh"], @"%@", text);
-    XCTAssertTrue([text containsString:@"\"DEFAULTED\"\t\"1\""], @"idDeclEntityDef's default definition: %@", text);
+    XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"it opens in its editor, not %@", editor);
+    UDDeclEntityDef *entityDef = ((UDEntityDefEditorViewController *)editor).entityDef;
+    XCTAssertEqualObjects([entityDef.keyValues valueForKey:@"key"], (@[@"DEFAULTED"]), @"idDeclEntityDef's default definition");
 
     [self save:controller];
     NSString *saved = [self savedText:@"def/udtest_fresh.def"];
     XCTAssertTrue([saved containsString:@"entityDef udtest_fresh"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"\"DEFAULTED\""], @"%@", saved);
 }
 
 - (void)testANewDeclGoesInTheFileItIsGiven {
@@ -153,19 +168,19 @@ static NSString *const UDFixtureParticles =
 - (void)testADeclIsHighlightedAsADecl {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"entityDef/udtest_lamp" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"an entityDef opens as text, not %@", editor);
+    UDTextEditorViewController *editor = [self openOutlinePath:@"sound/udtest_hum" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a sound shader opens as text, not %@", editor);
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
 
     // Its comments and strings, each in a colour of their own.
     BOOL highlighted = [self spinUntil:^BOOL{
-        NSColor *comment = [self colorOf:@"// lit" inTextView:textView];
-        NSColor *string = [self colorOf:@"\"inherit\"" inTextView:textView];
+        NSColor *comment = [self colorOf:@"// heard" inTextView:textView];
+        NSColor *string = [self colorOf:@"\"Low hum\"" inTextView:textView];
         return comment != nil && string != nil && ![comment isEqual:string] &&
                ![comment isEqual:textView.textColor] && ![string isEqual:textView.textColor];
     } timeout:5.0];
     XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
-                  [self colorOf:@"// lit" inTextView:textView], [self colorOf:@"\"inherit\"" inTextView:textView],
+                  [self colorOf:@"// heard" inTextView:textView], [self colorOf:@"\"Low hum\"" inTextView:textView],
                   textView.textColor);
 }
 
@@ -210,6 +225,88 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqual(findings.count, 1U, @"the brace, and no parse of a decl that does not hold together: %@", findings);
     XCTAssertEqual(findings.firstObject.line, 1, @"where it opened");
     XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityError);
+}
+
+#pragma mark - The entityDef editor (DialogEntityDefEditor)
+
+- (UDEntityDefEditorViewController *)openLampIn:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"entityDef/udtest_lamp" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"an entityDef opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDEntityDefEditorViewController class]] ? (UDEntityDefEditorViewController *)editor : nil;
+}
+
+- (void)testAnEntityDefOpensWithItsOwnAndInheritedPairs {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDEntityDefEditorViewController *editor = [self openLampIn:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"inherit" inView:editor.view]).stringValue, @"udtest_fixture");
+    XCTAssertEqualObjects([editor.keyValuesController.arrangedObjects valueForKey:@"key"], (@[@"model"]),
+                          @"its own pairs, inherit in its field");
+    XCTAssertEqual(editor.keyValuesTable.numberOfRows, 1);
+    NSArray *inheritedKeys = [editor.inheritedController.arrangedObjects valueForKey:@"key"];
+    XCTAssertTrue([inheritedKeys containsObject:@"solid"], @"%@", inheritedKeys);
+    XCTAssertTrue([inheritedKeys containsObject:@"spawnclass"], @"%@", inheritedKeys);
+    XCTAssertFalse([inheritedKeys containsObject:@"model"], @"what it sets is not inherited");
+    XCTAssertEqualObjects([[editor.inheritedController.arrangedObjects firstObject] valueForKey:@"from"], @"udtest_fixture");
+    XCTAssertEqualObjects(editor.usage, @"Something fixed to a wall.", @"editor_usage, inherited");
+
+    [editor.keyValuesController setSelectionIndex:0];
+    XCTAssertEqualObjects(editor.selectedKeyHelp, @"model: The model it shows.", @"editor_var model");
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U);
+}
+
+- (void)testEditingAnEntityDefsPairsSavesThem {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDEntityDefEditorViewController *editor = [self openLampIn:controller];
+    if (editor == nil) return;
+
+    UDEntityKeyValue *model = [editor.keyValuesController.arrangedObjects firstObject];
+    NSString *value = @"models/udtest/lamp2.lwo";
+    XCTAssertTrue([model validateValue:&value forKey:@"value" error:NULL]);
+    [model setValue:value forKey:@"value"];
+    [editor.editingContext processPendingChanges];
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+
+    [editor.inheritedController setSelectedObjects:[editor.inheritedController.arrangedObjects filteredArrayUsingPredicate:
+                                                    [NSPredicate predicateWithFormat:@"key == 'solid'"]]];
+    [[self buttonTitled:@"Override" inView:editor.view] performClick:nil];
+    [editor.view.window endEditingFor:nil];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects([editor.keyValuesController.arrangedObjects valueForKey:@"key"], (@[@"model", @"solid"]), @"overridden");
+    XCTAssertFalse([[editor.inheritedController.arrangedObjects valueForKey:@"key"] containsObject:@"solid"], @"and no longer inherited");
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"def/udtest.def"];
+    XCTAssertTrue([saved containsString:@"\"model\"\t\t\t\"models/udtest/lamp2.lwo\""], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"\"solid\"\t\t\t\"1\""], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"\"inherit\"\t\t\t\"udtest_fixture\""], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"entityDef udtest_fixture {"], @"the others as they were: %@", saved);
+
+    [editor.keyValuesController setSelectedObjects:@[[editor.keyValuesController.arrangedObjects lastObject]]];
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:@selector(addOrRemovePair:) inView:editor.view];
+    [buttons setSelectedSegment:1];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    XCTAssertEqualObjects([editor.keyValuesController.arrangedObjects valueForKey:@"key"], (@[@"model"]), @"- takes it off");
+}
+
+- (void)testAnUnknownInheritIsAnIssue {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDEntityDefEditorViewController *editor = [self openLampIn:controller];
+    if (editor == nil) return;
+    editor.entityDef.inherit = @"udtest_nothing";
+    [editor.editingContext processPendingChanges];
+    NSArray<UDDiagnosticItem *> *issues = editor.diagnosticStore.allDiagnostics;
+    XCTAssertEqual(issues.count, 1U, @"%@", issues);
+    XCTAssertEqualObjects(issues.firstObject.message, @"Unknown entityDef 'udtest_nothing' inherited by 'udtest_lamp'");
+    XCTAssertEqual([editor.inheritedController.arrangedObjects count], 0U);
+}
+
+- (void)testAMapDefOpensInTheEntityDefEditor {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"mapDef/udtest/yard" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"%@", editor);
+    XCTAssertEqualObjects([((UDEntityDefEditorViewController *)editor).keyValuesController.arrangedObjects valueForKey:@"value"], (@[@"Yard"]));
 }
 
 @end

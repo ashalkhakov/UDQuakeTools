@@ -22,6 +22,7 @@ DeclBrowser_OBJC_FILES = \
     UDDeclEditorViewController.m \
     UDTableEditorViewController.m \
     UDSkinEditorViewController.m \
+    UDEntityDefEditorViewController.m \
     UDPathTree.m \
     UDProject.m \
     UDScriptServer.m \
@@ -58,6 +59,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDPDAEditorView.xib \
     Resources/UDTableEditorView.xib \
     Resources/UDSkinEditorView.xib \
+    Resources/UDEntityDefEditorView.xib \
     Resources/UDPDAAudioEditorView.xib \
     Resources/UDPDAEmailEditorView.xib \
     Resources/UDPDAVideoEditorView.xib \

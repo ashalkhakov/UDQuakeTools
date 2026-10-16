@@ -127,6 +127,29 @@
          "}\n";
     [self writeGameFile:@"particles/test.prt" contents:particleFixture];
 
+    // An entityDef inheriting from one that inherits in turn.
+    [fileManager createDirectoryAtPath:[self.fullGameDirPath stringByAppendingPathComponent:@"def"]
+           withIntermediateDirectories:YES attributes:nil error:nil];
+    [self writeGameFile:@"def/test.def" contents:
+        @"entityDef test_base {\n"
+         "\t\"editor_usage\"\t\t\"Something that stands.\"\n"
+         "\t\"editor_var health\"\t\"How much it takes.\"\n"
+         "\t\"editor_bool solid\"\t\"Whether it blocks.\"\n"
+         "\t\"health\"\t\t\"100\"\n"
+         "\t\"solid\"\t\t\t\"1\"\n"
+         "}\n"
+         "\n"
+         "entityDef test_crate {\n"
+         "\t\"inherit\"\t\t\"test_base\"\n"
+         "\t\"health\"\t\t\"50\"\n"
+         "\t\"model\"\t\t\t\"models/test/crate.lwo\"\n"
+         "}\n"
+         "\n"
+         "entityDef test_small_crate {\n"
+         "\t\"inherit\"\t\t\"test_crate\"\n"
+         "\t\"model\"\t\t\t\"models/test/small_crate.lwo\"\n"
+         "}\n"];
+
     NSDictionary *dict = @{
         @"fs_basepath": self.rootDir,
         @"fs_savepath": self.rootDir,
@@ -522,6 +545,65 @@
     [self.context.undoManager undo];
     XCTAssertEqualObjects(pda.title, @"PDA Title", @"one undo takes it back");
     XCTAssertEqual(pda.audios.count, 1U);
+}
+
+#pragma mark - entityDefs
+
+- (void)testAnEntityDefsPairsAreItsOwnInOrder {
+    UDDeclEntityDef *crate = [self declWithTypeName:@"entityDef" name:@"test_crate"];
+    XCTAssertEqualObjects([crate.keyValues valueForKey:@"key"], (@[@"inherit", @"health", @"model"]));
+    XCTAssertEqualObjects(crate.inherit, @"test_base");
+}
+
+- (void)testWhatItInheritsIsResolvedAsTheEngineDoes {
+    UDDeclEntityDef *small = [self declWithTypeName:@"entityDef" name:@"test_small_crate"];
+    NSArray<NSString *> *unknown = nil;
+    NSArray<UDInheritedKeyValue *> *inherited = [small ud_inheritedKeyValuesUnknown:&unknown];
+    NSMutableDictionary *values = [NSMutableDictionary dictionary];
+    NSMutableDictionary *from = [NSMutableDictionary dictionary];
+    for (UDInheritedKeyValue *pair in inherited) {
+        values[pair.key] = pair.value;
+        from[pair.key] = pair.from;
+    }
+    XCTAssertNil(values[@"model"], @"its own model is not inherited");
+    XCTAssertEqualObjects(values[@"health"], @"50", @"the parent's, over the grandparent's");
+    XCTAssertEqualObjects(from[@"health"], @"test_crate");
+    XCTAssertEqualObjects(values[@"solid"], @"1");
+    XCTAssertEqualObjects(from[@"solid"], @"test_base", @"from where it is set");
+    XCTAssertEqual(unknown.count, 0U);
+
+    XCTAssertEqualObjects([small ud_helpForKey:@"health"], @"How much it takes.", @"editor_var, inherited");
+    XCTAssertEqualObjects([small ud_helpForKey:@"solid"], @"Whether it blocks.", @"editor_bool");
+    XCTAssertNil([small ud_helpForKey:@"model"]);
+    XCTAssertEqualObjects([small ud_usage], @"Something that stands.");
+
+    small.inherit = @"test_nothing";
+    [small ud_inheritedKeyValuesUnknown:&unknown];
+    XCTAssertEqualObjects(unknown, (@[@"test_nothing"]), @"an entityDef no file defines");
+}
+
+- (void)testAnEditedEntityDefIsWrittenAsTheEditorWroteIt {
+    UDDeclEntityDef *crate = [self declWithTypeName:@"entityDef" name:@"test_crate"];
+    NSMutableArray *pairs = [crate.keyValues mutableCopy];
+    [pairs addObject:[UDEntityKeyValue keyValueWithKey:@"mass" value:@"20"]];
+    crate.keyValues = pairs;
+    crate.keyValues[1].value = @"75";
+    crate.inherit = nil;
+    XCTAssertTrue([self saveContext]);
+
+    NSString *text = [self contentsOfGameFile:@"def/test.def"];
+    XCTAssertTrue([text containsString:@"entityDef test_crate\n{\n\"health\"\t\t\t\"75\"\n\"model\"\t\t\t\"models/test/crate.lwo\"\n\"mass\"\t\t\t\"20\"\n}"], @"%@", text);
+    XCTAssertTrue([text containsString:@"entityDef test_small_crate {"], @"the others as they were: %@", text);
+}
+
+- (void)testAKeyIsAQuotableString {
+    UDEntityKeyValue *pair = [UDEntityKeyValue keyValueWithKey:@"model" value:@""];
+    id value = @"";
+    XCTAssertFalse([pair validateValue:&value forKey:@"key" error:NULL], @"not empty");
+    value = @"say \"hi\"";
+    XCTAssertFalse([pair validateValue:&value forKey:@"value" error:NULL], @"no quote in it");
+    value = @"";
+    XCTAssertTrue([pair validateValue:&value forKey:@"value" error:NULL], @"a value may be empty");
 }
 
 @end

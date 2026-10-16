@@ -66,6 +66,12 @@ typedef enum {
 /// parser's error, when the text does not parse.
 - (BOOL)ud_applyText:(NSData *)text toDeclObject:(NSManagedObject *)object error:(NSError * _Nullable * _Nullable)error;
 
+/// The decl of type @a typeName named @a name, in @a context, by its object
+/// ID (no fetch); nil when the decl manager has no such decl.
+- (nullable __kindof NSManagedObject *)ud_existingDeclOfTypeName:(NSString *)typeName
+                                                           named:(NSString *)name
+                                                       inContext:(NSManagedObjectContext *)context;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -3,6 +3,7 @@
 #import "UDDeclManagedObjects.h"
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
+#import "UDEntityDefEditorViewController.h"
 #import "UDTextEditorViewController.h"
 #import "UDWorkspace.h"
 #import "UDWorkspaceDocument.h"
@@ -180,6 +181,26 @@
     NSUInteger tabs = [[self tabManagerOf:controller] allEditors].count;
     [self openOutlinePath:@"pda/admin_moses" inController:controller];
     XCTAssertEqual([[self tabManagerOf:controller] allEditors].count, tabs, @"re-selecting a decl should not open a second tab");
+}
+
+- (void)testARetailEntityDefInheritsThroughItsChain {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+
+    UDEntityDefEditorViewController *editor = [self openOutlinePath:@"entityDef/monster_zombie_fat" inController:controller];
+    if (![editor isKindOfClass:[UDEntityDefEditorViewController class]]) {
+        XCTFail(@"an entityDef should open in the entityDef editor, not %@", editor);
+        return;
+    }
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"inherit" inView:editor.view]).stringValue, @"zombie_default");
+    NSArray *own = [editor.keyValuesController.arrangedObjects valueForKey:@"key"];
+    XCTAssertTrue([own containsObject:@"scriptobject"], @"%@", own);
+    NSArray *froms = [editor.inheritedController.arrangedObjects valueForKey:@"from"];
+    XCTAssertTrue([froms containsObject:@"zombie_default"], @"its parent's pairs");
+    XCTAssertGreaterThan([[NSSet setWithArray:froms] count], 1U, @"and further up its chain: %@", [NSSet setWithArray:froms]);
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"every entityDef it inherits is there: %@",
+                   editor.diagnosticStore.allDiagnostics);
 }
 
 #pragma mark - Editing

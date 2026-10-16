@@ -644,6 +644,16 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 
 #pragma mark - A decl object's text, both ways (a structured editor's source view)
 
+- (NSManagedObject *)ud_existingDeclOfTypeName:(NSString *)typeName named:(NSString *)name inContext:(NSManagedObjectContext *)context {
+    declType_t type = [_declManager declTypeFromName:typeName];
+    NSEntityDescription *entity = type != DECL_MAX_TYPES ? [self _entityForDeclType:type] : nil;
+    idDeclBase *decl = entity != nil && name.length > 0 ? [_declManager findDeclWithoutParsing:type name:name makeDefault:NO] : nil;
+    if (decl == nil) {
+        return nil;
+    }
+    return [context existingObjectWithID:[self newObjectIDForEntity:entity referenceObject:[decl name]] error:NULL];
+}
+
 /// The decl the object was fetched as, or nil for one not saved yet.
 - (idDeclBase *)_declForObject:(NSManagedObject *)object {
     if (object.objectID.isTemporaryID) {

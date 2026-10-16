@@ -424,6 +424,7 @@
 		CE3FA394300E68B20048F206 /* idDeclManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA393300E68B10048F206 /* idDeclManager.m */; };
 		CE56D7A1302355B300099DF4 /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
 		6C63619AC5B5A4746914DFB2 /* UDSkinEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3C681834FB290A5F297E6DDF /* UDSkinEditorView.xib */; };
+		96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
 		CE56D7A53024904200099DF4 /* UDPDAEmailEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */; };
 		CEA5D2D7302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */; };
@@ -461,6 +462,7 @@
 		CEFC6559302A203200157501 /* UDBaseDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6558302A203100157501 /* UDBaseDocument.m */; };
 		CEFC655B302A20B600157501 /* UDPDAEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */; };
 		A04920D857935D828CEABBC8 /* UDSkinEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */; };
+		448F70F0699350C119A939D8 /* UDEntityDefEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */; };
 		10479B4660C30C0A918643FC /* UDTableEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */; };
 		07A76E187297B22FB10DCD99 /* UDDeclEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */; };
 		DC01000000000000000000AA /* UDCodecRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010900000000000000AA /* UDCodecRegistry.m */; };
@@ -519,6 +521,7 @@
 		29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */; };
 		FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */; };
 		65983192AB8783BB47BB376E /* UDSkinEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */; };
+		99479B9F2E95D9004A6C2400 /* UDEntityDefEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */; };
 		7D32A1D4BDDA72E8FA90D996 /* UDTableEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */; };
 		56188C66409329E7F92644C5 /* UDDeclEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */; };
 		52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC89301E4B650037DBA5 /* UDWorkspaceSettingsWindowController.m */; };
@@ -536,6 +539,7 @@
 		399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC73301E41220037DBA5 /* UDWorkspaceWindow.xib */; };
 		D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */; };
 		42EA6D3FAD19068EEEA3A386 /* UDSkinEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3C681834FB290A5F297E6DDF /* UDSkinEditorView.xib */; };
+		690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
 		41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CDC8B301E4C3E0037DBA5 /* UDWorkspaceSettings.xib */; };
 		100DDCD8BDC2EA6DB9D1CBB8 /* UDNewDecl.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2D95130CF5CADE32857620EB /* UDNewDecl.xib */; };
@@ -849,10 +853,12 @@
 		CE3FA393300E68B10048F206 /* idDeclManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclManager.m; sourceTree = "<group>"; };
 		CE56D79F3023024400099DF4 /* UDPDAEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPDAEditorViewController.h; sourceTree = "<group>"; };
 		EE009CB9D8B8F7C9E32BC754 /* UDSkinEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDSkinEditorViewController.h; sourceTree = "<group>"; };
+		97875D90D2F251D94B0C0E84 /* UDEntityDefEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEntityDefEditorViewController.h; sourceTree = "<group>"; };
 		02D0C48552AE5D49E917644C /* UDTableEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTableEditorViewController.h; sourceTree = "<group>"; };
 		1718D0BE955C2D1B8EC8C888 /* UDDeclEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclEditorViewController.h; sourceTree = "<group>"; };
 		CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDPDAEditorView.xib; sourceTree = "<group>"; };
 		3C681834FB290A5F297E6DDF /* UDSkinEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDSkinEditorView.xib; sourceTree = "<group>"; };
+		FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDEntityDefEditorView.xib; sourceTree = "<group>"; };
 		2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTableEditorView.xib; sourceTree = "<group>"; };
 		CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDPDAEmailEditorView.xib; sourceTree = "<group>"; };
 		CEA5D2D6302B6BCA00AFE5B9 /* UDPDAVideoEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDPDAVideoEditorView.xib; sourceTree = "<group>"; };
@@ -906,6 +912,7 @@
 		CEFC6558302A203100157501 /* UDBaseDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBaseDocument.m; sourceTree = "<group>"; };
 		CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorViewController.m; sourceTree = "<group>"; };
 		588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDSkinEditorViewController.m; sourceTree = "<group>"; };
+		EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDEntityDefEditorViewController.m; sourceTree = "<group>"; };
 		92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTableEditorViewController.m; sourceTree = "<group>"; };
 		EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclEditorViewController.m; sourceTree = "<group>"; };
 		DD00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -1277,10 +1284,12 @@
 				CEFC653B3027987300157501 /* UDImageViewerViewController.m */,
 				CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */,
 				588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */,
+				EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */,
 				92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */,
 				EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */,
 				CE56D79F3023024400099DF4 /* UDPDAEditorViewController.h */,
 				EE009CB9D8B8F7C9E32BC754 /* UDSkinEditorViewController.h */,
+				97875D90D2F251D94B0C0E84 /* UDEntityDefEditorViewController.h */,
 				02D0C48552AE5D49E917644C /* UDTableEditorViewController.h */,
 				1718D0BE955C2D1B8EC8C888 /* UDDeclEditorViewController.h */,
 			);
@@ -1332,6 +1341,7 @@
 				CEFC6552302A077100157501 /* UDTextEditorView.xib */,
 				CE56D7A0302355B300099DF4 /* UDPDAEditorView.xib */,
 				3C681834FB290A5F297E6DDF /* UDSkinEditorView.xib */,
+				FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */,
 				2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */,
 				CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */,
 				CE56D7A43024904200099DF4 /* UDPDAEmailEditorView.xib */,
@@ -1704,6 +1714,7 @@
 				CE1CDC86301E484A0037DBA5 /* UDWorkspaceWindow.xib in Resources */,
 				CE56D7A1302355B300099DF4 /* UDPDAEditorView.xib in Resources */,
 				6C63619AC5B5A4746914DFB2 /* UDSkinEditorView.xib in Resources */,
+				96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */,
 				3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */,
 				CE1CDC8C301E4C3E0037DBA5 /* UDWorkspaceSettings.xib in Resources */,
 				C536DE7B10180430F6FE1C48 /* UDNewDecl.xib in Resources */,
@@ -1733,6 +1744,7 @@
 				399EAEE8D9393D1E879042C0 /* UDWorkspaceWindow.xib in Resources */,
 				D74B0B20D4582EC4902BE4EA /* UDPDAEditorView.xib in Resources */,
 				42EA6D3FAD19068EEEA3A386 /* UDSkinEditorView.xib in Resources */,
+				690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */,
 				34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */,
 				41539F730BA1DC884C41D151 /* UDWorkspaceSettings.xib in Resources */,
 				100DDCD8BDC2EA6DB9D1CBB8 /* UDNewDecl.xib in Resources */,
@@ -1876,6 +1888,7 @@
 				CE1CDC92301E7F060037DBA5 /* UDDeclBrowser.m in Sources */,
 				CEFC655B302A20B600157501 /* UDPDAEditorViewController.m in Sources */,
 				A04920D857935D828CEABBC8 /* UDSkinEditorViewController.m in Sources */,
+				448F70F0699350C119A939D8 /* UDEntityDefEditorViewController.m in Sources */,
 				10479B4660C30C0A918643FC /* UDTableEditorViewController.m in Sources */,
 				07A76E187297B22FB10DCD99 /* UDDeclEditorViewController.m in Sources */,
 				CE1CDC8A301E4B660037DBA5 /* UDWorkspaceSettingsWindowController.m in Sources */,
@@ -1926,6 +1939,7 @@
 				29054287F6F010ECD7F2C6FB /* UDDeclBrowser.m in Sources */,
 				FC983DA30499E0ABBD09A0AA /* UDPDAEditorViewController.m in Sources */,
 				65983192AB8783BB47BB376E /* UDSkinEditorViewController.m in Sources */,
+				99479B9F2E95D9004A6C2400 /* UDEntityDefEditorViewController.m in Sources */,
 				7D32A1D4BDDA72E8FA90D996 /* UDTableEditorViewController.m in Sources */,
 				56188C66409329E7F92644C5 /* UDDeclEditorViewController.m in Sources */,
 				52C5D7D64B9A8E8F7F1ED3FA /* UDWorkspaceSettingsWindowController.m in Sources */,

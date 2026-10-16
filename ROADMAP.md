@@ -119,9 +119,11 @@ Built when the first editor needs each one, not up front:
 
 In order of value against cost; LOC is the MFC original's size.
 
-- [ ] **PDA** (0.7k) — finish: video editor covered by tests, editing an
-      existing email/audio/video (double-click opens the sheet; untested),
-      reference validation, creating a new PDA with its file.
+- [x] **PDA** (0.7k) — fields, emails, audio logs and videos added, edited
+      (double-click) and taken off through their sheets, with undo; what the
+      PDA references but no decl defines, as errors in the Issues tab before
+      saving (a click shows the row); File > New PDA… makes one in a file of
+      its own (`newpdas/<name>.pda`).
 - [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
       diagnostics, per-type templates for New.
 - [ ] **Table** and **Skin** — small structured editors (values/clamp/snap;

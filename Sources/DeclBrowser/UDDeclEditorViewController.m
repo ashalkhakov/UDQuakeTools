@@ -231,6 +231,24 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     return line;
 }
 
+- (void)moveSelectionOffRow:(NSUInteger)row inController:(NSArrayController *)controller {
+    if (row >= 1) {
+        [controller setSelectionIndex:row - 1];
+    } else {
+        [controller setSelectionIndexes:[NSIndexSet indexSet]];
+    }
+}
+
+- (void)selectRowAfterRemovingRow:(NSUInteger)row inController:(NSArrayController *)controller {
+    NSUInteger count = [controller.arrangedObjects count];
+    if (count == 0) {
+        [controller setSelectionIndexes:[NSIndexSet indexSet]];
+        return;
+    }
+    NSUInteger index = row >= 1 ? row - 1 : 0;
+    [controller setSelectionIndex:MIN(index, count - 1)];
+}
+
 - (BOOL)materialExists:(NSString *)name {
     if ([name hasPrefix:@"_"]) return YES;
     idDeclManager *declManager = self.workspace.declManager;

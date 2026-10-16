@@ -178,7 +178,12 @@ In order of value against cost; LOC is the MFC original's size.
       (idParticleStage::ParticleOrigin and friends, ported); the 3D one
       comes with the bridge. The material picker comes with the lookup
       dialogs.
-- [ ] **FX editor** — fx actions (sound, light, particle, decal, model…).
+- [x] **FX editor** — idDeclFX::Parse and ParseSingleFXAction ported (every
+      retail FX parses): the joint it binds to, its actions in a list, the
+      selected action's every keyword; in the Issues tab, what the engine
+      would not find (a material, a model of a type it does not load — 52
+      retail actions name a .particle or .ips model — a particle, entityDef
+      or sound, a light or model to use no earlier action names).
 - [ ] **AF editor** (8.1k) — bodies and constraints as data (the dialog
       pages map one-to-one to inspector sections); joints from the model's
       `.md5mesh`. Simulation preview comes with the bridge.

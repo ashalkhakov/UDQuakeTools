@@ -8,6 +8,7 @@
 #import "UDEntityDefEditorViewController.h"
 #import "UDSoundEditorViewController.h"
 #import "UDParticleEditorViewController.h"
+#import "UDFXEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"
 
@@ -31,10 +32,30 @@ static NSString *const UDFixtureDefs =
 
 static NSString *const UDFixtureFX =
     @"fx fx/udtest_spark {\n"
-     "\t// one spark\n"
      "\t{\n"
      "\t\tname\t\"spark\"\n"
      "\t\tduration\t0.5\n"
+     "\t\tlight\t\"lights/udtest_missing\", 1, 0.5, 0, 64\n"
+     "\t}\n"
+     "\t{\n"
+     "\t\tdelay\t0.1\n"
+     "\t\tuseLight\t\"spark\"\n"
+     "\t\tfadeOut\t0.2\n"
+     "\t}\n"
+     "\t{\n"
+     "\t\tduration\t1\n"
+     "\t\tparticle\t\"udtest_missing.prt\"\n"
+     "\t}\n"
+     "}\n";
+
+static NSString *const UDFixtureMaterials =
+    @"textures/udtest/glow\n"
+     "{\n"
+     "\t// glows\n"
+     "\tdescription\t\"Glow\"\n"
+     "\t{\n"
+     "\t\tblend\tadd\n"
+     "\t\tmap\ttextures/udtest/glow.tga\n"
      "\t}\n"
      "}\n";
 
@@ -77,7 +98,7 @@ static NSString *const UDFixtureParticles =
     self.basePath = [self.scratchDirectory stringByAppendingPathComponent:@"install"];
     self.savePath = [self.scratchDirectory stringByAppendingPathComponent:@"save"];
     NSFileManager *files = [NSFileManager defaultManager];
-    for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx"]) {
+    for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx", @"base/materials"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -85,6 +106,8 @@ static NSString *const UDFixtureParticles =
     [UDFixtureDefs writeToFile:[self.basePath stringByAppendingPathComponent:@"base/def/udtest.def"]
                     atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureParticles writeToFile:[self.basePath stringByAppendingPathComponent:@"base/particles/udtest.prt"]
+                         atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [UDFixtureMaterials writeToFile:[self.basePath stringByAppendingPathComponent:@"base/materials/udtest.mtr"]
                          atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDFixtureFX writeToFile:[self.basePath stringByAppendingPathComponent:@"base/fx/udtest.fx"]
                   atomically:YES encoding:NSUTF8StringEncoding error:NULL];
@@ -189,19 +212,19 @@ static NSString *const UDFixtureParticles =
 - (void)testADeclIsHighlightedAsADecl {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"an fx opens as text, not %@", editor);
+    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a material opens as text, not %@", editor);
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
 
     // Its comments and strings, each in a colour of their own.
     BOOL highlighted = [self spinUntil:^BOOL{
-        NSColor *comment = [self colorOf:@"// one" inTextView:textView];
-        NSColor *string = [self colorOf:@"\"spark\"" inTextView:textView];
+        NSColor *comment = [self colorOf:@"// glows" inTextView:textView];
+        NSColor *string = [self colorOf:@"\"Glow\"" inTextView:textView];
         return comment != nil && string != nil && ![comment isEqual:string] &&
                ![comment isEqual:textView.textColor] && ![string isEqual:textView.textColor];
     } timeout:5.0];
     XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
-                  [self colorOf:@"// one" inTextView:textView], [self colorOf:@"\"spark\"" inTextView:textView],
+                  [self colorOf:@"// glows" inTextView:textView], [self colorOf:@"\"Glow\"" inTextView:textView],
                   textView.textColor);
 }
 
@@ -213,12 +236,12 @@ static NSString *const UDFixtureParticles =
 - (void)testTestReportsWhatTheLexerSays {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     XCTAssertEqual([self testFindingsOf:editor].count, 0U);
 
-    // A string left open, typed above its duration.
-    NSRange duration = [textView.string rangeOfString:@"\t\tduration"];
+    // A string left open, typed above its blend.
+    NSRange duration = [textView.string rangeOfString:@"\t\tblend"];
     NSInteger line = [[textView.string substringToIndex:duration.location] componentsSeparatedByString:@"\n"].count;
     [textView setSelectedRange:NSMakeRange(duration.location, 0)];
     [textView insertText:@"\t\tname\t\"oops\n"];
@@ -236,7 +259,7 @@ static NSString *const UDFixtureParticles =
 - (void)testTestFindsABraceNeverClosed {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
+    UDTextEditorViewController *editor = [self openOutlinePath:@"material/textures/udtest/glow" inController:controller];
     NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
     NSRange last = [textView.string rangeOfString:@"}" options:NSBackwardsSearch];
     [textView setSelectedRange:last];
@@ -471,6 +494,73 @@ static NSString *const UDFixtureParticles =
         XCTAssertLessThanOrEqual(NSMaxY(field.frame), NSMinY(list.frame), @"at %@ high", height);
         XCTAssertGreaterThanOrEqual(NSMinY(field.frame), 0.0, @"and in the view at %@ high", height);
     }
+}
+
+#pragma mark - The FX editor
+
+- (UDFXEditorViewController *)openFXIn:(UDWorkspaceWindowController *)controller {
+    UDBaseEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
+    XCTAssertTrue([editor isKindOfClass:[UDFXEditorViewController class]], @"an fx opens in its editor, not %@", editor);
+    return [editor isKindOfClass:[UDFXEditorViewController class]] ? (UDFXEditorViewController *)editor : nil;
+}
+
+- (void)testAnFXOpensWithItsActions {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDFXEditorViewController *editor = [self openFXIn:controller];
+    if (editor == nil) return;
+
+    XCTAssertEqual(editor.actionsTable.numberOfRows, 3);
+    XCTAssertEqual(editor.actionsController.selectionIndex, 0U, @"its first action shown");
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"kind" inView:editor.view]).titleOfSelectedItem, @"light");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"data" inView:editor.view]).stringValue, @"lights/udtest_missing");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"lightRadius" inView:editor.view]).stringValue, @"64");
+
+    NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
+    XCTAssertEqualObjects(messages, (@[
+        @"Action 0: Material “lights/udtest_missing” is neither a decl nor an image: the engine makes it a default material",
+        @"Action 2: No particle “udtest_missing.prt”"]), @"its uselight finds the action named spark");
+    UDDiagnosticItem *particle = editor.diagnosticStore.allDiagnostics.lastObject;
+    [controller errorsViewController:nil didSelectDiagnostic:particle inStore:editor.diagnosticStore];
+    XCTAssertEqual(editor.actionsController.selectionIndex, 2U, @"a click shows the action");
+}
+
+- (void)testEditingAnActionIsAnEditOfTheFX {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDFXEditorViewController *editor = [self openFXIn:controller];
+    if (editor == nil) return;
+
+    id selection = editor.actionsController.selection;
+    id value = @"soon";
+    XCTAssertFalse([selection validateValue:&value forKey:@"duration" error:NULL], @"not a number: refused");
+    value = @"";
+    XCTAssertTrue([selection validateValue:&value forKey:@"restart" error:NULL]);
+    XCTAssertNil(value, @"nothing is no restart");
+    value = @"0.75";
+    XCTAssertTrue([selection validateValue:&value forKey:@"duration" error:NULL]);
+    // As a binding sets them: through the controller's selection each time.
+    [editor.actionsController setValue:value forKeyPath:@"selection.duration"];
+    [editor.actionsController setValue:@"lights/udtest_other" forKeyPath:@"selection.data"];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects(editor.fx.actions.firstObject.duration, @0.75f);
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited);
+
+    [editor.actionsController setSelectionIndex:2];
+    NSSegmentedControl *buttons = [self segmentedControlWithAction:@selector(addOrRemoveAction:) inView:editor.view];
+    [buttons setSelectedSegment:1];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    [buttons setSelectedSegment:0];
+    [NSApp sendAction:buttons.action to:buttons.target from:buttons];
+    XCTAssertEqual(editor.fx.actions.count, 3U);
+    UDFXAction *added = editor.actionsController.selectedObjects.firstObject;
+    XCTAssertEqualObjects(added.kind, @"model", @"idDeclFX::DefaultDefinition's action, shown");
+    XCTAssertEqualObjects(added.data, @"_default");
+
+    [self save:controller];
+    NSString *saved = [self savedText:@"fx/udtest.fx"];
+    XCTAssertTrue([saved containsString:@"\t\tname \"spark\"\n\t\tduration 0.75\n\t\tlight \"lights/udtest_other\", 1, 0.5, 0, 64\n"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"\t\tdelay 0.1\n\t\tuseLight \"spark\"\n\t\tfadeOut 0.2\n"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"\t\tduration 5\n\t\tmodel \"_default\"\n"], @"%@", saved);
+    XCTAssertFalse([saved containsString:@"udtest_missing.prt"], @"the action taken off: %@", saved);
 }
 
 @end

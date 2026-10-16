@@ -119,9 +119,12 @@ static void *UDSelectionContext = &UDSelectionContext;
         NSBeep();
         return;
     }
+    NSUInteger row = self.keyValuesController.selectionIndex;
+    [self moveSelectionOffRow:row inController:self.keyValuesController];
     NSMutableArray *pairs = [self.entityDef.keyValues mutableCopy];
     [pairs removeObjectAtIndex:selected];
     self.entityDef.keyValues = pairs;
+    [self selectRowAfterRemovingRow:row inController:self.keyValuesController];
 }
 
 - (IBAction)overrideInherited:(id)sender {

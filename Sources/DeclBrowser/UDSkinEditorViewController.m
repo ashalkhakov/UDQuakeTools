@@ -29,13 +29,15 @@ static UDDiagnosticSource const UDSkinReferencesSource = @"references";
     NSMutableArray *elements = [[self.skin valueForKey:key] mutableCopy] ?: [NSMutableArray array];
     NSUInteger selected = controller.selectionIndex;
     if (segment == 0) {
-        NSUInteger at = selected != NSNotFound ? selected + 1 : elements.count;
+        NSUInteger at = selected != NSNotFound && selected < elements.count ? selected + 1 : elements.count;
         [elements insertObject:element atIndex:at];
         [self.skin setValue:elements forKey:key];
         [controller setSelectionIndex:at];
     } else if (selected != NSNotFound && selected < elements.count) {
+        [self moveSelectionOffRow:selected inController:controller];
         [elements removeObjectAtIndex:selected];
         [self.skin setValue:elements forKey:key];
+        [self selectRowAfterRemovingRow:selected inController:controller];
     } else {
         NSBeep();
     }

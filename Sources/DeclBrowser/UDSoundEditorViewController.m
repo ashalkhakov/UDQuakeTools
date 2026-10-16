@@ -29,14 +29,16 @@ static UDDiagnosticSource const UDSoundReferencesSource = @"references";
     NSMutableArray *samples = [[self.sound valueForKey:key] mutableCopy] ?: [NSMutableArray array];
     NSUInteger selected = controller.selectionIndex;
     if (segment == 0) {
-        NSUInteger at = selected != NSNotFound ? selected + 1 : samples.count;
+        NSUInteger at = selected != NSNotFound && selected < samples.count ? selected + 1 : samples.count;
         [samples insertObject:[UDSoundSample sampleWithPath:@"sound/"] atIndex:at];
         [self.sound setValue:samples forKey:key];
         [controller setSelectionIndex:at];
         [table editColumn:0 row:(NSInteger)at withEvent:nil select:YES];
     } else if (selected != NSNotFound && selected < samples.count) {
+        [self moveSelectionOffRow:selected inController:controller];
         [samples removeObjectAtIndex:selected];
         [self.sound setValue:samples forKey:key];
+        [self selectRowAfterRemovingRow:selected inController:controller];
     } else {
         NSBeep();
     }

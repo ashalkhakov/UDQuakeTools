@@ -39,13 +39,15 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
             return;
         }
         UDParticleStage *stage = copying ? [source copy] : [[UDParticleStage alloc] init];   // Default()
-        NSUInteger at = selected != NSNotFound ? selected + 1 : stages.count;
+        NSUInteger at = selected != NSNotFound && selected < stages.count ? selected + 1 : stages.count;
         [stages insertObject:stage atIndex:at];
         self.particle.stages = stages;
         [self.stagesController setSelectionIndex:at];
     } else if (selected != NSNotFound && selected < stages.count) {
+        [self moveSelectionOffRow:selected inController:self.stagesController];
         [stages removeObjectAtIndex:selected];
         self.particle.stages = stages;
+        [self selectRowAfterRemovingRow:selected inController:self.stagesController];
     } else {
         NSBeep();
     }

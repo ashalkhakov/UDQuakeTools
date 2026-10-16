@@ -23,6 +23,7 @@
 - (IBAction)addOrRemoveValue:(NSSegmentedControl *)sender {
     NSMutableArray<UDTableValue *> *values = [self.table.values mutableCopy] ?: [NSMutableArray array];
     NSUInteger selected = self.valuesController.selectionIndex;
+    if (selected != NSNotFound && selected >= values.count) selected = NSNotFound;   // a stale one
     if (sender.selectedSegment == 0) {
         // After the selection (at the end without one), a copy of the value
         // before it.
@@ -37,8 +38,10 @@
             NSBeep();
             return;
         }
+        [self moveSelectionOffRow:selected inController:self.valuesController];
         [values removeObjectAtIndex:selected];
         self.table.values = values;
+        [self selectRowAfterRemovingRow:selected inController:self.valuesController];
     }
 }
 

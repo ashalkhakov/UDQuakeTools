@@ -37,6 +37,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)targetForDiagnostic:(UDDiagnosticItem *)diagnostic;
 - (void)removeDiagnosticTargets;
 
+/// Before a list's row @a row is taken off, the selection moved off it: to
+/// the row before, or to none. (GNUstep's array controller reads a selection
+/// past the end of its new content, and raises.)
+- (void)moveSelectionOffRow:(NSUInteger)row inController:(NSArrayController *)controller;
+
+/// After a list's row @a row is taken off, its neighbour selected, as
+/// DialogParticleEditor's RemoveStage selects it (the one before, or the
+/// one after the first); nothing in an empty list. (GNUstep's array
+/// controller keeps a selection past the end otherwise.)
+- (void)selectRowAfterRemovingRow:(NSUInteger)row inController:(NSArrayController *)controller;
+
 /// A material the engine finds: a decl, one of its own ("_default"), or an
 /// image of that name, which it makes a material of. (A skin's, a particle
 /// stage's.)

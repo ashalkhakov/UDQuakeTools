@@ -391,7 +391,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-name">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="name: the window's name, which scripts and other windows call it by." id="GUV-ip-name">
                                                 <rect key="frame" x="92" y="698" width="145" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-name-c">
@@ -421,7 +421,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-visible">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="visible: whether the window and its children are drawn (an expression leaves it to the run)." id="GUV-ip-visible">
                                                 <rect key="frame" x="90" y="649" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Visible" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-visible-c">
@@ -432,7 +432,7 @@
                                                     <action selector="generalChanged:" target="GUV-ip" id="GUV-ip-visible-a"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-notime">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="notime: the window's onTime events do not run until a script resets its time." id="GUV-ip-notime">
                                                 <rect key="frame" x="90" y="628" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="No time" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-notime-c">
@@ -443,7 +443,7 @@
                                                     <action selector="generalChanged:" target="GUV-ip" id="GUV-ip-notime-a"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-noevents">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="noevents: the window takes no mouse or key events (its children may)." id="GUV-ip-noevents">
                                                 <rect key="frame" x="90" y="607" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="No events" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-noevents-c">
@@ -454,7 +454,7 @@
                                                     <action selector="generalChanged:" target="GUV-ip" id="GUV-ip-noevents-a"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-noclip">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="noclip: the window's children are not clipped to its rect." id="GUV-ip-noclip">
                                                 <rect key="frame" x="90" y="586" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="No clipping" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-noclip-c">
@@ -465,7 +465,7 @@
                                                     <action selector="generalChanged:" target="GUV-ip" id="GUV-ip-noclip-a"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-nocursor">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="nocursor: the cursor is not drawn while over the window." id="GUV-ip-nocursor">
                                                 <rect key="frame" x="90" y="565" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="No cursor" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-nocursor-c">
@@ -489,7 +489,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-usemat">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="background: draw a material (or image) in the window's rect." id="GUV-ip-usemat">
                                                 <rect key="frame" x="8" y="502" width="200" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Material" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-usemat-c">
@@ -500,7 +500,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-usemat-a"/>
                                                 </connections>
                                             </button>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-background">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="background: the material or image drawn in the window's rect." id="GUV-ip-background">
                                                 <rect key="frame" x="26" y="479" width="211" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-background-c">
@@ -512,7 +512,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-background-a"/>
                                                 </connections>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-varbg">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="variablebackground: the background is a variable's value, set by scripts." id="GUV-ip-varbg">
                                                 <rect key="frame" x="24" y="454" width="200" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Variable background" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-varbg-c">
@@ -532,7 +532,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-matscalex">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="matscalex: the background repeats this many times across." id="GUV-ip-matscalex">
                                                 <rect key="frame" x="80" y="431" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-matscalex-c">
@@ -553,7 +553,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-matscaley">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="matscaley: the background repeats this many times down." id="GUV-ip-matscaley">
                                                 <rect key="frame" x="156" y="431" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-matscaley-c">
@@ -565,7 +565,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-matscaley-a"/>
                                                 </connections>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-usebackcolor">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="backcolor: fill the window's rect with a color." id="GUV-ip-usebackcolor">
                                                 <rect key="frame" x="8" y="403" width="120" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Back color" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-usebackcolor-c">
@@ -576,7 +576,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-usebackcolor-a"/>
                                                 </connections>
                                             </button>
-                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-backcolor">
+                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="backcolor r, g, b, a: the color the rect is filled with, under the background." id="GUV-ip-backcolor">
                                                 <rect key="frame" x="132" y="401" width="44" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -593,7 +593,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-bordersize">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="bordersize: the width of the border drawn around the rect; 0 draws none." id="GUV-ip-bordersize">
                                                 <rect key="frame" x="92" y="371" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-bordersize-c">
@@ -605,7 +605,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-bordersize-a"/>
                                                 </connections>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-usebordercolor">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="bordercolor: the border is a color." id="GUV-ip-usebordercolor">
                                                 <rect key="frame" x="24" y="348" width="100" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="radio" title="Color" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-usebordercolor-c">
@@ -616,7 +616,7 @@
                                                     <action selector="borderKindChanged:" target="GUV-ip" id="GUV-ip-usebordercolor-a"/>
                                                 </connections>
                                             </button>
-                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-bordercolor">
+                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="bordercolor r, g, b, a: the border's color." id="GUV-ip-bordercolor">
                                                 <rect key="frame" x="132" y="346" width="44" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -624,7 +624,7 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-bordercolor-a"/>
                                                 </connections>
                                             </colorWell>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-usebordermat">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="borderShader: the border is a material." id="GUV-ip-usebordermat">
                                                 <rect key="frame" x="24" y="320" width="100" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="radio" title="Material" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-usebordermat-c">
@@ -635,7 +635,7 @@
                                                     <action selector="borderKindChanged:" target="GUV-ip" id="GUV-ip-usebordermat-a"/>
                                                 </connections>
                                             </button>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-bordermat">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="borderShader: the material the border is drawn with." id="GUV-ip-bordermat">
                                                 <rect key="frame" x="26" y="297" width="211" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-bordermat-c">
@@ -656,7 +656,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-matcolor">
+                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="matcolor r, g, b, a: the color the background (and a border material) is tinted with." id="GUV-ip-matcolor">
                                                 <rect key="frame" x="132" y="267" width="44" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -677,7 +677,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-usetext">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="text: the window shows text." id="GUV-ip-usetext">
                                                 <rect key="frame" x="8" y="199" width="200" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Text" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-usetext-c">
@@ -688,7 +688,7 @@
                                                     <action selector="textChanged:" target="GUV-ip" id="GUV-ip-usetext-a"/>
                                                 </connections>
                                             </button>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-text">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="text: what the window shows; a #str_ id takes it from the string table." id="GUV-ip-text">
                                                 <rect key="frame" x="26" y="176" width="211" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-text-c">
@@ -709,7 +709,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-forecolor">
+                                            <colorWell verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="forecolor r, g, b, a: the text's color." id="GUV-ip-forecolor">
                                                 <rect key="frame" x="92" y="148" width="44" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -726,7 +726,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-textscale">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="textscale: the text's size, a scale of the font's." id="GUV-ip-textscale">
                                                 <rect key="frame" x="92" y="120" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-textscale-c">
@@ -747,7 +747,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-textalign">
+                                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="textalign: the text left, centered or right in the rect." id="GUV-ip-textalign">
                                                 <rect key="frame" x="89" y="93" width="100" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="GUV-ip-textalign-c">
@@ -774,7 +774,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-textalignx">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="textalignx: the text moved across by this many units." id="GUV-ip-textalignx">
                                                 <rect key="frame" x="92" y="65" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-textalignx-c">
@@ -795,7 +795,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-textaligny">
+                                            <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="textaligny: the text moved down by this many units." id="GUV-ip-textaligny">
                                                 <rect key="frame" x="166" y="65" width="50" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-textaligny-c">
@@ -816,7 +816,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-font">
+                                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="font: the font the text is drawn in (a folder of fonts/); the default is the GUI's." id="GUV-ip-font">
                                                 <rect key="frame" x="89" y="38" width="148" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="GUV-ip-font-c">
@@ -832,7 +832,7 @@
                                                     <action selector="textChanged:" target="GUV-ip" id="GUV-ip-font-a"/>
                                                 </connections>
                                             </popUpButton>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-nowrap">
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="nowrap: the text stays on one line, not wrapped to the rect." id="GUV-ip-nowrap">
                                                 <rect key="frame" x="90" y="10" width="145" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="No wrapping" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="GUV-ip-nowrap-c">
@@ -889,7 +889,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-lay-x">
+                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="The selection's left, from the left of the parent of its bottom-most window." id="GUV-lay-x">
                     <rect key="frame" x="30" y="456" width="60" height="19"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-lay-x-c">
@@ -910,7 +910,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-lay-y">
+                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="The selection's top, from the top of the parent of its bottom-most window." id="GUV-lay-y">
                     <rect key="frame" x="122" y="456" width="60" height="19"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-lay-y-c">
@@ -940,7 +940,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-lay-w">
+                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="The selection's width." id="GUV-lay-w">
                     <rect key="frame" x="30" y="400" width="60" height="19"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-lay-w-c">
@@ -961,7 +961,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-lay-h">
+                <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="The selection's height." id="GUV-lay-h">
                     <rect key="frame" x="122" y="400" width="60" height="19"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-lay-h-c">

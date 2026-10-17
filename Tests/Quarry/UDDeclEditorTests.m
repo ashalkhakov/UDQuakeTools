@@ -496,10 +496,10 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:stageColumn row:0], @"stage 0",
                           @"numbered as DialogParticleEditor listed them");
     XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"its first stage shown");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.inspectorView]).stringValue, @"4");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"material" inView:editor.inspectorView]).stringValue, @"textures/udtest/spark");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"depthHack" inView:editor.inspectorView]).stringValue, @"0.001");
-    XCTAssertEqual(((NSSlider *)[self viewWithToolTip:@"totalParticles slider" inView:editor.inspectorView]).doubleValue, 4.0, @"its slider too");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalParticles" inView:editor.inspectorView]).stringValue, @"4");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"material" inView:editor.inspectorView]).stringValue, @"textures/udtest/spark");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"depthHack" inView:editor.inspectorView]).stringValue, @"0.001");
+    XCTAssertEqual(((NSSlider *)[self viewBoundTo:@"totalParticles" ofClass:[NSSlider class] inView:editor.inspectorView]).doubleValue, 4.0, @"its slider too");
 
     NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
     XCTAssertEqualObjects(messages, (@[@"Stage 0: material “textures/udtest/spark” is neither a decl nor an image: the engine makes it a default material"]));
@@ -519,7 +519,7 @@ static NSString *const UDFixtureParticles =
     [editor.editingContext processPendingChanges];
     XCTAssertEqual(editor.particle.stages.firstObject.totalParticles, 8);
     XCTAssertTrue(editor.editorDocument.isDocumentEdited, @"the particle is edited");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.inspectorView]).stringValue, @"8");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalParticles" inView:editor.inspectorView]).stringValue, @"8");
 
     [editor.editorDocument.undoManager undo];
     XCTAssertEqual(editor.particle.stages.firstObject.totalParticles, 4, @"and undone");
@@ -546,11 +546,11 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
     XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"stage", @"its first stage's parameters");
-    XCTAssertNil([self viewWithToolTip:@"totalParticles" inView:editor.view], @"in the inspector, not the centre");
+    XCTAssertNil([self viewBoundTo:@"totalParticles" inView:editor.view], @"in the inspector, not the centre");
 
     [editor.stagesController setSelectionIndexes:[NSIndexSet indexSet]];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"particle", @"no stage: the particle's");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"depthHack" inView:editor.inspectorView]).stringValue, @"0.001");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"depthHack" inView:editor.inspectorView]).stringValue, @"0.001");
 
     // a second stage, dragged before the first
     [editor.stagesController setSelectionIndex:0];
@@ -562,7 +562,7 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([editor moveStageAtIndex:1 toRow:0]);
     XCTAssertEqual(editor.particle.stages[0].totalParticles, 100, @"the new stage first");
     XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"and chosen");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalParticles" inView:editor.inspectorView]).stringValue, @"100");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalParticles" inView:editor.inspectorView]).stringValue, @"100");
     [editor.editingContext processPendingChanges];
     [editor.editorDocument.undoManager undo];
     [editor.editingContext processPendingChanges];
@@ -608,12 +608,12 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqual(editor.actionsTable.numberOfRows, 3);
     XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"fx", @"the FX's keywords first");
-    XCTAssertNotNil([self viewWithToolTip:@"bindTo" inView:editor.inspectorView]);
+    XCTAssertNotNil([self viewBoundTo:@"bindTo" inView:editor.inspectorView]);
     [editor.actionsController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"action", @"an action chosen: its keywords");
-    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"kind" inView:editor.inspectorView]).titleOfSelectedItem, @"light");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"data" inView:editor.inspectorView]).stringValue, @"lights/udtest_missing");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"lightRadius" inView:editor.inspectorView]).stringValue, @"64");
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewBoundTo:@"kind" inView:editor.inspectorView]).titleOfSelectedItem, @"light");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"data" inView:editor.inspectorView]).stringValue, @"lights/udtest_missing");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"lightRadius" inView:editor.inspectorView]).stringValue, @"64");
 
     // dragged last
     XCTAssertTrue([editor moveActionAtIndex:0 toRow:3]);
@@ -688,17 +688,17 @@ static NSString *const UDFixtureParticles =
 
     XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"figure", @"nothing chosen: the figure's settings");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"totalMass" inView:editor.inspectorView]).stringValue, @"40");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalMass" inView:editor.inspectorView]).stringValue, @"40");
     XCTAssertEqual(editor.bodiesTable.numberOfRows, 3);
     XCTAssertEqual(editor.constraintsTable.numberOfRows, 2);
     [editor.bodiesController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"body");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"jointName" inView:editor.inspectorView]).stringValue, @"origin");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"jointName" inView:editor.inspectorView]).stringValue, @"origin");
     [editor.constraintsController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"constraint");
     XCTAssertEqual(editor.bodiesController.selectionIndexes.count, 0U, @"one list chosen at a time");
-    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"type" inView:editor.inspectorView]).titleOfSelectedItem, @"hinge");
-    XCTAssertNil([self viewWithToolTip:@"totalMass" inView:editor.view], @"the keywords in the inspector, not the centre");
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewBoundTo:@"type" inView:editor.inspectorView]).titleOfSelectedItem, @"hinge");
+    XCTAssertNil([self viewBoundTo:@"totalMass" inView:editor.view], @"the keywords in the inspector, not the centre");
 
     // The mesh has a "Lid": idAnimator finds a joint by Icmp.
     NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
@@ -720,7 +720,7 @@ static NSString *const UDFixtureParticles =
     for (NSNumber *height in @[@600, @1000]) {
         [inspector setFrameSize:NSMakeSize(280, height.doubleValue)];
         [inspector layoutSubtreeIfNeeded];
-        NSView *model = [self viewWithToolTip:@"model" inView:inspector];
+        NSView *model = [self viewBoundTo:@"model" inView:inspector];
         NSRect frame = [inspector convertRect:model.bounds fromView:model];
         CGFloat fromTop = inspector.isFlipped ? NSMinY(frame) : height.doubleValue - NSMaxY(frame);
         XCTAssertLessThan(fromTop, 80.0, @"the figure's first field at the top, %@ high", height);
@@ -772,6 +772,41 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([saved containsString:@"hinge \"hinge\" {\n\tbody1 \"door\"\n\tbody2 \"crate\"\n"], @"%@", saved);
     XCTAssertTrue([saved containsString:@"universalJoint \"constraint1\" {\n\tbody1 \"crate\"\n\tbody2 \"world\"\n"], @"%@", saved);
     XCTAssertFalse([saved containsString:@"latch"], @"%@", saved);
+}
+
+#pragma mark - Help
+
+/// Every control of @a view that edits a key has help as its tooltip.
+- (void)checkHelpUnder:(NSView *)view of:(NSString *)editor {
+    __block NSUInteger checked = 0;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        for (NSString *binding in @[NSValueBinding, NSSelectedValueBinding, NSSelectedIndexBinding]) {
+            NSString *keyPath = [candidate infoForBinding:binding][NSObservedKeyPathKey];
+            if (![keyPath hasPrefix:@"selection."]) continue;
+            checked++;
+            XCTAssertTrue([candidate.toolTip containsString:@" "], @"%@: %@ has help, not %@", editor, keyPath, candidate.toolTip);
+        }
+        return YES;
+    }];
+    XCTAssertGreaterThan(checked, 0U, @"%@", editor);
+}
+
+- (void)testEveryInspectorControlHasHelp {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *particle = [self openSparkIn:controller];
+    [self checkHelpUnder:particle.inspectorView of:@"particle"];
+    UDFXEditorViewController *fx = [self openFXIn:controller];
+    [fx.actionsController setSelectionIndex:0];
+    [self checkHelpUnder:fx.inspectorView of:@"fx"];
+    UDAFEditorViewController *af = [self openCrateIn:controller];
+    for (NSString *tab in @[@"figure", @"body", @"constraint"]) {
+        [af.inspectorTabs selectTabViewItemWithIdentifier:tab];
+        [self checkHelpUnder:af.inspectorView of:[@"af " stringByAppendingString:tab]];
+    }
+    UDMaterialEditorViewController *material = [self openMaterial:@"textures/udtest/glow" in:controller];
+    [self checkHelpUnder:material.inspectorView of:@"material"];
+    [material.stagesController setSelectionIndex:0];
+    [self checkHelpUnder:material.inspectorView of:@"material stage"];
 }
 
 #pragma mark - The material editor

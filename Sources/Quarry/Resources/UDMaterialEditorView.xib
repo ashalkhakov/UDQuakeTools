@@ -1988,7 +1988,7 @@
                                                     <binding destination="MTE-sac" name="value" keyPath="selection.screen" id="MTE-c288-b"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-c289">
+                                            <button toolTip="The image is mapped to the screen, the other way." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-c289">
                                                 <rect key="frame" x="138" y="40" width="124" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="screen2" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MTE-c289-c">

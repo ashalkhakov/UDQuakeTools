@@ -74,6 +74,8 @@ NSString * _Nullable UDDoom3InstallPath(void);
 /// The control under @a view bound to selection.<key> (its value, selected
 /// value or index): found by what it edits, its tooltip being help.
 - (nullable __kindof NSView *)viewBoundTo:(NSString *)key inView:(NSView *)view;
+/// The same, a control of @a cls (a slider beside its field, say).
+- (nullable __kindof NSView *)viewBoundTo:(NSString *)key ofClass:(Class)cls inView:(NSView *)view;
 - (nullable NSButton *)buttonTitled:(NSString *)title inView:(NSView *)view;
 - (nullable __kindof NSView *)firstSubviewOfClass:(Class)cls inView:(NSView *)view;
 - (nullable NSSegmentedControl *)segmentedControlWithAction:(SEL)action inView:(NSView *)view;

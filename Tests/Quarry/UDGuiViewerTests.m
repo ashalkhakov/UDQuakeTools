@@ -689,6 +689,10 @@ static NSString *const UDViewerScript =
     XCTAssertTrue([editor.propertiesPlaceholder isHidden]);
     XCTAssertEqualObjects(props.nameField.stringValue, @"Panel");
     XCTAssertEqualObjects(props.typeField.stringValue, @"windowDef");
+    for (NSView *control in @[props.nameField, props.visibleButton, props.backgroundField, props.textScaleField,
+                              props.fontPopUp, editor.layoutXField]) {
+        XCTAssertTrue([control.toolTip containsString:@" "], @"help on %@", control);
+    }
     XCTAssertFalse(props.visibleButton.isEnabled, @"its visible is an expression");
     XCTAssertEqual(props.useBackColorButton.state, NSControlStateValueOn);
     NSColor *back = [props.backColorWell.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];

@@ -300,9 +300,14 @@ NSString *UDDoom3InstallPath(void) {
 }
 
 - (NSView *)viewBoundTo:(NSString *)key inView:(NSView *)view {
+    return [self viewBoundTo:key ofClass:[NSView class] inView:view];
+}
+
+- (NSView *)viewBoundTo:(NSString *)key ofClass:(Class)cls inView:(NSView *)view {
     NSString *keyPath = [@"selection." stringByAppendingString:key];
     __block NSView *found = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        if (![candidate isKindOfClass:cls]) return YES;
         for (NSString *binding in @[NSValueBinding, NSSelectedValueBinding, NSSelectedIndexBinding]) {
             if ([[candidate infoForBinding:binding][NSObservedKeyPathKey] isEqualToString:keyPath]) {
                 found = candidate;

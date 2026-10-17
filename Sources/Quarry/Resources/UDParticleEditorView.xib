@@ -170,7 +170,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="depthHack" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f8">
+                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f8">
                                                 <rect key="frame" x="96" y="544" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f8-c">
@@ -236,7 +236,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="depthHack" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f116">
+                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f116">
                                                 <rect key="frame" x="96" y="1335" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f116-c">
@@ -270,7 +270,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="material" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119">
+                                            <textField toolTip="material: what each particle is drawn with." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119">
                                                 <rect key="frame" x="96" y="1275" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f119-c">
@@ -295,7 +295,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="totalParticles" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f121">
+                                            <textField toolTip="count: how many particles one cycle of the stage spawns." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f121">
                                                 <rect key="frame" x="96" y="1250" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f121-c">
@@ -311,7 +311,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="totalParticles slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s123">
+                                            <slider toolTip="count: how many particles one cycle of the stage spawns." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s123">
                                                 <rect key="frame" x="162" y="1250" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="4096" tickMarkPosition="above" sliderType="linear" id="PTE-s123-c"/>
@@ -328,7 +328,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="particleLife" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f124">
+                                            <textField toolTip="time: how many seconds each particle lives." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f124">
                                                 <rect key="frame" x="96" y="1225" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f124-c">
@@ -344,7 +344,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="particleLife slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s126">
+                                            <slider toolTip="time: how many seconds each particle lives." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s126">
                                                 <rect key="frame" x="162" y="1225" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="10" tickMarkPosition="above" sliderType="linear" id="PTE-s126-c"/>
@@ -361,7 +361,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="cycles" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f127">
+                                            <textField toolTip="cycles: how many times the stage runs its cycle before it stops; 0 runs it for ever." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f127">
                                                 <rect key="frame" x="96" y="1200" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f127-c">
@@ -386,7 +386,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="spawnBunching" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f129">
+                                            <textField toolTip="bunching: how the particles come out over a cycle: 1 evenly over its time, 0 all at its first instant." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f129">
                                                 <rect key="frame" x="96" y="1175" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f129-c">
@@ -402,7 +402,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="spawnBunching slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s131">
+                                            <slider toolTip="bunching: how the particles come out over a cycle: 1 evenly over its time, 0 all at its first instant." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s131">
                                                 <rect key="frame" x="162" y="1175" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s131-c"/>
@@ -419,7 +419,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="timeOffset" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f132">
+                                            <textField toolTip="timeOffset: seconds the stage waits before it starts." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f132">
                                                 <rect key="frame" x="96" y="1150" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f132-c">
@@ -444,7 +444,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="deadTime" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f134">
+                                            <textField toolTip="deadTime: seconds after each cycle before the next one starts." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f134">
                                                 <rect key="frame" x="96" y="1125" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f134-c">
@@ -478,7 +478,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton toolTip="distributionType" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p137">
+                                            <popUpButton toolTip="distribution: where particles start: rect (a box), cylinder, sphere." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p137">
                                                 <rect key="frame" x="96" y="1062" width="160" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" title="rect" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p137-i0" id="PTE-p137-c">
@@ -505,7 +505,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="distributionParms" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f139">
+                                            <textField toolTip="The shape's size: x y z, and for a cylinder or a sphere a ring fraction (0 fills it; near 1, only its shell)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f139">
                                                 <rect key="frame" x="96" y="1038" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f139-c">
@@ -521,7 +521,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c141">
+                                            <button toolTip="randomDistribution: particles start at random points of the shape; off, spread over it in order." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c141">
                                                 <rect key="frame" x="94" y="1013" width="160" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Random distribution" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c141-c">
@@ -541,7 +541,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton toolTip="directionType" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p142">
+                                            <popUpButton toolTip="direction: where particles head: cone (within an angle of up), outward (away from the shape's center)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p142">
                                                 <rect key="frame" x="96" y="986" width="160" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" title="cone" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p142-i0" id="PTE-p142-c">
@@ -567,7 +567,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="directionParms" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f144">
+                                            <textField toolTip="The cone's angle in degrees, or outward's upward bias." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f144">
                                                 <rect key="frame" x="96" y="962" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f144-c">
@@ -592,7 +592,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton toolTip="orientation" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p146">
+                                            <popUpButton toolTip="orientation: how a particle faces: view (the viewer), aimed (along its path, as a trail), x, y, z (flat across that axis)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p146">
                                                 <rect key="frame" x="96" y="934" width="160" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" title="view" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p146-i0" id="PTE-p146-c">
@@ -621,7 +621,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="orientationParms" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f148">
+                                            <textField toolTip="For aimed: the number of trail segments and the time they cover." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f148">
                                                 <rect key="frame" x="96" y="910" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f148-c">
@@ -646,7 +646,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton toolTip="customPathType" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p150">
+                                            <popUpButton toolTip="customPath: a path in place of speed and gravity: standard (none), helix, flies, orbit, drip." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p150">
                                                 <rect key="frame" x="96" y="882" width="160" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" title="standard" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p150-i0" id="PTE-p150-c">
@@ -675,7 +675,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="customPathParms" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f152">
+                                            <textField toolTip="The path's numbers: helix sizeX sizeY sizeZ radialSpeed climbSpeed; flies radialSpeed axialSpeed size; orbit radius speed." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f152">
                                                 <rect key="frame" x="96" y="858" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f152-c">
@@ -709,7 +709,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="speedFrom" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f155">
+                                            <textField toolTip="Speed at the particle's birth (units a second); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f155">
                                                 <rect key="frame" x="96" y="798" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f155-c">
@@ -725,7 +725,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="speedFrom slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s157">
+                                            <slider toolTip="Speed at the particle's birth (units a second); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s157">
                                                 <rect key="frame" x="162" y="798" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s157-c"/>
@@ -742,7 +742,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="speedTo" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f158">
+                                            <textField toolTip="Speed at the particle's death (units a second)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f158">
                                                 <rect key="frame" x="96" y="773" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f158-c">
@@ -758,7 +758,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="speedTo slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s160">
+                                            <slider toolTip="Speed at the particle's death (units a second)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s160">
                                                 <rect key="frame" x="162" y="773" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s160-c"/>
@@ -775,7 +775,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="speedTable" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161">
+                                            <textField toolTip="A table decl speed is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161">
                                                 <rect key="frame" x="96" y="748" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f161-c">
@@ -809,7 +809,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="rotationFrom" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f164">
+                                            <textField toolTip="How fast it turns at the particle's birth (degrees a second; half the particles turn the other way); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f164">
                                                 <rect key="frame" x="96" y="688" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f164-c">
@@ -825,7 +825,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="rotationFrom slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s166">
+                                            <slider toolTip="How fast it turns at the particle's birth (degrees a second; half the particles turn the other way); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s166">
                                                 <rect key="frame" x="162" y="688" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="100" tickMarkPosition="above" sliderType="linear" id="PTE-s166-c"/>
@@ -842,7 +842,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="rotationTo" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f167">
+                                            <textField toolTip="How fast it turns at the particle's death (degrees a second; half the particles turn the other way)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f167">
                                                 <rect key="frame" x="96" y="663" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f167-c">
@@ -858,7 +858,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="rotationTo slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s169">
+                                            <slider toolTip="How fast it turns at the particle's death (degrees a second; half the particles turn the other way)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s169">
                                                 <rect key="frame" x="162" y="663" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="100" tickMarkPosition="above" sliderType="linear" id="PTE-s169-c"/>
@@ -875,7 +875,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="rotationTable" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170">
+                                            <textField toolTip="A table decl how fast it turns is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170">
                                                 <rect key="frame" x="96" y="638" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f170-c">
@@ -909,7 +909,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="sizeFrom" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f173">
+                                            <textField toolTip="Size at the particle's birth (units); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f173">
                                                 <rect key="frame" x="96" y="578" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f173-c">
@@ -925,7 +925,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="sizeFrom slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s175">
+                                            <slider toolTip="Size at the particle's birth (units); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s175">
                                                 <rect key="frame" x="162" y="578" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s175-c"/>
@@ -942,7 +942,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="sizeTo" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f176">
+                                            <textField toolTip="Size at the particle's death (units)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f176">
                                                 <rect key="frame" x="96" y="553" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f176-c">
@@ -958,7 +958,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="sizeTo slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s178">
+                                            <slider toolTip="Size at the particle's death (units)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s178">
                                                 <rect key="frame" x="162" y="553" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s178-c"/>
@@ -975,7 +975,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="sizeTable" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179">
+                                            <textField toolTip="A table decl size is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179">
                                                 <rect key="frame" x="96" y="528" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f179-c">
@@ -1009,7 +1009,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="aspectFrom" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f182">
+                                            <textField toolTip="Width over height at the particle's birth; it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f182">
                                                 <rect key="frame" x="96" y="468" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f182-c">
@@ -1025,7 +1025,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="aspectFrom slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s184">
+                                            <slider toolTip="Width over height at the particle's birth; it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s184">
                                                 <rect key="frame" x="162" y="468" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s184-c"/>
@@ -1042,7 +1042,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="aspectTo" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f185">
+                                            <textField toolTip="Width over height at the particle's death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f185">
                                                 <rect key="frame" x="96" y="443" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f185-c">
@@ -1058,7 +1058,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="aspectTo slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s187">
+                                            <slider toolTip="Width over height at the particle's death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s187">
                                                 <rect key="frame" x="162" y="443" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s187-c"/>
@@ -1075,7 +1075,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="aspectTable" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188">
+                                            <textField toolTip="A table decl width over height is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188">
                                                 <rect key="frame" x="96" y="418" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f188-c">
@@ -1109,7 +1109,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="gravity" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f191">
+                                            <textField toolTip="gravity: units per second each second pulling the particles down the emitter's axis (negative pushes them up)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f191">
                                                 <rect key="frame" x="96" y="358" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f191-c">
@@ -1125,7 +1125,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="gravity slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s193">
+                                            <slider toolTip="gravity: units per second each second pulling the particles down the emitter's axis (negative pushes them up)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s193">
                                                 <rect key="frame" x="162" y="358" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s193-c"/>
@@ -1133,7 +1133,7 @@
                                                     <binding destination="PTE-sac" name="value" keyPath="selection.gravity" id="PTE-s193-b"/>
                                                 </connections>
                                             </slider>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c194">
+                                            <button toolTip="world: gravity pulls down the world's axis, not the emitter's." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c194">
                                                 <rect key="frame" x="94" y="333" width="160" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="World gravity" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c194-c">
@@ -1153,7 +1153,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="initialAngle" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f195">
+                                            <textField toolTip="angle: each particle's starting turn in degrees; 0 gives each a random one." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f195">
                                                 <rect key="frame" x="96" y="309" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f195-c">
@@ -1178,7 +1178,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="offset" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f197">
+                                            <textField toolTip="offset: x y z the particles start from, from the emitter." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f197">
                                                 <rect key="frame" x="96" y="284" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f197-c">
@@ -1203,7 +1203,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="boundsExpansion" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f199">
+                                            <textField toolTip="boundsExpansion: units added to the system's bounds, so it is not culled while still in view." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f199">
                                                 <rect key="frame" x="96" y="259" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f199-c">
@@ -1228,7 +1228,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="animationFrames" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f201">
+                                            <textField toolTip="animationFrames: the material's image is this many frames side by side; each particle plays them." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f201">
                                                 <rect key="frame" x="96" y="234" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f201-c">
@@ -1253,7 +1253,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="animationRate" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f203">
+                                            <textField toolTip="animationRate: frames a second the particles play." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f203">
                                                 <rect key="frame" x="96" y="209" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f203-c">
@@ -1287,7 +1287,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="color" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f206">
+                                            <textField toolTip="color r g b a: the particles' color as they spawn." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f206">
                                                 <rect key="frame" x="96" y="149" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f206-c">
@@ -1312,7 +1312,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="fadeColor" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f208">
+                                            <textField toolTip="fadeColor r g b a: the color they fade to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f208">
                                                 <rect key="frame" x="96" y="124" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f208-c">
@@ -1328,7 +1328,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c210">
+                                            <button toolTip="entityColor: the particles take the entity's color (its shaderParms) in place of color." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c210">
                                                 <rect key="frame" x="94" y="99" width="160" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Entity color" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c210-c">
@@ -1348,7 +1348,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="fadeInFraction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f211">
+                                            <textField toolTip="fadeIn: the fraction of its life a particle takes to fade in." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f211">
                                                 <rect key="frame" x="96" y="75" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f211-c">
@@ -1364,7 +1364,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="fadeInFraction slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s213">
+                                            <slider toolTip="fadeIn: the fraction of its life a particle takes to fade in." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s213">
                                                 <rect key="frame" x="162" y="75" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s213-c"/>
@@ -1381,7 +1381,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="fadeOutFraction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f214">
+                                            <textField toolTip="fadeOut: the fraction of its life, at its end, a particle takes to fade out." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f214">
                                                 <rect key="frame" x="96" y="50" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f214-c">
@@ -1397,7 +1397,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="fadeOutFraction slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s216">
+                                            <slider toolTip="fadeOut: the fraction of its life, at its end, a particle takes to fade out." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s216">
                                                 <rect key="frame" x="162" y="50" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s216-c"/>
@@ -1414,7 +1414,7 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="fadeIndexFraction" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f217">
+                                            <textField toolTip="fadeIndex: the particles spawned later in a cycle are more faded, over this fraction of them (smoke thinning out)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f217">
                                                 <rect key="frame" x="96" y="25" width="60" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f217-c">
@@ -1430,7 +1430,7 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
-                                            <slider toolTip="fadeIndexFraction slider" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s219">
+                                            <slider toolTip="fadeIndex: the particles spawned later in a cycle are more faded, over this fraction of them (smoke thinning out)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s219">
                                                 <rect key="frame" x="162" y="25" width="94" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s219-c"/>

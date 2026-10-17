@@ -234,8 +234,13 @@ In order of value against cost; LOC is the MFC original's size.
       where there is none), the mouse and keys sent as the game sends them,
       its named events, its state and its log in the window's new
       inspector pane (Xcode's three panes, as RDLKit's designer has them).
-      The editor is next, its canvas RDLKit's designer's: drag, resize,
-      select. The port interprets as well as draws: GUI scripts, named events,
+      The editor is under way, on tools/guied ported: a GUI loaded for
+      editing writes back as the engine's editor writes it (every retail
+      GUI reads back the same), and a .gui's Design mode is its canvas —
+      select (shift adds), move and size with the eight handles, snap to
+      the grid, each drag one Undo; Source and Run follow its edits. Next
+      on it: the navigator, the properties and scripts (inspector panes),
+      then insert, delete, z-order and copy/paste. The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

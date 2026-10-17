@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDGuiPlayer;
+@class UDGuiPlayer, UDTriangleList, UDOverlay, rvGEWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +28,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The player's last frame shown.
 - (void)showFrame;
+
+/// A frame shown: its triangles (drawn with GL) or its picture (in
+/// software), in a picture of @a pictureSize; @a overlay over it, in the
+/// view's points (the GUI editor's grid and selections).
+- (void)showTriangles:(nullable UDTriangleList *)triangles picture:(nullable NSImage *)picture
+          pictureSize:(NSSize)pictureSize overlay:(nullable UDOverlay *)overlay;
+
+/// Designing: the workspace the mouse edits instead of the player's GUI
+/// being run (rvGEWorkspace's HandleLButtonDown, …), its rect kept the
+/// GUI's in the view; the cursor what it would do. Nil, and it runs.
+@property (nonatomic, weak, nullable) rvGEWorkspace *workspace;
+/// Told after the mouse has edited the workspace or its selection
+/// (target-action; the sender is the view).
+@property (nonatomic, weak, nullable) id designTarget;
+@property (nonatomic, nullable) SEL designAction;
 
 /// The GUI's 640x480 in the view, and the scale it is drawn at.
 @property (nonatomic, readonly) NSRect guiRect;

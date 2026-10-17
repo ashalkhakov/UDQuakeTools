@@ -47,6 +47,11 @@
 
 - (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
     NSString *content = self.textView ? self.textView.string : self.textContent ?: @"";
+    id source = self.textSource;
+    if (source != nil && self.textSourceAction != NULL && [source respondsToSelector:self.textSourceAction]) {
+        NSString *sourced = ((NSString *(*)(id, SEL, id))[source methodForSelector:self.textSourceAction])(source, self.textSourceAction, self);
+        if (sourced != nil) content = sourced;
+    }
     NSData *buffer = [[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding];
 
     int written = [self.workspace.fileSystem writeFile:_path buffer:buffer.bytes size:(int)buffer.length basePath:nil error:error];

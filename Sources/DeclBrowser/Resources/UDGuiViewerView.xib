@@ -13,6 +13,9 @@
                 <outlet property="playButton" destination="GUV-play" id="GUV-o-play"/>
                 <outlet property="timeLabel" destination="GUV-time" id="GUV-o-time"/>
                 <outlet property="namedEventPopUp" destination="GUV-events" id="GUV-o-events"/>
+                <outlet property="modeControl" destination="GUV-mode" id="GUV-o-mode"/>
+                <outlet property="stepButton" destination="GUV-step" id="GUV-o-step"/>
+                <outlet property="restartButton" destination="GUV-restart" id="GUV-o-restart"/>
                 <outlet property="stateTable" destination="GUV-state" id="GUV-o-state"/>
                 <outlet property="logTable" destination="GUV-log" id="GUV-o-log"/>
                 <outlet property="stateView" destination="GUV-tab-state-v" id="GUV-o-stateView"/>
@@ -80,6 +83,20 @@
                         </menu>
                     </popUpButtonCell>
                 </popUpButton>
+                <segmentedControl toolTip="Run the GUI as the game does, or design it" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-mode">
+                    <rect key="frame" x="530" y="526" width="130" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="GUV-mode-c">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment label="Run" width="62" selected="YES"/>
+                            <segment label="Design" width="62" tag="1"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="changeMode:" target="-2" id="GUV-mode-a"/>
+                    </connections>
+                </segmentedControl>
                 <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-gui" customClass="UDGuiView">
                     <rect key="frame" x="0.0" y="0.0" width="920" height="518"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

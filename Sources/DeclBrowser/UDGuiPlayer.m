@@ -149,7 +149,7 @@
         static const float black[4] = { 0, 0, 0, 1 };
         [renderer clearToColor:black];
         [renderer drawTriangles:self.triangles];
-        self.frame = [UDGuiPlayer _imageOf:[renderer image]];
+        self.frame = [UDGuiPlayer imageOf:[renderer image]];
     }
     [self _takeMessages];
 
@@ -161,7 +161,7 @@
 
 /// The renderer's pixels, opaque: what the screen shows (its alpha is the
 /// blending's, never seen).
-+ (NSImage *)_imageOf:(UDImage *)image {
++ (NSImage *)imageOf:(UDImage *)image {
     NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:image.width pixelsHigh:image.height
                                                                  bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO
                                                                 colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:image.width * 4

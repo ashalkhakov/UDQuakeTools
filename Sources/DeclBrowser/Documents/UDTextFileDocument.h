@@ -23,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** Wire the document's text storage into the given NSTextView. */
 - (void)setTextView:(NSTextView *)textView;
 
+/** What saving writes, when the text view is not it: a GUI's canvas edited
+    since its text was shown asks for its text to be written instead (the
+    editor's text, its newlines \n). Nil, and the text view's is. */
+@property (nonatomic, weak, nullable) id textSource;
+@property (nonatomic, nullable) SEL textSourceAction;
+
 @end
 
 NS_ASSUME_NONNULL_END

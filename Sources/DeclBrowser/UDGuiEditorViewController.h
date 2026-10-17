@@ -1,7 +1,7 @@
 #import "UDTextEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 
-@class UDGuiPlayer, UDGuiView;
+@class UDGuiPlayer, UDGuiView, rvGEWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +17,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UDGuiEditorViewController : UDTextEditorViewController <UDSourceRepresenting, UDInspecting>
 
 @property (nonatomic, strong, readonly) UDGuiPlayer *player;
+
+/// Run | Design: the GUI run, or designed (the GUI editor's workspace, its
+/// canvas: select, move and size its windows, with Undo).
+@property (nonatomic, readonly) BOOL designing;
+@property (nonatomic, strong, readonly, nullable) rvGEWorkspace *designWorkspace;
+@property (weak) IBOutlet NSSegmentedControl *modeControl;
+@property (weak) IBOutlet NSButton *stepButton;
+@property (weak) IBOutlet NSButton *restartButton;
+- (IBAction)changeMode:(nullable id)sender;
 
 @property (strong) IBOutlet NSView *viewerView;
 @property (weak) IBOutlet UDGuiView *guiView;

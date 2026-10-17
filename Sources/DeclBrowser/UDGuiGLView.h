@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDTriangleList;
+@class UDTriangleList, UDOverlay;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UDTriangleList *triangles;
 @property (nonatomic) NSSize pictureSize;
 @property (nonatomic) NSRect guiRect;
+/// Drawn over it, in the view's coordinates (y down from its top): the GUI
+/// editor's grid and selections.
+@property (nonatomic, strong, nullable) UDOverlay *overlay;
 
 /// The GUI's rect as GL drew it last, read back: RGBA, its top row first,
 /// at the backing's resolution (a test's).

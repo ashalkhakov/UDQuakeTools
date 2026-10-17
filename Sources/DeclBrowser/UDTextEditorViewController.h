@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 /** The code editor's text view, once the text is in. */
 @property (nonatomic, readonly, nullable) NSTextView *editorTextView;
 
+/** The text's own edits taken off the document's undo stack (when an edit
+    of another kind takes their place). */
+- (void)forgetTextEdits;
+
 /** Selects @a length characters from @a line's @a character (0-based; UTF-16). */
 - (void)selectLine:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
 

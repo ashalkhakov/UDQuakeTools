@@ -69,6 +69,10 @@ UDCore_OBJC_FILES = \
     idWindow.m \
     rvGEWindowWrapper.m \
     rvGEWorkspace.m \
+    rvGEOptions.m \
+    rvGEModifier.m \
+    rvGESelectionMgr.m \
+    UDOverlay.m \
     idSimpleWindow.m \
     idGuiModel.m \
     idDeviceContext.m \
@@ -142,6 +146,10 @@ UDCore_HEADER_FILES = \
     idWindow.h \
     rvGEWindowWrapper.h \
     rvGEWorkspace.h \
+    rvGEOptions.h \
+    rvGEModifier.h \
+    rvGESelectionMgr.h \
+    UDOverlay.h \
     idGuiModel.h \
     idDeviceContext.h \
     idUserInterface.h \

@@ -12,6 +12,10 @@
 #import "DMTabBar.h"
 #import "idUserInterface.h"
 #import "idDict.h"
+#import "rvGEWorkspace.h"
+#import "rvGEWindowWrapper.h"
+#import "rvGESelectionMgr.h"
+#import "UDOverlay.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 // An original GUI: a panel the state hides, a label a named event renames,
@@ -239,6 +243,124 @@ static NSString *const UDViewerScript =
     controller.navigatorTabBar.selectedIndex = 2;
     [NSApp sendAction:@selector(navigatorTabChanged:) to:controller from:controller.navigatorTabBar];
     XCTAssertEqual([controller.navigatorTabView indexOfTabViewItem:controller.navigatorTabView.selectedTabViewItem], 2);
+}
+
+#pragma mark - Design
+
+/// A mouse event at @a guiPoint, at @a seconds, sent to @a view.
+- (void)mouse:(NSEventType)type at:(NSPoint)guiPoint time:(NSTimeInterval)seconds in:(UDGuiView *)view {
+    NSPoint location = [view convertPoint:[view viewPointFromGui:guiPoint] toView:nil];
+    NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:0 timestamp:seconds
+                                    windowNumber:view.window.windowNumber context:nil eventNumber:0 clickCount:1 pressure:1];
+    if (type == NSEventTypeLeftMouseDown) [view mouseDown:event];
+    else if (type == NSEventTypeLeftMouseUp) [view mouseUp:event];
+    else if (type == NSEventTypeLeftMouseDragged) [view mouseDragged:event];
+    else [view mouseMoved:event];
+}
+
+/// A drag in the GUI's units, as the mouse does it: down, four moves after
+/// the engine's 50 ms, up.
+- (void)dragFrom:(NSPoint)from to:(NSPoint)to in:(UDGuiView *)view {
+    [self mouse:NSEventTypeLeftMouseDown at:from time:1.0 in:view];
+    for (int i = 1; i <= 4; i++) {
+        NSPoint p = NSMakePoint(from.x + (to.x - from.x) * i / 4, from.y + (to.y - from.y) * i / 4);
+        [self mouse:NSEventTypeLeftMouseDragged at:p time:1.1 + i * 0.01 in:view];
+    }
+    [self mouse:NSEventTypeLeftMouseUp at:to time:1.2 in:view];
+}
+
+- (UDGuiEditorViewController *)openDesignIn:(UDWorkspaceWindowController *)controller {
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    editor.modeControl.selectedSegment = 1;
+    [editor changeMode:editor.modeControl];
+    XCTAssertTrue(editor.designing);
+    XCTAssertNotNil(editor.designWorkspace.interface, @"the GUI is loaded for editing");
+    return editor;
+}
+
+- (idRectangle)designRectOf:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    idDrawWin *dw = [[editor.designWorkspace.interface getDesktop] findChildByName:name];
+    return [rvGEWindowWrapper wrapperOf:dw.win].clientRect;
+}
+
+- (void)testADragInTheDesignMovesTheWindowWithUndo {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    [self dragFrom:NSMakePoint(480, 330) to:NSMakePoint(520, 350) in:editor.guiView];
+    idRectangle moved = [self designRectOf:@"Go" in:editor];
+    XCTAssertEqualWithAccuracy(moved.x, 440, 1, @"the button is moved by the drag");
+    XCTAssertEqualWithAccuracy(moved.y, 320, 1);
+    XCTAssertEqual([editor.designWorkspace.selections num], 1, @"and selected");
+    [self finishEvent];
+    XCTAssertTrue(editor.editorDocument.isDocumentEdited, @"a design's edit is the tab's");
+
+    NSUndoManager *undoManager = editor.editorDocument.undoManager;
+    XCTAssertEqualObjects(undoManager.undoActionName, @"Move");
+    [undoManager undo];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 400, 1, @"Undo puts it back");
+    [undoManager redo];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 440, 1, @"Redo moves it again");
+}
+
+- (void)testTheDesignsEditsAreSavedShownAndRun {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    [self dragFrom:NSMakePoint(480, 330) to:NSMakePoint(520, 350) in:editor.guiView];
+    [self finishEvent];
+
+    // saved: the GUI as the editor writes it, the button where it was put
+    [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
+    [self spinUntil:^BOOL{ return NO; } timeout:0.1];
+    NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/guis/udtest_menu.gui"]
+                                                encoding:NSISOLatin1StringEncoding error:NULL];
+    XCTAssertTrue([saved containsString:@"rect\t440,320,160,60"], @"%@", saved);
+    XCTAssertTrue([saved containsString:@"onNamedEvent udtestRename"], @"its scripts kept");
+
+    // shown in the source, and run
+    editor.showsSource = YES;
+    XCTAssertTrue([editor.editorTextView.string containsString:@"rect\t440,320,160,60"], @"%@", editor.editorTextView.string);
+    editor.showsSource = NO;
+    editor.modeControl.selectedSegment = 0;
+    [editor changeMode:editor.modeControl];
+    XCTAssertEqualObjects([self var:@"rect" of:@"Go" in:editor], @"440 320 160 60", @"the design's edit runs");
+}
+
+- (void)testAnEditedSourceIsOneUndo {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    editor.showsSource = YES;
+    [self typeText:[UDViewerGUI stringByReplacingOccurrencesOfString:@"400, 300, 160, 60" withString:@"10, 300, 160, 60"]
+      intoTextView:editor.editorTextView];
+    [self finishEvent];
+    editor.showsSource = NO;
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 10, 1, @"the edited text is designed");
+
+    NSUndoManager *undoManager = editor.editorDocument.undoManager;
+    XCTAssertEqualObjects(undoManager.undoActionName, @"Edit Source");
+    [undoManager undo];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 400, 1, @"Undo takes the whole edit back");
+    XCTAssertTrue([editor.editorTextView.string containsString:@"400, 300, 160, 60"]);
+    [undoManager redo];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 10, 1);
+}
+
+- (void)testTheSelectionIsDrawnOverTheDesign {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:editor.guiView];
+    XCTAssertEqual([editor.designWorkspace.selections num], 1);
+    UDOverlay *overlay = [[UDOverlay alloc] init];
+    [editor.designWorkspace renderOverlayInto:overlay];
+    XCTAssertGreaterThan(overlay.lineVertexCount, 0u, @"the selection and its handles");
+    UDGuiGLView *gl = (UDGuiGLView *)editor.guiView.glView;
+    if (gl != nil) {
+        XCTAssertEqual(gl.overlay.lineVertexCount, overlay.lineVertexCount, @"drawn over the GUI");
+    }
 }
 
 #pragma mark - GL

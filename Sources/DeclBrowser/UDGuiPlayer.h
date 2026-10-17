@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDWorkspace, idUserInterfaceManager, idUserInterfaceLocal, UDTriangleList;
+@class UDWorkspace, idUserInterfaceManager, idUserInterfaceLocal, UDTriangleList, UDImage;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,6 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Told after each frame (target-action; the sender is the player).
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;
+
+/// A renderer's picture as an image, opaque (what the screen shows).
++ (NSImage *)imageOf:(UDImage *)image;
 
 #pragma mark Input
 

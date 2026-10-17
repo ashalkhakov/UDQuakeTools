@@ -3,6 +3,7 @@
 #import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
 #import "UDSoftwareRenderer.h"
 #import "UDImageProgram.h"
+#import "UDOverlay.h"
 
 #if !defined(__APPLE__) && !defined(UD_HAVE_GL)
 
@@ -128,6 +129,8 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
     GLuint _program;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
+    GLuint _whiteTexture;     // the overlay's: its colors are its vertices'
+
     GLint _pictureSizeLocation, _constantColorLocation, _clampModeLocation, _imageLocation;
     /// UDImage → its texture (an NSNumber of the name).
     NSMapTable<UDImage *, NSNumber *> *_textures;
@@ -164,6 +167,7 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
             glDeleteTextures(1, &name);
         }
         glDeleteBuffers(1, &_vertexBuffer);
+        glDeleteTextures(1, &_whiteTexture);
 #if UD_GL_CORE
         glDeleteVertexArrays(1, &_vertexArray);
 #endif
@@ -231,6 +235,13 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
 #endif
     glGenBuffers(1, &_vertexBuffer);
     _textures = [NSMapTable strongToStrongObjectsMapTable];
+
+    static const uint8_t white[4] = { 255, 255, 255, 255 };
+    glGenTextures(1, &_whiteTexture);
+    glBindTexture(GL_TEXTURE_2D, _whiteTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, white);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     return YES;
 }
 
@@ -294,6 +305,10 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
     UDTriangleList *list = self.triangles;
     if (list != nil && list.count > 0 && [self _prepare]) {
         [self _drawList:list backing:backing];
+    }
+    UDOverlay *overlay = self.overlay;
+    if (overlay != nil && (overlay.lineVertexCount > 0 || overlay.triangleVertexCount > 0) && [self _prepare]) {
+        [self _drawOverlay:overlay backing:backing];
     }
     return YES;
 }
@@ -384,6 +399,56 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
     }
     [self.openGLContext flushBuffer];
     return rep;
+}
+
+/// The overlay over the whole view: its lines and triangles, in the view's
+/// points (y down), blended (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA).
+- (void)_drawOverlay:(UDOverlay *)overlay backing:(NSRect)backing {
+    glViewport(0, 0, (GLsizei)NSWidth(backing), (GLsizei)NSHeight(backing));
+    NSUInteger lines = overlay.lineVertexCount, triangles = overlay.triangleVertexCount;
+    NSMutableData *vertices = [NSMutableData dataWithLength:(lines + triangles) * UDGLVertexFloats * sizeof(float)];
+    float *out = vertices.mutableBytes;
+    const UDOverlayVertex *sources[2] = { overlay.triangleVertices, overlay.lineVertices };
+    NSUInteger counts[2] = { triangles, lines };
+    for (int part = 0; part < 2; part++) {
+        for (NSUInteger i = 0; i < counts[part]; i++) {
+            const UDOverlayVertex *v = &sources[part][i];
+            float values[UDGLVertexFloats] = { v->x, v->y, 0.5f, 0.5f, v->r, v->g, v->b, v->a };
+            memcpy(out, values, sizeof(values));
+            out += UDGLVertexFloats;
+        }
+    }
+    glUseProgram(_program);
+#if UD_GL_CORE
+    glBindVertexArray(_vertexArray);
+#endif
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)vertices.length, vertices.bytes, GL_STREAM_DRAW);
+    GLsizei stride = UDGLVertexFloats * sizeof(float);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (const void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (const void *)(2 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (const void *)(4 * sizeof(float)));
+    // the view's points as the picture
+    glUniform2f(_pictureSizeLocation, (GLfloat)NSWidth(self.bounds), (GLfloat)NSHeight(self.bounds));
+    static const float one[4] = { 1, 1, 1, 1 };
+    glUniform4fv(_constantColorLocation, 1, one);
+    glUniform1i(_clampModeLocation, 0);
+    glUniform1i(_imageLocation, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _whiteTexture);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    if (triangles > 0) {
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)triangles);
+    }
+    if (lines > 0) {
+        glDrawArrays(GL_LINES, (GLint)triangles, (GLsizei)lines);
+    }
+    glDisable(GL_BLEND);
 }
 
 /// GL_State's blend and mask for @a triangle's drawStateBits, its texture

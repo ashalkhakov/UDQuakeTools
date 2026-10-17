@@ -5,6 +5,14 @@
 #import "UDWorkspaceItem.h"
 #import "idUserInterface.h"
 #import "idDict.h"
+#import "idWindow.h"
+#import "idGuiModel.h"
+#import "UDSoftwareRenderer.h"
+#import "UDTextFileDocument.h"
+#import "UDOverlay.h"
+#import "rvGEWorkspace.h"
+#import "rvGEModifier.h"
+#import "rvGESelectionMgr.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 static UDDiagnosticSource const UDGuiParseSource = @"gui";
@@ -19,6 +27,18 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 @property (nonatomic) NSUInteger logRowsShown;
 /// When the state table was last brought up to date (a few times a second).
 @property (nonatomic, strong, nullable) NSDate *stateShown;
+
+@property (nonatomic, readwrite) BOOL designing;
+@property (nonatomic, strong, readwrite, nullable) rvGEWorkspace *designWorkspace;
+/// The text as the file has it (the source's when the tab opened).
+@property (nonatomic, copy, nullable) NSString *fileText;
+/// The text the source shows, and the design is in step with — but for
+/// the canvas's edits since (designDirty).
+@property (nonatomic, copy, nullable) NSString *shownText;
+@property (nonatomic) BOOL designDirty;
+/// What the workspace was loaded from.
+@property (nonatomic, copy, nullable) NSString *designText;
+@property (nonatomic) BOOL playedBeforeDesigning;
 @end
 
 @implementation UDGuiEditorViewController {
@@ -39,7 +59,16 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.player.action = @selector(playerDidDrawFrame:);
     self.guiView.player = self.player;
     self.player.view = self.guiView;
+    self.fileText = self.editorTextView.string;
+    self.shownText = self.fileText;
     [self _run];
+
+    // a canvas edited since its text was shown saves its text
+    if ([self.document isKindOfClass:[UDTextFileDocument class]]) {
+        UDTextFileDocument *document = (UDTextFileDocument *)self.document;
+        document.textSource = self;
+        document.textSourceAction = @selector(documentTextFor:);
+    }
 
     // The running GUI over the source, which is under it all along
     NSView *viewer = self.viewerView;
@@ -57,12 +86,25 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     }
 }
 
-/// The GUI read and run from its time 0: the file, or the edited source.
+/// The GUI's text as it is now: the canvas's, if it was edited since the
+/// source showed it, else the source's.
+- (NSString *)_currentText {
+    if (self.designDirty && self.designWorkspace != nil) {
+        return [self.designWorkspace.text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+    }
+    return self.editorTextView.string ?: @"";
+}
+
+/// UDTextFileDocument's text source: the canvas's text, when it is ahead.
+- (NSString *)documentTextFor:(id)document {
+    return self.designDirty ? [self _currentText] : nil;
+}
+
+/// The GUI read and run from its time 0: the file, or the text as it is.
 - (void)_run {
     NSString *path = self.item.path;
-    NSString *text = self.editorTextView.string;
-    BOOL edited = self.runningText != nil && text != nil && ![text isEqualToString:self.runningText];
-    if (edited) {
+    NSString *text = [self _currentText];
+    if (![text isEqualToString:self.fileText]) {
         [self.player loadText:text path:path];
     } else {
         [self.player loadFile:path];
@@ -104,14 +146,181 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     _showsSource = showsSource;
     [self _showViewer:!showsSource];
     if (showsSource) {
+        // the canvas's edits in the text
+        [self _showCanvasText];
         [self.view.window makeFirstResponder:self.editorTextView];
     } else {
-        // the source as edited, run; its errors in Issues
-        if (![self.editorTextView.string isEqualToString:self.runningText]) {
-            [self _run];
+        NSString *text = self.editorTextView.string ?: @"";
+        if (![text isEqualToString:self.shownText]) {
+            // the source as edited: one edit, the text's own edits' place
+            [self forgetTextEdits];
+            NSUndoManager *undoManager = self.document.undoManager;
+            [undoManager registerUndoWithTarget:self selector:@selector(_restoreSourceText:) object:self.shownText ?: @""];
+            [undoManager setActionName:@"Edit Source"];
+            [self _takeText:text];
         }
         [self.view.window makeFirstResponder:self.guiView];
     }
+}
+
+/// The source's text as the canvas has it now, if the canvas is ahead
+/// (no edit of the text: the canvas's edits are on the undo stack).
+- (void)_showCanvasText {
+    if (!self.designDirty) return;
+    NSString *text = [self _currentText];
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    self.shownText = text;
+    self.designDirty = NO;
+}
+
+/// @a text the GUI's: the design read from it again (its edits before
+/// forgotten), run, its errors in Issues.
+- (void)_takeText:(NSString *)text {
+    self.shownText = text;
+    self.designDirty = NO;
+    if (self.designWorkspace != nil) {
+        [self _loadDesign];
+    }
+    [self _run];
+    if (self.designing) {
+        [self _renderDesign];
+    }
+}
+
+/// Edit Source undone (or redone): the text before it back, in the source
+/// and the design.
+- (void)_restoreSourceText:(NSString *)text {
+    NSString *current = self.shownText ?: @"";
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    [self _takeText:text];
+    [undoManager registerUndoWithTarget:self selector:@selector(_restoreSourceText:) object:current];
+    [undoManager setActionName:@"Edit Source"];
+}
+
+#pragma mark - Run | Design
+
+- (IBAction)changeMode:(id)sender {
+    BOOL design = [sender isKindOfClass:[NSSegmentedControl class]] ? [(NSSegmentedControl *)sender selectedSegment] == 1 : !self.designing;
+    if (design == self.designing) return;
+    if (design) {
+        [self _enterDesign];
+    } else {
+        [self _enterRun];
+    }
+}
+
+- (void)_enterDesign {
+    self.designing = YES;
+    self.modeControl.selectedSegment = 1;
+    self.playedBeforeDesigning = self.player.playing;
+    self.player.playing = NO;
+    if (self.designWorkspace == nil) {
+        idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:self.workspace.fileSystem
+                                                                                declManager:self.workspace.declManager];
+        [manager managerInit];
+        rvGEWorkspace *design = [[rvGEWorkspace alloc] initWithManager:manager];
+        design.modifiers.undoManager = self.document.undoManager;
+        design.modifiers.target = self;
+        design.modifiers.action = @selector(_designEdited:);
+        self.designWorkspace = design;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
+                                                     name:rvGESelectionDidChangeNotification object:design.selections];
+    }
+    if (!self.designDirty && ![[self _currentText] isEqualToString:self.designText]) {
+        [self _loadDesign];
+    }
+    self.guiView.workspace = self.designWorkspace;
+    self.guiView.designTarget = self;
+    self.guiView.designAction = @selector(_designViewChanged:);
+    for (NSControl *control in @[self.playButton, self.stepButton, self.restartButton, self.namedEventPopUp]) {
+        control.enabled = NO;
+    }
+    [self _renderDesign];
+}
+
+- (void)_enterRun {
+    self.designing = NO;
+    self.modeControl.selectedSegment = 0;
+    self.guiView.workspace = nil;
+    for (NSControl *control in @[self.playButton, self.stepButton, self.restartButton]) {
+        control.enabled = YES;
+    }
+    self.namedEventPopUp.enabled = self.namedEventPopUp.numberOfItems > 1;
+    // the design's edits run
+    if (![[self _currentText] isEqualToString:self.runningText]) {
+        [self _run];
+    }
+    self.player.playing = self.playedBeforeDesigning;
+    [self.guiView showFrame];
+}
+
+/// The workspace loaded from the text as it is (from the file, when that
+/// is it): its selection and its edits gone.
+- (void)_loadDesign {
+    NSString *text = [self _currentText];
+    if ([text isEqualToString:self.fileText]) {
+        [self.designWorkspace loadFile:self.item.path];
+    } else {
+        [self.designWorkspace loadText:text path:self.item.path];
+    }
+    self.designText = text;
+}
+
+/// rvGEWorkspace::Render: the GUI still, at time 0, and over it the grid
+/// and the selections.
+- (void)_renderDesign {
+    rvGEWorkspace *design = self.designWorkspace;
+    idUserInterfaceManager *manager = design.manager;
+    UDGuiView *view = self.guiView;
+    NSRect rect = view.guiRect;
+    design.rect = idRectangle_Make((float)NSMinX(rect), (float)NSMinY(rect), (float)NSWidth(rect), (float)NSHeight(rect));
+
+    [manager.guiModel clear];
+    [design.interface redraw:0];
+    NSArray *surfaces = [manager.guiModel emitFullScreen];
+    UDSoftwareRenderer *renderer = manager.renderer;
+    UDTriangleList *triangles = [renderer trianglesOfSurfaces:surfaces time:0];
+    NSImage *picture = nil;
+    if (!view.drawsWithGL) {
+        static const float black[4] = { 0, 0, 0, 1 };
+        [renderer clearToColor:black];
+        [renderer drawTriangles:triangles];
+        picture = [UDGuiPlayer imageOf:[renderer image]];
+    }
+    UDOverlay *overlay = [[UDOverlay alloc] init];
+    [design renderOverlayInto:overlay];
+    [view showTriangles:triangles picture:picture pictureSize:NSMakeSize(renderer.width, renderer.height) overlay:overlay];
+}
+
+/// An edit of the design, its undo or its redo (the modifier stack's).
+- (void)_designEdited:(id)sender {
+    self.designDirty = YES;
+    // the source, if it is up and not edited, shows it
+    if (self.showsSource && [self.editorTextView.string isEqualToString:self.shownText]) {
+        [self _showCanvasText];
+    }
+    if (self.designing) {
+        [self _renderDesign];
+    }
+}
+
+- (void)_selectionChanged:(NSNotification *)notification {
+    if (self.designing) {
+        [self _renderDesign];
+    }
+}
+
+/// The view's mouse moved, sized or selected.
+- (void)_designViewChanged:(id)sender {
+    [self _renderDesign];
 }
 
 /// An Issue's line, in the source.
@@ -138,7 +347,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 - (void)playerDidDrawFrame:(UDGuiPlayer *)player {
-    [self.guiView showFrame];
+    if (!self.designing) {
+        [self.guiView showFrame];
+    }
     [self _showClock];
     [self _showLog];
     [self _showState:NO];

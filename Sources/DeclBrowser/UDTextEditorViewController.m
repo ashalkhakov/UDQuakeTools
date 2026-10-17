@@ -132,6 +132,12 @@
     return self.editor.textView;
 }
 
+- (void)forgetTextEdits {
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager removeAllActionsWithTarget:self.session.textStorage.textModel];
+    [undoManager removeAllActionsWithTarget:self.editor.textView.textStorage];
+}
+
 - (UDDiagnosticStore *)diagnosticStore {
     return self.session.document.diagnosticStore;
 }

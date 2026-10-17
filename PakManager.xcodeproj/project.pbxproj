@@ -443,6 +443,7 @@
 		CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */; };
 		CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CECEB2F930190F8400F88078 /* idDeclManagerTests.m */; };
 		CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D940108D00B900E3722F5781 /* idUserInterfaceTests.m */; };
+		C6BFBB0DB7C1401FD501217E /* rvGEWorkspaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */; };
 		CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = CED0148A302DDCA2009517DE /* UDBitMsg.h */; };
 		CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED0148B302DDCA2009517DE /* UDBitMsg.m */; };
 		CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
@@ -532,6 +533,10 @@
 		E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */; };
 		7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */ = {isa = PBXBuildFile; fileRef = A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */; };
 		14CC3EF91B74FD716076483C /* idWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBE249827AAF111537E815F /* idWindow.h */; };
+		D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBBC2EB095057556025E74B /* UDOverlay.h */; };
+		8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */; };
+		2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */ = {isa = PBXBuildFile; fileRef = E236E8273E29B39057FD009D /* rvGEModifier.h */; };
+		D2C0BEB1121CA52FDD24EE38 /* rvGEOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 056F4578ECACCB0458CF1F20 /* rvGEOptions.h */; };
 		20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = EA93624848048D705DD34DEC /* rvGEWorkspace.h */; };
 		6BED93D2967B9FCBEECCE6C3 /* rvGEWindowWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */; };
 		CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CB740118B731208062C3B6B /* idGuiScript.h */; };
@@ -575,6 +580,10 @@
 		21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EDFA4996907856A58FD832BB /* idGuiModel.m */; };
 		71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */; };
 		FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */; };
+		D498330BD324478801E0B61C /* UDOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EC089D5DF5BC259AD5D93F /* UDOverlay.m */; };
+		5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */; };
+		7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */ = {isa = PBXBuildFile; fileRef = C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */; };
+		3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 107BA026A2668B89D87A745E /* rvGEOptions.m */; };
 		BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */; };
 		3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */; };
 		300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */ = {isa = PBXBuildFile; fileRef = F08015F811AF8060B27F068B /* idGuiScript.m */; };
@@ -1019,6 +1028,7 @@
 		CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFileSystemTests.m; sourceTree = "<group>"; };
 		CECEB2F930190F8400F88078 /* idDeclManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclManagerTests.m; sourceTree = "<group>"; };
 		D940108D00B900E3722F5781 /* idUserInterfaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idUserInterfaceTests.m; sourceTree = "<group>"; };
+		4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWorkspaceTests.m; sourceTree = "<group>"; };
 		CED0148A302DDCA2009517DE /* UDBitMsg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDBitMsg.h; sourceTree = "<group>"; };
 		CED0148B302DDCA2009517DE /* UDBitMsg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDBitMsg.m; sourceTree = "<group>"; };
 		CEFC59D2303572CE001E2179 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1106,6 +1116,10 @@
 		D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeviceContext.h; sourceTree = "<group>"; };
 		A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiModel.h; sourceTree = "<group>"; };
 		FFBE249827AAF111537E815F /* idWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindow.h; sourceTree = "<group>"; };
+		FFBBC2EB095057556025E74B /* UDOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDOverlay.h; sourceTree = "<group>"; };
+		C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGESelectionMgr.h; sourceTree = "<group>"; };
+		E236E8273E29B39057FD009D /* rvGEModifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEModifier.h; sourceTree = "<group>"; };
+		056F4578ECACCB0458CF1F20 /* rvGEOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEOptions.h; sourceTree = "<group>"; };
 		EA93624848048D705DD34DEC /* rvGEWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEWorkspace.h; sourceTree = "<group>"; };
 		AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEWindowWrapper.h; sourceTree = "<group>"; };
 		7CB740118B731208062C3B6B /* idGuiScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiScript.h; sourceTree = "<group>"; };
@@ -1149,6 +1163,10 @@
 		EDFA4996907856A58FD832BB /* idGuiModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiModel.m; sourceTree = "<group>"; };
 		D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idSimpleWindow.m; sourceTree = "<group>"; };
 		CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWindow.m; sourceTree = "<group>"; };
+		84EC089D5DF5BC259AD5D93F /* UDOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDOverlay.m; sourceTree = "<group>"; };
+		12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGESelectionMgr.m; sourceTree = "<group>"; };
+		C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEModifier.m; sourceTree = "<group>"; };
+		107BA026A2668B89D87A745E /* rvGEOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEOptions.m; sourceTree = "<group>"; };
 		9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWorkspace.m; sourceTree = "<group>"; };
 		C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWindowWrapper.m; sourceTree = "<group>"; };
 		F08015F811AF8060B27F068B /* idGuiScript.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiScript.m; sourceTree = "<group>"; };
@@ -1378,6 +1396,10 @@
 				EDFA4996907856A58FD832BB /* idGuiModel.m */,
 				D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */,
 				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
+				84EC089D5DF5BC259AD5D93F /* UDOverlay.m */,
+				12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */,
+				C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */,
+				107BA026A2668B89D87A745E /* rvGEOptions.m */,
 				9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */,
 				C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */,
 				F08015F811AF8060B27F068B /* idGuiScript.m */,
@@ -1422,6 +1444,10 @@
 				D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */,
 				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
 				FFBE249827AAF111537E815F /* idWindow.h */,
+				FFBBC2EB095057556025E74B /* UDOverlay.h */,
+				C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */,
+				E236E8273E29B39057FD009D /* rvGEModifier.h */,
+				056F4578ECACCB0458CF1F20 /* rvGEOptions.h */,
 				EA93624848048D705DD34DEC /* rvGEWorkspace.h */,
 				AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */,
 				7CB740118B731208062C3B6B /* idGuiScript.h */,
@@ -1550,6 +1576,7 @@
 			children = (
 				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
 				D940108D00B900E3722F5781 /* idUserInterfaceTests.m */,
+				4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */,
 				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
 				71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */,
 				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
@@ -1851,6 +1878,10 @@
 				E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */,
 				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
 				14CC3EF91B74FD716076483C /* idWindow.h in Headers */,
+				D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */,
+				8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */,
+				2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */,
+				D2C0BEB1121CA52FDD24EE38 /* rvGEOptions.h in Headers */,
 				20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */,
 				6BED93D2967B9FCBEECCE6C3 /* rvGEWindowWrapper.h in Headers */,
 				CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */,
@@ -2238,6 +2269,7 @@
 				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
 				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
 				CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */,
+				C6BFBB0DB7C1401FD501217E /* rvGEWorkspaceTests.m in Sources */,
 				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
 				A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */,
 				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
@@ -2286,6 +2318,10 @@
 				21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */,
 				71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */,
 				FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */,
+				D498330BD324478801E0B61C /* UDOverlay.m in Sources */,
+				5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */,
+				7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */,
+				3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */,
 				BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */,
 				3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */,
 				300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */,

@@ -16,6 +16,11 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../../Sources/UDCore
+include $(UDCORE_DIR)/UDCore.include.make
+DECLBROWSER_DIR = ../../Sources/DeclBrowser
+include $(DECLBROWSER_DIR)/DeclBrowser.include.make
+
 APP_DIR = ../../Sources/DeclBrowser
 
 # The app's objects are compiled in directly (no host app): every .m of the
@@ -30,38 +35,38 @@ DeclBrowserTests_OBJC_FILES = \
     UDDoom3WorkspaceTests.m \
     UDPakInstallTests.m \
     UDGuiViewerTests.m \
-    $(APP_DIR)/UDAppDocumentController.m \
-    $(APP_DIR)/UDBaseEditorViewController.m \
-    $(APP_DIR)/UDDeclBrowser.m \
-    $(APP_DIR)/UDDeclItem.m \
-    $(APP_DIR)/UDFileItem.m \
-    $(APP_DIR)/UDFolder.m \
-    $(APP_DIR)/UDImageViewerViewController.m \
-    $(APP_DIR)/UDPDAEditorViewController.m \
-    $(APP_DIR)/UDDeclEditorViewController.m \
-    $(APP_DIR)/UDTableEditorViewController.m \
-    $(APP_DIR)/UDSkinEditorViewController.m \
-    $(APP_DIR)/UDEntityDefEditorViewController.m \
-    $(APP_DIR)/UDSoundEditorViewController.m \
-    $(APP_DIR)/UDParticleEditorViewController.m \
-    $(APP_DIR)/UDFXEditorViewController.m \
-    $(APP_DIR)/UDAFEditorViewController.m \
-    $(APP_DIR)/UDMaterialEditorViewController.m \
-    $(APP_DIR)/UDParticlePreview.m \
-    $(APP_DIR)/UDGuiPlayer.m \
-    $(APP_DIR)/UDTransportController.m \
-    $(APP_DIR)/UDGuiView.m \
-    $(APP_DIR)/UDGuiGLView.m \
-    $(APP_DIR)/UDTabBadge.m \
+    $(APP_DIR)/App/UDAppDocumentController.m \
+    $(APP_DIR)/Editors/UDBaseEditorViewController.m \
+    $(APP_DIR)/App/UDDeclBrowser.m \
+    $(APP_DIR)/Model/UDDeclItem.m \
+    $(APP_DIR)/Model/UDFileItem.m \
+    $(APP_DIR)/Model/UDFolder.m \
+    $(APP_DIR)/Editors/UDImageViewerViewController.m \
+    $(APP_DIR)/Editors/Decls/UDPDAEditorViewController.m \
+    $(APP_DIR)/Editors/UDDeclEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDTableEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDSkinEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDEntityDefEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDSoundEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDParticleEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDFXEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDAFEditorViewController.m \
+    $(APP_DIR)/Editors/Decls/UDMaterialEditorViewController.m \
+    $(APP_DIR)/Preview/UDParticlePreview.m \
+    $(APP_DIR)/GUIEditor/UDGuiPlayer.m \
+    $(APP_DIR)/Preview/UDTransportController.m \
+    $(APP_DIR)/GUIEditor/UDGuiView.m \
+    $(APP_DIR)/GUIEditor/UDGuiGLView.m \
+    $(APP_DIR)/Window/UDTabBadge.m \
     $(APP_DIR)/ThirdParty/DMTabBar/DMTabBar.m \
     $(APP_DIR)/ThirdParty/DMTabBar/DMTabBarItem.m \
-    $(APP_DIR)/UDGuiEditorViewController.m \
-    $(APP_DIR)/UDFXTimelineView.m \
-    $(APP_DIR)/UDPathTree.m \
-    $(APP_DIR)/UDProject.m \
-    $(APP_DIR)/UDScriptServer.m \
-    $(APP_DIR)/UDTextEditorViewController.m \
-    $(APP_DIR)/UDWorkspaceItem.m \
+    $(APP_DIR)/GUIEditor/UDGuiEditorViewController.m \
+    $(APP_DIR)/Preview/UDFXTimelineView.m \
+    $(APP_DIR)/Model/UDPathTree.m \
+    $(APP_DIR)/Model/UDProject.m \
+    $(APP_DIR)/Scripts/UDScriptServer.m \
+    $(APP_DIR)/Editors/UDTextEditorViewController.m \
+    $(APP_DIR)/Model/UDWorkspaceItem.m \
     $(APP_DIR)/Documents/UDBaseDocument.m \
     $(APP_DIR)/Documents/UDDeclDocument.m \
     $(APP_DIR)/Documents/UDImageFileDocument.m \
@@ -76,11 +81,8 @@ DeclBrowserTests_OBJC_FILES = \
 
 DeclBrowserTests_INCLUDE_DIRS = \
     -I. \
-    -I$(APP_DIR) \
-    -I$(APP_DIR)/Documents \
-    -I$(APP_DIR)/Window \
-    -I$(APP_DIR)/ThirdParty/DMTabBar \
-    -I../../Sources/UDCore \
+    $(DECLBROWSER_INCLUDE_DIRS) \
+    $(UDCORE_INCLUDE_DIRS) \
     -I../../Sources/UDFormats
 
 # The app loads its nibs with -bundleForClass:, which resolves to this
@@ -107,7 +109,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/en.lproj/UDImageViewerView.xib \
     $(APP_DIR)/en.lproj/UDTextEditorView.xib
 
-DeclBrowserTests_XCDATAMODELD_FILES = ../../Sources/UDCore/DeclModel.xcdatamodeld
+DeclBrowserTests_XCDATAMODELD_FILES = ../../Sources/UDCore/Decls/DeclModel.xcdatamodeld
 DeclBrowserTests_NEEDS_GUI = yes
 
 # CoreData is provided by FreeCoreData on GNUstep.

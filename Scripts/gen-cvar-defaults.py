@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Regenerates Sources/UDCore/idCVarDefaults.inc from dhewm3's sources:
-#   Scripts/gen-cvar-defaults.py Sources/UDCore/idCVarDefaults.inc [path/to/dhewm3/neo]
+# Regenerates Sources/UDCore/Framework/idCVarDefaults.inc from dhewm3's sources:
+#   Scripts/gen-cvar-defaults.py Sources/UDCore/Framework/idCVarDefaults.inc [path/to/dhewm3/neo]
 import re, os, sys
 root = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(__file__), '../../older-projects/dhewm3/neo')
 dirs = ['framework','renderer','sound','sys','ui','idlib','cm','game']

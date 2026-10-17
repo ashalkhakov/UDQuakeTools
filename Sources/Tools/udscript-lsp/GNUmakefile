@@ -6,9 +6,12 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../../UDCore
+include $(UDCORE_DIR)/UDCore.include.make
+
 udscript-lsp_OBJC_FILES = main.m UDScriptLanguageServer.m
 
-udscript-lsp_INCLUDE_DIRS = -I../../UDCore -I../../LSPServerKit
+udscript-lsp_INCLUDE_DIRS = $(UDCORE_INCLUDE_DIRS) -I../../LSPServerKit
 
 # It ships in Decl Browser, beside its executable (Decl Browser's
 # GNUmakefile copies it there), not on its own.

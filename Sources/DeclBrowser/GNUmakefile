@@ -6,43 +6,48 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../UDCore
+DECLBROWSER_DIR = .
+include DeclBrowser.include.make
+include $(UDCORE_DIR)/UDCore.include.make
+
 # Source list synced with the Xcode DeclBrowser target (2026-08-20).
 DeclBrowser_OBJC_FILES = \
     ../UDUpdater/UDUpdater.m \
-    main.m \
-    AppDelegate.m \
-    UDAppDocumentController.m \
-    UDBaseEditorViewController.m \
-    UDDeclBrowser.m \
-    UDDeclItem.m \
-    UDFileItem.m \
-    UDFolder.m \
-    UDImageViewerViewController.m \
-    UDPDAEditorViewController.m \
-    UDDeclEditorViewController.m \
-    UDTableEditorViewController.m \
-    UDSkinEditorViewController.m \
-    UDEntityDefEditorViewController.m \
-    UDSoundEditorViewController.m \
-    UDParticleEditorViewController.m \
-    UDFXEditorViewController.m \
-    UDAFEditorViewController.m \
-    UDMaterialEditorViewController.m \
-    UDParticlePreview.m \
-    UDGuiPlayer.m \
-    UDTransportController.m \
-    UDGuiView.m \
-    UDGuiGLView.m \
-    UDTabBadge.m \
+    App/main.m \
+    App/AppDelegate.m \
+    App/UDAppDocumentController.m \
+    Editors/UDBaseEditorViewController.m \
+    App/UDDeclBrowser.m \
+    Model/UDDeclItem.m \
+    Model/UDFileItem.m \
+    Model/UDFolder.m \
+    Editors/UDImageViewerViewController.m \
+    Editors/Decls/UDPDAEditorViewController.m \
+    Editors/UDDeclEditorViewController.m \
+    Editors/Decls/UDTableEditorViewController.m \
+    Editors/Decls/UDSkinEditorViewController.m \
+    Editors/Decls/UDEntityDefEditorViewController.m \
+    Editors/Decls/UDSoundEditorViewController.m \
+    Editors/Decls/UDParticleEditorViewController.m \
+    Editors/Decls/UDFXEditorViewController.m \
+    Editors/Decls/UDAFEditorViewController.m \
+    Editors/Decls/UDMaterialEditorViewController.m \
+    Preview/UDParticlePreview.m \
+    GUIEditor/UDGuiPlayer.m \
+    Preview/UDTransportController.m \
+    GUIEditor/UDGuiView.m \
+    GUIEditor/UDGuiGLView.m \
+    Window/UDTabBadge.m \
     ThirdParty/DMTabBar/DMTabBar.m \
     ThirdParty/DMTabBar/DMTabBarItem.m \
-    UDGuiEditorViewController.m \
-    UDFXTimelineView.m \
-    UDPathTree.m \
-    UDProject.m \
-    UDScriptServer.m \
-    UDTextEditorViewController.m \
-    UDWorkspaceItem.m \
+    GUIEditor/UDGuiEditorViewController.m \
+    Preview/UDFXTimelineView.m \
+    Model/UDPathTree.m \
+    Model/UDProject.m \
+    Scripts/UDScriptServer.m \
+    Editors/UDTextEditorViewController.m \
+    Model/UDWorkspaceItem.m \
     Documents/UDBaseDocument.m \
     Documents/UDDeclDocument.m \
     Documents/UDImageFileDocument.m \
@@ -56,18 +61,15 @@ DeclBrowser_OBJC_FILES = \
     Window/UDWorkspaceWindowController.m
 
 DeclBrowser_INCLUDE_DIRS = \
-    -I. \
+    $(DECLBROWSER_INCLUDE_DIRS) \
     -I../UDUpdater \
-    -IDocuments \
-    -IWindow \
-    -IThirdParty/DMTabBar \
-    -I../UDCore \
+    $(UDCORE_INCLUDE_DIRS) \
     -I../UDFormats
 
 # The data model is compiled to DeclModel.momd by FreeCoreData's momc via
 # coredata-model.make (included below), which adds the .momd to the app's
 # resources automatically.
-DeclBrowser_XCDATAMODELD_FILES = ../UDCore/DeclModel.xcdatamodeld
+DeclBrowser_XCDATAMODELD_FILES = ../UDCore/Decls/DeclModel.xcdatamodeld
 
 DeclBrowser_RESOURCE_FILES = \
     Resources/Base.lproj/MainMenu.xib \
@@ -100,7 +102,7 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 # UDCore from the tree beside this one, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
 # -rdynamic: export the executable's own symbols so UDCrashReporter's
-# backtrace (installed in main.m on Linux) resolves app frames by name.
+# backtrace (installed in App/main.m on Linux) resolves app frames by name.
 # UDCodeKit (the editor, its tab bar) from the prefix, where its release
 # archive is unpacked (.github/pins.env).
 ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic

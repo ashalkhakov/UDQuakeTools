@@ -6,10 +6,13 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../../UDCore
+include $(UDCORE_DIR)/UDCore.include.make
+
 udpaktool_OBJC_FILES = main.m
 
 udpaktool_INCLUDE_DIRS = \
-    -I../../UDCore \
+    $(UDCORE_INCLUDE_DIRS) \
     -I../../UDFormats
 
 # UDCore's decl layer is Core Data, which on GNUstep is FreeCoreData; the

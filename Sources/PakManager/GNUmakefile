@@ -7,6 +7,9 @@ PakManager_APPLICATION_ICON = PakManager.png
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../UDCore
+include $(UDCORE_DIR)/UDCore.include.make
+
 PakManager_OBJC_FILES = \
     ../UDUpdater/UDUpdater.m \
     main.m \
@@ -18,7 +21,7 @@ PakManager_OBJC_FILES = \
 
 PakManager_INCLUDE_DIRS = \
     -I../UDUpdater \
-    -I../UDCore \
+    $(UDCORE_INCLUDE_DIRS) \
     -I../UDFormats
 
 PakManager_RESOURCE_FILES = \

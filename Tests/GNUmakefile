@@ -8,6 +8,9 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDCORE_DIR = ../Sources/UDCore
+include $(UDCORE_DIR)/UDCore.include.make
+
 UDQuakeToolsTests_OBJC_FILES = \
     UDScriptEventsTests.m \
     UDScriptIndexTests.m \
@@ -32,14 +35,14 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDZipFixture.m
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
-    -I../Sources/UDCore \
+    $(UDCORE_INCLUDE_DIRS) \
     -I../Sources/UDFormats \
     -I../Sources/LSPServerKit \
     -I../Sources/Tools/udscript-lsp
 
 # The incremental-store tests need the compiled data model in the test
 # bundle's resources (Xcode does the same for the Mac test target).
-UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/UDCore/DeclModel.xcdatamodeld
+UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/UDCore/Decls/DeclModel.xcdatamodeld
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).

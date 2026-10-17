@@ -12,6 +12,18 @@ Scripts also have a language server, `udscript-lsp` (`Sources/Tools`),
 which Decl Browser carries beside its executable and starts per workspace;
 its protocol side is `Sources/LSPServerKit`, a framework of its own.
 
+## Layout
+
+Sources are in folders by part, the engine's own where it has one (`UDCore`:
+`idLib`, `Framework`, `Renderer`, `UI`, `GUIEditor`, `Decls`, `Archives`,
+`Scripts`, `Workspace`; Decl Browser: `App`, `Model`, `Documents`, `Window`,
+`Editors`, `Editors/Decls`, `Preview`, `GUIEditor`, `Scripts`). A new file
+goes in its part's folder, and in the Xcode group of the same name. Imports
+name the header alone: Xcode searches `Sources/UDCore/**`, and the
+GNUmakefiles take their include directories from
+`Sources/UDCore/UDCore.include.make` and
+`Sources/DeclBrowser/DeclBrowser.include.make` — a new folder is added there.
+
 ## GNUstep patches live elsewhere
 
 This repository carries none. Anything new belongs in `../gnustep-patches`,

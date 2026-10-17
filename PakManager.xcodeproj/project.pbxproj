@@ -278,7 +278,7 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/LSPServerKit",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -303,7 +303,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/LSPServerKit",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1378,156 +1378,15 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
-				CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */,
-				CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */,
-				9AC9FBF343033AC720BD8F3B /* UDDeclParticle.m */,
-				BDEC315F03EDEC6704A9B20A /* UDDeclPDA.m */,
-				79E5ACABD254048A07A649F7 /* UDDeclFX.m */,
-				8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */,
-				02105444DDAAF239E4E7C614 /* UDImageProgram.m */,
-				8BBAF3F8BD39596DCF48ABB9 /* UDMaterialParser.m */,
-				45588CCC0F2C1F6D4249AC39 /* UDDeclMaterial.m */,
-				A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */,
-				2D8A25610E5A2219107B5F20 /* UDFXModel.m */,
-				C58B4F2531625A19ACA0B306 /* UDARBProgram.m */,
-				593DBD1A5667D3799D5895EF /* idRenderWindow.m */,
-				6EF1E7C7C58971DFDA752CF9 /* idMarkerWindow.m */,
-				4926E895F515C0C7E959BBEE /* idFieldWindow.m */,
-				48492ACABB8B95DD179FB9D8 /* idBindWindow.m */,
-				9FA67773CCD26C1673783B39 /* idListWindow.m */,
-				4C49CF5D2057311C7F2E5FCF /* idChoiceWindow.m */,
-				CF82039C1BDC7D0AC7D258E0 /* idEditWindow.m */,
-				31C6D584F9E7158C5A57DA5C /* idSliderWindow.m */,
-				1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */,
-				CD05ED608716DD1F61442CE3 /* idDeviceContext.m */,
-				EDFA4996907856A58FD832BB /* idGuiModel.m */,
-				D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */,
-				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
-				84EC089D5DF5BC259AD5D93F /* UDOverlay.m */,
-				12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */,
-				C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */,
-				107BA026A2668B89D87A745E /* rvGEOptions.m */,
-				9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */,
-				C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */,
-				F08015F811AF8060B27F068B /* idGuiScript.m */,
-				CAC3D29085F68079F61091E9 /* idRegExp.m */,
-				D20D58546873E10F1A43336C /* idWinVar.m */,
-				BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */,
-				0A0DD1C51B1D932B49224CDC /* idLangDict.m */,
-				106FB3A2BE4BE631C4F88A33 /* idDict.m */,
-				31854F6DA3A3B3F7D25191B0 /* idStrPool.m */,
-				4BAE08FD19BF8E859D320005 /* idMath.m */,
-				1835DE984890C47029638F55 /* UDParticleModel.m */,
-				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
-				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
-				D13274818FD835C4FE7668C1 /* UDDeclSound.m */,
-				816BA3DAD5D8919EDF6EDCC1 /* UDDeclEntityDef.m */,
-				6146597D0478FD6CE0852DCE /* UDDeclSkin.m */,
-				FF2EA252A18E5CD718C41DBD /* UDDeclTable.m */,
-				E9356E8C7F24CDBB7D96C78D /* UDDeclElement.m */,
-				C701E94B680A58C03A2EBB0E /* UDDeclRawText.m */,
-				0FE4CB62ADD273544518EAB4 /* UDDeclBase.m */,
-				222CCD6950CEDD7BB7A6E187 /* UDDeclCodec.m */,
-				EE01000000000000000001AA /* UDDeclManagedObjects.h */,
-				1BA81542DE248DC6B489FB90 /* UDDeclParticle.h */,
-				C8D548B522A704D623AF89BC /* UDDeclPDA.h */,
-				29DECCEECC66A5BADEBD9722 /* UDDeclFX.h */,
-				299E1E8F0A6124814507B9D7 /* UDDeclAF.h */,
-				4BFE6E2F7D091CBDBBDB4EC7 /* UDImageProgram.h */,
-				548C9EE3C9E0FED0D7E2C136 /* UDMaterialParser.h */,
-				1E32547818FF7EE756D3C7BB /* UDDeclMaterial.h */,
-				61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */,
-				091AA4BB439C1C4F99491AFF /* UDFXModel.h */,
-				4373BA33DA044F471BEF3F84 /* UDARBProgram.h */,
-				E5B38B30EC8C8B531C25578F /* idRenderWindow.h */,
-				A4D2E7EAF5309DC24CB4FC78 /* idMarkerWindow.h */,
-				F108086491DE24B19C0EEAC4 /* idFieldWindow.h */,
-				A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */,
-				56E78D01ADB0C5CD2073E4FB /* idListWindow.h */,
-				49448419A78E96B080ED7EB0 /* idChoiceWindow.h */,
-				48D4A6A4B535E92C7C4E63BE /* idEditWindow.h */,
-				2EB5F1B522125C48A8E51171 /* idSliderWindow.h */,
-				733E795D12B9FE65BC2D3275 /* idUserInterface.h */,
-				D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */,
-				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
-				FFBE249827AAF111537E815F /* idWindow.h */,
-				FFBBC2EB095057556025E74B /* UDOverlay.h */,
-				C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */,
-				E236E8273E29B39057FD009D /* rvGEModifier.h */,
-				056F4578ECACCB0458CF1F20 /* rvGEOptions.h */,
-				EA93624848048D705DD34DEC /* rvGEWorkspace.h */,
-				AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */,
-				7CB740118B731208062C3B6B /* idGuiScript.h */,
-				53049CA0968E0953B66F23CE /* idRegExp.h */,
-				9B34F3D384DF609685676F89 /* idWinVar.h */,
-				18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */,
-				C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */,
-				3C8B3721B67B69644503E42C /* idDict.h */,
-				40202AC4B23060A21F17842D /* idStrPool.h */,
-				1476EE829F45453D38F3147C /* idMath.h */,
-				5D7A3E79A627C2E068122604 /* UDParticleModel.h */,
-				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
-				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
-				51A824AF4E7FA37F86BFF686 /* UDDeclSound.h */,
-				130F4FF2B6EFCE779333B845 /* UDDeclEntityDef.h */,
-				A86A49ED756A7230953CE81C /* UDDeclSkin.h */,
-				174634583236A71598F2BAA2 /* UDDeclTable.h */,
-				F6BBF7B4BA850292F73F83FD /* UDDeclElement.h */,
-				3AFC2457CEC8734BFAD64603 /* UDDeclRawText.h */,
-				1BFE6CCEEADF9716A3F8E1D9 /* UDDeclBase.h */,
-				CED0148A302DDCA2009517DE /* UDBitMsg.h */,
-				CED0148B302DDCA2009517DE /* UDBitMsg.m */,
-				CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */,
-				CECEB2F53018C04300F88078 /* UDEndian.h */,
-				CECEB2F33017B97A00F88078 /* MD5.m */,
-				CECEB2F13017B96A00F88078 /* MD5.h */,
-				CE3FA393300E68B10048F206 /* idDeclManager.m */,
-				CE3FA391300E598B0048F206 /* idDeclManager.h */,
-				CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */,
-				CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */,
-				CE3FA387300E438D0048F206 /* UDWorkspace.m */,
-				CE3FA385300E43810048F206 /* UDWorkspace.h */,
-				CE3FA383300C68540048F206 /* compat.m */,
-				CE3FA381300C683C0048F206 /* sys.h */,
-				CE3FA37E3007F33F0048F206 /* ioapi.c */,
-				CE3FA37C3007F3300048F206 /* ioapi.h */,
-				CE3FA37A3007ED6F0048F206 /* unzip.c */,
-				CE3FA3783007ED5C0048F206 /* unzip.h */,
-				CE3FA37430076E5A0048F206 /* idStr.m */,
-				CE3FA37230076E540048F206 /* idStr.h */,
-				CE3FA3763007B81C0048F206 /* idFile.m */,
-				CE3FA36E3004FC270048F206 /* idFile.h */,
-				CE3FA370300543F90048F206 /* idFileSystem.m */,
-				CE3FA36C3004FBF30048F206 /* idFileSystem.h */,
-				CE3FA36A300174680048F206 /* idParser.m */,
-				CE3FA3683001720E0048F206 /* idParser.h */,
-				CE07E8883000D99D007ED480 /* idLexer.m */,
-				CE07E8863000D982007ED480 /* idLexer.h */,
-				CE07E8843000D339007ED480 /* idToken.m */,
-				CE07E8823000D2F6007ED480 /* idToken.h */,
-				CE1151632FEE7777005C6DA3 /* UDGame.h */,
-				CE1151642FEE7777005C6DA3 /* UDGame.m */,
-				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
-				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
-				AA00020300000000000000AA /* UDArchive.h */,
-				AA00010400000000000000AA /* UDArchive.m */,
-				AA00020400000000000000AA /* UDArchiveEditor.h */,
-				AA00010500000000000000AA /* UDArchiveEditor.m */,
-				AA00020500000000000000AA /* UDArchiveEntry.h */,
-				AA00010600000000000000AA /* UDArchiveEntry.m */,
-				AA00020600000000000000AA /* UDArchiveMutation.h */,
-				AA00010700000000000000AA /* UDArchiveMutation.m */,
-				AA00020800000000000000AA /* UDContentSource.h */,
-				AA00020700000000000000AA /* UDDirectoryNode.h */,
-				AA00010800000000000000AA /* UDDirectoryNode.m */,
-				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
-				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
-				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
-				5C0E00000000000000000004 /* UDScriptEvents.h */,
-				5C0F00000000000000000004 /* UDScriptIndex.h */,
-				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
-				5C0E00000000000000000005 /* UDScriptEvents.m */,
-				5C0F00000000000000000005 /* UDScriptIndex.m */,
+				F25B7866D084694D5FDBA2BE /* Decls */,
+				BF3B69EF75FA6290FA98DF39 /* Renderer */,
+				B89CA645BAE20C09BA4BA047 /* UI */,
+				F703CB64DFBB5FE4F90319BC /* GUIEditor */,
+				98CFBAA589AE109C3526238F /* Framework */,
+				62EEB13C1545514253F4E6CD /* idLib */,
+				15F9C94E08B9B78D85CA1A2E /* Scripts */,
+				971335B7D1A5E141C29D08E1 /* Workspace */,
+				BF563828C798065F757E2B26 /* Archives */,
 			);
 			name = UDCore;
 			path = Sources/UDCore;
@@ -1641,82 +1500,10 @@
 				DAD0000200000000000000AA /* UDTextPromptPanel.m */,
 				CEFC65173027923700157501 /* UDEditorTabManager.h */,
 				CEFC65183027923700157501 /* UDEditorTabManager.m */,
+				5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */,
+				5C763FC8864FE17D895C5751 /* UDTabBadge.h */,
 			);
 			path = Window;
-			sourceTree = "<group>";
-		};
-		CEFC65223027938100157501 /* Editors */ = {
-			isa = PBXGroup;
-			children = (
-				CEFC65363027987300157501 /* UDBaseEditorViewController.h */,
-				CEFC65373027987300157501 /* UDBaseEditorViewController.m */,
-				CEFC65383027987300157501 /* UDTextEditorViewController.h */,
-				CEFC65393027987300157501 /* UDTextEditorViewController.m */,
-				EC1F00000000000000000004 /* UDScriptServer.h */,
-				EC1F00000000000000000003 /* UDScriptServer.m */,
-				CEFC653A3027987300157501 /* UDImageViewerViewController.h */,
-				CEFC653B3027987300157501 /* UDImageViewerViewController.m */,
-				CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */,
-				588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */,
-				C3DC73C4E26786FDCF01F5BF /* UDFXEditorViewController.m */,
-				8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */,
-				75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */,
-				53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */,
-				C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */,
-				651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */,
-				5AF451BB55BC43CA99A8CDEA /* UDTabBadge.m */,
-				936BAB3FC1597215BA4B670D /* UDGuiGLView.m */,
-				D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */,
-				93CD2BD211C45BCC10418142 /* UDGuiView.m */,
-				54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */,
-				0285F90CD6A9569047EE3274 /* UDTransportController.m */,
-				481364967D51A060DC767609 /* UDFXTimelineView.m */,
-				3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */,
-				0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */,
-				EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */,
-				92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */,
-				EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */,
-				CE56D79F3023024400099DF4 /* UDPDAEditorViewController.h */,
-				EE009CB9D8B8F7C9E32BC754 /* UDSkinEditorViewController.h */,
-				0B6E84FE41079D189C037AFE /* UDFXEditorViewController.h */,
-				0EA31B431111A5056D4CE676 /* UDAFEditorViewController.h */,
-				2594E3F6207A3C81DCAFA447 /* UDMaterialEditorViewController.h */,
-				25187EFA74DBCA91036A4C39 /* UDParticlePreview.h */,
-				932342E93CE03E531C257071 /* ThirdParty/DMTabBar/DMTabBarItem.h */,
-				B38B29002205549DFD5CD5C8 /* ThirdParty/DMTabBar/DMTabBar.h */,
-				5C763FC8864FE17D895C5751 /* UDTabBadge.h */,
-				C4B8F8B34293C2486ED09F35 /* UDGuiGLView.h */,
-				9F60BA2F4904EF7BB78F6010 /* UDGuiEditorViewController.h */,
-				BC8058C48C854AB54DF43004 /* UDGuiView.h */,
-				7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */,
-				60EE84BD28A596CBC514BBFA /* UDTransportController.h */,
-				ABBB3E1D8BD921C103C6E55E /* UDFXTimelineView.h */,
-				04DCF0BDBBF47EF8B3956C02 /* UDParticleEditorViewController.h */,
-				A2AC34FCD8C33C45C3B548ED /* UDSoundEditorViewController.h */,
-				97875D90D2F251D94B0C0E84 /* UDEntityDefEditorViewController.h */,
-				02D0C48552AE5D49E917644C /* UDTableEditorViewController.h */,
-				1718D0BE955C2D1B8EC8C888 /* UDDeclEditorViewController.h */,
-			);
-			name = Editors;
-			sourceTree = "<group>";
-		};
-		CEFC65303027974B00157501 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */,
-				CE1CDC8D301E7E250037DBA5 /* UDPathTree.h */,
-				CEFC65503029F03A00157501 /* UDDeclItem.m */,
-				CEFC654F3029EFC900157501 /* UDDeclItem.h */,
-				CEFC65283027974B00157501 /* UDWorkspaceItem.h */,
-				CEFC65293027974B00157501 /* UDWorkspaceItem.m */,
-				CEFC652A3027974B00157501 /* UDProject.h */,
-				CEFC652B3027974B00157501 /* UDProject.m */,
-				CEFC652C3027974B00157501 /* UDFolder.h */,
-				CEFC652D3027974B00157501 /* UDFolder.m */,
-				CEFC652E3027974B00157501 /* UDFileItem.h */,
-				CEFC652F3027974B00157501 /* UDFileItem.m */,
-			);
-			name = Model;
 			sourceTree = "<group>";
 		};
 		CEFC653F3027992800157501 /* Documents */ = {
@@ -1767,20 +1554,21 @@
 		DD00000400000000000000AA /* DeclBrowser */ = {
 			isa = PBXGroup;
 			children = (
-				CEFC65303027974B00157501 /* Model */,
-				CEFC65223027938100157501 /* Editors */,
 				CEFC653F3027992800157501 /* Documents */,
 				CEFC651A3027933900157501 /* Window */,
 				CEFC6554302A077600157501 /* Resources */,
-				CEFC6515302790DD00157501 /* UDAppDocumentController.m */,
-				CEFC6514302790B800157501 /* UDAppDocumentController.h */,
-				CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */,
-				CE1CDC90301E7EAB0037DBA5 /* UDDeclBrowser.h */,
-				CE1CDC6D301E41220037DBA5 /* AppDelegate.h */,
-				CE1CDC6E301E41220037DBA5 /* AppDelegate.m */,
 				CE1CDC6F301E41220037DBA5 /* Assets.xcassets */,
-				DD00010000000000000000AA /* main.m */,
 				DD00010500000000000000AA /* DeclBrowser-Info.plist */,
+				C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */,
+				651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */,
+				932342E93CE03E531C257071 /* ThirdParty/DMTabBar/DMTabBarItem.h */,
+				B38B29002205549DFD5CD5C8 /* ThirdParty/DMTabBar/DMTabBar.h */,
+				6027841741368F329BB8E0DF /* App */,
+				8907241260CC5708EC20D773 /* Model */,
+				2950C37C5B3A7E081F727D2F /* Editors */,
+				0CAB5DE53CC553003F049675 /* Scripts */,
+				4D6F757E914240D18AF87DDC /* Preview */,
+				0E18561CEF64818B64FBE71E /* GUIEditor */,
 			);
 			name = DeclBrowser;
 			path = Sources/DeclBrowser;
@@ -1841,6 +1629,330 @@
 				ED1D00000000000000000005 /* TreeSitterIdDecl.bundle */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F25B7866D084694D5FDBA2BE /* Decls */ = {
+			isa = PBXGroup;
+			children = (
+				CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */,
+				299E1E8F0A6124814507B9D7 /* UDDeclAF.h */,
+				8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */,
+				1BFE6CCEEADF9716A3F8E1D9 /* UDDeclBase.h */,
+				0FE4CB62ADD273544518EAB4 /* UDDeclBase.m */,
+				222CCD6950CEDD7BB7A6E187 /* UDDeclCodec.m */,
+				F6BBF7B4BA850292F73F83FD /* UDDeclElement.h */,
+				E9356E8C7F24CDBB7D96C78D /* UDDeclElement.m */,
+				130F4FF2B6EFCE779333B845 /* UDDeclEntityDef.h */,
+				816BA3DAD5D8919EDF6EDCC1 /* UDDeclEntityDef.m */,
+				29DECCEECC66A5BADEBD9722 /* UDDeclFX.h */,
+				79E5ACABD254048A07A649F7 /* UDDeclFX.m */,
+				CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */,
+				CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */,
+				EE01000000000000000001AA /* UDDeclManagedObjects.h */,
+				1E32547818FF7EE756D3C7BB /* UDDeclMaterial.h */,
+				45588CCC0F2C1F6D4249AC39 /* UDDeclMaterial.m */,
+				1BA81542DE248DC6B489FB90 /* UDDeclParticle.h */,
+				9AC9FBF343033AC720BD8F3B /* UDDeclParticle.m */,
+				C8D548B522A704D623AF89BC /* UDDeclPDA.h */,
+				BDEC315F03EDEC6704A9B20A /* UDDeclPDA.m */,
+				3AFC2457CEC8734BFAD64603 /* UDDeclRawText.h */,
+				C701E94B680A58C03A2EBB0E /* UDDeclRawText.m */,
+				A86A49ED756A7230953CE81C /* UDDeclSkin.h */,
+				6146597D0478FD6CE0852DCE /* UDDeclSkin.m */,
+				51A824AF4E7FA37F86BFF686 /* UDDeclSound.h */,
+				D13274818FD835C4FE7668C1 /* UDDeclSound.m */,
+				174634583236A71598F2BAA2 /* UDDeclTable.h */,
+				FF2EA252A18E5CD718C41DBD /* UDDeclTable.m */,
+				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
+				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
+			);
+			path = Decls;
+			sourceTree = "<group>";
+		};
+		BF3B69EF75FA6290FA98DF39 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
+				EDFA4996907856A58FD832BB /* idGuiModel.m */,
+				4373BA33DA044F471BEF3F84 /* UDARBProgram.h */,
+				C58B4F2531625A19ACA0B306 /* UDARBProgram.m */,
+				091AA4BB439C1C4F99491AFF /* UDFXModel.h */,
+				2D8A25610E5A2219107B5F20 /* UDFXModel.m */,
+				4BFE6E2F7D091CBDBBDB4EC7 /* UDImageProgram.h */,
+				02105444DDAAF239E4E7C614 /* UDImageProgram.m */,
+				548C9EE3C9E0FED0D7E2C136 /* UDMaterialParser.h */,
+				8BBAF3F8BD39596DCF48ABB9 /* UDMaterialParser.m */,
+				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
+				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
+				5D7A3E79A627C2E068122604 /* UDParticleModel.h */,
+				1835DE984890C47029638F55 /* UDParticleModel.m */,
+				61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */,
+				A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		B89CA645BAE20C09BA4BA047 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */,
+				48492ACABB8B95DD179FB9D8 /* idBindWindow.m */,
+				49448419A78E96B080ED7EB0 /* idChoiceWindow.h */,
+				4C49CF5D2057311C7F2E5FCF /* idChoiceWindow.m */,
+				D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */,
+				CD05ED608716DD1F61442CE3 /* idDeviceContext.m */,
+				48D4A6A4B535E92C7C4E63BE /* idEditWindow.h */,
+				CF82039C1BDC7D0AC7D258E0 /* idEditWindow.m */,
+				F108086491DE24B19C0EEAC4 /* idFieldWindow.h */,
+				4926E895F515C0C7E959BBEE /* idFieldWindow.m */,
+				7CB740118B731208062C3B6B /* idGuiScript.h */,
+				F08015F811AF8060B27F068B /* idGuiScript.m */,
+				56E78D01ADB0C5CD2073E4FB /* idListWindow.h */,
+				9FA67773CCD26C1673783B39 /* idListWindow.m */,
+				A4D2E7EAF5309DC24CB4FC78 /* idMarkerWindow.h */,
+				6EF1E7C7C58971DFDA752CF9 /* idMarkerWindow.m */,
+				53049CA0968E0953B66F23CE /* idRegExp.h */,
+				CAC3D29085F68079F61091E9 /* idRegExp.m */,
+				E5B38B30EC8C8B531C25578F /* idRenderWindow.h */,
+				593DBD1A5667D3799D5895EF /* idRenderWindow.m */,
+				D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */,
+				2EB5F1B522125C48A8E51171 /* idSliderWindow.h */,
+				31C6D584F9E7158C5A57DA5C /* idSliderWindow.m */,
+				733E795D12B9FE65BC2D3275 /* idUserInterface.h */,
+				1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */,
+				FFBE249827AAF111537E815F /* idWindow.h */,
+				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
+				9B34F3D384DF609685676F89 /* idWinVar.h */,
+				D20D58546873E10F1A43336C /* idWinVar.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		F703CB64DFBB5FE4F90319BC /* GUIEditor */ = {
+			isa = PBXGroup;
+			children = (
+				E236E8273E29B39057FD009D /* rvGEModifier.h */,
+				C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */,
+				056F4578ECACCB0458CF1F20 /* rvGEOptions.h */,
+				107BA026A2668B89D87A745E /* rvGEOptions.m */,
+				C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */,
+				12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */,
+				AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */,
+				C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */,
+				EA93624848048D705DD34DEC /* rvGEWorkspace.h */,
+				9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */,
+				FFBBC2EB095057556025E74B /* UDOverlay.h */,
+				84EC089D5DF5BC259AD5D93F /* UDOverlay.m */,
+			);
+			path = GUIEditor;
+			sourceTree = "<group>";
+		};
+		98CFBAA589AE109C3526238F /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */,
+				BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */,
+				CE3FA391300E598B0048F206 /* idDeclManager.h */,
+				CE3FA393300E68B10048F206 /* idDeclManager.m */,
+				CE3FA36E3004FC270048F206 /* idFile.h */,
+				CE3FA3763007B81C0048F206 /* idFile.m */,
+				CE3FA36C3004FBF30048F206 /* idFileSystem.h */,
+				CE3FA370300543F90048F206 /* idFileSystem.m */,
+				CE3FA37E3007F33F0048F206 /* ioapi.c */,
+				CE3FA37C3007F3300048F206 /* ioapi.h */,
+				CE3FA37A3007ED6F0048F206 /* unzip.c */,
+				CE3FA3783007ED5C0048F206 /* unzip.h */,
+			);
+			path = Framework;
+			sourceTree = "<group>";
+		};
+		62EEB13C1545514253F4E6CD /* idLib */ = {
+			isa = PBXGroup;
+			children = (
+				CE3FA383300C68540048F206 /* compat.m */,
+				3C8B3721B67B69644503E42C /* idDict.h */,
+				106FB3A2BE4BE631C4F88A33 /* idDict.m */,
+				C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */,
+				0A0DD1C51B1D932B49224CDC /* idLangDict.m */,
+				CE07E8863000D982007ED480 /* idLexer.h */,
+				CE07E8883000D99D007ED480 /* idLexer.m */,
+				1476EE829F45453D38F3147C /* idMath.h */,
+				4BAE08FD19BF8E859D320005 /* idMath.m */,
+				CE3FA3683001720E0048F206 /* idParser.h */,
+				CE3FA36A300174680048F206 /* idParser.m */,
+				CE3FA37230076E540048F206 /* idStr.h */,
+				CE3FA37430076E5A0048F206 /* idStr.m */,
+				40202AC4B23060A21F17842D /* idStrPool.h */,
+				31854F6DA3A3B3F7D25191B0 /* idStrPool.m */,
+				CE07E8823000D2F6007ED480 /* idToken.h */,
+				CE07E8843000D339007ED480 /* idToken.m */,
+				CECEB2F13017B96A00F88078 /* MD5.h */,
+				CECEB2F33017B97A00F88078 /* MD5.m */,
+				CE3FA381300C683C0048F206 /* sys.h */,
+				CED0148A302DDCA2009517DE /* UDBitMsg.h */,
+				CED0148B302DDCA2009517DE /* UDBitMsg.m */,
+				CECEB2F53018C04300F88078 /* UDEndian.h */,
+			);
+			path = idLib;
+			sourceTree = "<group>";
+		};
+		15F9C94E08B9B78D85CA1A2E /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				5C0E00000000000000000004 /* UDScriptEvents.h */,
+				5C0E00000000000000000005 /* UDScriptEvents.m */,
+				5C0F00000000000000000004 /* UDScriptIndex.h */,
+				5C0F00000000000000000005 /* UDScriptIndex.m */,
+				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
+				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+		971335B7D1A5E141C29D08E1 /* Workspace */ = {
+			isa = PBXGroup;
+			children = (
+				CE1151632FEE7777005C6DA3 /* UDGame.h */,
+				CE1151642FEE7777005C6DA3 /* UDGame.m */,
+				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
+				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
+				CE3FA385300E43810048F206 /* UDWorkspace.h */,
+				CE3FA387300E438D0048F206 /* UDWorkspace.m */,
+				CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */,
+				CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */,
+			);
+			path = Workspace;
+			sourceTree = "<group>";
+		};
+		BF563828C798065F757E2B26 /* Archives */ = {
+			isa = PBXGroup;
+			children = (
+				AA00020300000000000000AA /* UDArchive.h */,
+				AA00010400000000000000AA /* UDArchive.m */,
+				AA00020400000000000000AA /* UDArchiveEditor.h */,
+				AA00010500000000000000AA /* UDArchiveEditor.m */,
+				AA00020500000000000000AA /* UDArchiveEntry.h */,
+				AA00010600000000000000AA /* UDArchiveEntry.m */,
+				AA00020600000000000000AA /* UDArchiveMutation.h */,
+				AA00010700000000000000AA /* UDArchiveMutation.m */,
+				AA00020800000000000000AA /* UDContentSource.h */,
+				AA00020700000000000000AA /* UDDirectoryNode.h */,
+				AA00010800000000000000AA /* UDDirectoryNode.m */,
+				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
+				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
+			);
+			path = Archives;
+			sourceTree = "<group>";
+		};
+		6027841741368F329BB8E0DF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CE1CDC6D301E41220037DBA5 /* AppDelegate.h */,
+				CE1CDC6E301E41220037DBA5 /* AppDelegate.m */,
+				DD00010000000000000000AA /* main.m */,
+				CEFC6514302790B800157501 /* UDAppDocumentController.h */,
+				CEFC6515302790DD00157501 /* UDAppDocumentController.m */,
+				CE1CDC90301E7EAB0037DBA5 /* UDDeclBrowser.h */,
+				CE1CDC91301E7F050037DBA5 /* UDDeclBrowser.m */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8907241260CC5708EC20D773 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CEFC654F3029EFC900157501 /* UDDeclItem.h */,
+				CEFC65503029F03A00157501 /* UDDeclItem.m */,
+				CEFC652E3027974B00157501 /* UDFileItem.h */,
+				CEFC652F3027974B00157501 /* UDFileItem.m */,
+				CEFC652C3027974B00157501 /* UDFolder.h */,
+				CEFC652D3027974B00157501 /* UDFolder.m */,
+				CE1CDC8D301E7E250037DBA5 /* UDPathTree.h */,
+				CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */,
+				CEFC652A3027974B00157501 /* UDProject.h */,
+				CEFC652B3027974B00157501 /* UDProject.m */,
+				CEFC65283027974B00157501 /* UDWorkspaceItem.h */,
+				CEFC65293027974B00157501 /* UDWorkspaceItem.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2950C37C5B3A7E081F727D2F /* Editors */ = {
+			isa = PBXGroup;
+			children = (
+				A061D93BCE5F221CE3AE5642 /* Decls */,
+				CEFC65363027987300157501 /* UDBaseEditorViewController.h */,
+				CEFC65373027987300157501 /* UDBaseEditorViewController.m */,
+				1718D0BE955C2D1B8EC8C888 /* UDDeclEditorViewController.h */,
+				EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */,
+				CEFC653A3027987300157501 /* UDImageViewerViewController.h */,
+				CEFC653B3027987300157501 /* UDImageViewerViewController.m */,
+				CEFC65383027987300157501 /* UDTextEditorViewController.h */,
+				CEFC65393027987300157501 /* UDTextEditorViewController.m */,
+			);
+			path = Editors;
+			sourceTree = "<group>";
+		};
+		0CAB5DE53CC553003F049675 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				EC1F00000000000000000004 /* UDScriptServer.h */,
+				EC1F00000000000000000003 /* UDScriptServer.m */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+		4D6F757E914240D18AF87DDC /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				ABBB3E1D8BD921C103C6E55E /* UDFXTimelineView.h */,
+				481364967D51A060DC767609 /* UDFXTimelineView.m */,
+				25187EFA74DBCA91036A4C39 /* UDParticlePreview.h */,
+				53580DCED01FFDF5E8C6CE83 /* UDParticlePreview.m */,
+				60EE84BD28A596CBC514BBFA /* UDTransportController.h */,
+				0285F90CD6A9569047EE3274 /* UDTransportController.m */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
+		0E18561CEF64818B64FBE71E /* GUIEditor */ = {
+			isa = PBXGroup;
+			children = (
+				9F60BA2F4904EF7BB78F6010 /* UDGuiEditorViewController.h */,
+				D08B595BFBF04AE0E159741E /* UDGuiEditorViewController.m */,
+				C4B8F8B34293C2486ED09F35 /* UDGuiGLView.h */,
+				936BAB3FC1597215BA4B670D /* UDGuiGLView.m */,
+				7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */,
+				54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */,
+				BC8058C48C854AB54DF43004 /* UDGuiView.h */,
+				93CD2BD211C45BCC10418142 /* UDGuiView.m */,
+			);
+			path = GUIEditor;
+			sourceTree = "<group>";
+		};
+		A061D93BCE5F221CE3AE5642 /* Decls */ = {
+			isa = PBXGroup;
+			children = (
+				0EA31B431111A5056D4CE676 /* UDAFEditorViewController.h */,
+				8F7D6EC5E05B9E88D9D12D01 /* UDAFEditorViewController.m */,
+				97875D90D2F251D94B0C0E84 /* UDEntityDefEditorViewController.h */,
+				EA7158902F3FC2119DDBBFB3 /* UDEntityDefEditorViewController.m */,
+				0B6E84FE41079D189C037AFE /* UDFXEditorViewController.h */,
+				C3DC73C4E26786FDCF01F5BF /* UDFXEditorViewController.m */,
+				2594E3F6207A3C81DCAFA447 /* UDMaterialEditorViewController.h */,
+				75B08C2C99AED891688DC47B /* UDMaterialEditorViewController.m */,
+				04DCF0BDBBF47EF8B3956C02 /* UDParticleEditorViewController.h */,
+				3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */,
+				CE56D79F3023024400099DF4 /* UDPDAEditorViewController.h */,
+				CEFC655A302A20B100157501 /* UDPDAEditorViewController.m */,
+				EE009CB9D8B8F7C9E32BC754 /* UDSkinEditorViewController.h */,
+				588B343D789F4BEA84688B10 /* UDSkinEditorViewController.m */,
+				A2AC34FCD8C33C45C3B548ED /* UDSoundEditorViewController.h */,
+				0EAF7161DA4AD13597DC77FF /* UDSoundEditorViewController.m */,
+				02D0C48552AE5D49E917644C /* UDTableEditorViewController.h */,
+				92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */,
+			);
+			path = Decls;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2702,7 +2814,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
@@ -2751,7 +2863,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
@@ -2783,7 +2895,7 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2808,7 +2920,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2842,7 +2954,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 					"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
@@ -2880,7 +2992,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 					"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
@@ -2924,7 +3036,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INSTALL_PATH = "@rpath";
@@ -2965,7 +3077,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INSTALL_PATH = "@rpath";
@@ -3007,7 +3119,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
@@ -3045,7 +3157,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 				);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
@@ -3164,7 +3276,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 					"$(SRCROOT)/Sources/DeclBrowser",
 					"$(SRCROOT)/Sources/DeclBrowser/Documents",
@@ -3201,7 +3313,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore",
+					"$(SRCROOT)/Sources/UDCore/**",
 					"$(SRCROOT)/Sources/UDFormats",
 					"$(SRCROOT)/Sources/DeclBrowser",
 					"$(SRCROOT)/Sources/DeclBrowser/Documents",

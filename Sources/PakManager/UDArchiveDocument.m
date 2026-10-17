@@ -4,11 +4,11 @@
 
 #import "UDArchiveDocument.h"
 #import "UDArchiveBrowserController.h"
-#import "../UDCore/UDArchive.h"
-#import "../UDCore/UDArchiveEditor.h"
+#import "UDArchive.h"
+#import "UDArchiveEditor.h"
 #import "../UDFormats/UDArchiveCodec.h"
 #import "../UDFormats/UDCodecRegistry.h"
-#import "../UDCore/UDGameDetectionService.h"
+#import "UDGameDetectionService.h"
 
 @implementation UDArchiveDocument
 

@@ -118,7 +118,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ILi-hz-v0L">
-                        <rect key="frame" x="123" y="112" width="408" height="21"/>
+                        <rect key="frame" x="123" y="112" width="382" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="RoQ" drawsBackground="YES" id="pEx-hN-HBr">
                             <font key="font" metaFont="system"/>
@@ -133,8 +133,19 @@ DQ
                             </binding>
                         </connections>
                     </textField>
+                    <button toolTip="Choose the video material" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="ILi-hz-v0L-pick">
+                        <rect key="frame" x="507" y="111" width="24" height="23"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ILi-hz-v0L-pick-c">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pickReference:" target="-2" id="ILi-hz-v0L-pick-a"/>
+                        </connections>
+                    </button>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pZI-mc-32h">
-                        <rect key="frame" x="123" y="81" width="408" height="21"/>
+                        <rect key="frame" x="123" y="81" width="382" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Wave" drawsBackground="YES" id="GwA-KC-yQv">
                             <font key="font" metaFont="system"/>
@@ -149,8 +160,19 @@ DQ
                             </binding>
                         </connections>
                     </textField>
+                    <button toolTip="Choose a sound shader" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="pZI-mc-32h-pick">
+                        <rect key="frame" x="507" y="80" width="24" height="23"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pZI-mc-32h-pick-c">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pickReference:" target="-2" id="pZI-mc-32h-pick-a"/>
+                        </connections>
+                    </button>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jsy-A8-y8k">
-                        <rect key="frame" x="123" y="51" width="408" height="21"/>
+                        <rect key="frame" x="123" y="51" width="382" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Preview" drawsBackground="YES" id="OP0-fj-jWR">
                             <font key="font" metaFont="system"/>
@@ -165,6 +187,17 @@ DQ
                             </binding>
                         </connections>
                     </textField>
+                    <button toolTip="Choose the preview material" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="jsy-A8-y8k-pick">
+                        <rect key="frame" x="507" y="50" width="24" height="23"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jsy-A8-y8k-pick-c">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pickReference:" target="-2" id="jsy-A8-y8k-pick-a"/>
+                        </connections>
+                    </button>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wtq-FZ-p6M">
                         <rect key="frame" x="13" y="114" width="30" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

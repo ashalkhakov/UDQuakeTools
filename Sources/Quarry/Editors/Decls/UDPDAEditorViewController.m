@@ -197,6 +197,7 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 - (NSModalResponse)openAudioEditor:(UDDeclAudio *)audio {
     // Lazily load the NIB each time, or keep the controller around
     UDPDAAudioEditorViewController *editorVC = [[UDPDAAudioEditorViewController alloc] init];
+    editorVC.workspace = self.workspace;
     editorVC.editingAudio = audio;
     [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAAudioEditorView"
                                  owner:editorVC
@@ -217,6 +218,7 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 
 - (NSModalResponse)openEmailEditor:(UDDeclEmail *)email {
     UDPDAEmailEditorViewController *editorVC = [[UDPDAEmailEditorViewController alloc] init];
+    editorVC.workspace = self.workspace;
     editorVC.editingEmail = email;
     [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAEmailEditorView"
                                  owner:editorVC
@@ -238,6 +240,7 @@ static NSArray<NSArray<NSString *> *> *UDPDALists(void) {
 - (NSModalResponse)openVideoEditor:(UDDeclVideo *)video {
     // Lazily load the NIB each time, or keep the controller around
     UDPDAVideoEditorViewController *editorVC = [[UDPDAVideoEditorViewController alloc] init];
+    editorVC.workspace = self.workspace;
     editorVC.editingVideo = video;
     [[NSBundle bundleForClass:[UDPDAEditorViewController class]] loadNibNamed:@"UDPDAVideoEditorView"
                                  owner:editorVC
@@ -293,7 +296,56 @@ static NSInteger UDRowToEdit(NSTableView *tableView) {
 
 @end
 
+@interface UDPDAChildEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
+@property (nonatomic, strong, nullable) UDReferenceField *pickedField;
+@end
+
+@implementation UDPDAChildEditorViewController
+
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    return nil;
+}
+
+/// A "…": its field's picker, a sheet over this one; the name chosen set
+/// as the field's value.
+- (IBAction)pickReference:(id)sender {
+    UDReferenceField *field = [self referenceFieldForTag:[sender tag]];
+    if (field == nil || self.workspace == nil || self.window.attachedSheet != nil) {
+        NSBeep();
+        return;
+    }
+    NSMutableArray<NSString *> *details = [NSMutableArray array];
+    NSArray<NSString *> *names = [UDReferencePicker namesFor:field workspace:self.workspace details:details];
+    id current = [field.controller valueForKeyPath:[@"selection." stringByAppendingString:field.key]];
+    self.pickedField = field;
+    self.referencePicker = [[UDReferencePicker alloc] initWithTitle:field.title names:names details:details
+                                                            current:[current isKindOfClass:[NSString class]] ? current : nil];
+    [self.referencePicker beginSheetForWindow:self.window target:self action:@selector(_referencePicked:)];
+}
+
+- (void)_referencePicked:(UDReferencePicker *)picker {
+    UDReferenceField *field = self.pickedField;
+    if (field == nil || picker.chosenName == nil) return;
+    [field.controller setValue:picker.chosenName forKeyPath:[@"selection." stringByAppendingString:field.key]];
+}
+
+@end
+
 @implementation UDPDAAudioEditorViewController
+
+/// idDeclAudio's preview (a material) and audio (a sound shader).
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    if (tag == 1) {
+        return [UDReferenceField fieldTitled:@"The audio log's preview" key:@"preview" controller:self.objectController kind:UDReferenceMaterials];
+    }
+    if (tag == 2) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"The audio log's sound" key:@"audio" controller:self.objectController kind:UDReferenceDecls];
+        field.declType = DECL_SOUND;
+        return field;
+    }
+    return nil;
+}
 
 - (void)awakeFromNib {
     self.objectController.content = self.editingAudio;
@@ -355,6 +407,22 @@ static NSInteger UDRowToEdit(NSTableView *tableView) {
 @end
 
 @implementation UDPDAVideoEditorViewController
+
+/// idDeclVideo's preview and video (materials) and audio (a sound shader).
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    if (tag == 1) {
+        return [UDReferenceField fieldTitled:@"The video's preview" key:@"preview" controller:self.objectController kind:UDReferenceMaterials];
+    }
+    if (tag == 2) {
+        return [UDReferenceField fieldTitled:@"The video (its material)" key:@"video" controller:self.objectController kind:UDReferenceMaterials];
+    }
+    if (tag == 3) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"The video's sound" key:@"audio" controller:self.objectController kind:UDReferenceDecls];
+        field.declType = DECL_SOUND;
+        return field;
+    }
+    return nil;
+}
 
 - (void)awakeFromNib {
     self.objectController.content = self.editingVideo;

@@ -8,6 +8,7 @@
 #import "UDDeclDocument.h"
 #import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
+#import "UDReferencePicker.h"
 
 static NSString *const UDFixturePDA =
     @"pda udtest_pda {\n"
@@ -76,6 +77,11 @@ static NSString *const UDDanglingPDA =
                    atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDDanglingPDA writeToFile:[pdaDirectory stringByAppendingPathComponent:@"udtest_dangling.pda"]
                     atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    // a sound shader to pick (original: no game data)
+    NSString *soundDirectory = [self.basePath stringByAppendingPathComponent:@"base/sound"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:soundDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
+    [@"udtest_beep {\n\tminDistance 1\n}\nudtest_hum {\n\tminDistance 2\n}\n" writeToFile:[soundDirectory stringByAppendingPathComponent:@"udtest.sndshd"]
+                                                                                atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
 - (UDWorkspaceWindowController *)openFixtureWorkspace {
@@ -455,6 +461,56 @@ static NSString *const UDDanglingPDA =
                           @"Cancel keeps it as it was");
     [self spinUntil:^BOOL{ return !editor.editorDocument.isDocumentEdited; } timeout:1.0];
     XCTAssertFalse(editor.editorDocument.isDocumentEdited, @"and the tab clean");
+}
+
+/// The audio log's sound, picked: a sheet over its editor (a modal
+/// window inside its modal session on GNUstep).
+- (void)testAnAudioLogsSoundIsPicked {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
+    if (editor == nil) return;
+
+    [self selectTabLabeled:@"Audio Logs" inView:editor.view];
+    [editor.audioArrayController setSelectionIndex:0];
+    __block NSArray<NSString *> *offered = nil;
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        __block NSButton *pick = nil;
+        [self forEachViewUnder:window.contentView do:^BOOL(NSView *view) {
+            if ([view isKindOfClass:[NSButton class]] && [(NSButton *)view action] == @selector(pickReference:) && [(NSButton *)view tag] == 2) {
+                pick = (NSButton *)view;
+                return NO;
+            }
+            return YES;
+        }];
+        XCTAssertNotNil(pick, @"the sound's picker");
+        void (^choose)(UDReferencePicker *) = ^(UDReferencePicker *picker) {
+            offered = picker.shownNames;
+            picker.filterField.stringValue = @"beep";
+            [picker filterChanged:nil];
+            [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:[picker.shownNames indexOfObject:@"udtest_beep"]] byExtendingSelection:NO];
+            [picker ok:nil];
+        };
+#ifdef GNUSTEP
+        [self whenModalWindowAppears:^(NSWindow *pickerWindow) {
+            choose((UDReferencePicker *)pickerWindow.windowController);
+        }];
+        [NSApp sendAction:pick.action to:pick.target from:pick];
+#else
+        [NSApp sendAction:pick.action to:pick.target from:pick];
+        choose((UDReferencePicker *)window.attachedSheet.windowController);
+        // the sheet's end comes from the run loop, in the session's mode
+        NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:5];
+        while (window.attachedSheet != nil && [deadline timeIntervalSinceNow] > 0) {
+            [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+        }
+#endif
+        XCTAssertEqualObjects([self textFieldBoundTo:@"audio" inView:window.contentView].stringValue, @"udtest_beep", @"the field as chosen");
+        [[self buttonTitled:@"OK" inView:window.contentView] performClick:nil];
+    }];
+    [self doubleClickSelectedRowOf:editor.audioArrayController inView:editor.view];
+
+    XCTAssertTrue([offered containsObject:@"udtest_beep"] && [offered containsObject:@"udtest_hum"], @"the sound shaders: %@", offered);
+    XCTAssertEqualObjects([[editor.audioArrayController.arrangedObjects firstObject] valueForKey:@"audio"], @"udtest_beep");
 }
 
 #pragma mark - References

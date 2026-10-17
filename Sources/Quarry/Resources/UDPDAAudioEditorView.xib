@@ -52,7 +52,7 @@ DQ
                         </connections>
                     </button>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NGI-qN-AFL">
-                        <rect key="frame" x="123" y="375" width="334" height="21"/>
+                        <rect key="frame" x="123" y="375" width="308" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Wave" drawsBackground="YES" id="eU1-dp-kIy">
                             <font key="font" metaFont="system"/>
@@ -67,6 +67,17 @@ DQ
                             </binding>
                         </connections>
                     </textField>
+                    <button toolTip="Choose a sound shader" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="NGI-qN-AFL-pick">
+                        <rect key="frame" x="433" y="374" width="24" height="23"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="NGI-qN-AFL-pick-c">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pickReference:" target="-2" id="NGI-qN-AFL-pick-a"/>
+                        </connections>
+                    </button>
                     <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lk2-Vt-beE">
                         <rect key="frame" x="123" y="344" width="334" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -84,7 +95,7 @@ DQ
                         </connections>
                     </textField>
                     <textField focusRingType="none" verticalHuggingPriority="750" id="NmC-jJ-ffo">
-                        <rect key="frame" x="123" y="97" width="334" height="22"/>
+                        <rect key="frame" x="123" y="97" width="308" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Preview" drawsBackground="YES" id="2mb-sX-SQb">
                             <font key="font" usesAppearanceFont="YES"/>
@@ -99,6 +110,17 @@ DQ
                             </binding>
                         </connections>
                     </textField>
+                    <button toolTip="Choose the preview material" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="NmC-jJ-ffo-pick">
+                        <rect key="frame" x="433" y="96" width="24" height="24"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="NmC-jJ-ffo-pick-c">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pickReference:" target="-2" id="NmC-jJ-ffo-pick-a"/>
+                        </connections>
+                    </button>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvF-e0-GQo">
                         <rect key="frame" x="12" y="377" width="37" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

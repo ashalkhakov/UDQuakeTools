@@ -4,6 +4,9 @@
  */
 
 #import "UDReferencePicker.h"
+#import "UDWorkspace.h"
+#import "idDeclManager.h"
+#import "idFileSystem.h"
 
 @interface UDReferencePicker () <NSTextFieldDelegate>
 @property (nonatomic, copy) NSString *pickerTitle;
@@ -16,7 +19,102 @@
 @property (nonatomic, nullable) SEL action;
 @end
 
+@implementation UDReferenceField
+
++ (instancetype)fieldTitled:(NSString *)title key:(NSString *)key controller:(id)controller kind:(UDReferenceKind)kind {
+    UDReferenceField *field = [[UDReferenceField alloc] init];
+    field.title = title;
+    field.key = key;
+    field.controller = controller;
+    field.kind = kind;
+    return field;
+}
+
+@end
+
 @implementation UDReferencePicker
+
+#pragma mark - The candidates
+
+/// The files under the folders things are kept in, of @a extensions.
++ (void)_files:(NSArray<NSString *> *)folders extensions:(NSString *)extensions stripped:(BOOL)stripped
+          what:(NSString *)what into:(NSMutableArray<NSString *> *)names details:(NSMutableArray<NSString *> *)details
+          seen:(NSMutableSet<NSString *> *)seen fileSystem:(idFileSystem *)fileSystem {
+    for (NSString *folder in folders) {
+        idFileList *list = [fileSystem listFilesTree:folder extension:extensions sorted:YES inGameDir:nil error:NULL];
+        for (NSString *path in list.list) {
+            NSString *name = stripped ? path.stringByDeletingPathExtension : path;
+            if ([seen containsObject:name.lowercaseString]) continue;
+            [seen addObject:name.lowercaseString];
+            [names addObject:name];
+            [details addObject:what];
+        }
+    }
+}
+
++ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDWorkspace *)workspace
+                          details:(NSMutableArray<NSString *> *)details {
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    idDeclManager *declManager = workspace.declManager;
+    idFileSystem *fileSystem = workspace.fileSystem;
+    NSArray<NSString *> *imageFolders = @[@"textures", @"models", @"gfx", @"guis", @"lights", @"particles", @"env", @"fonts"];
+    NSString *images = @".tga|.dds|.jpg|.png";
+    switch (field.kind) {
+        case UDReferenceNames:
+            [names addObjectsFromArray:field.names ?: @[]];
+            for (NSUInteger i = 0; i < names.count; i++) [details addObject:i < field.details.count ? field.details[i] : @""];
+            return names;
+        case UDReferenceMaterials:
+        case UDReferenceDecls: {
+            declType_t type = field.kind == UDReferenceMaterials ? DECL_MATERIAL : (declType_t)field.declType;
+            for (idDeclBase *decl in [declManager declsOfType:type forceParse:NO]) {
+                NSString *name = decl.name;
+                if (name.length == 0 || [seen containsObject:name.lowercaseString]) continue;
+                [seen addObject:name.lowercaseString];
+                [names addObject:name];
+                [details addObject:decl.fileName.lastPathComponent ?: @""];
+            }
+            if (field.kind == UDReferenceMaterials) {
+                // an image is made a material of (idMaterial's default)
+                [self _files:imageFolders extensions:images stripped:YES what:@"image" into:names details:details seen:seen fileSystem:fileSystem];
+            }
+            break;
+        }
+        case UDReferenceImages:
+            [self _files:imageFolders extensions:images stripped:NO what:@"image" into:names details:details seen:seen fileSystem:fileSystem];
+            break;
+        case UDReferenceModels:
+            [self _files:@[@"models"] extensions:@".lwo|.ase|.ma|.flt|.md5mesh|.md3" stripped:NO what:@"model"
+                    into:names details:details seen:seen fileSystem:fileSystem];
+            break;
+        case UDReferenceVideos:
+            [self _files:@[@"video"] extensions:@".roq" stripped:NO what:@"video" into:names details:details seen:seen fileSystem:fileSystem];
+            break;
+        case UDReferenceGuis:
+            [self _files:@[@"guis"] extensions:@".gui" stripped:NO what:@"GUI" into:names details:details seen:seen fileSystem:fileSystem];
+            break;
+    }
+    // sorted by name, their details with them
+    NSArray<NSNumber *> *order = [[self _indexesOf:names] sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+        return [names[a.unsignedIntegerValue] caseInsensitiveCompare:names[b.unsignedIntegerValue]];
+    }];
+    NSMutableArray<NSString *> *sortedNames = [NSMutableArray array];
+    NSMutableArray<NSString *> *sortedDetails = [NSMutableArray array];
+    for (NSNumber *i in order) {
+        [sortedNames addObject:names[i.unsignedIntegerValue]];
+        [sortedDetails addObject:details[i.unsignedIntegerValue]];
+    }
+    [details setArray:sortedDetails];
+    return sortedNames;
+}
+
++ (NSArray<NSNumber *> *)_indexesOf:(NSArray *)array {
+    NSMutableArray<NSNumber *> *indexes = [NSMutableArray arrayWithCapacity:array.count];
+    for (NSUInteger i = 0; i < array.count; i++) [indexes addObject:@(i)];
+    return indexes;
+}
+
 
 - (instancetype)initWithTitle:(NSString *)title names:(NSArray<NSString *> *)names
                       details:(NSArray<NSString *> *)details current:(NSString *)current {
@@ -56,8 +154,11 @@
 - (void)_sheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo {
     [sheet orderOut:self];
     id target = self.target;
-    if (returnCode == NSModalResponseOK && target != nil && self.action != NULL) {
-        [NSApp sendAction:self.action to:target from:self];
+    // called, not sent: in an app-modal session (a PDA child's sheet's)
+    // NSApp's sendAction:to:from: does not reach a target outside it
+    if (returnCode == NSModalResponseOK && target != nil && self.action != NULL && [target respondsToSelector:self.action]) {
+        void (*send)(id, SEL, id) = (void (*)(id, SEL, id))[target methodForSelector:self.action];
+        send(target, self.action, self);
     }
 }
 

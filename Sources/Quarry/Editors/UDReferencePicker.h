@@ -9,7 +9,37 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class UDWorkspace;
+
 NS_ASSUME_NONNULL_BEGIN
+
+/// What a field's picker chooses from.
+typedef NS_ENUM(NSInteger, UDReferenceKind) {
+    UDReferenceDecls,       // the decls of a type
+    UDReferenceMaterials,   // material decls, and images (what a material may be)
+    UDReferenceImages,      // image files, with their extensions
+    UDReferenceModels,      // model files
+    UDReferenceVideos,      // cinematics (.roq)
+    UDReferenceGuis,        // GUI files
+    UDReferenceNames,       // names the editor gives (joints, bodies, actions)
+};
+
+/// A field that names something, and its picker (the "…" beside it).
+@interface UDReferenceField : NSObject
++ (instancetype)fieldTitled:(NSString *)title key:(NSString *)key controller:(id)controller kind:(UDReferenceKind)kind;
+@property (nonatomic, copy) NSString *title;
+/// The value set: selection.<key> of the controller (an object or array
+/// controller), as the field's binding sets it.
+@property (nonatomic, copy) NSString *key;
+@property (nonatomic, weak) id controller;
+@property (nonatomic) UDReferenceKind kind;
+/// For UDReferenceDecls: the decls' type (a declType_t).
+@property (nonatomic) int declType;
+/// For UDReferenceNames: the names, and what each is.
+@property (nonatomic, copy, nullable) NSArray<NSString *> *names;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *details;
+@end
+
 
 @interface UDReferencePicker : NSWindowController <NSTableViewDataSource, NSTableViewDelegate>
 
@@ -23,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)beginSheetForWindow:(NSWindow *)window target:(id)target action:(SEL)action;
 
 @property (nonatomic, copy, readonly, nullable) NSString *chosenName;
+
+/// What a picker for @a field offers in @a workspace: names, sorted, and
+/// what each is in @a details (a decl's file, "image", …).
++ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDWorkspace *)workspace
+                          details:(NSMutableArray<NSString *> *)details;
 /// The filter as typed; the names shown (its rows).
 @property (nonatomic, copy, readonly) NSArray<NSString *> *shownNames;
 

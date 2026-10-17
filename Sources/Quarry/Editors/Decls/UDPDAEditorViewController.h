@@ -2,6 +2,8 @@
 
 @class UDDeclBase, UDDeclPDA, UDDeclEmail, UDDeclVideo, UDDeclAudio;
 
+@class UDWorkspace;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UDPDAEditorViewController : UDDeclEditorViewController
@@ -29,10 +31,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UDPDAAudioEditorViewController : NSObject
-
+/// A PDA's child's sheet (an audio log's, an email's, a video's): its
+/// fields, and pickers for the ones that name something.
+@interface UDPDAChildEditorViewController : NSObject
 @property IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSObjectController *objectController;
+/// Where the pickers' names come from.
+@property (nonatomic, weak, nullable) UDWorkspace *workspace;
+@property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
+/// The picker of the field whose "…" has tag @a tag (subclasses say).
+- (nullable UDReferenceField *)referenceFieldForTag:(NSInteger)tag;
+- (IBAction)pickReference:(nullable id)sender;
+@end
+
+@interface UDPDAAudioEditorViewController : UDPDAChildEditorViewController
 
 @property UDDeclAudio *editingAudio;
 
@@ -41,10 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UDPDAEmailEditorViewController : NSObject
-
-@property IBOutlet NSWindow *window;
-@property (strong) IBOutlet NSObjectController *objectController;
+@interface UDPDAEmailEditorViewController : UDPDAChildEditorViewController
 
 @property UDDeclEmail *editingEmail;
 
@@ -53,10 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UDPDAVideoEditorViewController : NSObject
-
-@property IBOutlet NSWindow *window;
-@property (strong) IBOutlet NSObjectController *objectController;
+@interface UDPDAVideoEditorViewController : UDPDAChildEditorViewController
 
 @property UDDeclVideo *editingVideo;
 

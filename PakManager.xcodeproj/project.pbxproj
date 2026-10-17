@@ -650,6 +650,19 @@
 		866C09EB04834533E0783FCA /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 		90AE985B00574CF16AA29815 /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 		614A56AB831EF86732909960 /* UDScriptDebugAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */; };
+		DA9A00000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DA9A0000000000000000000B;
+			remoteInfo = "udscript-dap";
+		};
+		DA9A00000000000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DA9A0000000000000000000B /* udscript-dap */;
+			targetProxy = DA9A00000000000000000013 /* PBXContainerItemProxy */;
+		};
+		92A97CD38C1CD0465FCBDA22 /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 /* Begin PBXBuildFile section */
 		AF7E50172F726A0C78A3C8E9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
 		902F0A0371C8BE1A7CAEAB3A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
@@ -771,7 +784,9 @@
 		58E7C8040171C2598E709B47 /* UDExpressionEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = A2D8D0335870525A2E5A69E7 /* UDExpressionEditor.m */; };
 		CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
 		EC1F00000000000000000001 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
+		BB9A3C06FE8A53A3C73ED1D7 /* UDScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */; };
 		EC1F00000000000000000002 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
+		D000F919359527848B26B916 /* UDScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */; };
 		CEFC653E3027987300157501 /* UDBaseEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65373027987300157501 /* UDBaseEditorViewController.m */; };
 		CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
 		CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65413027994F00157501 /* UDWorkspaceDocument.m */; };
@@ -1022,6 +1037,7 @@
 		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
 		7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */; };
+		A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */; };
 		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
 		D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
@@ -3029,7 +3045,9 @@
 		CEFC65383027987300157501 /* UDTextEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextEditorViewController.h; sourceTree = "<group>"; };
 		CEFC65393027987300157501 /* UDTextEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextEditorViewController.m; sourceTree = "<group>"; };
 		EC1F00000000000000000003 /* UDScriptServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptServer.m; sourceTree = "<group>"; };
+		A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebugger.m; sourceTree = "<group>"; };
 		EC1F00000000000000000004 /* UDScriptServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptServer.h; sourceTree = "<group>"; };
+		92E48CB9A0F8330A0ADB5841 /* UDScriptDebugger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebugger.h; sourceTree = "<group>"; };
 		CEFC653A3027987300157501 /* UDImageViewerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDImageViewerViewController.h; sourceTree = "<group>"; };
 		BF6EF605130C9BD647F22E53 /* UDTopClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTopClipView.h; sourceTree = "<group>"; };
 		A7A1C7065A8E7599821A7EB8 /* UDReferencePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDReferencePicker.h; sourceTree = "<group>"; };
@@ -3205,6 +3223,7 @@
 		395D2B3D3773407E57B6B678 /* QuarryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuarryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
+		B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebuggerTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
@@ -3922,6 +3941,7 @@
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
+				B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */,
 			);
 			path = Quarry;
 			sourceTree = "<group>";
@@ -4225,7 +4245,9 @@
 			isa = PBXGroup;
 			children = (
 				EC1F00000000000000000004 /* UDScriptServer.h */,
+				92E48CB9A0F8330A0ADB5841 /* UDScriptDebugger.h */,
 				EC1F00000000000000000003 /* UDScriptServer.m */,
+				A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -4689,6 +4711,7 @@
 				EC1D00000000000000000007 /* PBXTargetDependency */,
 				ED1D00000000000000000007 /* PBXTargetDependency */,
 				EC1E00000000000000000014 /* PBXTargetDependency */,
+				DA9A00000000000000000014 /* PBXTargetDependency */,
 			);
 			name = QuarryTests;
 			productName = QuarryTests;
@@ -5386,6 +5409,7 @@
 				58E7C8040171C2598E709B47 /* UDExpressionEditor.m in Sources */,
 				CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000001 /* UDScriptServer.m in Sources */,
+				BB9A3C06FE8A53A3C73ED1D7 /* UDScriptDebugger.m in Sources */,
 				CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */,
 				CEFC654C3029E5FE00157501 /* UDDeclDocument.m in Sources */,
 				CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */,
@@ -5409,6 +5433,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92A97CD38C1CD0465FCBDA22 /* UDFakeScriptDebugger.m in Sources */,
 				6046DF8D5CD56900C2CB0851 /* UDQuarryTestCase.m in Sources */,
 				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
 				E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */,
@@ -5458,6 +5483,7 @@
 				9BE1B6ACD5D76A2010909F67 /* UDExpressionEditor.m in Sources */,
 				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000002 /* UDScriptServer.m in Sources */,
+				D000F919359527848B26B916 /* UDScriptDebugger.m in Sources */,
 				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,
 				F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */,
 				A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */,
@@ -5466,6 +5492,7 @@
 				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
 				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
 				7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */,
+				A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

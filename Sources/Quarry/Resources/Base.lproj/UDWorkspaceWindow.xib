@@ -8,6 +8,11 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDWorkspaceWindowController">
             <connections>
+                <outlet property="editorSplit" destination="DBG-spl-001" id="DBG-o-split"/>
+                <outlet property="debugPane" destination="DBG-pan-001" id="DBG-o-pane"/>
+                <outlet property="debugBarHost" destination="DBG-bar-hst" id="DBG-o-bar"/>
+                <outlet property="debugAreaHost" destination="DBG-are-hst" id="DBG-o-area"/>
+                <outlet property="debugNavigatorHost" destination="DBG-nav-hst" id="DBG-o-nav"/>
                 <outlet property="representationControl" destination="rep-sc-001" id="rep-ot-001"/>
                 <outlet property="issuesHost" destination="IsT-hs-001" id="IsT-ol-001"/>
                 <outlet property="nameFilterField" destination="D99-4e-U2t" id="q4M-DV-AV5"/>
@@ -197,6 +202,18 @@
                                                     </subviews>
                                                 </view>
                                             </tabViewItem>
+                                            <tabViewItem label="Debug" identifier="debug" id="DBG-nav-tab">
+                                                <view key="view" id="DBG-nav-tbv">
+                                                    <rect key="frame" x="10" y="33" width="144" height="367"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <customView id="DBG-nav-hst" userLabel="Debug Navigator Host">
+                                                            <rect key="frame" x="0.0" y="0.0" width="144" height="367"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        </customView>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
                                         </tabViewItems>
                                     </tabView>
                                 </subviews>
@@ -223,19 +240,52 @@
                                             <action selector="showRepresentation:" target="-2" id="rep-ac-001"/>
                                         </connections>
                                     </segmentedControl>
-                                    <tabView fixedFrame="YES" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="4rW-Hd-hq9">
+                                    <splitView fixedFrame="YES" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="DBG-spl-001" userLabel="Editors and Debug Area">
                                         <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                        <tabViewItems>
-                                            <tabViewItem label="Tab" identifier="" id="9cv-OG-39v">
-                                                <view key="view" id="RQv-TK-re6">
-                                                    <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                </view>
-                                            </tabViewItem>
-                                        </tabViewItems>
-                                    </tabView>
+                                        <subviews>
+                                            <customView fixedFrame="YES" id="DBG-edt-001" userLabel="Editors">
+                                                <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                            <tabView fixedFrame="YES" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="4rW-Hd-hq9">
+                                                <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <tabViewItems>
+                                                    <tabViewItem label="Tab" identifier="" id="9cv-OG-39v">
+                                                        <view key="view" id="RQv-TK-re6">
+                                                            <rect key="frame" x="0.0" y="0.0" width="758" height="752"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        </view>
+                                                    </tabViewItem>
+                                                </tabViewItems>
+                                            </tabView>
+                                                </subviews>
+                                            </customView>
+                                            <customView fixedFrame="YES" id="DBG-pan-001" userLabel="Debug Area">
+                                                <rect key="frame" x="0.0" y="753" width="758" height="0.0"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <customView fixedFrame="YES" id="DBG-bar-hst" userLabel="Debug Bar Host">
+                                                        <rect key="frame" x="0.0" y="0.0" width="758" height="0.0"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                    </customView>
+                                                    <customView fixedFrame="YES" id="DBG-are-hst" userLabel="Debug Area Host">
+                                                        <rect key="frame" x="0.0" y="0.0" width="758" height="0.0"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    </customView>
+                                                </subviews>
+                                            </customView>
+                                        </subviews>
+                                        <holdingPriorities>
+                                            <real value="250"/>
+                                            <real value="260"/>
+                                        </holdingPriorities>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="DBG-spl-dlg"/>
+                                        </connections>
+                                    </splitView>
                                 </subviews>
                             </customView>
                             <customView fixedFrame="YES" id="INS-pan-001" userLabel="Inspector">

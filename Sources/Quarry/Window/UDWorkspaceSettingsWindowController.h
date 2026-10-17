@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)selectSavePath:(id)sender;
 - (IBAction)selectHomePath:(id)sender;
 - (IBAction)selectCDPath:(id)sender;
+/// The game scripts are debugged in: an application, or a program.
+- (IBAction)selectGameExecutable:(id)sender;
 
 @end
 

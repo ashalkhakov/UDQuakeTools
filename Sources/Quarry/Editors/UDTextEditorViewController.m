@@ -262,7 +262,25 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
         self.isScript = YES;
         self.funcParmToolTipStart = -1;
         self.editor.textView.delegate = self;
+        [self _showBreakpoints];
     }
+}
+
+- (IBAction)toggleBreakpoint:(id)sender {
+    if (self.isScript && self.breakpointStore != nil) [self.editor toggleBreakpoint:sender];
+    else NSBeep();
+}
+
+- (void)setBreakpointStore:(UDBreakpointStore *)breakpointStore {
+    _breakpointStore = breakpointStore;
+    [self _showBreakpoints];
+}
+
+/// A script's breakpoints in its gutter, once both the editor and the store are there.
+- (void)_showBreakpoints {
+    if (!self.isScript || self.editor == nil || self.breakpointStore == nil || self.item.path.length == 0) return;
+    if (self.editor.breakpointStore == self.breakpointStore) return;
+    [self.editor showBreakpointsOfStore:self.breakpointStore forFile:[self.workspace diskPathOfGamePath:self.item.path]];
 }
 
 #pragma mark - Script helpers (SyntaxRichEditCtrl's OnChar, asking the server)

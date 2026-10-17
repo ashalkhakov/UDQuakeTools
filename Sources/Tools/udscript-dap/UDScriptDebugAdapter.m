@@ -99,32 +99,18 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 
 #pragma mark - Paths
 
-/// The folders a script's game path is relative to, the search paths'
-/// order: each base path's mod, then its base mod, then base.
+/// The workspace the settings say: its game folders, what a script's game
+/// path is relative to (UDWorkspace's gameFolders, as Quarry's editors name
+/// scripts), and its file system, where a script in a pak is read from.
 - (void)_useSettings:(NSDictionary *)settings {
-    NSMutableArray<NSString *> *roots = [NSMutableArray array];
-    NSMutableArray<NSString *> *games = [NSMutableArray array];
-    for (NSString *key in @[@"fs_game", @"fs_game_base"]) {
-        NSString *game = settings[key];
-        if ([game isKindOfClass:[NSString class]] && game.length > 0) [games addObject:game];
-    }
-    [games addObject:@"base"];
-    for (NSString *key in @[@"fs_savepath", @"fs_basepath", @"fs_cdpath"]) {
-        NSString *base = settings[key];
-        if (![base isKindOfClass:[NSString class]] || base.length == 0) continue;
-        for (NSString *game in games) {
-            NSString *root = [base.stringByStandardizingPath stringByAppendingPathComponent:game];
-            if (![roots containsObject:root]) [roots addObject:root];
-        }
-    }
-    _roots = roots;
-    if (settings[@"fs_basepath"] != nil) {
-        _workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"]];
-        NSError *error = nil;
-        if (![_workspace startup:&error]) {
-            [self _output:[NSString stringWithFormat:@"The workspace does not start: %@\n", error.localizedDescription] category:@"stderr"];
-            _workspace = nil;
-        }
+    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
+    _roots = workspace.gameFolders;
+    if (settings[@"fs_basepath"] == nil) return;
+    NSError *error = nil;
+    if ([workspace startup:&error]) {
+        _workspace = workspace;
+    } else {
+        [self _output:[NSString stringWithFormat:@"The workspace does not start: %@\n", error.localizedDescription] category:@"stderr"];
     }
 }
 
@@ -165,7 +151,17 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
         [_sourceReferences addObject:gamePath];
         index = _sourceReferences.count - 1;
     }
-    return @{ @"name": gamePath.lastPathComponent, @"sourceReference": @(index + 1), @"origin": gamePath };
+    NSMutableDictionary *source = [@{ @"name": gamePath.lastPathComponent, @"sourceReference": @(index + 1),
+                                      @"origin": gamePath } mutableCopy];
+    // where it would be in the mod's folder: what a client names it by (its
+    // text the source request's, as DAP has it for a path with a reference)
+    for (NSString *root in _roots) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:root]) {
+            source[@"path"] = [root stringByAppendingPathComponent:gamePath];
+            break;
+        }
+    }
+    return source;
 }
 
 /// A script's text: from disk, or from the workspace's file system.

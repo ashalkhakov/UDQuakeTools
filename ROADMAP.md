@@ -325,8 +325,13 @@ bundle brings the adapter as it brings the language server).
 - [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
       its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
       language server (clangd), with build and run from the editor.
-- [ ] idScript's bundle brings the adapter below, and Quarry debugs
-      scripts with UDCodeKit's debugger UI.
+- [x] Quarry debugs scripts with UDCodeKit's debugger UI (UDScriptDebugger):
+      Debug > Run starts the workspace's game (Workspace Settings > Debugging:
+      its executable and arguments), Attach a running one; breakpoints in the
+      script tabs' gutters (a pak's script named where it would be in the
+      mod's folder, as the adapter names it), the debug navigator tab, the
+      debug bar and area under the editors. (Needs UDCodeKit's debugger,
+      ashalkhakov/UDCodeKit#45, released and pinned.)
 - [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
       27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
       speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where
@@ -339,8 +344,6 @@ bundle brings the adapter as it brings the language server).
 - [x] Launch and attach: launch starts the game with its debugger server on
       (`+set com_enableDebuggerServer 1`) on the workspace's paths, its own
       output forwarded; attach asks a running one.
-- [ ] Quarry's launch configurations: the game's executable and arguments,
-      kept in the workspace.
 
 The engine's own gaps, for the fork: `GetRegisterValue` aborts the game
 (`idTypeDef::SuperClass` throws) for a name it does not find in a

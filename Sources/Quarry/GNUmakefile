@@ -54,6 +54,7 @@ Quarry_OBJC_FILES = \
     Model/UDPathTree.m \
     Model/UDProject.m \
     Scripts/UDScriptServer.m \
+    Scripts/UDScriptDebugger.m \
     Editors/UDTextEditorViewController.m \
     Model/UDWorkspaceItem.m \
     Documents/UDBaseDocument.m \

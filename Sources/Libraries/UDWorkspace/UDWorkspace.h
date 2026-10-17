@@ -47,6 +47,12 @@ extern NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification;
 @property (strong, nonatomic) NSString *com_singleDeclFileName; // override packed decl file used by com_SingleDeclFile and writeDeclFile
 @property (assign, nonatomic) NSInteger com_singleDeclFileWriteMode; // packed .decls writer policy: 0 = openQ4 extended game types, 1 = exact retail game types
 
+// (not the engine's) The game the scripts are debugged in: its executable
+// (an application bundle or a program) and the arguments it is started with
+// besides the workspace's paths, as a command line has them ("+map game/mars_city1").
+@property (strong, nonatomic) NSString *gameExecutable;
+@property (strong, nonatomic) NSString *gameArguments;
+
 // Engine Subsystems (Lifetimes are bound to the workspace, not the stack)
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, strong) idDeclManager *declManager;
@@ -78,6 +84,18 @@ extern NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification;
 - (nullable NSDictionary *)settingsForTool:(NSString *)tool;
 - (void)setSettings:(nullable NSDictionary *)settings forTool:(NSString *)tool;
 - (NSDictionary *)dictionaryRepresentation;
+
+/// (not the engine's) The folders a file's game path ("script/lamp.script")
+/// is relative to on disk, in the search paths' order: each of fs_savepath,
+/// fs_basepath and fs_cdpath, with fs_game, fs_game_base and base. Read
+/// from the settings alone (no -startup:).
+@property (nonatomic, readonly) NSArray<NSString *> *gameFolders;
+/// The file at @a gamePath on disk; one in a pak named where it would be in
+/// the first of the gameFolders there is (a debugger's name for a script,
+/// the same for its editor and its adapter). And back: nil for what no
+/// game folder holds.
+- (NSString *)diskPathOfGamePath:(NSString *)gamePath;
+- (nullable NSString *)gamePathOfDiskPath:(NSString *)path;
 
 // Re-applies a settings dictionary (same keys as dictionaryRepresentation)
 // onto this workspace, filling in the usual defaults for missing keys. Used

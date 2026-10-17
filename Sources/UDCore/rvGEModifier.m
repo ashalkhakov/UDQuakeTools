@@ -401,6 +401,208 @@ static void UDCopyDict(idDict *from, idDict *to) {
 
 @end
 
+@implementation rvGEInsertModifier {
+    idWindow *mParent;
+    idWindow *mBefore;
+    idRectangle mRect;
+    idWindow *mUndoParent;
+    idWindow *mUndoBefore;
+    idRectangle mUndoRect;
+}
+
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window parent:(idWindow *)parent before:(idWindow *)before {
+    self = [super initWithName:name window:window];
+    if (self) {
+        mParent = parent;
+        mBefore = before;
+
+        NSAssert( mParent, @"a parent to insert in" );
+
+        mUndoParent = [window getParent];
+        mUndoBefore = nil;
+        mUndoRect = self.wrapper.clientRect;
+        mRect = self.wrapper.clientRect;
+
+        // Find the child window the window being inserted is before
+        if ( mUndoParent ) {
+            int index;
+            rvGEWindowWrapper *pwrapper;
+
+            pwrapper = [rvGEWindowWrapper wrapperOf:mUndoParent];
+            index = [mUndoParent getChildIndex:self.window];
+
+            if ( index + 1 < [pwrapper childCount] ) {
+                mUndoBefore = [pwrapper childAtIndex:index + 1];
+            }
+        }
+
+        // Since rectangles are relative to the parent rectangle we need to figure
+        // out the new x and y coordinate as if this window were a child
+        rvGEWindowWrapper *parentWrapper;
+        parentWrapper = [rvGEWindowWrapper wrapperOf:mParent];
+        mRect.x = self.wrapper.screenRect.x - parentWrapper.screenRect.x;
+        mRect.y = self.wrapper.screenRect.y - parentWrapper.screenRect.y;
+    }
+    return self;
+}
+
+/*
+================
+rvGEInsertModifier::Apply
+
+Apply the insert modifier by removing the child from its original parent and
+inserting it as a child of the new parent
+================
+*/
+- (BOOL)apply {
+    if ( mUndoParent ) {
+        [mUndoParent removeChild:self.window];
+    }
+
+    [mParent insertChild:self.window before:mBefore];
+    [self.wrapper setRect:mRect];
+
+    return YES;
+}
+
+/*
+================
+rvGEInsertModifier::Undo
+
+Undo the insert modifier by removing the window from the parent it was
+added to and re-inserting it back into its original parent
+================
+*/
+- (BOOL)undo {
+    [mParent removeChild:self.window];
+
+    if ( mUndoParent ) {
+        [mUndoParent insertChild:self.window before:mUndoBefore];
+        [self.wrapper setRect:mUndoRect];
+    }
+
+    return YES;
+}
+
+@end
+
+@implementation rvGEDeleteModifier
+
+/*
+================
+rvGEDeleteModifier::Apply
+
+Apply the delete modifier by setting the deleted flag in the wrapper
+================
+*/
+- (BOOL)apply {
+    self.wrapper.deleted = YES;
+
+    return YES;
+}
+
+/*
+================
+rvGEDeleteModifier::Undo
+
+Undo the delete modifier by unsetting the deleted flag in the wrapper
+================
+*/
+- (BOOL)undo {
+    self.wrapper.deleted = NO;
+
+    return YES;
+}
+
+@end
+
+@implementation rvGEZOrderModifier {
+    idWindow *mBefore;
+    idWindow *mUndoBefore;
+}
+
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window change:(rvGEZOrderChange)change {
+    self = [super initWithName:name window:window];
+    if (self) {
+        int count;
+        int index;
+        idWindow *parent;
+
+        parent = [window getParent];
+        if ( !parent ) {
+            return self;
+        }
+
+        count = [parent getChildCount];
+        index = [parent getChildIndex:self.window];
+
+        if ( index + 1 >= count ) {
+            mUndoBefore = nil;
+        } else {
+            mUndoBefore = [parent getChild:index + 1];
+        }
+
+        switch ( change ) {
+            case ZO_FORWARD:
+                index += 2;
+                break;
+
+            case ZO_BACKWARD:
+                if ( index == 0 ) {
+                    index = 1;
+                } else {
+                    index -= 1;
+                }
+                break;
+
+            case ZO_BACK:
+                index = 0;
+                break;
+
+            case ZO_FRONT:
+                index = count;
+                break;
+        }
+
+        if ( index >= count ) {
+            mBefore = nil;
+        } else {
+            mBefore = [parent getChild:index];
+        }
+    }
+    return self;
+}
+
+- (BOOL)apply {
+    idWindow *parent;
+
+    parent = [self.window getParent];
+    [parent removeChild:self.window];
+    [parent insertChild:self.window before:mBefore];
+
+    return YES;
+}
+
+- (BOOL)undo {
+    idWindow *parent;
+
+    parent = [self.window getParent];
+    [parent removeChild:self.window];
+    [parent insertChild:self.window before:mUndoBefore];
+
+    return YES;
+}
+
+- (BOOL)isValid {
+    if ( ![self.window getParent] ) {
+        return NO;
+    }
+
+    return YES;
+}
+
+@end
+
 @implementation rvGEModifierStack {
     NSMutableArray<rvGEModifier *> *mModifiers;
     int mCurrentModifier;

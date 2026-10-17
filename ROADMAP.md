@@ -241,8 +241,12 @@ In order of value against cost; LOC is the MFC original's size.
       the grid, each drag one Undo; Source and Run follow its edits. The
       GUI's windows are a navigator in the left pane (a window's eye hides
       it in the design, as the main menu's black curtain needs), and its
-      Properties and Scripts are inspector panes, each edit one Undo.
-      Next: insert, delete, z-order, align and copy/paste. The port interprets as well as draws: GUI scripts, named events,
+      Properties and Scripts are inspector panes, each edit one Undo; and
+      the design's menu (the engine's popup) and keys make, delete,
+      arrange, align, size alike, parent, nudge, copy and paste windows.
+      What is left of tools/guied: its item properties dialog (a form over
+      the state keys the Properties list already edits), and its options
+      (grid, colors) as settings. The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

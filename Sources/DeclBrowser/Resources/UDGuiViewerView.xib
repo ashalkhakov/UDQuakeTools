@@ -29,6 +29,8 @@
                 <outlet property="scriptsText" destination="GUV-scr-text" id="GUV-o-scrText"/>
                 <outlet property="scriptsMessage" destination="GUV-scr-msg" id="GUV-o-scrMsg"/>
                 <outlet property="scriptsPlaceholder" destination="GUV-scr-none" id="GUV-o-scrNone"/>
+                <outlet property="designMenu" destination="GUV-menu" id="GUV-o-menu"/>
+                <outlet property="selectMenu" destination="GUV-menu-select-m" id="GUV-o-selectMenu"/>
                 <outlet property="logView" destination="GUV-tab-log-v" id="GUV-o-logView"/>
             </connections>
         </customObject>
@@ -500,5 +502,172 @@
                 </textField>
             </subviews>
         </customView>
+        <menu title="Design" id="GUV-menu" userLabel="Design Menu">
+            <items>
+                <menuItem title="New" id="GUV-m-sub-45">
+                    <menu key="submenu" title="New" id="GUV-m-m-46">
+                        <items>
+                        <menuItem title="windowDef" tag="1" id="GUV-m-i-1">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-2"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="editDef" tag="2" id="GUV-m-i-3">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-4"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="choiceDef" tag="4" id="GUV-m-i-5">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-6"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="sliderDef" tag="5" id="GUV-m-i-7">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-8"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="bindDef" tag="6" id="GUV-m-i-9">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-10"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="listDef" tag="7" id="GUV-m-i-11">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-12"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="renderDef" tag="8" id="GUV-m-i-13">
+                            <connections>
+                                <action selector="newWindow:" target="-2" id="GUV-m-a-14"/>
+                            </connections>
+                        </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Select" id="GUV-menu-select">
+                    <menu key="submenu" title="Select" id="GUV-menu-select-m"/>
+                </menuItem>
+                <menuItem title="Arrange" id="GUV-m-sub-47">
+                    <menu key="submenu" title="Arrange" id="GUV-m-m-48">
+                        <items>
+                        <menuItem title="Bring to Front" keyEquivalent="]" id="GUV-m-i-15">
+                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                            <connections>
+                                <action selector="bringToFront:" target="-2" id="GUV-m-a-16"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Bring Forward" keyEquivalent="]" id="GUV-m-i-17">
+                            <connections>
+                                <action selector="bringForward:" target="-2" id="GUV-m-a-18"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Send to Back" keyEquivalent="[" id="GUV-m-i-19">
+                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                            <connections>
+                                <action selector="sendToBack:" target="-2" id="GUV-m-a-20"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Send Backward" keyEquivalent="[" id="GUV-m-i-21">
+                            <connections>
+                                <action selector="sendBackward:" target="-2" id="GUV-m-a-22"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem isSeparatorItem="YES" id="GUV-m-s-23"/>
+                        <menuItem title="Make Child" id="GUV-m-i-24">
+                            <connections>
+                                <action selector="makeChild:" target="-2" id="GUV-m-a-25"/>
+                            </connections>
+                        </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Align" id="GUV-m-sub-49">
+                    <menu key="submenu" title="Align" id="GUV-m-m-50">
+                        <items>
+                        <menuItem title="Lefts" tag="1" id="GUV-m-i-26">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-27"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Centers" tag="2" id="GUV-m-i-28">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-29"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Rights" tag="3" id="GUV-m-i-30">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-31"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem isSeparatorItem="YES" id="GUV-m-s-32"/>
+                        <menuItem title="Tops" tag="4" id="GUV-m-i-33">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-34"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Middles" tag="5" id="GUV-m-i-35">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-36"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Bottoms" tag="6" id="GUV-m-i-37">
+                            <connections>
+                                <action selector="alignWindows:" target="-2" id="GUV-m-a-38"/>
+                            </connections>
+                        </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Make Same Size" id="GUV-m-sub-51">
+                    <menu key="submenu" title="Make Same Size" id="GUV-m-m-52">
+                        <items>
+                        <menuItem title="Width" tag="1" id="GUV-m-i-39">
+                            <connections>
+                                <action selector="makeSameSize:" target="-2" id="GUV-m-a-40"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Height" tag="2" id="GUV-m-i-41">
+                            <connections>
+                                <action selector="makeSameSize:" target="-2" id="GUV-m-a-42"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Both" tag="3" id="GUV-m-i-43">
+                            <connections>
+                                <action selector="makeSameSize:" target="-2" id="GUV-m-a-44"/>
+                            </connections>
+                        </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="GUV-menu-sep1"/>
+                <menuItem title="Copy" keyEquivalent="c" id="GUV-m-i-53">
+                    <connections>
+                        <action selector="copyWindows:" target="-2" id="GUV-m-a-54"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Paste" keyEquivalent="v" id="GUV-m-i-55">
+                    <connections>
+                        <action selector="pasteWindows:" target="-2" id="GUV-m-a-56"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Delete" id="GUV-m-i-57">
+                    <connections>
+                        <action selector="deleteWindows:" target="-2" id="GUV-m-a-58"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="GUV-menu-sep2"/>
+                <menuItem title="Scripts…" id="GUV-m-i-59">
+                    <connections>
+                        <action selector="showScripts:" target="-2" id="GUV-m-a-60"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Properties…" id="GUV-m-i-61">
+                    <connections>
+                        <action selector="showProperties:" target="-2" id="GUV-m-a-62"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
     </objects>
 </document>

@@ -254,4 +254,111 @@ static NSString *const UDCanvasGui =
     XCTAssertFalse([self.workspace.modifiers canUndo], @"and nothing is changed");
 }
 
+#pragma mark - Commands
+
+/// The desktop's windows' names, in their order (back to front).
+- (NSArray<NSString *> *)desktopOrder {
+    idWindow *desktop = [self.workspace.interface getDesktop];
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (int i = 0; i < [desktop getChildCount]; i++) {
+        rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:[desktop getChild:i]];
+        if (!wrapper.deleted) [names addObject:[[desktop getChild:i] getName]];
+    }
+    return names;
+}
+
+- (void)select:(NSArray<NSString *> *)names {
+    [self.workspace.selections clear];
+    for (NSString *name in names) [self.workspace.selections add:[self window:name]];
+}
+
+- (void)testANewWindowIsAddedAndUndone {
+    idWindow *window = [self.workspace addWindow:WT_NORMAL];
+    XCTAssertEqualObjects([window getName], @"unnamed");
+    XCTAssertEqualObjects(self.desktopOrder.lastObject, @"unnamed", @"on the desktop, at the front");
+    XCTAssertEqual(self.workspace.selections[0], window, @"and selected");
+    XCTAssertTrue([self.workspace.text containsString:@"windowDef unnamed"]);
+    idWindow *second = [self.workspace addWindow:WT_EDIT];
+    XCTAssertEqualObjects([second getName], @"unnamed1", @"named apart from the first");
+    XCTAssertTrue([self.workspace.text containsString:@"editDef unnamed1"]);
+    [self.workspace.modifiers undo];
+    [self.workspace.modifiers undo];
+    XCTAssertFalse([self.desktopOrder containsObject:@"unnamed"]);
+}
+
+- (void)testDeletingTakesTheWindowOutOfTheFile {
+    [self select:@[@"Label"]];
+    [self.workspace deleteSelected];
+    XCTAssertFalse([self.workspace.text containsString:@"windowDef Label"]);
+    XCTAssertEqual([self.workspace.selections num], 0);
+    [self.workspace.modifiers undo];
+    XCTAssertTrue([self.workspace.text containsString:@"windowDef Label"]);
+}
+
+- (void)testTheOrderIsArranged {
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Panel", @"Label", @"Moving"]));
+    [self select:@[@"Panel"]];
+    [self.workspace bringSelectedToFront];
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Label", @"Moving", @"Panel"]));
+    [self.workspace sendSelectedBackward];
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Label", @"Panel", @"Moving"]));
+    [self.workspace sendSelectedToBack];
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Panel", @"Label", @"Moving"]));
+    [self.workspace bringSelectedForward];
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Label", @"Panel", @"Moving"]));
+    [self.workspace.modifiers undo];
+    XCTAssertEqualObjects(self.desktopOrder, (@[@"Panel", @"Label", @"Moving"]));
+}
+
+- (void)testAligningAndSizingFollowTheFirstSelected {
+    [self select:@[@"Panel", @"Label"]];
+    [self.workspace alignSelected:ALIGN_LEFTS];
+    XCTAssertEqual([self rectOf:@"Label"].x, 100);
+    [self.workspace alignSelected:ALIGN_BOTTOMS];
+    XCTAssertEqual([self rectOf:@"Label"].y + [self rectOf:@"Label"].h, 200);
+    [self.workspace makeSelectedSameSizeWidth:YES height:NO];
+    XCTAssertEqual([self rectOf:@"Label"].w, 200);
+    XCTAssertEqual([self rectOf:@"Label"].h, 30, @"its height as it was");
+}
+
+- (void)testMakeChildKeepsItWhereItIs {
+    [self select:@[@"Panel", @"Label"]];
+    XCTAssertTrue([self.workspace makeSelectedAChild]);
+    idWindow *label = [self window:@"Label"];
+    XCTAssertEqual([label getParent], [self window:@"Panel"]);
+    XCTAssertEqual([rvGEWindowWrapper wrapperOf:label].screenRect.x, 400, @"where it was on the screen");
+    XCTAssertEqual([self rectOf:@"Label"].x, 300, @"its rect now the panel's");
+    [self.workspace.modifiers undo];
+    XCTAssertEqual([label getParent], [self.workspace.interface getDesktop]);
+    XCTAssertEqual([self rectOf:@"Label"].x, 400);
+}
+
+- (void)testCopiedWindowsArePastedAsNew {
+    [self select:@[@"Button"]];
+    [self.workspace copySelected];
+    XCTAssertTrue([self.workspace canPaste]);
+    [self.workspace paste];
+    XCTAssertTrue([self.desktopOrder containsObject:@"Button1"], @"%@", self.desktopOrder);
+    idWindow *pasted = self.workspace.selections[0];
+    XCTAssertEqualObjects([pasted getName], @"Button1");
+    XCTAssertNotNil([[rvGEWindowWrapper wrapperOf:pasted].scriptDict getString:@"onAction" defaultString:nil], @"its scripts with it");
+    XCTAssertTrue([self.workspace.text containsString:@"windowDef Button1"]);
+}
+
+- (void)testTheArrowsNudge {
+    [self select:@[@"Label"]];
+    [self.workspace nudgeX:1 y:0 size:NO];
+    [self.workspace nudgeX:0 y:-1 size:NO];
+    XCTAssertEqual([self rectOf:@"Label"].x, 401);
+    XCTAssertEqual([self rectOf:@"Label"].y, 49);
+    [self.workspace nudgeX:2 y:0 size:YES];
+    XCTAssertEqual([self rectOf:@"Label"].w, 102);
+}
+
+- (void)testTheWindowsUnderAPointAreOffered {
+    NSArray<idWindow *> *under = [self.workspace windowsUnderX:115 y:115];
+    NSArray *names = [under valueForKey:@"getName"];
+    XCTAssertEqualObjects(names, (@[@"Button", @"Panel", @"Desktop"]), @"the child first, the desktop last");
+}
+
 @end

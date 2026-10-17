@@ -1,5 +1,6 @@
 #import "UDTextEditorViewController.h"
 #import "UDBaseEditorViewController.h"
+#import "UDGuiView.h"
 
 @class UDGuiPlayer, UDGuiView, rvGEWorkspace;
 
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  * whose document saves it). Back from the source, an edited text is run
  * instead, its parse errors in the tab's Issues.
  */
-@interface UDGuiEditorViewController : UDTextEditorViewController <UDSourceRepresenting, UDInspecting, UDNavigating>
+@interface UDGuiEditorViewController : UDTextEditorViewController <UDSourceRepresenting, UDInspecting, UDNavigating, UDGuiViewDesignDelegate>
 
 @property (nonatomic, strong, readonly) UDGuiPlayer *player;
 
@@ -43,6 +44,25 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTextField *propertiesMessage;
 @property (weak) IBOutlet NSTextField *propertiesPlaceholder;
 - (IBAction)addProperty:(nullable id)sender;
+
+/// The design's menu (rvGEWorkspace's popup, IDR_GUIED_ITEM_POPUP): New,
+/// Select (filled with the windows under the click), Arrange, Align, Make
+/// Same Size, Copy, Paste, Delete, Scripts, Properties.
+@property (strong) IBOutlet NSMenu *designMenu;
+@property (weak) IBOutlet NSMenu *selectMenu;
+- (IBAction)newWindow:(nullable id)sender;
+- (IBAction)selectWindowFromMenu:(nullable id)sender;
+- (IBAction)bringToFront:(nullable id)sender;
+- (IBAction)bringForward:(nullable id)sender;
+- (IBAction)sendToBack:(nullable id)sender;
+- (IBAction)sendBackward:(nullable id)sender;
+- (IBAction)makeChild:(nullable id)sender;
+- (IBAction)alignWindows:(nullable id)sender;
+- (IBAction)makeSameSize:(nullable id)sender;
+- (IBAction)copyWindows:(nullable id)sender;
+- (IBAction)pasteWindows:(nullable id)sender;
+- (IBAction)deleteWindows:(nullable id)sender;
+- (IBAction)showScripts:(nullable id)sender;
 /// The inspector's Properties shown (a window double-clicked).
 - (IBAction)showProperties:(nullable id)sender;
 /// The inspector's Scripts (GEItemScriptsDlg): the selected window's

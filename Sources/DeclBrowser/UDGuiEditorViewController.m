@@ -440,6 +440,120 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [self _updateScripts:YES];
 }
 
+#pragma mark - The design's menu
+
+- (NSMenu *)guiView:(UDGuiView *)view designMenuAt:(NSPoint)point {
+    rvGEWorkspace *design = self.designWorkspace;
+    if (design == nil) return nil;
+    // HandleRButtonDown's Select: the windows under the click
+    NSMenu *select = self.selectMenu;
+    [select removeAllItems];
+    for (idWindow *window in [design windowsUnderX:(float)point.x y:(float)point.y]) {
+        NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:[window getName] action:@selector(selectWindowFromMenu:) keyEquivalent:@""];
+        item.target = self;
+        item.representedObject = window;
+        item.state = [rvGEWindowWrapper wrapperOf:window].selected ? NSControlStateValueOn : NSControlStateValueOff;
+        [select addItem:item];
+    }
+    return self.designMenu;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item {
+    rvGEWorkspace *design = self.designWorkspace;
+    int selected = [design.selections num];
+    SEL action = item.action;
+    if (action == @selector(bringToFront:) || action == @selector(bringForward:) || action == @selector(sendToBack:)
+        || action == @selector(sendBackward:) || action == @selector(copyWindows:) || action == @selector(deleteWindows:)) {
+        return selected > 0;
+    }
+    if (action == @selector(makeChild:) || action == @selector(alignWindows:) || action == @selector(makeSameSize:)) {
+        return selected > 1;
+    }
+    if (action == @selector(pasteWindows:)) {
+        return [design canPaste];
+    }
+    if (action == @selector(showScripts:) || action == @selector(showProperties:)) {
+        return selected == 1;
+    }
+    return [super validateMenuItem:item];
+}
+
+/// A command of the design's, and the design shown after it.
+- (void)_designCommandDone {
+    if (!self.designing) [self _enterDesign];
+    [self _renderDesign];
+}
+
+- (IBAction)newWindow:(id)sender {
+    [[self _design] addWindow:(rvGEWindowType)[sender tag]];
+    [self _designCommandDone];
+}
+
+- (IBAction)selectWindowFromMenu:(id)sender {
+    idWindow *window = [sender representedObject];
+    if (window != nil) [self.designWorkspace.selections set:window];
+    [self _designCommandDone];
+}
+
+- (IBAction)bringToFront:(id)sender {
+    [self.designWorkspace bringSelectedToFront];
+    [self _designCommandDone];
+}
+
+- (IBAction)bringForward:(id)sender {
+    [self.designWorkspace bringSelectedForward];
+    [self _designCommandDone];
+}
+
+- (IBAction)sendToBack:(id)sender {
+    [self.designWorkspace sendSelectedToBack];
+    [self _designCommandDone];
+}
+
+- (IBAction)sendBackward:(id)sender {
+    [self.designWorkspace sendSelectedBackward];
+    [self _designCommandDone];
+}
+
+- (IBAction)makeChild:(id)sender {
+    if (![self.designWorkspace makeSelectedAChild]) NSBeep();
+    [self _designCommandDone];
+}
+
+/// The menu's tags are the engine's EItemAlign, one on.
+- (IBAction)alignWindows:(id)sender {
+    [self.designWorkspace alignSelected:(rvGEItemAlign)([sender tag] - 1)];
+    [self _designCommandDone];
+}
+
+/// Width (1), Height (2), Both (3).
+- (IBAction)makeSameSize:(id)sender {
+    NSInteger tag = [sender tag];
+    [self.designWorkspace makeSelectedSameSizeWidth:(tag & 1) != 0 height:(tag & 2) != 0];
+    [self _designCommandDone];
+}
+
+- (IBAction)copyWindows:(id)sender {
+    [self.designWorkspace copySelected];
+}
+
+- (IBAction)pasteWindows:(id)sender {
+    [[self _design] paste];
+    [self _designCommandDone];
+}
+
+- (IBAction)deleteWindows:(id)sender {
+    [self.designWorkspace deleteSelected];
+    [self _designCommandDone];
+}
+
+- (IBAction)showScripts:(id)sender {
+    id controller = self.view.window.windowController;
+    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
+        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Scripts"];
+    }
+}
+
 #pragma mark - Editor | Source
 
 - (void)setShowsSource:(BOOL)showsSource {
@@ -530,6 +644,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.guiView.workspace = self.designWorkspace;
     self.guiView.designTarget = self;
     self.guiView.designAction = @selector(_designViewChanged:);
+    self.guiView.designDelegate = self;
     for (NSControl *control in @[self.playButton, self.stepButton, self.restartButton, self.namedEventPopUp]) {
         control.enabled = NO;
     }

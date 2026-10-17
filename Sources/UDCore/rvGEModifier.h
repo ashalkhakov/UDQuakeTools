@@ -65,6 +65,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithName:(NSString *)name window:(idWindow *)window variables:(idDict *)variables scripts:(idDict *)scripts;
 @end
 
+/// rvGEInsertModifier: a window made a child of @a parent, before
+/// @a before (at the front for none), its rect as it was on the screen.
+@interface rvGEInsertModifier : rvGEModifier
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window parent:(idWindow *)parent before:(nullable idWindow *)before;
+@end
+
+/// rvGEDeleteModifier: a window marked deleted (not drawn, not written).
+@interface rvGEDeleteModifier : rvGEModifier
+@end
+
+/// rvGEZOrderModifier::EZOrderChange
+typedef NS_ENUM(int, rvGEZOrderChange) {
+    ZO_FORWARD,
+    ZO_BACKWARD,
+    ZO_FRONT,
+    ZO_BACK,
+};
+
+/// rvGEZOrderModifier: a window moved in its parent's order.
+@interface rvGEZOrderModifier : rvGEModifier
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window change:(rvGEZOrderChange)change;
+@end
+
 /// rvGEModifierStack
 @interface rvGEModifierStack : NSObject
 

@@ -339,7 +339,13 @@ static int UDEventMilliseconds(NSEvent *event) {
 
 - (void)mouseDown:(NSEvent *)event       { if (![self _designMouseDown:event]) [self _button:K_MOUSE1 event:event down:YES]; }
 - (void)mouseUp:(NSEvent *)event         { if (![self _designMouseUp:event]) [self _button:K_MOUSE1 event:event down:NO]; }
-- (void)rightMouseDown:(NSEvent *)event  { [self _button:K_MOUSE2 event:event down:YES]; }
+- (void)rightMouseDown:(NSEvent *)event  {
+    if (self.workspace != nil) {
+        [super rightMouseDown:event];       // the design's menu
+        return;
+    }
+    [self _button:K_MOUSE2 event:event down:YES];
+}
 - (void)rightMouseUp:(NSEvent *)event    { [self _button:K_MOUSE2 event:event down:NO]; }
 - (void)otherMouseDown:(NSEvent *)event  { [self _button:K_MOUSE3 event:event down:YES]; }
 - (void)otherMouseUp:(NSEvent *)event    { [self _button:K_MOUSE3 event:event down:NO]; }
@@ -359,7 +365,76 @@ static int UDEventMilliseconds(NSEvent *event) {
 
 #pragma mark - Keys
 
+/// rvGEWorkspace::HandleKeyDown, and the arrange menu's keys: the arrows
+/// nudge (shift sizes), Escape lets the selection go, Delete deletes,
+/// ⌘] ⌘[ bring forward and send backward (shift: to the front, the back).
+- (BOOL)_designKeyDown:(NSEvent *)event {
+    rvGEWorkspace *design = self.workspace;
+    if (design == nil) return NO;
+    NSString *characters = event.charactersIgnoringModifiers;
+    if (characters.length == 0) return NO;
+    unichar c = [characters characterAtIndex:0];
+    NSEventModifierFlags flags = event.modifierFlags;
+    BOOL shift = (flags & NSEventModifierFlagShift) != 0;
+    BOOL command = (flags & NSEventModifierFlagCommand) != 0;
+    if (command) {
+        if (c == ']' || c == '}') {
+            shift ? [design bringSelectedToFront] : [design bringSelectedForward];
+        } else if (c == '[' || c == '{') {
+            shift ? [design sendSelectedToBack] : [design sendSelectedBackward];
+        } else {
+            return NO;
+        }
+    } else {
+        switch (c) {
+            case NSLeftArrowFunctionKey:  [design nudgeX:-1 y:0 size:shift]; break;
+            case NSRightArrowFunctionKey: [design nudgeX:1 y:0 size:shift]; break;
+            case NSUpArrowFunctionKey:    [design nudgeX:0 y:-1 size:shift]; break;
+            case NSDownArrowFunctionKey:  [design nudgeX:0 y:1 size:shift]; break;
+            case 27:                      [design.selections clear]; break;
+            case 8: case 127: case NSDeleteFunctionKey: [design deleteSelected]; break;
+            default: return NO;
+        }
+    }
+    [self _designChanged];
+    return YES;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item {
+    rvGEWorkspace *design = self.workspace;
+    if (item.action == @selector(copy:) || item.action == @selector(delete:)) {
+        return design != nil && [design.selections num] > 0;
+    }
+    if (item.action == @selector(paste:)) {
+        return design != nil && [design canPaste];
+    }
+    return YES;
+}
+
+- (IBAction)copy:(id)sender {
+    [self.workspace copySelected];
+}
+
+- (IBAction)paste:(id)sender {
+    if (self.workspace == nil) return;
+    [self.workspace paste];
+    [self _designChanged];
+}
+
+- (IBAction)delete:(id)sender {
+    if (self.workspace == nil) return;
+    [self.workspace deleteSelected];
+    [self _designChanged];
+}
+
+- (NSMenu *)menuForEvent:(NSEvent *)event {
+    if (self.workspace == nil) return [super menuForEvent:event];
+    [self _syncWorkspaceRect];
+    return [self.designDelegate guiView:self designMenuAt:[self _pointOf:event]];
+}
+
 - (void)keyDown:(NSEvent *)event {
+    if ([self _designKeyDown:event]) return;
     if ((event.modifierFlags & NSEventModifierFlagCommand) || self.workspace != nil) {
         [super keyDown:event];      // the menus'
         return;

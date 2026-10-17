@@ -1,6 +1,13 @@
 #import <AppKit/AppKit.h>
 
-@class UDGuiPlayer, UDTriangleList, UDOverlay, rvGEWorkspace;
+@class UDGuiPlayer, UDTriangleList, UDOverlay, rvGEWorkspace, UDGuiView;
+
+/// What a designing view asks its owner.
+@protocol UDGuiViewDesignDelegate <NSObject>
+/// The menu for a right click at @a point (the view's): the design's
+/// commands, the windows under it to select.
+- (nullable NSMenu *)guiView:(UDGuiView *)view designMenuAt:(NSPoint)point;
+@end
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,6 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// (target-action; the sender is the view).
 @property (nonatomic, weak, nullable) id designTarget;
 @property (nonatomic, nullable) SEL designAction;
+@property (nonatomic, weak, nullable) id<UDGuiViewDesignDelegate> designDelegate;
+
+/// Edit's Copy, Paste and Delete, while designing: the selected windows'.
+- (IBAction)copy:(nullable id)sender;
+- (IBAction)paste:(nullable id)sender;
+- (IBAction)delete:(nullable id)sender;
 
 /// The GUI's 640x480 in the view, and the scale it is drawn at.
 @property (nonatomic, readonly) NSRect guiRect;

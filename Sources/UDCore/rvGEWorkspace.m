@@ -11,6 +11,13 @@
 #import "idDict.h"
 #import "idLexer.h"
 #import "idStr.h"
+#import "idDeviceContext.h"
+#import "idListWindow.h"
+#import "idSliderWindow.h"
+#import "idEditWindow.h"
+#import "idChoiceWindow.h"
+#import "idRenderWindow.h"
+#import "idBindWindow.h"
 #import "UDDeclCodec.h"
 #import "idWinVar.h"
 #import "idToken.h"
@@ -27,6 +34,26 @@
 @property (nonatomic, strong, readwrite, nullable) idUserInterfaceLocal *interface;
 @property (nonatomic, readwrite) rvGEHitTest dragType;
 @end
+
+/// rvGEClipboardItem: a copied window's state (with its "windowType"),
+/// scripts and variables.
+@interface rvGEClipboardItem : NSObject
+@property (nonatomic, strong) idDict *stateDict;
+@property (nonatomic, strong) idDict *scriptDict;
+@property (nonatomic, strong) idDict *varDict;
+@end
+
+@implementation rvGEClipboardItem
+@end
+
+/// rvGEWorkspace::mClipboard (static: every workspace's)
+static NSMutableArray<rvGEClipboardItem *> *UDClipboard(void) {
+    static NSMutableArray<rvGEClipboardItem *> *clipboard;
+    if ( clipboard == nil ) {
+        clipboard = [NSMutableArray array];
+    }
+    return clipboard;
+}
 
 @implementation rvGEWorkspace {
     idVec2 mDragPoint;
@@ -658,6 +685,21 @@ Creates a new modifier of the given type
         case MOD_UNHIDE:
             return [[rvGEHideModifier alloc] initWithName:@"Hide" window:window hide:NO];
 
+        case MOD_DELETE:
+            return [[rvGEDeleteModifier alloc] initWithName:@"Delete" window:window];
+
+        case MOD_SEND_BACKWARD:
+            return [[rvGEZOrderModifier alloc] initWithName:@"Send Backward" window:window change:ZO_BACKWARD];
+
+        case MOD_SEND_BACK:
+            return [[rvGEZOrderModifier alloc] initWithName:@"Send to Back" window:window change:ZO_BACK];
+
+        case MOD_BRING_FORWARD:
+            return [[rvGEZOrderModifier alloc] initWithName:@"Bring Forward" window:window change:ZO_FORWARD];
+
+        case MOD_BRING_FRONT:
+            return [[rvGEZOrderModifier alloc] initWithName:@"Bring to Front" window:window change:ZO_FRONT];
+
         default:
             return nil;
     }
@@ -952,6 +994,406 @@ Applies the script text to the window's variables and scripts
     self.modified = YES;
     (void)wrapper;
     return YES;
+}
+
+#pragma mark - The editor's commands
+
+- (void)deleteSelected {
+    [self addModifierToSelection:MOD_DELETE];
+    [self.selections clear];
+}
+
+/*
+================
+rvGEWorkspace::NewWindow
+
+Create a new window
+================
+*/
+- (idWindow *)newWindow:(idDict *)state type:(rvGEWindowType)type {
+    idWindow *desktop = [self.interface getDesktop];
+    idDeviceContext *dc = [desktop getDC];
+    idWindow *window;
+    rvGEWindowWrapper *wrapper;
+    int count;
+    NSString *baseName;
+
+    switch ( type ) {
+        case WT_NORMAL:
+            window = [[idWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        case WT_BIND:
+            window = [[idBindWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        case WT_RENDER:
+            window = [[idRenderWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        case WT_CHOICE:
+            window = [[idChoiceWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        case WT_EDIT:
+            window = [[idEditWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        // not in the engine, whose Paste of a copied slider or list came here
+        // to an assert and a NULL window
+        case WT_SLIDER:
+            window = [[idSliderWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        case WT_LIST:
+            window = [[idListWindow alloc] initWithDC:dc gui:self.interface];
+            break;
+
+        default:
+            return nil;
+    }
+
+    baseName = state ? [state getString:@"name" defaultString:@"unnamed"] : @"unnamed";
+    if ( [baseName hasPrefix:@"\""] ) {
+        // idStr::StripQuotes
+        NSUInteger end = baseName.length;
+        if ( end > 1 && [baseName characterAtIndex:end - 1] == '"' ) end--;
+        baseName = [baseName substringWithRange:NSMakeRange(1, end - 1)];
+    }
+
+    count = 0;
+    if ( [desktop findChildByName:baseName] ) {
+        count = 1;
+        while ( 1 ) {
+            idDrawWin *dw = [desktop findChildByName:[NSString stringWithFormat:@"%@%d", baseName, count]];
+            if ( !dw ) {
+                break;
+            }
+            wrapper = [rvGEWindowWrapper wrapperOf:dw.win];
+            if ( wrapper && wrapper.deleted ) {
+                break;
+            }
+            count++;
+        }
+    }
+
+    NSString *winName = count ? [NSString stringWithFormat:@"%@%d", baseName, count] : baseName;
+    NSString *winTemplate = [winName stringByAppendingString:@" { }"];
+
+    NSData *bytes __attribute__((objc_precise_lifetime)) = [winTemplate ud_latin1Buffer];
+    idParser *src = [[idParser alloc] initWithBuffer:bytes.bytes length:(int)bytes.length - 1 name:@""
+                                               flags:LEXFL_ALLOWMULTICHARLITERALS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                               error:NULL];
+    [window parse:src rebuild:YES];
+
+    wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if ( state ) {
+        [wrapper setState:state];
+    }
+
+    [wrapper setStateKey:@"name" value:winName update:YES];
+    [wrapper finish];
+
+    self.modified = YES;
+
+    return window;
+}
+
+- (idWindow *)addWindow:(rvGEWindowType)type {
+    idWindow *window;
+    idDict *state = [[idDict alloc] init];
+
+    [state set:@"rect" value:@"0,0,100,100"];
+    [state set:@"visible" value:@"1"];
+
+    window = [self newWindow:state type:type];
+    if ( !window ) {
+        return nil;
+    }
+
+    [self.modifiers append:[[rvGEInsertModifier alloc] initWithName:@"New" window:window parent:[self.interface getDesktop] before:nil]];
+    [self.selections set:window];
+
+    return window;
+}
+
+- (void)bringSelectedForward {
+    [self addModifierToSelection:MOD_BRING_FORWARD];
+}
+
+- (void)bringSelectedToFront {
+    [self addModifierToSelection:MOD_BRING_FRONT];
+}
+
+- (void)sendSelectedToBack {
+    [self addModifierToSelection:MOD_SEND_BACK];
+}
+
+- (void)sendSelectedBackward {
+    [self addModifierToSelection:MOD_SEND_BACKWARD];
+}
+
+/*
+================
+rvGEWorkspace::MakeSelectedSameSize
+
+Align the selected items to the first one using the given align type
+================
+*/
+- (void)makeSelectedSameSizeWidth:(BOOL)changeWidth height:(BOOL)changeHeight {
+    rvGESelectionMgr *mSelections = self.selections;
+    if ( [mSelections num] < 2 ) {
+        return;
+    }
+    rvGEModifierGroup *group = [[rvGEModifierGroup alloc] init];
+    idRectangle rectTo = [rvGEWindowWrapper wrapperOf:mSelections[0]].clientRect;
+
+    for ( int i = 1; i < [mSelections num]; i ++ ) {
+        idRectangle rectFrom;
+        float width = 0;
+        float height = 0;
+
+        rectFrom = [rvGEWindowWrapper wrapperOf:mSelections[i]].clientRect;
+
+        if ( changeWidth ) {
+            width = rectTo.w - rectFrom.w;
+        }
+
+        if ( changeHeight ) {
+            height = rectTo.h - rectFrom.h;
+        }
+
+        [group append:[[rvGESizeModifier alloc] initWithName:@"Make Same Size" window:mSelections[i] l:0 t:0 r:width b:height]];
+    }
+
+    [self.modifiers append:group];
+
+    // Cant merge alignments
+    [self.modifiers blockNextMerge];
+
+    self.modified = YES;
+}
+
+/*
+================
+rvGEWorkspace::AlignSelected
+
+Align the selected items to the first one using the given align type
+================
+*/
+- (void)alignSelected:(rvGEItemAlign)align {
+    static NSString *const alignNames[] = { @"Lefts", @"Centers", @"Rights", @"Tops", @"Middles", @"Bottoms" };
+    rvGESelectionMgr *mSelections = self.selections;
+
+    if ( [mSelections num] < 2 ) {
+        return;
+    }
+
+    NSString *modName = [@"Align " stringByAppendingString:alignNames[align]];
+    rvGEModifierGroup *group = [[rvGEModifierGroup alloc] init];
+
+    idRectangle rectTo = [rvGEWindowWrapper wrapperOf:mSelections[0]].screenRect;
+
+    // Everything gets aligned to the first selection so run
+    // through all other selections and move them.
+    for ( int i = 1; i < [mSelections num]; i ++ ) {
+        float x = 0;
+        float y = 0;
+        idRectangle rectFrom;
+
+        rectFrom = [rvGEWindowWrapper wrapperOf:mSelections[i]].screenRect;
+
+        switch ( align ) {
+            case ALIGN_LEFTS:
+                x = rectTo.x - rectFrom.x;
+                y = 0;
+                break;
+
+            case ALIGN_RIGHTS:
+                x = (rectTo.x + rectTo.w) - (rectFrom.x + rectFrom.w);
+                y = 0;
+                break;
+
+            case ALIGN_CENTERS:
+                x = (rectTo.x + rectTo.w / 2) - (rectFrom.x + rectFrom.w / 2);
+                y = 0;
+                break;
+
+            case ALIGN_TOPS:
+                y = rectTo.y - rectFrom.y;
+                x = 0;
+                break;
+
+            case ALIGN_BOTTOMS:
+                x = 0;
+                y = (rectTo.y + rectTo.h) - (rectFrom.y + rectFrom.h);
+                break;
+
+            case ALIGN_MIDDLES:
+                x = 0;
+                y = (rectTo.y + rectTo.h / 2) - (rectFrom.y + rectFrom.h / 2);
+                break;
+        }
+
+        [group append:[[rvGEMoveModifier alloc] initWithName:modName window:mSelections[i] x:x y:y]];
+    }
+
+    [self.modifiers append:group];
+
+    // Cant merge alignments
+    [self.modifiers blockNextMerge];
+
+    self.modified = YES;
+}
+
+/*
+================
+rvGEWorkspace::MakeSelectedAChild
+
+Makes the selected windows a child of the first selected window
+================
+*/
+- (BOOL)makeSelectedAChild {
+    rvGESelectionMgr *mSelections = self.selections;
+    if ( [mSelections num] < 2 ) {
+        return NO;
+    }
+
+    if ( ![[rvGEWindowWrapper wrapperOf:mSelections[0]] canHaveChildren] ) {
+        // "Cannot add children to an htmlDef item"
+        return NO;
+    }
+
+    rvGEModifierGroup *group = [[rvGEModifierGroup alloc] init];
+    for ( int i = 1; i < [mSelections num]; i ++ ) {
+        if ( [mSelections[i] getParent] == mSelections[0] ) {
+            continue;
+        }
+
+        if ( ![mSelections[i] getParent] ) {
+            continue;
+        }
+
+        [group append:[[rvGEInsertModifier alloc] initWithName:@"Make Child" window:mSelections[i] parent:mSelections[0] before:nil]];
+    }
+
+    [self.modifiers append:group];
+
+    self.modified = YES;
+    return YES;
+}
+
+- (void)copySelected {
+    NSMutableArray<rvGEClipboardItem *> *mClipboard = UDClipboard();
+    rvGESelectionMgr *mSelections = self.selections;
+
+    // Clear the current clipboard
+    [mClipboard removeAllObjects];
+
+    for ( int i = 0; i < [mSelections num]; i ++ ) {
+        rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:mSelections[i]];
+        NSAssert( wrapper, @"a wrapped window" );
+
+        rvGEClipboardItem *item = [[rvGEClipboardItem alloc] init];
+        item.stateDict = [wrapper.stateDict copy];
+        item.scriptDict = [wrapper.scriptDict copy];
+        item.varDict = [wrapper.variableDict copy];
+        [item.stateDict set:@"windowType" value:[rvGEWindowWrapper stringFromWindowType:wrapper.windowType]];
+
+        [mClipboard addObject:item];
+    }
+}
+
+- (BOOL)canPaste {
+    return UDClipboard().count > 0;
+}
+
+- (void)paste {
+    NSMutableArray<rvGEClipboardItem *> *mClipboard = UDClipboard();
+    rvGESelectionMgr *mSelections = self.selections;
+    rvGEModifierGroup *group = [[rvGEModifierGroup alloc] init];
+
+    [mSelections clear];
+
+    for ( rvGEClipboardItem *item in mClipboard ) {
+        idDict *state = [item.stateDict copy];
+        rvGEWindowType type;
+
+        type = [rvGEWindowWrapper windowTypeFromString:[state getString:@"windowType" defaultString:@"windowDef"]];
+        [state deleteKey:@"windowType"];
+
+        idWindow *window = [self newWindow:state type:type];
+        if ( !window ) {
+            continue;
+        }
+        [group append:[[rvGEInsertModifier alloc] initWithName:@"Paste" window:window parent:[self.interface getDesktop] before:nil]];
+        [mSelections add:window];
+
+        rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+        idDict *scripts = wrapper.scriptDict, *variables = wrapper.variableDict;
+        [scripts clear];
+        for ( int k = 0; k < [item.scriptDict numKeyVals]; k++ ) [scripts set:[item.scriptDict keyAtIndex:k] value:[item.scriptDict valueAtIndex:k]];
+        [variables clear];
+        for ( int k = 0; k < [item.varDict numKeyVals]; k++ ) [variables set:[item.varDict keyAtIndex:k] value:[item.varDict valueAtIndex:k]];
+    }
+
+    [self.modifiers append:group];
+
+    self.modified = YES;
+}
+
+- (void)nudgeX:(float)x y:(float)y size:(BOOL)size {
+    if ( ![self.selections num] || [self.selections isExpression] ) {
+        return;
+    }
+    if ( size ) {
+        // AddModifierSizeNudge
+        [self addModifierSize:@"Nudge Size" l:0 t:0 r:x b:y snap:NO];
+    } else {
+        // AddModifierMoveNudge
+        [self addModifierMove:@"Nudge Move" x:x y:y snap:NO];
+    }
+}
+
+/*
+================
+rvGEWorkspace::BuildSelectMenuEnumProc
+
+Builds the list of windows under the point for the select menu
+================
+*/
+- (void)_addWindowsUnder:(idVec2)point of:(rvGEWindowWrapper *)wrapper into:(NSMutableArray<idWindow *> *)menu {
+    if ( !wrapper ) {
+        return;
+    }
+
+    for ( int i = 0; i < [wrapper childCount]; i ++ ) {
+        rvGEWindowWrapper *child = [rvGEWindowWrapper wrapperOf:[wrapper childAtIndex:i]];
+        [self _addWindowsUnder:point of:child into:menu];
+
+        if ( !child || child.deleted || child.hidden ) {
+            continue;
+        }
+
+        idRectangle rect = child.screenRect;
+        if ( idRectangle_Contains( &rect, point.x, point.y ) ) {
+            [menu addObject:child.window];
+        }
+    }
+}
+
+- (NSArray<idWindow *> *)windowsUnderX:(float)x y:(float)y {
+    NSMutableArray<idWindow *> *menu = [NSMutableArray array];
+    idVec2 point = [self windowToWorkspacePoint:idVec2_Make( x, y )];
+
+    // Build a list of all the windows under the menu point
+    [self _addWindowsUnder:point of:[rvGEWindowWrapper wrapperOf:[self.interface getDesktop]] into:menu];
+
+    // Add the desktop window always
+    if ( [self.interface getDesktop] ) {
+        [menu addObject:[self.interface getDesktop]];
+    }
+    return menu;
 }
 
 @end

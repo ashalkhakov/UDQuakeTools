@@ -519,6 +519,83 @@ static NSString *const UDViewerScript =
     XCTAssertTrue([editor.scriptsMessage.stringValue hasPrefix:@"Script error"], @"%@", editor.scriptsMessage.stringValue);
 }
 
+#pragma mark - Commands
+
+/// A key event of @a characters (and @a flags) sent to @a view.
+- (void)key:(NSString *)characters flags:(NSEventModifierFlags)flags in:(UDGuiView *)view {
+    NSEvent *event = [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint modifierFlags:flags timestamp:0
+                                  windowNumber:view.window.windowNumber context:nil characters:characters
+                   charactersIgnoringModifiers:characters isARepeat:NO keyCode:0];
+    [view keyDown:event];
+}
+
+- (NSArray<NSString *> *)navigatorNamesIn:(UDGuiEditorViewController *)editor {
+    NSOutlineView *outline = editor.windowsOutline;
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (NSInteger i = 0; i < outline.numberOfRows; i++) {
+        [names addObject:[(idWindow *)[outline itemAtRow:i] getName]];
+    }
+    return names;
+}
+
+- (void)testTheDesignsMenuOffersTheEditorsCommands {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    UDGuiView *view = editor.guiView;
+    NSMenu *menu = [editor guiView:view designMenuAt:[view viewPointFromGui:NSMakePoint(480, 330)]];
+    NSArray<NSString *> *titles = [menu.itemArray valueForKey:@"title"];
+    for (NSString *title in @[@"New", @"Select", @"Arrange", @"Align", @"Make Same Size", @"Copy", @"Paste", @"Delete", @"Scripts…", @"Properties…"]) {
+        XCTAssertTrue([titles containsObject:title], @"%@ in %@", title, titles);
+    }
+    NSArray<NSString *> *under = [[editor.selectMenu.itemArray valueForKey:@"title"] copy];
+    XCTAssertEqualObjects(under, (@[@"Go", @"Desktop"]), @"the windows under the click");
+
+    // New: a window, selected, in the navigator
+    NSMenuItem *newEdit = [[menu itemWithTitle:@"New"].submenu itemWithTitle:@"editDef"];
+    [NSApp sendAction:newEdit.action to:newEdit.target from:newEdit];
+    XCTAssertEqualObjects([editor.designWorkspace.selections[0] getName], @"unnamed");
+    XCTAssertTrue([[self navigatorNamesIn:editor] containsObject:@"unnamed"]);
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"editDef unnamed"]);
+}
+
+- (void)testTheKeysDeleteNudgeAndArrange {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    UDGuiView *view = editor.guiView;
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:view];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:view];
+
+    unichar right = NSRightArrowFunctionKey;
+    [self key:[NSString stringWithCharacters:&right length:1] flags:0 in:view];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 401, 0.5, @"the arrow nudges");
+
+    [self key:@"[" flags:NSEventModifierFlagCommand | NSEventModifierFlagShift in:view];
+    XCTAssertEqualObjects([[self navigatorNamesIn:editor] subarrayWithRange:NSMakeRange(0, 2)], (@[@"Desktop", @"Go"]), @"sent to the back");
+
+    unichar backspace = 127;
+    [self key:[NSString stringWithCharacters:&backspace length:1] flags:0 in:view];
+    XCTAssertFalse([editor.designWorkspace.text containsString:@"windowDef Go"], @"deleted");
+    XCTAssertFalse([[self navigatorNamesIn:editor] containsObject:@"Go"]);
+    [editor.editorDocument.undoManager undo];
+    XCTAssertTrue([[self navigatorNamesIn:editor] containsObject:@"Go"], @"and back");
+}
+
+- (void)testCopyAndPasteFromTheEditMenu {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    UDGuiView *view = editor.guiView;
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:view];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:view];
+    [view copy:nil];
+    [view paste:nil];
+    XCTAssertEqualObjects([editor.designWorkspace.selections[0] getName], @"Go1", @"a new window, named apart");
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"udtest_go"], @"its scripts with it");
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Paste");
+}
+
 #pragma mark - GL
 
 - (void)testGLDrawsWhatTheSoftwareRendererDraws {

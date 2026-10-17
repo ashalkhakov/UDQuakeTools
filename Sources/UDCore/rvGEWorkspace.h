@@ -14,6 +14,7 @@
 #import <Foundation/Foundation.h>
 #import "idMath.h"
 #import "rvGESelectionMgr.h"
+#import "rvGEWindowWrapper.h"
 
 @class idUserInterfaceManager, idUserInterfaceLocal, idWindow, rvGEOptions, rvGEModifierStack, UDOverlay;
 
@@ -112,6 +113,48 @@ typedef NS_ENUM(int, rvGEModifierType) {
 /// scripts, as one undoable "Scripts Change" (the engine's changed them as
 /// they were); NO, and what is wrong in @a message, for text it cannot read.
 - (BOOL)setScriptsText:(NSString *)text of:(idWindow *)window message:(NSString *_Nullable *_Nullable)message;
+
+/// rvGEWorkspace::EItemAlign
+typedef NS_ENUM(int, rvGEItemAlign) {
+    ALIGN_LEFTS,
+    ALIGN_CENTERS,
+    ALIGN_RIGHTS,
+    ALIGN_TOPS,
+    ALIGN_MIDDLES,
+    ALIGN_BOTTOMS,
+};
+
+/// DeleteSelected: the selection deleted, as one edit.
+- (void)deleteSelected;
+/// NewWindow: a window of @a type, from @a state, named after its "name"
+/// (made unique among the desktop's), not yet anywhere.
+- (nullable idWindow *)newWindow:(nullable idDict *)state type:(rvGEWindowType)type;
+/// AddWindow: a new window of @a type, 0,0,100,100, on the desktop and
+/// selected ("New").
+- (nullable idWindow *)addWindow:(rvGEWindowType)type;
+/// BringSelectedForward, BringSelectedToFront, SendSelectedToBack,
+/// SendSelectedBackward.
+- (void)bringSelectedForward;
+- (void)bringSelectedToFront;
+- (void)sendSelectedToBack;
+- (void)sendSelectedBackward;
+/// MakeSelectedSameSize, AlignSelected: the others as the first selected.
+- (void)makeSelectedSameSizeWidth:(BOOL)changeWidth height:(BOOL)changeHeight;
+- (void)alignSelected:(rvGEItemAlign)align;
+/// MakeSelectedAChild: the others children of the first selected; NO when
+/// it cannot have any.
+- (BOOL)makeSelectedAChild;
+/// Copy, Paste: the selection to the editor's clipboard (the engine's,
+/// shared by its workspaces), and back as new windows on the desktop.
+- (void)copySelected;
+- (void)paste;
+- (BOOL)canPaste;
+/// HandleKeyDown's: AddModifierMoveNudge, AddModifierSizeNudge (the arrows,
+/// with shift sizing).
+- (void)nudgeX:(float)x y:(float)y size:(BOOL)size;
+/// HandleRButtonDown's Select menu: the windows under ( @a x, @a y ) in the
+/// window, shown and not deleted, children first; the desktop last.
+- (NSArray<idWindow *> *)windowsUnderX:(float)x y:(float)y;
 
 /// HideWindow, UnhideWindow, HideSelected, UnhideSelected.
 - (void)hideWindow:(idWindow *)window;

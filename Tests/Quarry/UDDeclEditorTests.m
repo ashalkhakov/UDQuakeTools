@@ -1041,6 +1041,11 @@ static NSString *const UDFixtureParticles =
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
 
+    // The slider over the FX's loop once the preview has it (until then the
+    // slider's range is its own, and 600 is past its end)
+    XCTAssertTrue([self spinUntil:^BOOL{ return editor.transport.timeSlider.maxValue >= 1000; } timeout:10],
+                  @"the slider over the FX: %g", editor.transport.timeSlider.maxValue);
+
     // The slider dragged: paused there, that frame drawn.
     editor.transport.timeSlider.intValue = 600;
     [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];

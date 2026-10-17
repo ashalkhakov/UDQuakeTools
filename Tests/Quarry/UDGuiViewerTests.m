@@ -406,6 +406,9 @@ static NSString *const UDViewerScript =
 
 - (void)slide:(UDGuiEditorViewController *)editor to:(double)time {
     XCTAssertTrue([editor.transport.timeSlider isEnabled]);
+    // the slider's range the GUI's, once the player has it
+    XCTAssertTrue([self spinUntil:^BOOL{ return editor.transport.timeSlider.maxValue >= time; } timeout:10],
+                  @"the slider reaches %g: %g", time, editor.transport.timeSlider.maxValue);
     editor.transport.timeSlider.doubleValue = time;
     [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];
 }

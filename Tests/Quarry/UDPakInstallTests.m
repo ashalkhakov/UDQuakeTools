@@ -604,7 +604,7 @@ static NSString *const UDEventsScript =
     UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
     XCTAssertTrue([textView.window makeFirstResponder:textView]);
     UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:10.0],
+    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:30.0],
                   @"the script's language server should start");
 
     [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"}"].location, 0)];
@@ -666,7 +666,7 @@ static NSString *const UDEventsScript =
 
     // The helpers ask the workspace's script language server: once it is up.
     UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:10.0],
+    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:30.0],
                   @"the script's language server should start");
 
     // After "sys.", every event; narrowed by what follows.

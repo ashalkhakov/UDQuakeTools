@@ -760,6 +760,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     NSMenuItem *noIntro = [editor.namedEventPopUp itemWithTitle:@"NoIntro"];
     XCTAssertNotNil(noIntro);
     [NSApp sendAction:noIntro.action to:noIntro.target from:noIntro];
+    XCTAssertTrue([self spinUntil:^BOOL{ return editor.transport.timeSlider.maxValue >= 2000; } timeout:10]);
     editor.transport.timeSlider.doubleValue = 2000;
     [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];
     double shown = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);

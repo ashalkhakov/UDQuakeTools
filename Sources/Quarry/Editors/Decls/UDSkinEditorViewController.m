@@ -107,4 +107,17 @@ static UDDiagnosticSource const UDSkinReferencesSource = @"references";
     [table.window makeFirstResponder:table];
 }
 
+#pragma mark - Pickers
+
+/// A mapping's materials (the one replaced, its replacement), a model the
+/// skin is for: the chosen row's.
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    switch (tag) {
+        case 1: return [UDReferenceField fieldTitled:@"The material replaced" key:@"from" controller:self.mappingsController kind:UDReferenceMaterials];
+        case 2: return [UDReferenceField fieldTitled:@"The material it is replaced with" key:@"to" controller:self.mappingsController kind:UDReferenceMaterials];
+        case 3: return [UDReferenceField fieldTitled:@"A model the skin is for" key:@"path" controller:self.modelsController kind:UDReferenceModels];
+    }
+    return nil;
+}
+
 @end

@@ -9,6 +9,9 @@
 #import "rvGEScript.h"
 #import "idDict.h"
 #import "idWindow.h"
+#import "idUserInterface.h"
+#import "UDReferencePicker.h"
+#import "idDeclManager.h"
 
 /// A statement dragged in the outline: its path (indexes down the tree).
 static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-statement-path";
@@ -37,11 +40,14 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 @property (nonatomic, copy) NSArray<NSString *> *eventKeys;
 @property (nonatomic, copy) NSArray<NSArray<NSString *> *> *variableRows;
 @property (nonatomic) BOOL filling;
+@property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
+@property (nonatomic) NSInteger pickedRow;
 @end
 
 @implementation UDGuiScriptsController {
     NSArray<NSTextField *> *_labels;
     NSArray<NSTextField *> *_fields;
+    NSArray<NSButton *> *_picks;
 }
 
 - (instancetype)init {
@@ -69,6 +75,8 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
                     self.parameterLabel4, self.parameterLabel5, self.parameterLabel6];
         _fields = @[self.parameterField1, self.parameterField2, self.parameterField3,
                     self.parameterField4, self.parameterField5, self.parameterField6];
+        _picks = @[self.parameterPick1, self.parameterPick2, self.parameterPick3,
+                   self.parameterPick4, self.parameterPick5, self.parameterPick6];
     }
     return _labels;
 }
@@ -177,7 +185,7 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 
 - (BOOL)_applyScripts:(idDict *)scripts variables:(idDict *)variables named:(NSString *)name {
     NSString *why = nil;
-    if (![self.workspace setScripts:scripts variables:variables of:self.window named:name message:&why]) {
+    if (![self.design setScripts:scripts variables:variables of:self.window named:name message:&why]) {
         self.message.stringValue = why ?: @"";
         NSBeep();
         return NO;
@@ -615,9 +623,11 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
         BOOL on = i < shown;
         labels[i].hidden = !on;
         fields[i].hidden = !on;
+        _picks[i].hidden = YES;
         if (!on) continue;
         labels[i].stringValue = [NSString stringWithFormat:@"%@:", i < names.count ? names[i] : [NSString stringWithFormat:@"Value %lu", (unsigned long)i]];
         fields[i].stringValue = i < values.count ? values[i] : @"";
+        _picks[i].hidden = [self _pickerKindOf:statement.command parameter:(NSInteger)i] == nil;
         NSString *help = [rvGEScript helpOf:statement.command parameter:(NSInteger)i];
         fields[i].toolTip = help;
         labels[i].toolTip = help;
@@ -707,6 +717,94 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
         [variables set:[NSString stringWithFormat:@"%@\t\"%@\"", v[0], v[1]] value:v[2]];
     }
     [self _applyScripts:[[self _wrapper].scriptDict copy] variables:variables named:@"Variable Change"];
+}
+
+#pragma mark - Pickers
+
+/// What a command's parameter names, for its picker: "window", "variable",
+/// "sound", or nil (a value, a time).
+- (NSString *)_pickerKindOf:(NSString *)command parameter:(NSInteger)index {
+    if (index != 0) return nil;
+    if ([command isEqualToString:@"setFocus"] || [command isEqualToString:@"resetTime"]) return @"window";
+    if ([command isEqualToString:@"set"] || [command isEqualToString:@"transition"]) return @"variable";
+    if ([command isEqualToString:@"localSound"]) return @"sound";
+    return nil;
+}
+
+/// The GUI's windows, from the desktop down.
+- (void)_windowsUnder:(idWindow *)window into:(NSMutableArray<idWindow *> *)windows {
+    if (window == nil) return;
+    [windows addObject:window];
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        [self _windowsUnder:[wrapper childAtIndex:i] into:windows];
+    }
+}
+
+- (IBAction)pickParameter:(id)sender {
+    rvGEScriptStatement *statement = [self.selectedStatement isKindOfClass:[rvGEScriptStatement class]] ? self.selectedStatement : nil;
+    NSInteger row = [sender tag] - 1;
+    NSString *kind = statement ? [self _pickerKindOf:statement.command parameter:row] : nil;
+    NSWindow *window = self.statementsOutline.window;
+    if (kind == nil || window == nil || window.attachedSheet != nil) {
+        NSBeep();
+        return;
+    }
+    UDReferenceField *field = [UDReferenceField fieldTitled:@"" key:@"" controller:self kind:UDReferenceNames];
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    NSMutableArray<NSString *> *details = [NSMutableArray array];
+    NSMutableArray<idWindow *> *windows = [NSMutableArray array];
+    [self _windowsUnder:[self.design.interface getDesktop] into:windows];
+    if ([kind isEqualToString:@"sound"]) {
+        field.title = @"A sound shader";
+        field.kind = UDReferenceDecls;
+        field.declType = DECL_SOUND;
+    } else if ([kind isEqualToString:@"window"]) {
+        field.title = @"A window";
+        for (idWindow *w in windows) {
+            [names addObject:[w getName]];
+            [details addObject:[rvGEWindowWrapper stringFromWindowType:[rvGEWindowWrapper wrapperOf:w].windowType]];
+        }
+    } else {
+        // a window's variables: its own (Window::name) and the ones every
+        // window has that scripts set and transitions move
+        field.title = @"A window's variable";
+        NSArray<NSString *> *common = [statement.command isEqualToString:@"transition"]
+            ? @[@"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor"]
+            : @[@"visible", @"text", @"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor", @"background", @"textscale", @"noevents"];
+        for (idWindow *w in windows) {
+            for (NSString *var in common) {
+                [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], var]];
+                [details addObject:@"window"];
+            }
+            idDict *variables = [rvGEWindowWrapper wrapperOf:w].variableDict;
+            for (int i = 0; i < [variables numKeyVals]; i++) {
+                NSString *key = [variables keyAtIndex:i];
+                NSRange quote = [key rangeOfString:@"\""];
+                NSString *name = quote.location == NSNotFound ? key :
+                    [[key substringFromIndex:quote.location] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\""]];
+                [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], name]];
+                [details addObject:@"variable"];
+            }
+        }
+    }
+    field.names = names;
+    field.details = details;
+    NSMutableArray<NSString *> *shownDetails = [NSMutableArray array];
+    NSArray<NSString *> *offered = self.workspace != nil ? [UDReferencePicker namesFor:field workspace:self.workspace details:shownDetails] : names;
+    self.pickedRow = row;
+    self.referencePicker = [[UDReferencePicker alloc] initWithTitle:field.title names:offered
+                                                            details:self.workspace != nil ? shownDetails : details
+                                                            current:[self _fields][(NSUInteger)row].stringValue];
+    [self.referencePicker beginSheetForWindow:window target:self action:@selector(_parameterPicked:)];
+}
+
+/// The name in the parameter's field, and the statement as the fields have it.
+- (void)_parameterPicked:(UDReferencePicker *)picker {
+    NSInteger row = self.pickedRow;
+    if (picker.chosenName == nil || row < 0 || row >= (NSInteger)[self _fields].count) return;
+    [self _fields][(NSUInteger)row].stringValue = picker.chosenName;
+    [self statementEdited:[self _fields][(NSUInteger)row]];
 }
 
 @end

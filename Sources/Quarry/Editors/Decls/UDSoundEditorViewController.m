@@ -114,4 +114,21 @@ static UDDiagnosticSource const UDSoundReferencesSource = @"references";
     [table.window makeFirstResponder:table];
 }
 
+#pragma mark - Pickers
+
+/// A sample's or a leadin's sound file (the chosen row's); the alternate
+/// sound shader.
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    switch (tag) {
+        case 1: return [UDReferenceField fieldTitled:@"A sample" key:@"path" controller:self.samplesController kind:UDReferenceSounds];
+        case 2: return [UDReferenceField fieldTitled:@"A leadin" key:@"path" controller:self.leadinsController kind:UDReferenceSounds];
+        case 3: {
+            UDReferenceField *field = [UDReferenceField fieldTitled:@"The alternate sound" key:@"altSound" controller:self.objectController kind:UDReferenceDecls];
+            field.declType = DECL_SOUND;
+            return field;
+        }
+    }
+    return nil;
+}
+
 @end

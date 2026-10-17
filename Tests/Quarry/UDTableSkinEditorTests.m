@@ -1,4 +1,5 @@
 #import "UDQuarryTestCase.h"
+#import "UDReferencePicker.h"
 #import "UDWorkspace.h"
 
 #import <UDCodeKit/UDErrorsViewController.h>
@@ -381,6 +382,28 @@ static NSString *const UDFixtureSkin =
     [self show:0 in:controller];
     XCTAssertEqualObjects(editor.values, (@[@0, @0.75, @1]));
     XCTAssertFalse(editor.editorDocument.isDocumentEdited, @"what was saved is no edit");
+}
+
+#pragma mark - Pickers
+
+- (void)testASkinsMaterialsAndModelsArePicked {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDSkinEditorViewController *editor = [self openSkinIn:controller];
+    if (editor == nil) return;
+    NSUInteger star = [[editor.mappingsController.arrangedObjects valueForKey:@"from"] indexOfObject:@"*"];
+    XCTAssertNotEqual(star, (NSUInteger)NSNotFound);
+    [editor.mappingsController setSelectionIndex:star];
+    [self pick:2 in:editor under:editor.view with:^(UDReferencePicker *picker) {
+        [self choose:@"textures/udtest/wall" in:picker];
+    }];
+    XCTAssertEqualObjects([editor.mappingsController.arrangedObjects[star] valueForKey:@"to"], @"textures/udtest/wall", @"the chosen row's replacement");
+
+    __block NSArray<NSString *> *models = nil;
+    [self pick:3 in:editor under:editor.view with:^(UDReferencePicker *picker) {
+        models = picker.shownNames;
+        [picker cancel:nil];
+    }];
+    XCTAssertTrue([models containsObject:@"models/udtest/crate.lwo"], @"%@", models);
 }
 
 @end

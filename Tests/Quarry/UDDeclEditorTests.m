@@ -777,52 +777,6 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - Pickers
 
-/// The "…" of @a tag under @a view clicked, and @a choose run on its
-/// picker (a sheet; a modal window on GNUstep).
-- (void)pick:(NSInteger)tag in:(UDDeclEditorViewController *)editor under:(NSView *)view
-        with:(void (^)(UDReferencePicker *picker))choose {
-    __block NSButton *button = nil;
-    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
-        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == @selector(pickReference:)
-            && [(NSButton *)candidate tag] == tag) {
-            button = (NSButton *)candidate;
-            return NO;
-        }
-        return YES;
-    }];
-    XCTAssertNotNil(button, @"a picker's button, tag %ld", (long)tag);
-    __block BOOL shown = NO;
-#ifdef GNUSTEP
-    [self whenModalWindowAppears:^(NSWindow *window) {
-        shown = YES;
-        choose((UDReferencePicker *)window.windowController);
-    }];
-    [NSApp sendAction:button.action to:button.target from:button];
-#else
-    [NSApp sendAction:button.action to:button.target from:button];
-    NSWindow *sheet = editor.view.window.attachedSheet;
-    XCTAssertNotNil(sheet, @"a sheet");
-    if (sheet != nil) {
-        shown = YES;
-        choose(editor.referencePicker);
-    }
-    [self spinUntil:^BOOL{ return editor.view.window.attachedSheet == nil; } timeout:5];
-#endif
-    XCTAssertTrue(shown);
-}
-
-/// The picker's @a name chosen, and OK.
-- (void)choose:(NSString *)name in:(UDReferencePicker *)picker {
-    NSUInteger row = [picker.shownNames indexOfObject:name];
-    XCTAssertNotEqual(row, (NSUInteger)NSNotFound, @"%@ among %@", name, picker.shownNames);
-    if (row == NSNotFound) {
-        [picker cancel:nil];
-        return;
-    }
-    [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-    [picker ok:nil];
-}
-
 - (void)testAPickerChoosesWhatAFieldNames {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *particle = [self openSparkIn:controller];

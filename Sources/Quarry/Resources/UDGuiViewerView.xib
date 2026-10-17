@@ -96,16 +96,22 @@
                 <outlet property="conditionField" destination="GUV-sc-condition" id="GUV-sc-condition-o"/>
                 <outlet property="parameterLabel1" destination="GUV-sc-parmlabel1" id="GUV-sc-parmlabel1-o"/>
                 <outlet property="parameterField1" destination="GUV-sc-parm1" id="GUV-sc-parm1-o"/>
+                <outlet property="parameterPick1" destination="GUV-sc-parmpick1" id="GUV-sc-parmpick1-o"/>
                 <outlet property="parameterLabel2" destination="GUV-sc-parmlabel2" id="GUV-sc-parmlabel2-o"/>
                 <outlet property="parameterField2" destination="GUV-sc-parm2" id="GUV-sc-parm2-o"/>
+                <outlet property="parameterPick2" destination="GUV-sc-parmpick2" id="GUV-sc-parmpick2-o"/>
                 <outlet property="parameterLabel3" destination="GUV-sc-parmlabel3" id="GUV-sc-parmlabel3-o"/>
                 <outlet property="parameterField3" destination="GUV-sc-parm3" id="GUV-sc-parm3-o"/>
+                <outlet property="parameterPick3" destination="GUV-sc-parmpick3" id="GUV-sc-parmpick3-o"/>
                 <outlet property="parameterLabel4" destination="GUV-sc-parmlabel4" id="GUV-sc-parmlabel4-o"/>
                 <outlet property="parameterField4" destination="GUV-sc-parm4" id="GUV-sc-parm4-o"/>
+                <outlet property="parameterPick4" destination="GUV-sc-parmpick4" id="GUV-sc-parmpick4-o"/>
                 <outlet property="parameterLabel5" destination="GUV-sc-parmlabel5" id="GUV-sc-parmlabel5-o"/>
                 <outlet property="parameterField5" destination="GUV-sc-parm5" id="GUV-sc-parm5-o"/>
+                <outlet property="parameterPick5" destination="GUV-sc-parmpick5" id="GUV-sc-parmpick5-o"/>
                 <outlet property="parameterLabel6" destination="GUV-sc-parmlabel6" id="GUV-sc-parmlabel6-o"/>
                 <outlet property="parameterField6" destination="GUV-sc-parm6" id="GUV-sc-parm6-o"/>
+                <outlet property="parameterPick6" destination="GUV-sc-parmpick6" id="GUV-sc-parmpick6-o"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -529,7 +535,7 @@
                                                 </connections>
                                             </button>
                                             <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="background: the material or image drawn in the window's rect." id="GUV-ip-background">
-                                                <rect key="frame" x="26" y="479" width="211" height="19"/>
+                                                <rect key="frame" x="26" y="479" width="185" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-background-c">
                                                     <font key="font" metaFont="smallSystem"/>
@@ -540,6 +546,17 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-background-a"/>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a material or an image" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-background-pick">
+                                                <rect key="frame" x="213" y="478" width="24" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-ip-background-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="GUV-ip" id="GUV-ip-background-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="variablebackground: the background is a variable's value, set by scripts." id="GUV-ip-varbg">
                                                 <rect key="frame" x="24" y="454" width="200" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -664,7 +681,7 @@
                                                 </connections>
                                             </button>
                                             <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" toolTip="borderShader: the material the border is drawn with." id="GUV-ip-bordermat">
-                                                <rect key="frame" x="26" y="297" width="211" height="19"/>
+                                                <rect key="frame" x="26" y="297" width="185" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-ip-bordermat-c">
                                                     <font key="font" metaFont="smallSystem"/>
@@ -675,6 +692,17 @@
                                                     <action selector="imageChanged:" target="GUV-ip" id="GUV-ip-bordermat-a"/>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a material" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-bordermat-pick">
+                                                <rect key="frame" x="213" y="296" width="24" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-ip-bordermat-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="GUV-ip" id="GUV-ip-bordermat-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-ip-l-matcolor">
                                                 <rect key="frame" x="8" y="270" width="120" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1471,7 +1499,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm1">
-                                                            <rect key="frame" x="84" y="140" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="140" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm1-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1482,6 +1510,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm1-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick1">
+                                                            <rect key="frame" x="213" y="139" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick1-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick1-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel2">
                                                             <rect key="frame" x="8" y="117" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1492,7 +1531,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm2">
-                                                            <rect key="frame" x="84" y="115" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="115" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm2-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1503,6 +1542,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm2-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick2">
+                                                            <rect key="frame" x="213" y="114" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick2-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick2-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel3">
                                                             <rect key="frame" x="8" y="92" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1513,7 +1563,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm3">
-                                                            <rect key="frame" x="84" y="90" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="90" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm3-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1524,6 +1574,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm3-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick3">
+                                                            <rect key="frame" x="213" y="89" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick3-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick3-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel4">
                                                             <rect key="frame" x="8" y="67" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1534,7 +1595,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm4">
-                                                            <rect key="frame" x="84" y="65" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="65" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm4-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1545,6 +1606,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm4-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick4">
+                                                            <rect key="frame" x="213" y="64" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick4-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick4-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel5">
                                                             <rect key="frame" x="8" y="42" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1555,7 +1627,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm5">
-                                                            <rect key="frame" x="84" y="40" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="40" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm5-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1566,6 +1638,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm5-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick5">
+                                                            <rect key="frame" x="213" y="39" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick5-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick5-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel6">
                                                             <rect key="frame" x="8" y="17" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1576,7 +1659,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm6">
-                                                            <rect key="frame" x="84" y="15" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="15" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm6-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1587,6 +1670,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-parm6-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick6">
+                                                            <rect key="frame" x="213" y="14" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick6-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick6-a"/>
+                                                            </connections>
+                                                        </button>
                                                     </subviews>
                                                 </view>
                                             </subviews>

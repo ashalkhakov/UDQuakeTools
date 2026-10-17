@@ -21,6 +21,7 @@
 #import "UDGuiEditorOptionsController.h"
 #import "UDGuiItemPropertiesController.h"
 #import "UDGuiScriptsController.h"
+#import "UDReferencePicker.h"
 #import "rvGEScript.h"
 #import "rvGESelectionMgr.h"
 #import "UDOverlay.h"
@@ -867,6 +868,34 @@ static NSString *const UDViewerScript =
     XCTAssertEqual([scripts numberOfRowsInTableView:scripts.variablesTable], 1);
     [scripts tableView:scripts.variablesTable setObjectValue:@"0.5" forTableColumn:[scripts.variablesTable tableColumnWithIdentifier:@"value"] row:0];
     XCTAssertTrue([editor.designWorkspace.text containsString:@"definefloat\t\"variable1\"\t0.5"], @"%@", editor.designWorkspace.text);
+}
+
+- (void)testAStatementsWindowsAndVariablesArePicked {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    UDGuiScriptsController *scripts = editor.scriptsController;
+    [self chooseWindow:@"Go" in:editor];
+    [self openEvent:@"onAction" in:editor];
+    [self chooseStatementAtRow:1 in:editor];
+    [self add:@"setFocus" in:editor];
+    XCTAssertFalse([scripts.parameterPick1 isHidden], @"a window to pick");
+    [self pick:1 action:@selector(pickParameter:) under:scripts.pages sheetOver:editor.view.window
+          with:^(UDReferencePicker *picker) {
+              XCTAssertTrue([picker.shownNames containsObject:@"Lamp"], @"the GUI's windows: %@", picker.shownNames);
+              [self choose:@"Panel" in:picker];
+          } picker:^UDReferencePicker *{ return scripts.referencePicker; }];
+    XCTAssertEqualObjects([self statementAtRow:2 in:editor], @"setFocus \"Panel\"");
+
+    [self chooseStatementAtRow:0 in:editor];
+    __block NSArray<NSString *> *variables = nil;
+    [self pick:1 action:@selector(pickParameter:) under:scripts.pages sheetOver:editor.view.window
+          with:^(UDReferencePicker *picker) {
+              variables = picker.shownNames;
+              [picker cancel:nil];
+          } picker:^UDReferencePicker *{ return scripts.referencePicker; }];
+    XCTAssertTrue([variables containsObject:@"Label::text"], @"a window's variables: %@", variables);
+    XCTAssertTrue([scripts.parameterPick2 isHidden], @"a value has no picker");
 }
 
 #pragma mark - Commands

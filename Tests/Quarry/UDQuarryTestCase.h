@@ -4,7 +4,7 @@
 #import "UDWorkspaceWindowController.h"
 #import "UDBaseEditorViewController.h"
 
-@class UDEditorTabManager, UDWorkspaceDocument;
+@class UDEditorTabManager, UDWorkspaceDocument, UDDeclEditorViewController, UDReferencePicker;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -108,6 +108,16 @@ NSString * _Nullable UDDoom3InstallPath(void);
 /// If the modal is still up 20s later it is aborted and the case fails,
 /// rather than hanging the run.
 - (void)whenModalWindowAppears:(void (^)(NSWindow *window))block;
+
+/// A picker's "…" (of @a tag) under @a view clicked, and @a choose run on
+/// the picker (a sheet over the editor's window; a modal window on
+/// GNUstep); the same for a button of @a action, its picker from @a picker.
+- (void)pick:(NSInteger)tag in:(UDDeclEditorViewController *)editor under:(NSView *)view
+        with:(void (^)(UDReferencePicker *picker))choose;
+- (void)pick:(NSInteger)tag action:(SEL)action under:(NSView *)view sheetOver:(NSWindow *)window
+        with:(void (^)(UDReferencePicker *picker))choose picker:(UDReferencePicker *(^)(void))picker;
+/// The picker's @a name chosen, and its OK.
+- (void)choose:(NSString *)name in:(UDReferencePicker *)picker;
 
 @end
 

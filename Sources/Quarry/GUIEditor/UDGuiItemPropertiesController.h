@@ -11,7 +11,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class rvGEWorkspace, idFileSystem;
+@class rvGEWorkspace, idFileSystem, UDWorkspace, UDReferencePicker;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) rvGEWorkspace *workspace;
 /// Where the fonts are listed from (rvGEItemPropsTextPage::Init).
 @property (nonatomic, weak, nullable) idFileSystem *fileSystem;
+/// Where the pickers' names come from; the picker up, if one is.
+@property (nonatomic, weak, nullable) UDWorkspace *resourceWorkspace;
+@property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
+/// A "…": the background's (1) or the border's (2) material, picked.
+- (IBAction)pickReference:(nullable id)sender;
 
 /// SetActive, every page: the selected window's state in the controls;
 /// NO when not just one window is selected (nothing shown).

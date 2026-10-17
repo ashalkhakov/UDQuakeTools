@@ -91,6 +91,9 @@
         case UDReferenceVideos:
             [self _files:@[@"video"] extensions:@".roq" stripped:NO what:@"video" into:names details:details seen:seen fileSystem:fileSystem];
             break;
+        case UDReferenceSounds:
+            [self _files:@[@"sound"] extensions:@".wav|.ogg" stripped:NO what:@"sound" into:names details:details seen:seen fileSystem:fileSystem];
+            break;
         case UDReferenceGuis:
             [self _files:@[@"guis"] extensions:@".gui" stripped:NO what:@"GUI" into:names details:details seen:seen fileSystem:fileSystem];
             break;

@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, UDReferenceKind) {
     UDReferenceModels,      // model files
     UDReferenceVideos,      // cinematics (.roq)
     UDReferenceGuis,        // GUI files
+    UDReferenceSounds,      // sound files (.wav, .ogg)
     UDReferenceNames,       // names the editor gives (joints, bodies, actions)
 };
 

@@ -255,7 +255,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="altSound" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-f7">
-                    <rect key="frame" x="416" y="406" width="170" height="21"/>
+                    <rect key="frame" x="416" y="406" width="144" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="SDE-f7-c">
                         <font key="font" metaFont="system"/>
@@ -271,6 +271,17 @@
                         </binding>
                     </connections>
                 </textField>
+                <button toolTip="Choose a sound shader" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-f7-pick">
+                    <rect key="frame" x="562" y="405" width="24" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SDE-f7-pick-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SDE-f7-pick-a"/>
+                    </connections>
+                </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-flags">
                     <rect key="frame" x="20" y="368" width="200" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -542,6 +553,17 @@
                         <action selector="addOrRemoveSample:" target="-2" id="SDE-samples-pm-a"/>
                     </connections>
                 </segmentedControl>
+                <button toolTip="Choose a sound file for the chosen sample" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-pick-sample">
+                    <rect key="frame" x="97" y="14" width="80" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Sample…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SDE-pick-sample-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SDE-pick-sample-a"/>
+                    </connections>
+                </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-ll">
                     <rect key="frame" x="350" y="252" width="200" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -619,6 +641,17 @@
                         <action selector="addOrRemoveLeadin:" target="-2" id="SDE-leadins-pm-a"/>
                     </connections>
                 </segmentedControl>
+                <button toolTip="Choose a sound file for the chosen leadin" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="SDE-pick-leadin">
+                    <rect key="frame" x="427" y="14" width="80" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Leadin…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SDE-pick-leadin-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SDE-pick-leadin-a"/>
+                    </connections>
+                </button>
             </subviews>
         </customView>
     </objects>

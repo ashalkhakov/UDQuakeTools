@@ -237,8 +237,10 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         design.modifiers.action = @selector(_designEdited:);
         self.designWorkspace = design;
         self.itemProperties.workspace = design;
-        self.scriptsController.workspace = design;
+        self.scriptsController.design = design;
         self.itemProperties.fileSystem = self.workspace.fileSystem;
+        self.itemProperties.resourceWorkspace = self.workspace;
+        self.scriptsController.workspace = self.workspace;
         self.transformer = [[rvGETransformer alloc] initWithWorkspace:design];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
                                                      name:rvGESelectionDidChangeNotification object:design.selections];

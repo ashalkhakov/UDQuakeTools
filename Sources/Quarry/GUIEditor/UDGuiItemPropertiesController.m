@@ -11,6 +11,7 @@
 #import "idDict.h"
 #import "idWindow.h"
 #import "idStr.h"
+#import "UDReferencePicker.h"
 
 static NSControlStateValue UDState(BOOL on) {
     return on ? NSControlStateValueOn : NSControlStateValueOff;
@@ -37,6 +38,11 @@ static NSString *UDNumberText(NSTextField *field) {
 static int UDAtoi(NSTextField *field) {
     return atoi(UDNumberText(field).UTF8String);
 }
+
+@interface UDGuiItemPropertiesController ()
+@property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
+@property (nonatomic, weak, nullable) NSTextField *pickedField;
+@end
 
 @implementation UDGuiItemPropertiesController {
     /// The dialog's dictionary: the window's state when it was shown.
@@ -510,6 +516,32 @@ Applys the settings currently stored in the property page back into the attached
     [self _updateTextCheckedStates];
     [self _killTextActive];
     [self _apply];
+}
+
+#pragma mark - Pickers
+
+- (IBAction)pickReference:(id)sender {
+    NSTextField *target = [sender tag] == 1 ? self.backgroundField : self.borderMaterialField;
+    NSWindow *window = target.window;
+    if (mDict == nil || self.resourceWorkspace == nil || window == nil || window.attachedSheet != nil || !target.isEnabled) {
+        NSBeep();
+        return;
+    }
+    UDReferenceField *field = [UDReferenceField fieldTitled:[sender tag] == 1 ? @"The window's background" : @"The border's material"
+                                                        key:@"" controller:self kind:UDReferenceMaterials];
+    NSMutableArray<NSString *> *details = [NSMutableArray array];
+    NSArray<NSString *> *names = [UDReferencePicker namesFor:field workspace:self.resourceWorkspace details:details];
+    self.pickedField = target;
+    self.referencePicker = [[UDReferencePicker alloc] initWithTitle:field.title names:names details:details current:target.stringValue];
+    [self.referencePicker beginSheetForWindow:window target:self action:@selector(_referencePicked:)];
+}
+
+/// The name in the field, and the page applied (as typing it would).
+- (void)_referencePicked:(UDReferencePicker *)picker {
+    NSTextField *field = self.pickedField;
+    if (field == nil || picker.chosenName == nil) return;
+    field.stringValue = picker.chosenName;
+    [self imageChanged:field];
 }
 
 @end

@@ -47,7 +47,7 @@
                     </textFieldCell>
                 </textField>
                 <textField toolTip="inherit" focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDE-inherit">
-                    <rect key="frame" x="100" y="444" width="520" height="21"/>
+                    <rect key="frame" x="100" y="444" width="494" height="21"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDE-inherit-c">
                         <font key="font" metaFont="system"/>
@@ -62,6 +62,17 @@
                         </binding>
                     </connections>
                 </textField>
+                <button toolTip="Choose the entityDef it inherits" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="EDE-inherit-pick">
+                    <rect key="frame" x="596" y="443" width="24" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EDE-inherit-pick-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="EDE-inherit-pick-a"/>
+                    </connections>
+                </button>
                 <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDE-usage">
                     <rect key="frame" x="18" y="402" width="604" height="34"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

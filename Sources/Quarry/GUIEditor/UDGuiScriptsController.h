@@ -13,7 +13,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class rvGEWorkspace, idWindow;
+@class rvGEWorkspace, idWindow, UDWorkspace, UDReferencePicker;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,8 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UDGuiScriptsController : NSObject <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate>
 
-/// The design the scripts are of.
-@property (nonatomic, weak, nullable) rvGEWorkspace *workspace;
+/// The design the scripts are of, and the workspace (where the pickers'
+/// names come from).
+@property (nonatomic, weak, nullable) rvGEWorkspace *design;
+@property (nonatomic, weak, nullable) UDWorkspace *workspace;
+@property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
 /// Told to show an event in the navigator (one added, one opened from the
 /// events, one renamed): the sender is the controller, its window and its
 /// eventKey what to show (eventKey nil: the window).
@@ -64,20 +67,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTextField *conditionField;
 @property (weak) IBOutlet NSTextField *parameterLabel1;
 @property (weak) IBOutlet NSTextField *parameterField1;
+@property (weak) IBOutlet NSButton *parameterPick1;
 @property (weak) IBOutlet NSTextField *parameterLabel2;
 @property (weak) IBOutlet NSTextField *parameterField2;
+@property (weak) IBOutlet NSButton *parameterPick2;
 @property (weak) IBOutlet NSTextField *parameterLabel3;
 @property (weak) IBOutlet NSTextField *parameterField3;
+@property (weak) IBOutlet NSButton *parameterPick3;
 @property (weak) IBOutlet NSTextField *parameterLabel4;
 @property (weak) IBOutlet NSTextField *parameterField4;
+@property (weak) IBOutlet NSButton *parameterPick4;
 @property (weak) IBOutlet NSTextField *parameterLabel5;
 @property (weak) IBOutlet NSTextField *parameterField5;
+@property (weak) IBOutlet NSButton *parameterPick5;
 @property (weak) IBOutlet NSTextField *parameterLabel6;
 @property (weak) IBOutlet NSTextField *parameterField6;
+@property (weak) IBOutlet NSButton *parameterPick6;
 - (IBAction)changeEvent:(nullable id)sender;
 - (IBAction)addStatement:(nullable id)sender;
 - (IBAction)removeStatement:(nullable id)sender;
 - (IBAction)statementEdited:(nullable id)sender;
+/// A parameter's "…" (its row, its tag): a window, a window's variable, a
+/// sound shader, picked.
+- (IBAction)pickParameter:(nullable id)sender;
 
 /// The statement shown in the fields (the outline's chosen one), and the
 /// rows a drag moves (for the tests: what a drop does).

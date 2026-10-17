@@ -1,4 +1,6 @@
 #import "UDQuarryTestCase.h"
+#import "UDDeclEditorViewController.h"
+#import "UDReferencePicker.h"
 
 #import "UDWorkspaceDocument.h"
 #import "UDEditorTabManager.h"
@@ -425,6 +427,60 @@ NSString *UDDoom3InstallPath(void) {
                                            userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSModalPanelRunLoopMode];
+}
+
+#pragma mark - Pickers
+
+/// The "…" of @a tag under @a view clicked, and @a choose run on its
+/// picker (a sheet; a modal window on GNUstep).
+- (void)pick:(NSInteger)tag in:(UDDeclEditorViewController *)editor under:(NSView *)view
+        with:(void (^)(UDReferencePicker *picker))choose {
+    [self pick:tag action:@selector(pickReference:) under:view sheetOver:editor.view.window
+          with:choose picker:^UDReferencePicker *{ return editor.referencePicker; }];
+}
+
+- (void)pick:(NSInteger)tag action:(SEL)action under:(NSView *)view sheetOver:(NSWindow *)window
+        with:(void (^)(UDReferencePicker *picker))choose picker:(UDReferencePicker *(^)(void))picker {
+    __block NSButton *button = nil;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == action
+            && [(NSButton *)candidate tag] == tag) {
+            button = (NSButton *)candidate;
+            return NO;
+        }
+        return YES;
+    }];
+    XCTAssertNotNil(button, @"a picker's button, tag %ld", (long)tag);
+    __block BOOL shown = NO;
+#ifdef GNUSTEP
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        shown = YES;
+        choose((UDReferencePicker *)window.windowController);
+    }];
+    [NSApp sendAction:button.action to:button.target from:button];
+#else
+    [NSApp sendAction:button.action to:button.target from:button];
+    NSWindow *sheet = window.attachedSheet;
+    XCTAssertNotNil(sheet, @"a sheet");
+    if (sheet != nil) {
+        shown = YES;
+        choose(picker());
+    }
+    [self spinUntil:^BOOL{ return window.attachedSheet == nil; } timeout:5];
+#endif
+    XCTAssertTrue(shown);
+}
+
+/// The picker's @a name chosen, and OK.
+- (void)choose:(NSString *)name in:(UDReferencePicker *)picker {
+    NSUInteger row = [picker.shownNames indexOfObject:name];
+    XCTAssertNotEqual(row, (NSUInteger)NSNotFound, @"%@ among %@", name, picker.shownNames);
+    if (row == NSNotFound) {
+        [picker cancel:nil];
+        return;
+    }
+    [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+    [picker ok:nil];
 }
 
 @end

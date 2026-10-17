@@ -133,6 +133,28 @@
                         <action selector="addOrRemoveMapping:" target="-2" id="SKE-mappings-pm-a"/>
                     </connections>
                 </segmentedControl>
+                <button toolTip="Choose the material the chosen mapping replaces" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="SKE-pick-from">
+                    <rect key="frame" x="97" y="172" width="70" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="From…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SKE-pick-from-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SKE-pick-from-a"/>
+                    </connections>
+                </button>
+                <button toolTip="Choose the material it is replaced with" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="SKE-pick-to">
+                    <rect key="frame" x="171" y="172" width="70" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="To…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SKE-pick-to-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SKE-pick-to-a"/>
+                    </connections>
+                </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SKE-dl">
                     <rect key="frame" x="20" y="150" width="300" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -210,6 +232,17 @@
                         <action selector="addOrRemoveModel:" target="-2" id="SKE-models-pm-a"/>
                     </connections>
                 </segmentedControl>
+                <button toolTip="Choose a model for the chosen row" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="SKE-pick-model">
+                    <rect key="frame" x="97" y="14" width="80" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Model…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SKE-pick-model-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="pickReference:" target="-2" id="SKE-pick-model-a"/>
+                    </connections>
+                </button>
             </subviews>
         </customView>
     </objects>

@@ -1,4 +1,5 @@
 #import "UDEntityDefEditorViewController.h"
+#import "idDeclManager.h"
 #import "UDDeclManagedObjects.h"
 
 static UDDiagnosticSource const UDEntityDefReferencesSource = @"references";
@@ -192,6 +193,16 @@ static void *UDSelectionContext = &UDSelectionContext;
         if (found != nil) return found;
     }
     return nil;
+}
+
+#pragma mark - Pickers
+
+/// The entityDef it inherits.
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    if (tag != 1) return nil;
+    UDReferenceField *field = [UDReferenceField fieldTitled:@"The entityDef it inherits" key:@"inherit" controller:self.objectController kind:UDReferenceDecls];
+    field.declType = DECL_ENTITYDEF;
+    return field;
 }
 
 @end

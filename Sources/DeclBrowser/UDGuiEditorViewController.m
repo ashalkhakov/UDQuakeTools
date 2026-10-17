@@ -7,6 +7,9 @@
 #import "idUserInterface.h"
 #import "idDict.h"
 #import "idWindow.h"
+#import "idParser.h"
+#import "idLexer.h"
+#import "idStr.h"
 #import "idGuiModel.h"
 #import "UDSoftwareRenderer.h"
 #import "UDTextFileDocument.h"
@@ -41,6 +44,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 @property (nonatomic) BOOL playedBeforeDesigning;
 /// How long the slider is: the GUI's last time event, and a second.
 @property (nonatomic) int timelineLength;
+/// The run's window for each of the design's (the design's window the key).
+@property (nonatomic, strong) NSMapTable<idWindow *, idWindow *> *runWindows;
 /// Whether the run is to be read again to hold the design as it is.
 @property (nonatomic) BOOL runStale;
 /// The names of the windows the design hid when it loaded.
@@ -71,6 +76,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [[NSBundle bundleForClass:[UDGuiEditorViewController class]] loadNibNamed:@"UDGuiViewerView" owner:self topLevelObjects:nil];
     self.stateRows = @[];
 
+    self.runWindows = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality
+                                            valueOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality];
     self.player = [[UDGuiPlayer alloc] initWithWorkspace:self.workspace];
     self.player.target = self;
     self.player.action = @selector(playerDidDrawFrame:);
@@ -135,7 +142,13 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.player.windowVisibility = self.designing ? [self _designVisibility] : nil;
     self.runningText = text;
     self.runStale = NO;
+    [self.runWindows removeAllObjects];
     [self.player loadText:[text isEqualToString:self.fileText] ? nil : text path:path time:self.player.time];
+    if (self.designing) {
+        // each design window's in the run: the same tree, but for the
+        // deleted (not written)
+        [self _mapRunWindow:[self.player.gui getDesktop] to:[self.designWorkspace.interface getDesktop]];
+    }
     self.timelineLength = [self _timelineLengthOf:[self.player.gui getDesktop]];
     [self _showClock];
     [self _showDiagnostics];
@@ -704,11 +717,12 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 /// @a modifier's edit (applied, undone or redone) made in the run as it
-/// is, as the engine's editor makes it in its GUI (the window's state
-/// taken again, rvGEWindowWrapper's UpdateWindowState): the run's window of
-/// the same name given the design's. NO for an edit of the windows
-/// themselves (made, deleted, ordered, parented) or of a window's scripts:
-/// those the run is read again for.
+/// is, as the engine's editor makes it in its GUI: the run's window for the
+/// edited one given its state again (rvGEWindowWrapper's
+/// UpdateWindowState); its windows ordered and parented as the design's,
+/// a window new to it read from its own text, and one whose scripts
+/// changed read again so. NO where the run has no window for it: then it
+/// is read again whole.
 - (BOOL)_applyToRun:(nullable rvGEModifier *)modifier {
     if (modifier == nil) return YES;
     if ([modifier isKindOfClass:[rvGEModifierGroup class]]) {
@@ -717,14 +731,112 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         }
         return YES;
     }
-    if (!([modifier isKindOfClass:[rvGEMoveModifier class]] || [modifier isKindOfClass:[rvGESizeModifier class]]
-          || [modifier isKindOfClass:[rvGEStateModifier class]] || [modifier isKindOfClass:[rvGEHideModifier class]])) {
-        return NO;
-    }
     idWindow *window = modifier.window;
-    idDrawWin *ran = [[self.player.gui getDesktop] findChildByName:[window getName]];
-    if (ran.win == nil) return NO;
-    [ran.win updateFromDictionary:[rvGEWindowWrapper wrapperOf:window].stateDict];
+    if ([modifier isKindOfClass:[rvGEInsertModifier class]] || [modifier isKindOfClass:[rvGEZOrderModifier class]]) {
+        if (![self _syncRunChildrenOf:[self.designWorkspace.interface getDesktop]]) return NO;
+    } else if ([modifier isKindOfClass:[rvGEScriptsModifier class]]) {
+        return [self _readRunWindowAgain:window];
+    }
+    idWindow *ran = [self.runWindows objectForKey:window];
+    if (ran == nil) {
+        // not in the run, and not to be: an inserted window's undo
+        return [window getParent] == nil || [rvGEWindowWrapper wrapperOf:window].deleted;
+    }
+    [ran updateFromDictionary:[rvGEWindowWrapper wrapperOf:window].stateDict];
+    return YES;
+}
+
+/// @a design's run window @a run, and their children's, mapped.
+- (void)_mapRunWindow:(nullable idWindow *)run to:(nullable idWindow *)design {
+    if (run == nil || design == nil) return;
+    [self.runWindows setObject:run forKey:design];
+    int r = 0;
+    for (int i = 0; i < [design getChildCount]; i++) {
+        idWindow *child = [design getChild:i];
+        if ([rvGEWindowWrapper wrapperOf:child].deleted) continue;
+        if (r < [run getChildCount]) {
+            [self _mapRunWindow:[run getChild:r] to:child];
+        }
+        r++;
+    }
+}
+
+/// The run's children of @a design's window, and theirs, as the design
+/// has them (in its order; a window new to the run read from its text, one
+/// gone from the design gone): NO when a window is not to be had.
+- (BOOL)_syncRunChildrenOf:(idWindow *)design {
+    idWindow *run = [self.runWindows objectForKey:design];
+    if (run == nil) return NO;
+    NSMutableArray<idWindow *> *wanted = [NSMutableArray array];
+    NSMutableArray<idWindow *> *fresh = [NSMutableArray array];
+    for (int i = 0; i < [design getChildCount]; i++) {
+        idWindow *child = [design getChild:i];
+        idWindow *ran = [self.runWindows objectForKey:child];
+        if (ran == nil) {
+            if ([rvGEWindowWrapper wrapperOf:child].deleted) continue;     // never run
+            ran = [self _runWindowFromTextOf:child];
+            if (ran == nil) return NO;
+            [fresh addObject:ran];
+        }
+        [wanted addObject:ran];
+        if (![self _syncRunChildrenOf:child]) return NO;
+    }
+    BOOL same = [run getChildCount] == (int)wanted.count;
+    for (int i = 0; same && i < (int)wanted.count; i++) {
+        same = [run getChild:i] == wanted[(NSUInteger)i];
+    }
+    if (same) return YES;
+    while ([run getChildCount] > 0) {
+        [run removeChild:[run getChild:0]];
+    }
+    for (idWindow *ran in wanted) {
+        idWindow *parent = [ran getParent];
+        if (parent != nil && parent != run) {
+            [parent removeChild:ran];
+        }
+        [run insertChild:ran before:nil];
+    }
+    // a new window's script names looked up where it is
+    for (idWindow *ran in fresh) {
+        [self.player.gui fixupParmsOf:ran];
+    }
+    return YES;
+}
+
+/// A window for the run, read from @a design's text (and its children's,
+/// mapped) in the run's GUI, as the GUI reads a child's; not yet anywhere.
+- (nullable idWindow *)_runWindowFromTextOf:(idWindow *)design {
+    idWindow *desktop = [self.player.gui getDesktop];
+    if (desktop == nil) return nil;
+    NSMutableString *text = [NSMutableString stringWithString:@"UDRunHolder {\r\n"];
+    [self.designWorkspace writeWindow:design depth:2 into:text];
+    [text appendString:@"}\r\n"];
+    NSData *bytes = [text ud_latin1Buffer];
+    idParser *src = [[idParser alloc] initWithBuffer:bytes.bytes length:(int)bytes.length - 1 name:@"" 
+                                               flags:LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                               error:NULL];
+    idWindow *holder = [[idWindow alloc] initWithDC:[desktop getDC] gui:self.player.gui];
+    [holder parse:src rebuild:NO];
+    if ([holder getChildCount] != 1) return nil;
+    idWindow *ran = [holder getChild:0];
+    [holder removeChild:ran];
+    [self _mapRunWindow:ran to:design];
+    return ran;
+}
+
+/// @a design's window read again into the run, in its place (its scripts
+/// changed); its script names looked up in the run as it is.
+- (BOOL)_readRunWindowAgain:(idWindow *)design {
+    idWindow *old = [self.runWindows objectForKey:design];
+    idWindow *parent = [old getParent];
+    if (old == nil || parent == nil) return NO;
+    idWindow *ran = [self _runWindowFromTextOf:design];
+    if (ran == nil) return NO;
+    int index = [parent getChildIndex:old];
+    idWindow *before = index + 1 < [parent getChildCount] ? [parent getChild:index + 1] : nil;
+    [parent removeChild:old];
+    [parent insertChild:ran before:before];
+    [self.player.gui fixupParmsOf:ran];
     return YES;
 }
 
@@ -744,8 +856,13 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// of those hidden then.
 - (void)_addVisibilityOf:(idWindow *)window to:(nullable NSMutableDictionary<NSString *, NSNumber *> *)visibility {
     rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
-    if (wrapper == nil || wrapper.deleted) return;
+    if (wrapper == nil) return;
     NSString *name = [window getName];
+    if (wrapper.deleted) {
+        // not drawn, as not written (the run may have it, from before)
+        if (visibility != nil) visibility[name] = @NO;
+        return;
+    }
     if (visibility == nil) {
         if (wrapper.hidden) [self.loadedHidden addObject:name];
     } else if (wrapper.hidden != [self.loadedHidden containsObject:name]) {

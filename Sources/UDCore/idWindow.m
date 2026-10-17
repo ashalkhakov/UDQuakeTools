@@ -553,7 +553,8 @@ idWindow::StateChanged
         [self evalRegs];
     }
 
-    for ( idDrawWin *dw in [drawWindows copy] ) {
+    for ( NSUInteger i = 0; i < drawWindows.count; i++ ) {
+        idDrawWin *dw = drawWindows[i];
         if ( dw.win ) {
             [dw.win stateChanged:redraw];
         } else {
@@ -612,7 +613,8 @@ idWindow::UpdateWinVars
 ================
 */
 - (void)updateWinVars {
-    for (idWinVar *var in [updateVars copy]) {
+    for (NSUInteger i = 0; i < updateVars.count; i++) {
+        idWinVar *var = updateVars[i];
         [var update];
     }
 }
@@ -646,7 +648,8 @@ idWindow::RunTimeEvents
     // renamed ON_EVENT to ON_FRAME
     [self runScript:ON_FRAME];
 
-    for (idWindow *child in [children copy]) {
+    for (NSUInteger i = 0; i < children.count; i++) {
+        idWindow *child = children[i];
         [child runTimeEvents:time];
     }
 
@@ -1079,7 +1082,8 @@ idWindow::Time
 
     [cmd setString:@""];
 
-    for ( idTimeLineEvent *ev in [timeLineEvents copy] ) {
+    for ( NSUInteger i = 0; i < timeLineEvents.count; i++ ) {
+        idTimeLineEvent *ev = timeLineEvents[i];
         if ( ev->pending && [gui getTime] - timeLine >= ev->time ) {
             ev->pending = NO;
             [self runScriptList:ev->event];
@@ -1327,7 +1331,8 @@ idWindow::Redraw
         [self debugDraw:time x:x y:y];
     }
 
-    for ( idDrawWin *dw in [drawWindows copy] ) {
+    for ( NSUInteger i = 0; i < drawWindows.count; i++ ) {
+        idDrawWin *dw = drawWindows[i];
         if ( dw.win ) {
             [dw.win redraw:clientRect.x + xOffset y:clientRect.y + yOffset];
         } else {
@@ -2546,6 +2551,12 @@ idWindow::FindChildByName
 ================
 */
 - (idDrawWin *)findChildByName:(NSString *)_name {
+    // (not the engine's: the GUI's index of this window's tree, while it
+    // has them; see idUserInterfaceLocal's fixupParmsOf:)
+    NSDictionary<NSString *, idDrawWin *> *index = [gui nameIndexOf:self];
+    if (index != nil) {
+        return index[[_name ud_foldedAZ]];
+    }
     if ([name ud_iequals:_name]) {
         idDrawWin *dw = [[idDrawWin alloc] init];
         dw.simp = nil;

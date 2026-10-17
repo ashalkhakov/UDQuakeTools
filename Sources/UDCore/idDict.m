@@ -45,12 +45,15 @@ static idStrPool *GlobalValues( void ) {
 
 @implementation idDict {
     NSMutableArray<idKeyValue *> *args;
+    // argHash: each key value by its key, A-Z folded (keys are unique)
+    NSMutableDictionary<NSString *, idKeyValue *> *argHash;
 }
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         args = [NSMutableArray array];
+        argHash = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -66,6 +69,7 @@ static idStrPool *GlobalValues( void ) {
         c->key = [GlobalKeys() copyString:kv->key];
         c->value = [GlobalValues() copyString:kv->value];
         [copy->args addObject:c];
+        copy->argHash[[c->key.string ud_foldedAZ]] = c;
     }
     return copy;
 }
@@ -81,6 +85,7 @@ idDict::Clear
         [GlobalValues() freeString:kv->value];
     }
     [args removeAllObjects];
+    [argHash removeAllObjects];
 }
 
 /*
@@ -92,14 +97,8 @@ idDict::FindKeyIndex
     if ( key.length == 0 ) {
         return -1;
     }
-    NSInteger i = 0;
-    for ( idKeyValue *kv in args ) {
-        if ( [kv->key.string ud_iequals:key] ) {
-            return i;
-        }
-        i++;
-    }
-    return -1;
+    idKeyValue *kv = argHash[[key ud_foldedAZ]];
+    return kv != nil ? (NSInteger)[args indexOfObjectIdenticalTo:kv] : -1;
 }
 
 /*
@@ -123,6 +122,7 @@ idDict::Set
         kv->key = [GlobalKeys() allocString:key];
         kv->value = [GlobalValues() allocString:value];
         [args addObject:kv];
+        argHash[[key ud_foldedAZ]] = kv;
     }
 }
 
@@ -139,9 +139,9 @@ idDict::FindKey, GetString
 ================
 */
 - (NSString *)getString:(NSString *)key defaultString:(NSString *)defaultString {
-    NSInteger i = [self findKeyIndex:key];
-    if ( i != -1 ) {
-        return args[i]->value.string;
+    idKeyValue *kv = key.length > 0 ? argHash[[key ud_foldedAZ]] : nil;
+    if ( kv != nil ) {
+        return kv->value.string;
     }
     return defaultString;
 }
@@ -200,6 +200,7 @@ idDict::Delete
     }
     [GlobalKeys() freeString:args[i]->key];
     [GlobalValues() freeString:args[i]->value];
+    [argHash removeObjectForKey:[key ud_foldedAZ]];
     [args removeObjectAtIndex:i];
 }
 

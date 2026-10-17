@@ -168,7 +168,7 @@
     idUserInterfaceManager *manager = self.manager;
     while (self.time + USERCMD_MSEC < time) {
         self.time += USERCMD_MSEC;
-        [self _runFrame];
+        [self _runFrameDrawing:NO];
     }
     self.time = time;
     self.lastTick = [NSDate date];
@@ -176,10 +176,10 @@
     [manager.guiModel clear];
 }
 
-/// A frame at the time it is at, into the GUI model: the named events sent
-/// before it (again, after a load) sent, the hidden windows hidden, the GUI
-/// redrawn.
-- (void)_runFrame {
+/// A frame at the time it is at, into the GUI model (@a drawing; else its
+/// time events alone): the named events sent before it (again, after a
+/// load) sent, the hidden windows hidden, the GUI redrawn.
+- (void)_runFrameDrawing:(BOOL)drawing {
     idUserInterfaceManager *manager = self.manager;
     manager.ticNumber = self.time / USERCMD_MSEC;
     NSArray<UDGuiPlayerEvent *> *track = self.eventTrack;
@@ -188,8 +188,12 @@
         self.replayed++;
     }
     [self _applyVisibility];
-    [manager.guiModel clear];
-    [self.gui redraw:self.time];
+    if (drawing) {
+        [manager.guiModel clear];
+        [self.gui redraw:self.time];
+    } else {
+        [self.gui runTimeEvents:self.time];
+    }
     [self _takeMessages];
 }
 
@@ -233,7 +237,7 @@
     // idSessionLocal::Draw: the GUI redrawn at the frame's time, into the
     // GUI model; the model's surfaces as the ambient pass draws them, over
     // black
-    [self _runFrame];
+    [self _runFrameDrawing:YES];
     NSArray *surfaces = [manager.guiModel emitFullScreen];
     UDSoftwareRenderer *renderer = manager.renderer;
     self.triangles = [renderer trianglesOfSurfaces:surfaces time:self.time * 0.001f];

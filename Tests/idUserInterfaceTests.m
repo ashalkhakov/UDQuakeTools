@@ -249,4 +249,24 @@ static NSString *const UDTestGui =
     XCTAssertEqual(v.y, 0.5f);
 }
 
+- (void)testDictLookupsFollowDeletesCopiesAndClears {
+    idDict *dict = [[idDict alloc] init];
+    for (NSString *key in @[@"a", @"B", @"c", @"D"]) {
+        [dict set:key value:[key stringByAppendingString:@"!"]];
+    }
+    [dict deleteKey:@"b"];
+    XCTAssertEqual([dict numKeyVals], 3);
+    XCTAssertEqualObjects([dict getString:@"B" defaultString:@"none"], @"none");
+    XCTAssertEqualObjects([dict getString:@"d"], @"D!", @"found after a delete moved it");
+    idDict *copy = [dict copy];
+    [dict set:@"d" value:@"changed"];
+    XCTAssertEqualObjects([copy getString:@"D"], @"D!", @"the copy its own");
+    XCTAssertEqualObjects([dict keyAtIndex:2], @"D", @"the first spelling kept");
+    [copy clear];
+    XCTAssertEqualObjects([copy getString:@"a" defaultString:@"none"], @"none");
+    [copy set:@"A" value:@"again"];
+    XCTAssertEqualObjects([copy getString:@"a"], @"again");
+    XCTAssertEqualObjects([@"MixedCase_Ä" ud_foldedAZ], @"mixedcase_Ä", @"A-Z alone, as idStr::Icmp");
+}
+
 @end

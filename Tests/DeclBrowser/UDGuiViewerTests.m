@@ -464,6 +464,91 @@ static NSString *const UDViewerScript =
     XCTAssertEqualObjects([self var:@"visible" of:@"Panel" in:editor], @"1");
 }
 
+/// The names of @a window's tree, depth first; the design's deleted not.
+- (NSArray<NSString *> *)treeNamesOf:(idWindow *)window {
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if (wrapper.deleted) return names;
+    [names addObject:[window getName]];
+    for (int i = 0; i < [window getChildCount]; i++) {
+        [names addObjectsFromArray:[self treeNamesOf:[window getChild:i]]];
+    }
+    return names;
+}
+
+- (idWindow *)designWindow:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    return [[editor.designWorkspace.interface getDesktop] findChildByName:name].win;
+}
+
+- (idWindow *)runWindow:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    return [[editor.player.gui getDesktop] findChildByName:name].win;
+}
+
+- (void)testEveryEditIsMadeInTheRunAsItIs {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    rvGEWorkspace *design = editor.designWorkspace;
+    NSUndoManager *undo = editor.editorDocument.undoManager;
+    [self namedEvent:@"udtestLight" in:editor];
+    [self slide:editor to:1000];
+    NSString *ranText = editor.runningText;
+
+    // pasted, with its scripts
+    [design.selections set:[self designWindow:@"Go" in:editor]];
+    [design copySelected];
+    [design paste];
+    [self checkRunOf:editor ranText:ranText after:@"Paste"];
+    XCTAssertNotNil([self runWindow:@"Go1" in:editor]);
+    [undo undo];
+    [self checkRunOf:editor ranText:ranText after:@"Paste undone"];
+    XCTAssertNil([self runWindow:@"Go1" in:editor]);
+    [undo redo];
+    [self checkRunOf:editor ranText:ranText after:@"Paste redone"];
+
+    // deleted: not drawn
+    [design.selections set:[self designWindow:@"Go1" in:editor]];
+    [design deleteSelected];
+    XCTAssertEqualObjects([self var:@"visible" of:@"Go1" in:editor], @"0");
+    [undo undo];
+    XCTAssertEqualObjects([self var:@"visible" of:@"Go1" in:editor], @"1");
+    [self checkRunOf:editor ranText:ranText after:@"Delete undone"];
+
+    // ordered, parented
+    [design.selections set:[self designWindow:@"Go" in:editor]];
+    [design sendSelectedToBack];
+    [self checkRunOf:editor ranText:ranText after:@"Send to Back"];
+    [undo undo];
+    [self checkRunOf:editor ranText:ranText after:@"Send to Back undone"];
+    [design.selections set:[self designWindow:@"Panel" in:editor]];
+    [design.selections add:[self designWindow:@"Go" in:editor]];
+    XCTAssertTrue([design makeSelectedAChild]);
+    [self checkRunOf:editor ranText:ranText after:@"Make Child"];
+    XCTAssertEqualObjects([[[self runWindow:@"Go" in:editor] getParent] getName], @"Panel");
+
+    // new
+    [design addWindow:WT_NORMAL];
+    [self checkRunOf:editor ranText:ranText after:@"New"];
+
+    // its scripts
+    [self chooseWindow:@"Lamp" in:editor];
+    editor.scriptsText.string = [editor.scriptsText.string stringByReplacingOccurrencesOfString:@"0 1 0 1" withString:@"0 1 1 1"];
+    [editor applyScripts:nil];
+    XCTAssertEqualObjects(editor.runningText, ranText, @"scripts: not read again");
+    NSString *script = [[rvGEWindowWrapper wrapperOf:[self runWindow:@"Lamp" in:editor]].scriptDict getString:@"onTime 500"];
+    XCTAssertTrue([script containsString:@"0 1 1 1"], @"the run's lamp read again: %@", script);
+}
+
+/// The run as it was (its text, its time, the lamp lit) and its windows
+/// the design's, after @a what.
+- (void)checkRunOf:(UDGuiEditorViewController *)editor ranText:(NSString *)ranText after:(NSString *)what {
+    XCTAssertEqualObjects(editor.runningText, ranText, @"%@: made in the run, not read again", what);
+    XCTAssertEqual(editor.player.time, 1000, @"%@", what);
+    XCTAssertTrue([self lampIsLitIn:editor], @"%@: the run where it was", what);
+    XCTAssertEqualObjects([self treeNamesOf:[editor.player.gui getDesktop]], [self treeNamesOf:[editor.designWorkspace.interface getDesktop]],
+                          @"%@: the run's windows the design's", what);
+}
+
 #pragma mark - The navigator
 
 - (void)testTheWindowsAreANavigatorOfTheGuisTab {

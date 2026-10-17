@@ -149,6 +149,7 @@
 #pragma mark - idUserInterfaceLocal
 
 @implementation idUserInterfaceLocal {
+    NSMapTable<idWindow *, NSMutableDictionary<NSString *, idDrawWin *> *> *_nameIndexes;
     BOOL                        active;
     BOOL                        loading;
     BOOL                        interactive;
@@ -272,7 +273,7 @@ idUserInterfaceLocal::InitFromFile
                 [desktop setDC:uiManagerLocal.dc];
                 if ( [desktop parse:src rebuild:rebuild] ) {
                     [desktop setFlag:WIN_DESKTOP];
-                    [desktop fixupParms];
+                    [self fixupParmsOf:desktop];
                 }
                 continue;
             }
@@ -410,6 +411,23 @@ idUserInterfaceLocal::Redraw
         [self.manager.dc pushClipRect:self.manager.screenRect];
         [desktop redraw:0 y:0];
         [self.manager.dc popClipRect];
+    }
+}
+
+- (void)runTimeEvents:(int)_time {
+    int r_skipGuiShaders = [self.manager.cvars getInt:@"r_skipGuiShaders"];
+    if ( r_skipGuiShaders > 5 ) {
+        return;
+    }
+    if ( !loading && desktop ) {
+        time = _time;
+        // idWindow::Redraw's, before it draws
+        if ( r_skipGuiShaders == 1 || [desktop getDC] == nil ) {
+            return;
+        }
+        if ( [desktop getFlags] & WIN_DESKTOP && r_skipGuiShaders != 3 ) {
+            [desktop runTimeEvents:time];
+        }
     }
 }
 
@@ -592,5 +610,44 @@ idUserInterfaceLocal::SetCursor
 - (int)getRefs { return refs; }
 - (NSMutableString *)getPendingCmd { return pendingCmd; }
 - (NSMutableString *)getReturnCmd { return returnCmd; }
+
+
+#pragma mark - The name index (not the engine's)
+
+- (void)fixupParmsOf:(idWindow *)window {
+    _nameIndexes = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality
+                                         valueOptions:NSPointerFunctionsStrongMemory];
+    [window fixupParms];
+    _nameIndexes = nil;
+}
+
+- (nullable NSDictionary<NSString *, idDrawWin *> *)nameIndexOf:(idWindow *)window {
+    NSMapTable *indexes = _nameIndexes;
+    if (indexes == nil) return nil;
+    NSMutableDictionary<NSString *, idDrawWin *> *index = [indexes objectForKey:window];
+    if (index == nil) {
+        index = [NSMutableDictionary dictionary];
+        idDrawWin *dw = [[idDrawWin alloc] init];
+        dw.win = window;
+        index[[[window getName] ud_foldedAZ]] = dw;
+        UDIndexChildren(window, index);
+        [indexes setObject:index forKey:window];
+    }
+    return index;
+}
+
+/// @a window's draw windows, by name, in FindChildByName's order: each
+/// one's name, then (a full window) its own; the first of a name kept.
+static void UDIndexChildren(idWindow *window, NSMutableDictionary<NSString *, idDrawWin *> *index) {
+    for (idDrawWin *dw in window->drawWindows) {
+        NSString *key = [(dw.win != nil ? [dw.win getName] : dw.simp->name) ud_foldedAZ];
+        if (key != nil && index[key] == nil) {
+            index[key] = dw;
+        }
+        if (dw.win != nil) {
+            UDIndexChildren(dw.win, index);
+        }
+    }
+}
 
 @end

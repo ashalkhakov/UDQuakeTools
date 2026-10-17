@@ -350,6 +350,9 @@ NSString *idStr_FloatArrayToString(const float *array, int length, int precision
 - (int)ud_icmp:(NSString *)text;
 /// [self ud_icmp:text] == 0, without copying strings of different lengths
 - (BOOL)ud_iequals:(NSString *)text;
+/// A–Z made a–z, and nothing else: strings ud_iequals finds equal fold the
+/// same (a key for them).
+- (NSString *)ud_foldedAZ;
 - (int)ud_icmpn:(NSString *)text length:(NSInteger)n;
 - (int)ud_cmpn:(NSString *)text length:(NSInteger)n;
 /// idStr::ToLower: A–Z and 0xC0–0xDF lowered.

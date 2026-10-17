@@ -1041,6 +1041,22 @@ static int UDCmpn(const unichar *s1, const unichar *s2, NSInteger n) {
     return [self ud_icmpn:text length:-1] == 0;
 }
 
+- (NSString *)ud_foldedAZ {
+    NSUInteger length = self.length;
+    unichar stack[UD_CMP_STACK];
+    unichar *chars = UDCopyChars(self, stack);
+    BOOL changed = NO;
+    for (NSUInteger i = 0; i < length; i++) {
+        if (chars[i] >= 'A' && chars[i] <= 'Z') {
+            chars[i] += 'a' - 'A';
+            changed = YES;
+        }
+    }
+    NSString *folded = changed ? [NSString stringWithCharacters:chars length:length] : self;
+    UDFreeChars(chars, stack);
+    return folded;
+}
+
 - (int)ud_icmpn:(NSString *)text length:(NSInteger)n {
     unichar b1[UD_CMP_STACK], b2[UD_CMP_STACK];
     unichar *s1 = UDCopyChars(self, b1), *s2 = UDCopyChars(text, b2);

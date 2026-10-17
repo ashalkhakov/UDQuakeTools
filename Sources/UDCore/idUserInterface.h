@@ -81,10 +81,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@class idDrawWin;
+
 @interface idUserInterfaceLocal : NSObject
 
 - (instancetype)initWithManager:(idUserInterfaceManager *)manager;
 @property (nonatomic, weak, readonly) idUserInterfaceManager *manager;
+
+/// Not in the engine: while @a window's script names are looked up
+/// (idWindow's fixupParms, the tree as it is), FindChildByName answered
+/// from an index of the window's tree, made in the order it searches (the
+/// first window of a name), not by searching it each time. What the engine
+/// does once a reference; the main menu's thousands of them made its load
+/// take most of half a second.
+- (void)fixupParmsOf:(idWindow *)window;
+/// @a window's index (names folded as idStr::Icmp folds them), made the
+/// first time it is asked for; nil but while fixupParmsOf: runs.
+- (nullable NSDictionary<NSString *, idDrawWin *> *)nameIndexOf:(idWindow *)window;
 
 - (NSString *)name;
 - (NSString *)comment;
@@ -96,6 +109,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)handleEvent:(const sysEvent_t *)event time:(int)time updateVisuals:(BOOL *_Nullable)updateVisuals;
 - (void)handleNamedEvent:(NSString *)namedEvent;
 - (void)redraw:(int)time;
+/// Not in the engine: Redraw's time events alone (the desktop's
+/// RunTimeEvents at @a time, as Redraw runs them), nothing drawn: a seek's
+/// frames between.
+- (void)runTimeEvents:(int)time;
 - (void)drawCursor;
 - (idDict *)state;
 - (void)deleteStateVar:(NSString *)varName;

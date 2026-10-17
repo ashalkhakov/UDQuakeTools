@@ -3,7 +3,7 @@
  * idEditWindow.m — ui/EditWindow.cpp, ported. See idEditWindow.h.
  */
 
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import "idFileSystem.h"
 #import "idEditWindow.h"
 #import "idSliderWindow.h"
 #import "idUserInterface.h"

@@ -53,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) idCVarSystem *cvars;
 /// com_editors & EDITOR_GUI: no simple windows, every window kept.
 @property (nonatomic) BOOL editing;
+/// The class each window is wrapped in while editing (the GUI editor's
+/// rvGEWindowWrapper, an idWindowEditorWrapper); Nil, none.
+@property (nonatomic, nullable) Class editorWrapperClass;
 /// idKeyInput::IsDown
 - (BOOL)isKeyDown:(int)key;
 - (void)setKey:(int)key down:(BOOL)down;

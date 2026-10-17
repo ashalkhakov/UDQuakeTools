@@ -9,6 +9,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "idGuiModel.h"
 #import "idMath.h"
 
 @class idUserInterfaceManager, idGuiModel, UDMaterialParser;
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// idMaterial, as a GUI has one: declManager->FindMaterial's, by name; the
 /// same object for the same name.
-@interface idMaterial : NSObject
+@interface idMaterial : NSObject <idGuiMaterial>
 @property (nonatomic, copy, readonly) NSString *name;
 /// The material's parse (the renderer's).
 - (UDMaterialParser *)parser;

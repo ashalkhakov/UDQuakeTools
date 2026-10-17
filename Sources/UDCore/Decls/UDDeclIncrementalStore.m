@@ -31,7 +31,8 @@
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 #import "UDDeclManagedObjects.h"
-#import "UDWorkspace.h"
+#import "idFileSystem.h"
+#import "idDeclManager.h"
 
 NSString * const UDDeclIncrementalStoreType = @"UDDeclIncrementalStore";
 NSString * const UDDeclIncrementalStoreConfigureDeclManager = @"UDDeclIncrementalStoreConfigureDeclManager";
@@ -278,7 +279,7 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
                                   name:[decl name]
                               fileName:[decl fileName]
                                lineNum:[decl lineNum]
-                            fileSystem:_declManager.workspace.fileSystem
+                            fileSystem:_declManager.fileSystem
                                  error:error];
 }
 
@@ -688,7 +689,7 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     if ([cls isSubclassOfClass:[UDDeclBase class]]) {
         NSError *parseError = nil;
         parsed = [cls ud_parseValuesFromText:text name:[object valueForKey:@"name"] fileName:nil lineNum:1
-                                  fileSystem:_declManager.workspace.fileSystem error:&parseError];
+                                  fileSystem:_declManager.fileSystem error:&parseError];
         if (parsed == nil && parseError != nil) {
             if (error != NULL) *error = parseError;
             return NO;

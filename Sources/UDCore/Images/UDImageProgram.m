@@ -10,7 +10,6 @@
 #import "idFileSystem.h"
 #import "idLexer.h"
 #import "idToken.h"
-#import "UDDeclCodec.h"
 #import <objc/runtime.h>
 
 #define STBI_NO_THREAD_LOCALS

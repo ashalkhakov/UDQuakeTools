@@ -1,4 +1,5 @@
 #import "UDTransportController.h"
+#import "UDWorkspace.h"
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclDocument.h"

@@ -3,7 +3,7 @@
  * idMarkerWindow.m — ui/MarkerWindow.cpp, ported. See idMarkerWindow.h.
  */
 
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import "idFileSystem.h"
 #import "idMarkerWindow.h"
 #import "idUserInterface.h"
 #import "idStr.h"

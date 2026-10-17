@@ -1,6 +1,5 @@
+#import "idFileAccess.h"
 #import "idLexer.h"
-#import "idFile.h"
-#import "idFileSystem.h"
 
 #define PUNCTABLE
 
@@ -1561,7 +1560,7 @@ file as text after it.
 }
 
 -(BOOL)loadFile:(NSString *)filename isOSPath:(BOOL)OSPath error:(NSError **)error {
-    idFile *fp;
+    id<idFileReading>fp;
     NSString *pathname;
     int length;
     char *buf;
@@ -1667,7 +1666,7 @@ file as text after it.
     self->loaded = NO;
 }
 
--(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
+-(instancetype)initWithFileSystem:(id<idFileSystemReading>)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -1688,7 +1687,7 @@ file as text after it.
     return self;
 }
 
--(instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem {
+-(instancetype)initWithFlags:(int)flags fileSystem:(id<idFileSystemReading>)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -1712,7 +1711,7 @@ file as text after it.
 - (instancetype)initWithFileName:(NSString *)filename
                            flags:(int)flags
                         isOSPath:(BOOL)isOSPath
-                      fileSystem:(idFileSystem *)fileSystem
+                      fileSystem:(id<idFileSystemReading>)fileSystem
                            error:(NSError **)error {
     self = [super init];
     if (self)
@@ -1734,7 +1733,7 @@ file as text after it.
                         length:(int)length
                           name:(NSString *)name
                          flags:(int)flags
-                    fileSystem:(idFileSystem *)fileSystem
+                    fileSystem:(id<idFileSystemReading>)fileSystem
                          error:(NSError **)error {
     self = [super init];
     if (self)

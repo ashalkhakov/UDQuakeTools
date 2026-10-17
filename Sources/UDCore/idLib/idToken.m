@@ -1,3 +1,4 @@
+#include <strings.h>
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
  * UDToken.h — token type
@@ -450,4 +451,20 @@ void idToken_StripQuotes(idToken *token) {
     token->length--;
     memmove(&token->text[0], &token->text[1], token->length);
     token->text[token->length] = '\0';
+}
+
+NSString *UDTokenString(const idToken *token) {
+    return [NSString stringWithUTF8String:token->text] ?: @"";
+}
+
+NSString *UDTokenLatin1String(const idToken *token) {
+    return [NSString stringWithCString:token->text encoding:NSISOLatin1StringEncoding] ?: @"";
+}
+
+BOOL UDTokenIs(const idToken *token, const char *text) {
+    return !strcmp(token->text, text);
+}
+
+BOOL UDTokenIcmp(const idToken *token, const char *text) {
+    return !strcasecmp(token->text, text);
 }

@@ -20,7 +20,7 @@ UDCore_OBJC_FILES = \
     Archives/UDArchiveEntry.m \
     Archives/UDArchiveMutation.m \
     Archives/UDDirectoryNode.m \
-    Workspace/UDGame.m \
+    Framework/UDGame.m \
     Workspace/UDGameDetectionService.m \
     ../UDFormats/UDCodecRegistry.m \
     ../UDFormats/UDDaikatanaPAKCodec.m \
@@ -37,6 +37,7 @@ UDCore_OBJC_FILES = \
     idLib/compat.m \
     idLib/idStr.m \
     Framework/idFile.m \
+    Framework/idLangDict+Common.m \
     Framework/idFileSystem.m \
     Workspace/UDWorkspace.m \
     Workspace/UDWorkspaceManager.m \
@@ -55,7 +56,7 @@ UDCore_OBJC_FILES = \
     Decls/UDDeclFX.m \
     Decls/UDDeclAF.m \
     Renderer/UDMD5Mesh.m \
-    Scripts/UDSourceTokens.m \
+    idLib/UDSourceTokens.m \
     Decls/UDDeclMaterial.m \
     Renderer/UDParticleModel.m \
     Renderer/UDSoftwareRenderer.m \
@@ -88,8 +89,8 @@ UDCore_OBJC_FILES = \
     UI/idFieldWindow.m \
     UI/idMarkerWindow.m \
     UI/idRenderWindow.m \
-    Renderer/UDMaterialParser.m \
-    Renderer/UDImageProgram.m \
+    Decls/UDMaterialParser.m \
+    Images/UDImageProgram.m \
     Decls/UDDeclPDA.m \
     Decls/UDDeclParticle.m \
     Decls/UDDeclIncrementalStore.m \
@@ -108,13 +109,17 @@ UDCore_HEADER_FILES = \
     Archives/UDArchiveMutation.h \
     Archives/UDContentSource.h \
     Archives/UDDirectoryNode.h \
-    Workspace/UDGame.h \
+    Framework/UDGame.h \
     Workspace/UDGameDetectionService.h \
     idLib/idToken.h \
     idLib/idLexer.h \
     idLib/idParser.h \
     idLib/idStr.h \
     Framework/idFile.h \
+    Framework/idLangDict+Common.h \
+    Framework/UDEngineSettings.h \
+    idLib/idFileAccess.h \
+    UI/idWindowEditorWrapper.h \
     Framework/idFileSystem.h \
     Workspace/UDWorkspace.h \
     Workspace/UDWorkspaceManager.h \
@@ -132,7 +137,7 @@ UDCore_HEADER_FILES = \
     Decls/UDDeclFX.h \
     Decls/UDDeclAF.h \
     Renderer/UDMD5Mesh.h \
-    Scripts/UDSourceTokens.h \
+    idLib/UDSourceTokens.h \
     Decls/UDDeclMaterial.h \
     Renderer/UDParticleModel.h \
     Renderer/UDSoftwareRenderer.h \
@@ -164,8 +169,8 @@ UDCore_HEADER_FILES = \
     UI/idFieldWindow.h \
     UI/idMarkerWindow.h \
     UI/idRenderWindow.h \
-    Renderer/UDMaterialParser.h \
-    Renderer/UDImageProgram.h \
+    Decls/UDMaterialParser.h \
+    Images/UDImageProgram.h \
     Decls/UDDeclPDA.h \
     Decls/UDDeclParticle.h \
     Decls/UDDeclIncrementalStore.h \

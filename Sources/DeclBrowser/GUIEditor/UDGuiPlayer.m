@@ -1,7 +1,9 @@
 #import "UDGuiPlayer.h"
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
+#import "idFileSystem.h"
 #import "UDWorkspace.h"
 #import "idUserInterface.h"
+#import "rvGEWindowWrapper.h"
 #import "idStr.h"
 #import "idDeviceContext.h"
 #import "idGuiModel.h"
@@ -129,6 +131,7 @@
         [self.manager deAlloc:self.gui];
     }
     self.manager.editing = self.editing;
+    self.manager.editorWrapperClass = self.editing ? [rvGEWindowWrapper class] : Nil;
     self.gui = [self.manager allocGui];
     BOOL loaded = self.text != nil ? [self.gui initFromText:self.text path:self.path] : [self.gui initFromFile:self.path];
     self.diagnostics = [self.gui.diagnostics copy];

@@ -27,6 +27,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #import <Foundation/Foundation.h>
+#import "idFileAccess.h"
 
 /*
 ==============================================================
@@ -45,7 +46,7 @@ typedef enum {
 
 @class idFileSystem;
 
-@interface idFile : NSObject
+@interface idFile : NSObject <idFileReading>
 
 @property (weak, nonatomic) idFileSystem *fileSystem;
 

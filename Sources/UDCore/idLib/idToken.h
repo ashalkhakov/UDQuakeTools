@@ -160,3 +160,12 @@ int             idToken_Flags(const idToken *token);
 void            idToken_AddToFlags(idToken *token, int flags);
 
 void idToken_StripQuotes(idToken *token);
+
+/// The token's text as a string (UTF-8); as the engine's Latin-1 text (a
+/// GUI's strings).
+NSString *UDTokenString(const idToken *token);
+NSString *UDTokenLatin1String(const idToken *token);
+/// token == text, token.Icmp( text ) == 0
+BOOL UDTokenIs(const idToken *token, const char *text);
+BOOL UDTokenIcmp(const idToken *token, const char *text);
+

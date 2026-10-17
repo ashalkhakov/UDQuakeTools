@@ -779,8 +779,8 @@ static void                    TouchDecl_f( const idCmdArgs &args );
 
 @end
 
-static void DeclManager_GetSingleDeclFileName(UDWorkspace *workspace, NSMutableString *fileName) {
-    NSString *overrideName = workspace.com_singleDeclFileName;
+static void DeclManager_GetSingleDeclFileName(id<UDEngineSettings> settings, NSMutableString *fileName) {
+    NSString *overrideName = settings.com_singleDeclFileName;
     if (overrideName != nil && overrideName.length > 0) {
         [fileName setString:overrideName];
         return;
@@ -838,8 +838,8 @@ static const char *DeclManager_GetSingleDeclWriteModeName(enum declSingleFileWri
     }
 }
 
-static enum declSingleFileWriteMode_t DeclManager_GetConfiguredSingleDeclWriteMode(UDWorkspace *workspace) {
-    if (workspace.com_singleDeclFileWriteMode == DECL_SINGLEFILE_WRITE_RETAIL) {
+static enum declSingleFileWriteMode_t DeclManager_GetConfiguredSingleDeclWriteMode(id<UDEngineSettings> settings) {
+    if (settings.com_singleDeclFileWriteMode == DECL_SINGLEFILE_WRITE_RETAIL) {
         return DECL_SINGLEFILE_WRITE_RETAIL;
     }
     
@@ -987,14 +987,15 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     indent--;
 }
 
-- (instancetype)initWithWorkspace:(UDWorkspace *)workspace {
+- (instancetype)initWithSettings:(id<UDEngineSettings>)settings fileSystem:(idFileSystem *)fileSystem {
     
     self = [super init];
     if (!self) {
         return nil;
     }
     
-    _workspace = workspace;
+    _settings = settings;
+    _fileSystem = fileSystem;
 
     self->declFolders = [[NSMutableArray alloc] init];
     self->loadedFiles = [[NSMutableArray alloc] init];
@@ -1040,10 +1041,10 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
     // Which decls there are is the game's: Doom 3's are below, as dhewm3's
     // idDeclManagerLocal::Init and idGameLocal::Init register them.
-    if (_workspace.game != UDGameTypeDoom3) {
+    if (_settings.game != UDGameTypeDoom3) {
         if (error != NULL) {
             NSString *message = [NSString stringWithFormat:@"%@ has no decls this version can read.",
-                                 [UDGame gameWithType:_workspace.game].displayName];
+                                 [UDGame gameWithType:_settings.game].displayName];
             *error = [NSError errorWithDomain:@"idDeclManager" code:1
                                      userInfo:@{NSLocalizedDescriptionKey: message}];
         }
@@ -1082,7 +1083,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     [self registerDeclType:DECL_MODELDEF typeName:@"model"];
     [self registerDeclType:DECL_MODELEXPORT typeName:@"export"];
 
-    if (_workspace.com_SingleDeclFile) {
+    if (_settings.com_SingleDeclFile) {
         [self startLoadingDecls];
         if (![self loadDeclsFromFile:error]) {
             return NO;
@@ -1296,7 +1297,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
 -(BOOL)evaluateInlineGuide:(NSMutableString *)name definition:(NSMutableString *)definition error:(NSError **)error {
     NSMutableString *store = [definition mutableCopy];
-    idLexer *lexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:_workspace.fileSystem];
+    idLexer *lexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:_fileSystem];
     const char *utf8 = store.UTF8String;
     int len = (int)strlen(utf8);
 
@@ -1414,8 +1415,8 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
     
     NSMutableString *singleDeclFileName = [[NSMutableString alloc] init];
-    DeclManager_GetSingleDeclFileName(_workspace, singleDeclFileName);
-    singleDeclFile = [_workspace.fileSystem openFileRead:singleDeclFileName allowCopyFiles:YES gamedir:nil error:nil];
+    DeclManager_GetSingleDeclFileName(_settings, singleDeclFileName);
+    singleDeclFile = [_fileSystem openFileRead:singleDeclFileName allowCopyFiles:YES gamedir:nil error:nil];
     if (singleDeclFile == nil) {
         NSLog(@"Could not open packed decl file '%@'", singleDeclFileName);
     }
@@ -1423,7 +1424,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 
 -(void)finishLoadingDecls {
     if (singleDeclFile != nil) {
-        [_workspace.fileSystem closeFile:singleDeclFile error:nil];
+        [_fileSystem closeFile:singleDeclFile error:nil];
         singleDeclFile = nil;
     }
 }
@@ -1467,7 +1468,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
     }
     
     NSMutableString *singleDeclFileName = [[NSMutableString alloc] init];
-    DeclManager_GetSingleDeclFileName(_workspace, singleDeclFileName);
+    DeclManager_GetSingleDeclFileName(_settings, singleDeclFileName);
     
     NSMutableString *countString = [[NSMutableString alloc] init];
     if (!readPackedDeclLine(self->singleDeclFile, countString, error)) {
@@ -1503,14 +1504,14 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
 }
 
 -(BOOL)writeDeclFile:(NSError **)error {
-    return [self writeDeclFileWithMode:DeclManager_GetConfiguredSingleDeclWriteMode(_workspace) error:error];
+    return [self writeDeclFileWithMode:DeclManager_GetConfiguredSingleDeclWriteMode(_settings) error:error];
 }
 
 -(BOOL)writeDeclFileWithMode:(enum declSingleFileWriteMode_t)writeMode error:(NSError **)error {
     NSMutableString *singleDeclFileName = [[NSMutableString alloc] init];
-    DeclManager_GetSingleDeclFileName(_workspace, singleDeclFileName);
+    DeclManager_GetSingleDeclFileName(_settings, singleDeclFileName);
     
-    idFile *file = [_workspace.fileSystem openFileWrite:singleDeclFileName basePath:@"fs_savepath" error:error];
+    idFile *file = [_fileSystem openFileWrite:singleDeclFileName basePath:@"fs_savepath" error:error];
     if (file == nil) {
         NSLog(@"Could not open packed decl file '%@' for writing", singleDeclFileName);
         return NO;
@@ -1528,7 +1529,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         return NO;
     }
     
-    BOOL ret = [_workspace.fileSystem closeFile:file error:error];
+    BOOL ret = [_fileSystem closeFile:file error:error];
     if (ret) {
         NSLog(@"Wrote packed decl file '%@' using %s game-type coverage", singleDeclFileName, DeclManager_GetSingleDeclWriteModeName(writeMode));
     }
@@ -1562,7 +1563,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         return YES;
     }
 
-    idFileList *fileList = [_workspace.fileSystem listFiles:declFolder.folder
+    idFileList *fileList = [_fileSystem listFiles:declFolder.folder
                                                   extension:extension
                                                      sorted:YES
                                                       error:error];
@@ -1580,7 +1581,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
                 return NO;
             }
         }
-        [_workspace.fileSystem freeFileList:fileList];
+        [_fileSystem freeFileList:fileList];
         fileList = nil;
     }
     
@@ -1588,7 +1589,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
         return YES;
     }
     
-    idFileList *folderList = [_workspace.fileSystem listFiles:folder extension:@"/" sorted:YES error:error];
+    idFileList *folderList = [_fileSystem listFiles:folder extension:@"/" sorted:YES error:error];
 
     if (folderList != nil) {
         NSArray<NSString *> *list = folderList.list;
@@ -1606,7 +1607,7 @@ static BOOL DeclManager_WriteProgramImagesEnabled(void) {
                 return NO;
             }
         }
-        [_workspace.fileSystem freeFileList:folderList];
+        [_fileSystem freeFileList:folderList];
         folderList = nil;
     }
 
@@ -2479,12 +2480,12 @@ static NSString *DeclText_StoredText(idDeclLocal *decl) {
     if (sourceFile->fileSize > 0) {
         void *buffer = NULL;
         unsigned int timestamp = 0;
-        int length = [_workspace.fileSystem readFile:sourceFile->fileName buffer:&buffer timestamp:&timestamp error:NULL];
+        int length = [_fileSystem readFile:sourceFile->fileName buffer:&buffer timestamp:&timestamp error:NULL];
         if (length < 0 || buffer == NULL) {
             return [self declFileError:error format:@"Couldn't read '%@' to save it.", sourceFile->fileName];
         }
         original = [NSData dataWithBytes:buffer length:(NSUInteger)length];
-        [_workspace.fileSystem freeFile:buffer error:NULL];
+        [_fileSystem freeFile:buffer error:NULL];
         // (int): checksums are stored as int, MD5_BlockChecksum returns an
         // unsigned long, which is 64 bits outside Windows.
         if (length != sourceFile->fileSize ||
@@ -2628,7 +2629,7 @@ static NSString *DeclText_StoredText(idDeclLocal *decl) {
     }
 
     // 5. Write the whole file (to fs_savepath, where an override belongs).
-    const int written = [_workspace.fileSystem writeFile:sourceFile->fileName
+    const int written = [_fileSystem writeFile:sourceFile->fileName
                                                    buffer:(output.bytes ?: "")
                                                      size:(int)output.length
                                                  basePath:@"fs_savepath"
@@ -2667,7 +2668,7 @@ static NSString *DeclText_StoredText(idDeclLocal *decl) {
     sourceFile->fileSize = (int)output.length;
     sourceFile->checksum = MD5_BlockChecksum(output.bytes, (int)output.length);
     sourceFile->numLines = lines;
-    [_workspace.fileSystem readFile:sourceFile->fileName buffer:NULL timestamp:&sourceFile->timestamp error:NULL];
+    [_fileSystem readFile:sourceFile->fileName buffer:NULL timestamp:&sourceFile->timestamp error:NULL];
     [sourceFile->removedSpans removeAllObjects];
     sourceFile->dirty = NO;
 
@@ -2717,7 +2718,7 @@ static NSString *DeclText_StoredText(idDeclLocal *decl) {
 }
 
 -(void)mediaPrint:(NSString *)fmt, ... {
-    if (!_workspace.decl_show) {
+    if (!_settings.decl_show) {
         return;
     }
 
@@ -3085,7 +3086,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     idDeclLocal *decl = hashTables[typeIndex][lookupName];
     if (decl) {
         // only print these when decl_show is set to 2, because it can be a lot of clutter
-        if (_workspace.decl_show > 1) {
+        if (_settings.decl_show > 1) {
             [self mediaPrint:@"referencing %@ %@\n", [declTypes[type] typeName], name];
         }
         return decl;
@@ -3176,7 +3177,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     // check for an unchanged timestamp
     if (!force && timestamp != 0) {
         unsigned int    testTimeStamp;
-        int ret = [declManager.workspace.fileSystem readFile:fileName buffer:NULL timestamp:&testTimeStamp error:error];
+        int ret = [declManager.fileSystem readFile:fileName buffer:NULL timestamp:&testTimeStamp error:error];
         if (ret == -1) {
             return -1;
         }
@@ -3205,7 +3206,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
     
     // load the text
     NSLog(@"...loading '%@'\n", fileName);
-    length = [declManager.workspace.fileSystem readFile:fileName buffer:(void **)&buffer timestamp:&timestamp error:error];
+    length = [declManager.fileSystem readFile:fileName buffer:(void **)&buffer timestamp:&timestamp error:error];
     if (length == -1) {
         //common->FatalError( "couldn't load %s", fileName.c_str() );
         return 0;
@@ -3216,7 +3217,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
 
     strippedName = [[fileName stringByDeletingPathExtension] mutableCopy];
 
-    src = [[idLexer alloc] initWithFileSystem:declManager.workspace.fileSystem];
+    src = [[idLexer alloc] initWithFileSystem:declManager.fileSystem];
     
     if (![src loadMemory:finalPreprocessedBuffer length:length name:fileName startLine:1 error:error]) {
         //common->Error( "Couldn't parse %s", fileName.c_str() );
@@ -3489,7 +3490,7 @@ void idDeclManagerLocal::TouchDecl_f( const idCmdArgs &args ) {
         
         fileSize = readBytes;
         
-        idLexer *src = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.workspace.fileSystem];
+        idLexer *src = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.fileSystem];
         idToken token;
         if (![src loadMemory:buffer.bytes length:packedTextLength name:fileName startLine:1 error:error]) {
             NSLog(@"Couldn't parse packed decl text in '%@'", fileName);
@@ -3967,7 +3968,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     // read original file
     if (sourceFile->fileSize) {
         
-        file = [declManager.workspace.fileSystem openFileRead:[self fileName] allowCopyFiles:YES gamedir:nil error:error];
+        file = [declManager.fileSystem openFileRead:[self fileName] allowCopyFiles:YES gamedir:nil error:error];
         if (!file) {
             NSLog(@"Couldn't open %@ for reading.", [self fileName]);
             return NO;
@@ -3975,14 +3976,14 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
         
         if ([file length] != sourceFile->fileSize || [file timestamp] != sourceFile->timestamp) {
             NSLog(@"The file %@ has been modified outside of the engine.", [self fileName]);
-            return [declManager.workspace.fileSystem closeFile:file error:error];
+            return [declManager.fileSystem closeFile:file error:error];
         }
         
         if (![file read:buffer.mutableBytes length:oldFileLength error:error]) {
-            return [declManager.workspace.fileSystem closeFile:file error:error];
+            return [declManager.fileSystem closeFile:file error:error];
         }
 
-        if (![declManager.workspace.fileSystem closeFile:file error:error]) {
+        if (![declManager.fileSystem closeFile:file error:error]) {
             return NO;
         }
 
@@ -4000,18 +4001,18 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     memcpy(buffer.mutableBytes + self->sourceTextOffset, declText.mutableBytes, self->textLength);
 
     // write out new file
-    file = [declManager.workspace.fileSystem openFileWrite:[self fileName] basePath:@"fs_savepath" error:error];
+    file = [declManager.fileSystem openFileWrite:[self fileName] basePath:@"fs_savepath" error:error];
     if (!file) {
         //common->Warning( "Couldn't open %s for writing.", GetFileName() );
         return NO;
     }
     [file write:buffer.bytes length:newFileLength error:error];
-    [declManager.workspace.fileSystem closeFile:file error:error];
+    [declManager.fileSystem closeFile:file error:error];
 
     // set new file size, checksum and timestamp
     sourceFile->fileSize = newFileLength;
     sourceFile->checksum = MD5_BlockChecksum(buffer.bytes, newFileLength);
-    [declManager.workspace.fileSystem readFile:[self fileName] buffer:NULL timestamp:&sourceFile->timestamp error:error];
+    [declManager.fileSystem readFile:[self fileName] buffer:NULL timestamp:&sourceFile->timestamp error:error];
     
     // free buffer
     buffer = nil;
@@ -4034,7 +4035,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     unsigned int newTimestamp;
     NSError *error = nil;
 
-    if (declManager.workspace.com_SingleDeclFile) {
+    if (declManager.settings.com_SingleDeclFile) {
         return NO;
     }
     
@@ -4042,7 +4043,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
         return NO;
     }
     
-    newLength = [declManager.workspace.fileSystem readFile:[self fileName] buffer:NULL timestamp:&newTimestamp error:&error];
+    newLength = [declManager.fileSystem readFile:[self fileName] buffer:NULL timestamp:&newTimestamp error:&error];
     if (error) {
         return NO; // TODO: log this?
     }
@@ -4071,7 +4072,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
 }
 
 -(BOOL)parse:(NSMutableData *)text noCaching:(BOOL)cache error:(NSError **)error {
-    idLexer *src = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.workspace.fileSystem];
+    idLexer *src = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.fileSystem];
     
     if (![src loadMemory:text.bytes length:text.length-1 name:[self fileName] startLine:[self lineNum] error:error]) {
         return NO;
@@ -4124,7 +4125,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
     NSMutableData *parseText = declText;
     
     if (strncasecmp(parseText.bytes, "{ STUB:", 7) == 0) {
-        idLexer *stubLexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.workspace.fileSystem];
+        idLexer *stubLexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.fileSystem];
         if (![stubLexer loadMemory:parseText.bytes length:parseText.length-1 name:[self fileName] startLine:[self lineNum] error:error]) {
             return NO;
         }
@@ -4139,12 +4140,12 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
             self->needsPrecache = YES;
             NSLog(@"You should precache: %@", [self name]);
             
-            idFile *stubSource = [declManager.workspace.fileSystem openFileRead:sourceFile->fileName allowCopyFiles:YES gamedir:nil error:error];
+            idFile *stubSource = [declManager.fileSystem openFileRead:sourceFile->fileName allowCopyFiles:YES gamedir:nil error:error];
             if (stubSource != nil) {
                 NSMutableData *sourceText = [[NSMutableData alloc] initWithLength:stubLength+1];
                 [stubSource seek:stubOffset origin:FS_SEEK_SET];
                 const int readBytes = [stubSource read:sourceText.mutableBytes length:stubLength error:error];
-                [declManager.workspace.fileSystem closeFile:stubSource error:error];
+                [declManager.fileSystem closeFile:stubSource error:error];
                 
                 if (readBytes > 0) {
                     [sourceText setLength:readBytes + 1];
@@ -4153,7 +4154,7 @@ bool rvDeclGuide::Evaluate( idLexer *src, idStr &definition ) {
                     NSMutableString *definition = [[NSMutableString alloc] init];
                     [definition appendFormat:@"%s", (char *)sourceText.bytes];
                     
-                    idLexer *sourceLexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.workspace.fileSystem];
+                    idLexer *sourceLexer = [[idLexer alloc] initWithFlags:DECL_LEXER_FLAGS fileSystem:declManager.fileSystem];
                     idToken token;
                     idToken_Init(&token);
                     if (![sourceLexer loadMemory:sourceText.bytes

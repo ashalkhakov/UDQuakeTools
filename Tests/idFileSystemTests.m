@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "UDZipFixture.h"
+#import "UDWorkspace.h"
 #import "idFileSystem.h"
 #import "idFile.h"
 #import "UDWorkspaceManager.h"

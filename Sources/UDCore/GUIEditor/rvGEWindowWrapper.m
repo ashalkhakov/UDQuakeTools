@@ -79,6 +79,11 @@ static NSString *UDStripTrailing(NSString *s, NSCharacterSet *white) {
     return self;
 }
 
+/// idWindowEditorWrapper's: the window's parse wraps it so.
+- (instancetype)initForWindow:(idWindow *)window {
+    return [self initWithWindow:window type:WT_NORMAL];
+}
+
 /*
 ================
 rvGEWindowWrapper::GetWrapper
@@ -87,7 +92,7 @@ Static method that returns the window wrapper for the given window class
 ================
 */
 + (rvGEWindowWrapper *)wrapperOf:(idWindow *)window {
-    return window != nil ? window->guiedWrapper : nil;
+    return window != nil ? (rvGEWindowWrapper *)window->guiedWrapper : nil;
 }
 
 - (idRectangle)clientRect {

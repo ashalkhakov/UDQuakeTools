@@ -522,8 +522,8 @@ static BOOL UDSameTriangles(UDTriangleList *a, UDTriangleList *b, NSString **why
             for (UDGuiPlayer *player in @[skipping, stepping]) {
                 [player seekTo:1000];
                 if (event != nil) [player sendNamedEvent:event];
-                [player seekTo:12345];
-                [player seekTo:7000];
+                [player seekTo:4321];
+                [player seekTo:2500];
             }
             NSString *why = nil;
             if (!UDSameTriangles(skipping.triangles, stepping.triangles, &why)) {

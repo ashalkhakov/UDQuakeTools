@@ -22,7 +22,7 @@
 }
 @end
 
-static BOOL UDTokenIs(const idToken *token, const char *text) {
+static BOOL UDPunctuationIs(const idToken *token, const char *text) {
     return token->type == TT_PUNCTUATION && strcmp(token->text, text) == 0;
 }
 
@@ -53,7 +53,7 @@ static BOOL UDTokenIs(const idToken *token, const char *text) {
     BOOL opened = NO;
     while ([lexer readToken:&token error:NULL]) {
         lastLine = token.line;
-        if (UDTokenIs(&token, "{")) {
+        if (UDPunctuationIs(&token, "{")) {
             opened = YES;
             break;
         }
@@ -85,9 +85,9 @@ static BOOL UDTokenIs(const idToken *token, const char *text) {
                 }
                 continue;
             }
-            if (UDTokenIs(&token, "{")) {
+            if (UDPunctuationIs(&token, "{")) {
                 [openLines addObject:@(token.line)];
-            } else if (UDTokenIs(&token, "}")) {
+            } else if (UDPunctuationIs(&token, "}")) {
                 [openLines removeLastObject];
             }
         }

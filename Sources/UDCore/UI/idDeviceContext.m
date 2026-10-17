@@ -6,7 +6,7 @@
  * GUIs' idMaterial handle.
  */
 
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import "idFileSystem.h"
 #import "idDeviceContext.h"
 #import "idUserInterface.h"
 #import "idGuiModel.h"

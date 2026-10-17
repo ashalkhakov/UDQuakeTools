@@ -67,6 +67,7 @@ static NSMutableArray<rvGEClipboardItem *> *UDClipboard(void) {
     if (self) {
         _manager = manager;
         manager.editing = YES;
+        manager.editorWrapperClass = [rvGEWindowWrapper class];
         _options = [[rvGEOptions alloc] init];
         _selections = [[rvGESelectionMgr alloc] init];
         _selections.workspace = self;

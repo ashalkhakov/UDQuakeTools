@@ -9,11 +9,12 @@
 #import <AppKit/AppKit.h>
 
 #import "UDGame.h"
+#import "UDEngineSettings.h"
 
 @class idFileSystem, idDeclManager;
 @class NSManagedObjectContext, NSPersistentStoreCoordinator;
 
-@interface UDWorkspace : NSObject
+@interface UDWorkspace : NSObject <UDEngineSettings>
 
 // The root folder on the user's drive (e.g., "/Users/bob/Games/Doom3/d3xp")
 @property (nonatomic, copy) NSString *rootDirectory;

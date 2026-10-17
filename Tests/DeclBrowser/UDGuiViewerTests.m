@@ -1,7 +1,9 @@
 #import "UDTransportController.h"
+#import "UDWorkspace.h"
 #import "UDDeclBrowserTestCase.h"
 
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
+#import "idFileSystem.h"
 #import "UDBaseDocument.h"
 #import "UDSoftwareRenderer.h"
 

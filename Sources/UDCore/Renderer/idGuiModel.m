@@ -5,10 +5,9 @@
  */
 
 #import "idGuiModel.h"
-#import "idDeviceContext.h"
 
 typedef struct {
-    __unsafe_unretained idMaterial *material;
+    __unsafe_unretained id<idGuiMaterial> material;
     float               color[4];
     int                 firstVert;
     int                 numVerts;
@@ -154,7 +153,7 @@ static BOOL idWinding_ClipInPlace( idFixedWinding *w, const idPlane *plane, cons
 #pragma mark - idGuiModel
 
 @implementation idGuiModel {
-    idMaterial *defaultMaterial;
+    id<idGuiMaterial> defaultMaterial;
     guiModelSurface_t *surfaces;
     int numSurfaces, maxSurfaces;
     int surf;                       // the current surface's index
@@ -162,7 +161,7 @@ static BOOL idWinding_ClipInPlace( idFixedWinding *w, const idPlane *plane, cons
     NSMutableData *indexes;         // int
 }
 
-- (instancetype)initWithDefaultMaterial:(idMaterial *)material {
+- (instancetype)initWithDefaultMaterial:(id<idGuiMaterial>)material {
     self = [super init];
     if (self) {
         defaultMaterial = material;
@@ -258,7 +257,7 @@ DrawStretchPic
 =============
 */
 - (void)drawStretchPic:(const UDDrawVert *)dverts indexes:(const int *)dindexes vertCount:(int)vertCount indexCount:(int)indexCount
-              material:(idMaterial *)hShader clip:(BOOL)clip minX:(float)min_x minY:(float)min_y maxX:(float)max_x maxY:(float)max_y {
+              material:(id<idGuiMaterial>)hShader clip:(BOOL)clip minX:(float)min_x minY:(float)min_y maxX:(float)max_x maxY:(float)max_y {
     if ( !( dverts && dindexes && vertCount && indexCount && hShader ) ) {
         return;
     }
@@ -376,7 +375,7 @@ DrawStretchPic
 x/y/w/h are in the 0,0 to 640,480 range
 =============
 */
-- (void)drawStretchPic:(float)x y:(float)y w:(float)w h:(float)h s1:(float)s1 t1:(float)t1 s2:(float)s2 t2:(float)t2 material:(idMaterial *)hShader {
+- (void)drawStretchPic:(float)x y:(float)y w:(float)w h:(float)h s1:(float)s1 t1:(float)t1 s2:(float)s2 t2:(float)t2 material:(id<idGuiMaterial>)hShader {
     UDDrawVert dverts[4];
     int dindexes[6];
 
@@ -430,7 +429,7 @@ DrawStretchTri
 x/y/w/h are in the 0,0 to 640,480 range
 =============
 */
-- (void)drawStretchTri:(idVec2)p1 p2:(idVec2)p2 p3:(idVec2)p3 t1:(idVec2)t1 t2:(idVec2)t2 t3:(idVec2)t3 material:(idMaterial *)material {
+- (void)drawStretchTri:(idVec2)p1 p2:(idVec2)p2 p3:(idVec2)p3 t1:(idVec2)t1 t2:(idVec2)t2 t3:(idVec2)t3 material:(id<idGuiMaterial>)material {
     UDDrawVert tempVerts[3];
     int tempIndexes[3];
     int vertCount = 3;

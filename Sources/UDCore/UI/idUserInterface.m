@@ -4,8 +4,9 @@
  * parts, and the gamepad's events, left out). See idUserInterface.h.
  */
 
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import "idFileSystem.h"
 #import "idUserInterface.h"
+#import "idLangDict+Common.h"
 #import "idDeviceContext.h"
 #import "idGuiModel.h"
 #import "idDict.h"

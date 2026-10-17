@@ -26,7 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#import "UDWorkspace.h"
+#import <Foundation/Foundation.h>
+#import "idFileAccess.h"
+#import "UDEngineSettings.h"
 
 #define MAX_STRING_CHARS        1024        // max length of a string
 #define PATHSEPERATOR_CHAR      '/'
@@ -99,10 +101,10 @@ typedef enum {
 -(NSString *)fileByIndex:(int)index;
 @end
 
-@interface idFileSystem : NSObject
+@interface idFileSystem : NSObject <idFileSystemReading>
 
-// the workspace that owns this file system instance
-@property (nonatomic, weak, readonly) UDWorkspace *workspace;
+// the settings it reads (its owner's: a workspace's)
+@property (nonatomic, weak, readonly) id<UDEngineSettings> settings;
 
 // variables
 @property (readonly, nonatomic) NSString *gamedir; // the default game dir
@@ -122,7 +124,7 @@ typedef enum {
 -(int)readCount;
 
 // Initializes the file system.
-- (instancetype)initWithWorkspace:(UDWorkspace *)workspace;
+- (instancetype)initWithSettings:(id<UDEngineSettings>)settings;
 
 -(BOOL)startup:(NSError **)error;
 // Restarts the file system.

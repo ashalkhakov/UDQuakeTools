@@ -1,7 +1,6 @@
+#import "idFileAccess.h"
 #import "idParser.h"
 #import "idStr.h"
-#import "idFile.h"
-#import "idFileSystem.h"
 
 @interface NSMutableString (idStr)
 
@@ -2819,7 +2818,7 @@ int PC_OperatorPriority(int op) {
     return 0;
 }
 
--(instancetype)initWithFileSystem:(idFileSystem *)fileSystem {
+-(instancetype)initWithFileSystem:(id<idFileSystemReading>)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -2843,7 +2842,7 @@ int PC_OperatorPriority(int op) {
     return self;
 }
 
--(instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem {
+-(instancetype)initWithFlags:(int)flags fileSystem:(id<idFileSystemReading>)fileSystem {
     self = [super init];
     if (self) {
         self->loaded = NO;
@@ -2871,7 +2870,7 @@ int PC_OperatorPriority(int op) {
 - (instancetype)initWithFileName:(NSString *)filename
                            flags:(int)flags
                         isOSPath:(BOOL)OSPath
-                      fileSystem:(idFileSystem *)fileSystem
+                      fileSystem:(id<idFileSystemReading>)fileSystem
                            error:(NSError **)error {
     self = [super init];
     if (self) {

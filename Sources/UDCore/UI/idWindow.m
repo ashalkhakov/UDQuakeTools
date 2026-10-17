@@ -5,7 +5,6 @@
  */
 
 #import "idWindow.h"
-#import "rvGEWindowWrapper.h"
 #import "idLexer.h"
 #import "idUserInterface.h"
 #import "idDeviceContext.h"
@@ -2283,7 +2282,10 @@ idWindow::Parse
     // attach a window wrapper to the window if the gui editor is running
     BOOL editing = [gui manager].editing;
     if ( editing ) {
-        (void)[[rvGEWindowWrapper alloc] initWithWindow:self type:WT_NORMAL];
+        Class wrapper = [gui manager].editorWrapperClass;
+        if ( wrapper != Nil ) {
+            (void)[(id<idWindowEditorWrapper>)[wrapper alloc] initForWindow:self];
+        }
     }
 
     while( !TokenIs( &token, "}" ) ) {

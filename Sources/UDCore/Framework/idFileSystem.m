@@ -866,7 +866,7 @@ static BOOL UDStringHasUppercase(NSString *value) {
     int                       loadStack;            // total files in memory
     NSMutableString           *gameFolder;            // this will be a single name without separators
     
-    __weak UDWorkspace *     _workspace;
+    __weak id<UDEngineSettings> _settings;
 
     //idDict                    mapDict;            // for GetMapDecl
 /*
@@ -1882,7 +1882,7 @@ static int directFileLength(FILE *o) {
 
     f = [self openOSFile:zipfile mode:"rb" caseSensitiveName:nil];
     if (!f) {
-        NSLog(@"Could not open %@ '%@': %s", _workspace.pakFileExtension, zipfile, strerror(errno));
+        NSLog(@"Could not open %@ '%@': %s", _settings.pakFileExtension, zipfile, strerror(errno));
         return nil;
     }
     fseek(f, 0, SEEK_END);
@@ -1893,13 +1893,13 @@ static int directFileLength(FILE *o) {
 
     uf = unzOpen([zipfile UTF8String]);
     if (!uf) {
-        NSLog(@"WARN: could not open %@ zip '%@'", _workspace.pakFileExtension, zipfile);
+        NSLog(@"WARN: could not open %@ zip '%@'", _settings.pakFileExtension, zipfile);
         return nil;
     }
     err = unzGetGlobalInfo(uf, &gi);
 
     if (err != UNZ_OK) {
-        NSLog(@"WARN: could not read %@ central directory '%@'", _workspace.pakFileExtension, zipfile);
+        NSLog(@"WARN: could not read %@ central directory '%@'", _settings.pakFileExtension, zipfile);
         unzClose( uf );
         return nil;
     }
@@ -1974,7 +1974,7 @@ static int directFileLength(FILE *o) {
         last = last->next;
     }
     last->next = search;
-    NSLog(@"Appended %@ %@", _workspace.pakFileExtension, pak->pakFilename);
+    NSLog(@"Appended %@ %@", _settings.pakFileExtension, pak->pakFilename);
     return pak->checksum;
 }
 
@@ -3516,9 +3516,9 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
     
     pakfiles = [[NSMutableArray alloc] init];
 
-    [self listOSFiles:pakfile extension:[@"." stringByAppendingString:_workspace.pakFileExtension] list:pakfiles];
+    [self listOSFiles:pakfile extension:[@"." stringByAppendingString:_settings.pakFileExtension] list:pakfiles];
     if (self.fs_debug) {
-        NSLog(@"Found %d %@ file(s) in %@", (int)pakfiles.count, _workspace.pakFileExtension, pakfile);
+        NSLog(@"Found %d %@ file(s) in %@", (int)pakfiles.count, _settings.pakFileExtension, pakfile);
     }
 
     // Sort them so later entries override earlier ones after they are inserted
@@ -3541,7 +3541,7 @@ void idFileSystemLocal::TouchFileList_f( const idCmdArgs &args ) {
         search->pack = pak;
         search->next = searchPaths->next;
         searchPaths->next = search;
-        NSLog(@"Loaded %@ %@", _workspace.pakFileExtension, pakfile);
+        NSLog(@"Loaded %@ %@", _settings.pakFileExtension, pakfile);
     }
 }
 
@@ -3866,7 +3866,7 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
          [self.fs_game_base caseInsensitiveCompare:self.gamedir] != NSOrderedSame &&
         ![self validateConfiguredGameDir:self.fs_game_base reason:invalidReason]) {
         NSLog(@"WARN: ignoring fs_game_base '%@': %@", self.fs_game_base, invalidReason);
-        self.workspace.fs_game_base = @"";
+        self.settings.fs_game_base = @"";
     }
 
     if (self.fs_game.length &&
@@ -3874,7 +3874,7 @@ bool idFileSystemLocal::ValidateRequiredOfficialPaks( idStr &errors ) const {
         ![self validateConfiguredGameDir:self.fs_game reason:invalidReason]) {
 
         NSLog(@"WARN: ignoring fs_game '%@': %@", self.fs_game, invalidReason);
-        self.workspace.fs_game = @"";
+        self.settings.fs_game = @"";
     }
 
     // File writes should use the selected game directory even while search paths
@@ -4349,26 +4349,26 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
 }
 #endif
 
-- (NSString *)gamedir               { return self.workspace.gamedir; }
-- (BOOL)fs_debug                    { return self.workspace.fs_debug; }
-- (BOOL)fs_restrict                 { return self.workspace.fs_restrict; }
-- (int)fs_copyfiles                 { return self.workspace.fs_copyfiles; }
-- (NSString *)fs_basepath           { return self.workspace.fs_basepath; }
-- (NSString *)fs_homepath           { return self.workspace.fs_homepath; }
-- (NSString *)fs_savepath           { return self.workspace.fs_savepath; }
-- (NSString *)fs_cdpath             { return self.workspace.fs_cdpath; }
-- (NSString *)fs_game               { return self.workspace.fs_game; }
-- (NSString *)fs_game_base          { return self.workspace.fs_game_base; }
-- (BOOL)fs_caseSensitiveOS          { return self.workspace.fs_caseSensitiveOS; }
+- (NSString *)gamedir               { return self.settings.gamedir; }
+- (BOOL)fs_debug                    { return self.settings.fs_debug; }
+- (BOOL)fs_restrict                 { return self.settings.fs_restrict; }
+- (int)fs_copyfiles                 { return self.settings.fs_copyfiles; }
+- (NSString *)fs_basepath           { return self.settings.fs_basepath; }
+- (NSString *)fs_homepath           { return self.settings.fs_homepath; }
+- (NSString *)fs_savepath           { return self.settings.fs_savepath; }
+- (NSString *)fs_cdpath             { return self.settings.fs_cdpath; }
+- (NSString *)fs_game               { return self.settings.fs_game; }
+- (NSString *)fs_game_base          { return self.settings.fs_game_base; }
+- (BOOL)fs_caseSensitiveOS          { return self.settings.fs_caseSensitiveOS; }
 
--(instancetype)initWithWorkspace:(UDWorkspace *)workspace {
+-(instancetype)initWithSettings:(id<UDEngineSettings>)settings {
     self = [super init];
     
     if (!self) {
         return nil;
     }
     
-    _workspace = workspace;
+    _settings = settings;
     
     searchPaths = nil;
     readCount = 0;
@@ -4406,23 +4406,23 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
     */
 
     if (self.fs_basepath.length == 0) {
-        self.workspace.fs_basepath = Sys_DefaultBasePath();
+        self.settings.fs_basepath = Sys_DefaultBasePath();
     }
 
     // fs_homepath is the user-writable root; fs_savepath follows it when unset.
     if (self.fs_homepath.length == 0) {
         if (self.fs_savepath.length) {
-            self.workspace.fs_homepath = self.fs_savepath;
+            self.settings.fs_homepath = self.fs_savepath;
         } else {
-            self.workspace.fs_homepath = Sys_DefaultSavePath();
+            self.settings.fs_homepath = Sys_DefaultSavePath();
         }
     }
     if (self.fs_savepath.length == 0) {
-        self.workspace.fs_savepath = self.fs_homepath;
+        self.settings.fs_savepath = self.fs_homepath;
     }
     // allow cd path to be changed
     if (self.fs_cdpath.length == 0) {
-        self.workspace.fs_cdpath = Sys_DefaultCDPath();
+        self.settings.fs_cdpath = Sys_DefaultCDPath();
     }
 
     NSLog(

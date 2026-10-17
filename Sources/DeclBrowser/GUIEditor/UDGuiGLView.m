@@ -1,6 +1,7 @@
 #import "UDGuiGLView.h"
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"   // GL, on macOS
-#import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
+#import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
+#import "idFileSystem.h"
 #import "UDSoftwareRenderer.h"
 #import "UDImageProgram.h"
 #import "UDOverlay.h"

@@ -15,6 +15,7 @@
 
 #import <Foundation/Foundation.h>
 #import "idMath.h"
+#import "idWindowEditorWrapper.h"
 
 @class idWindow, idDict;
 
@@ -34,7 +35,7 @@ typedef NS_ENUM(int, rvGEWindowType) {
     WT_TRANSITION
 };
 
-@interface rvGEWindowWrapper : NSObject
+@interface rvGEWindowWrapper : NSObject <idWindowEditorWrapper>
 
 /// A wrapper for @a window, hung on it; its type from the window's class
 /// where it is one of the item windows'.

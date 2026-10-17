@@ -2,9 +2,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UDEngineSettings.h"
 #import "idLexer.h"
 
-@class UDWorkspace;
+@class idFileSystem;
 @class idFile;
 
 /*
@@ -175,12 +176,14 @@ typedef enum {
 
 @interface idDeclManager : NSObject
 
-// the workspace that owns this file system instance
-@property (nonatomic, weak, readonly) UDWorkspace *workspace;
+// the settings it reads, and the file system it reads decls with (its
+// owner's: a workspace's)
+@property (nonatomic, weak, readonly) id<UDEngineSettings> settings;
+@property (nonatomic, weak, readonly) idFileSystem *fileSystem;
 
 @property (assign, nonatomic) BOOL insideLoad;
 
--(instancetype)initWithWorkspace:(UDWorkspace *)workspace;
+-(instancetype)initWithSettings:(id<UDEngineSettings>)settings fileSystem:(idFileSystem *)fileSystem;
 -(BOOL)startup:(NSError **)error;
 -(void)shutdown;
 -(void)reload:(BOOL)force error:(NSError **)error;

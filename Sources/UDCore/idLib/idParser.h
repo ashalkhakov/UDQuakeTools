@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "idFileAccess.h"
 #import "idToken.h"
 #import "idLexer.h"
 
@@ -76,20 +77,20 @@ typedef struct indent_s {
     const char*          markerDirective_p;
 }
 
-@property (weak, nonatomic) idFileSystem *fileSystem;
+@property (weak, nonatomic) id<idFileSystemReading>fileSystem;
 
 // When set, given to every script the parser reads (its file's, and the
 // files it #includes), which collect their errors and warnings into it
 // (idLexer's diagnostics).
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *diagnostics;
 
-- (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
+- (instancetype)initWithFileSystem:(id<idFileSystemReading>)fileSystem;
 - (instancetype)initWithFlags:(int)flags
-                   fileSystem:(idFileSystem *)fileSystem;
+                   fileSystem:(id<idFileSystemReading>)fileSystem;
 - (instancetype)initWithFileName:(NSString *)filename
                            flags:(int)flags
                         isOSPath:(BOOL)OSPath
-                      fileSystem:(idFileSystem *)fileSystem
+                      fileSystem:(id<idFileSystemReading>)fileSystem
                            error:(NSError **)error;
 - (instancetype)initWithBuffer:(const char *)ptr
                         length:(int)length

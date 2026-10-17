@@ -5,8 +5,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "idFileAccess.h"
 
-@class idFileSystem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,9 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clear;
 /// idLangDict::Load( fileName, clear )
-- (BOOL)load:(NSString *)fileName clear:(BOOL)clear fileSystem:(idFileSystem *)fileSystem;
-/// idCommonLocal::InitLanguageDict, for @a language (sys_lang's).
-- (void)initLanguage:(NSString *)language fileSystem:(idFileSystem *)fileSystem;
+- (BOOL)load:(NSString *)fileName clear:(BOOL)clear fileSystem:(id<idFileSystemReading>)fileSystem;
 /// idLangDict::GetString: the string of a "#str_" id; any other string
 /// itself; an unknown id itself, with a warning.
 - (NSString *)getString:(NSString *)str;

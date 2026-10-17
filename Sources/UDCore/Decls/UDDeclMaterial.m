@@ -3,9 +3,8 @@
  * UDDeclMaterial.m — materials (idMaterial), kept as their tokens.
  */
 
-// AppKit (UDWorkspace.h) before Core Data: GNUstep's NSPredicateEditorRowTemplate.h
-// defines Core Data's attribute types when Core Data is not yet in.
-#import "UDWorkspace.h"
+#import "idFileSystem.h"
+#import "idDeclManager.h"
 #import "UDDeclMaterial.h"
 #import "UDDeclCodec.h"
 #import "UDDeclIncrementalStore.h"
@@ -617,7 +616,7 @@ static const void *UDStructureKey = &UDStructureKey;
 }
 
 + (NSArray<UDDeclTextProblem *> *)ud_problemsParsingText:(NSString *)text name:(NSString *)name fileSystem:(idFileSystem *)fileSystem {
-    return [self ud_problemsParsingText:text name:name declManager:fileSystem.workspace.declManager];
+    return [self ud_problemsParsingText:text name:name declManager:nil];
 }
 
 @end

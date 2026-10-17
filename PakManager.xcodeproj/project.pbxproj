@@ -384,6 +384,7 @@
 		CE07E8833000D2F6007ED480 /* idToken.h in Headers */ = {isa = PBXBuildFile; fileRef = CE07E8823000D2F6007ED480 /* idToken.h */; };
 		CE07E8853000D33B007ED480 /* idToken.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07E8843000D339007ED480 /* idToken.m */; };
 		CE07E8873000D984007ED480 /* idLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = CE07E8863000D982007ED480 /* idLexer.h */; };
+		43E41A1B2C8FE1A5B2E119F7 /* idFileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = E073443E57EBE2EA391F766C /* idFileAccess.h */; };
 		CE07E8893000D9A0007ED480 /* idLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07E8883000D99D007ED480 /* idLexer.m */; };
 		CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */; };
 		CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */; };
@@ -408,9 +409,12 @@
 		CE3FA36B3001746A0048F206 /* idParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA36A300174680048F206 /* idParser.m */; };
 		CE3FA36D3004FBF60048F206 /* idFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA36C3004FBF30048F206 /* idFileSystem.h */; };
 		CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA36E3004FC270048F206 /* idFile.h */; };
+		76756ABA0B14E2A5AFB864F2 /* UDEngineSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F0F1FB586992C29AB8A8D0 /* UDEngineSettings.h */; };
+		509413079B1031AFCD9FBC81 /* idLangDict+Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C2C68A866201356F9149E5D /* idLangDict+Common.h */; };
 		CE3FA37330076E560048F206 /* idStr.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA37230076E540048F206 /* idStr.h */; };
 		CE3FA37530076E5C0048F206 /* idStr.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA37430076E5A0048F206 /* idStr.m */; };
 		CE3FA3773007B81F0048F206 /* idFile.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA3763007B81C0048F206 /* idFile.m */; };
+		2557DBC6A66F1543D6A4D9E5 /* idLangDict+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = C3AB285C78472A3E0221460D /* idLangDict+Common.m */; };
 		CE3FA3793007ED5D0048F206 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA3783007ED5C0048F206 /* unzip.h */; };
 		CE3FA37B3007ED710048F206 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA37A3007ED6F0048F206 /* unzip.c */; };
 		CE3FA37D3007F3320048F206 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA37C3007F3300048F206 /* ioapi.h */; };
@@ -535,6 +539,7 @@
 		E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */; };
 		7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */ = {isa = PBXBuildFile; fileRef = A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */; };
 		14CC3EF91B74FD716076483C /* idWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBE249827AAF111537E815F /* idWindow.h */; };
+		0F7C767754D5E25F16F6F911 /* idWindowEditorWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7239320AF18331857C368FBA /* idWindowEditorWrapper.h */; };
 		D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBBC2EB095057556025E74B /* UDOverlay.h */; };
 		8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */; };
 		2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */ = {isa = PBXBuildFile; fileRef = E236E8273E29B39057FD009D /* rvGEModifier.h */; };
@@ -942,6 +947,7 @@
 		CE07E8823000D2F6007ED480 /* idToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idToken.h; sourceTree = "<group>"; };
 		CE07E8843000D339007ED480 /* idToken.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idToken.m; sourceTree = "<group>"; };
 		CE07E8863000D982007ED480 /* idLexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idLexer.h; sourceTree = "<group>"; };
+		E073443E57EBE2EA391F766C /* idFileAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idFileAccess.h; sourceTree = "<group>"; };
 		CE07E8883000D99D007ED480 /* idLexer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idLexer.m; sourceTree = "<group>"; };
 		CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEntryTests.m; sourceTree = "<group>"; };
 		CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameDetectionTests.m; sourceTree = "<group>"; };
@@ -978,10 +984,13 @@
 		CE3FA36A300174680048F206 /* idParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idParser.m; sourceTree = "<group>"; };
 		CE3FA36C3004FBF30048F206 /* idFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idFileSystem.h; sourceTree = "<group>"; };
 		CE3FA36E3004FC270048F206 /* idFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idFile.h; sourceTree = "<group>"; };
+		F5F0F1FB586992C29AB8A8D0 /* UDEngineSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDEngineSettings.h; sourceTree = "<group>"; };
+		1C2C68A866201356F9149E5D /* idLangDict+Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "idLangDict+Common.h"; sourceTree = "<group>"; };
 		CE3FA370300543F90048F206 /* idFileSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFileSystem.m; sourceTree = "<group>"; };
 		CE3FA37230076E540048F206 /* idStr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idStr.h; sourceTree = "<group>"; };
 		CE3FA37430076E5A0048F206 /* idStr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idStr.m; sourceTree = "<group>"; };
 		CE3FA3763007B81C0048F206 /* idFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idFile.m; sourceTree = "<group>"; };
+		C3AB285C78472A3E0221460D /* idLangDict+Common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "idLangDict+Common.m"; sourceTree = "<group>"; };
 		CE3FA3783007ED5C0048F206 /* unzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		CE3FA37A3007ED6F0048F206 /* unzip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
 		CE3FA37C3007F3300048F206 /* ioapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -1123,6 +1132,7 @@
 		D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeviceContext.h; sourceTree = "<group>"; };
 		A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiModel.h; sourceTree = "<group>"; };
 		FFBE249827AAF111537E815F /* idWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindow.h; sourceTree = "<group>"; };
+		7239320AF18331857C368FBA /* idWindowEditorWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindowEditorWrapper.h; sourceTree = "<group>"; };
 		FFBBC2EB095057556025E74B /* UDOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDOverlay.h; sourceTree = "<group>"; };
 		C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGESelectionMgr.h; sourceTree = "<group>"; };
 		E236E8273E29B39057FD009D /* rvGEModifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEModifier.h; sourceTree = "<group>"; };
@@ -1378,6 +1388,7 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
+				FDD1D08ED8043F53A6AA548E /* Images */,
 				F25B7866D084694D5FDBA2BE /* Decls */,
 				BF3B69EF75FA6290FA98DF39 /* Renderer */,
 				B89CA645BAE20C09BA4BA047 /* UI */,
@@ -1634,6 +1645,8 @@
 		F25B7866D084694D5FDBA2BE /* Decls */ = {
 			isa = PBXGroup;
 			children = (
+				8BBAF3F8BD39596DCF48ABB9 /* UDMaterialParser.m */,
+				548C9EE3C9E0FED0D7E2C136 /* UDMaterialParser.h */,
 				CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */,
 				299E1E8F0A6124814507B9D7 /* UDDeclAF.h */,
 				8EBE5318514FCFE9D3DD4151 /* UDDeclAF.m */,
@@ -1678,10 +1691,6 @@
 				C58B4F2531625A19ACA0B306 /* UDARBProgram.m */,
 				091AA4BB439C1C4F99491AFF /* UDFXModel.h */,
 				2D8A25610E5A2219107B5F20 /* UDFXModel.m */,
-				4BFE6E2F7D091CBDBBDB4EC7 /* UDImageProgram.h */,
-				02105444DDAAF239E4E7C614 /* UDImageProgram.m */,
-				548C9EE3C9E0FED0D7E2C136 /* UDMaterialParser.h */,
-				8BBAF3F8BD39596DCF48ABB9 /* UDMaterialParser.m */,
 				A1003F1D0030C0B804080444 /* UDMD5Mesh.h */,
 				C29982B886113E507E0CD7D2 /* UDMD5Mesh.m */,
 				5D7A3E79A627C2E068122604 /* UDParticleModel.h */,
@@ -1721,6 +1730,7 @@
 				733E795D12B9FE65BC2D3275 /* idUserInterface.h */,
 				1FDD6E37A041FD86A6D8D8D7 /* idUserInterface.m */,
 				FFBE249827AAF111537E815F /* idWindow.h */,
+				7239320AF18331857C368FBA /* idWindowEditorWrapper.h */,
 				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
 				9B34F3D384DF609685676F89 /* idWinVar.h */,
 				D20D58546873E10F1A43336C /* idWinVar.m */,
@@ -1750,12 +1760,17 @@
 		98CFBAA589AE109C3526238F /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				CE1151642FEE7777005C6DA3 /* UDGame.m */,
+				CE1151632FEE7777005C6DA3 /* UDGame.h */,
 				18BBA9F3E443C3F4BF2480CD /* idCVarSystem.h */,
 				BEE20F08907CEC4E6C0161F0 /* idCVarSystem.m */,
 				CE3FA391300E598B0048F206 /* idDeclManager.h */,
 				CE3FA393300E68B10048F206 /* idDeclManager.m */,
 				CE3FA36E3004FC270048F206 /* idFile.h */,
+				F5F0F1FB586992C29AB8A8D0 /* UDEngineSettings.h */,
+				1C2C68A866201356F9149E5D /* idLangDict+Common.h */,
 				CE3FA3763007B81C0048F206 /* idFile.m */,
+				C3AB285C78472A3E0221460D /* idLangDict+Common.m */,
 				CE3FA36C3004FBF30048F206 /* idFileSystem.h */,
 				CE3FA370300543F90048F206 /* idFileSystem.m */,
 				CE3FA37E3007F33F0048F206 /* ioapi.c */,
@@ -1769,12 +1784,15 @@
 		62EEB13C1545514253F4E6CD /* idLib */ = {
 			isa = PBXGroup;
 			children = (
+				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
+				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
 				CE3FA383300C68540048F206 /* compat.m */,
 				3C8B3721B67B69644503E42C /* idDict.h */,
 				106FB3A2BE4BE631C4F88A33 /* idDict.m */,
 				C3DC5026C6D0B2319E1CBA1B /* idLangDict.h */,
 				0A0DD1C51B1D932B49224CDC /* idLangDict.m */,
 				CE07E8863000D982007ED480 /* idLexer.h */,
+				E073443E57EBE2EA391F766C /* idFileAccess.h */,
 				CE07E8883000D99D007ED480 /* idLexer.m */,
 				1476EE829F45453D38F3147C /* idMath.h */,
 				4BAE08FD19BF8E859D320005 /* idMath.m */,
@@ -1803,8 +1821,6 @@
 				5C0E00000000000000000005 /* UDScriptEvents.m */,
 				5C0F00000000000000000004 /* UDScriptIndex.h */,
 				5C0F00000000000000000005 /* UDScriptIndex.m */,
-				C4FBA96865A5ED8EB8782417 /* UDSourceTokens.h */,
-				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -1812,8 +1828,6 @@
 		971335B7D1A5E141C29D08E1 /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
-				CE1151632FEE7777005C6DA3 /* UDGame.h */,
-				CE1151642FEE7777005C6DA3 /* UDGame.m */,
 				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
 				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
 				CE3FA385300E43810048F206 /* UDWorkspace.h */,
@@ -1955,6 +1969,15 @@
 			path = Decls;
 			sourceTree = "<group>";
 		};
+		FDD1D08ED8043F53A6AA548E /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				02105444DDAAF239E4E7C614 /* UDImageProgram.m */,
+				4BFE6E2F7D091CBDBBDB4EC7 /* UDImageProgram.h */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1976,6 +1999,8 @@
 				CC02001400000000000000AA /* UDContentSource.h in Headers */,
 				CC02001500000000000000AA /* UDDirectoryNode.h in Headers */,
 				CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */,
+				76756ABA0B14E2A5AFB864F2 /* UDEngineSettings.h in Headers */,
+				509413079B1031AFCD9FBC81 /* idLangDict+Common.h in Headers */,
 				CEFC59D83035994A001E2179 /* UDDeclIncrementalStore.h in Headers */,
 				EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */,
 				FD867A106D6D48F7F7E84B73 /* UDDeclParticle.h in Headers */,
@@ -2000,6 +2025,7 @@
 				E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */,
 				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
 				14CC3EF91B74FD716076483C /* idWindow.h in Headers */,
+				0F7C767754D5E25F16F6F911 /* idWindowEditorWrapper.h in Headers */,
 				D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */,
 				8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */,
 				2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */,
@@ -2025,6 +2051,7 @@
 				5830E987D64405FE5E1DE09B /* UDDeclRawText.h in Headers */,
 				D02A9C547C9CEB1E6383C98A /* UDDeclBase.h in Headers */,
 				CE07E8873000D984007ED480 /* idLexer.h in Headers */,
+				43E41A1B2C8FE1A5B2E119F7 /* idFileAccess.h in Headers */,
 				CE3FA382300C683E0048F206 /* sys.h in Headers */,
 				CECEB2F23017B96D00F88078 /* MD5.h in Headers */,
 				DC02000000000000000000AA /* UDArchiveCodec.h in Headers */,
@@ -2492,6 +2519,7 @@
 				DC01000600000000000000AA /* UDPK3Codec.m in Sources */,
 				CE3FA394300E68B20048F206 /* idDeclManager.m in Sources */,
 				CE3FA3773007B81F0048F206 /* idFile.m in Sources */,
+				2557DBC6A66F1543D6A4D9E5 /* idLangDict+Common.m in Sources */,
 				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
 				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
 				CE07E8853000D33B007ED480 /* idToken.m in Sources */,

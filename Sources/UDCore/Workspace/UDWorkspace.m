@@ -96,11 +96,11 @@
     // Call this ONCE when you first load a workspace into your app.
     // They will live in memory until this UDWorkspace is destroyed.
     if (!self.fileSystem) {
-        self.fileSystem = [[idFileSystem alloc] initWithWorkspace:self];
+        self.fileSystem = [[idFileSystem alloc] initWithSettings:self];
     }
     
     if (!self.declManager) {
-        self.declManager = [[idDeclManager alloc] initWithWorkspace:self];
+        self.declManager = [[idDeclManager alloc] initWithSettings:self fileSystem:self.fileSystem];
     }
     
     

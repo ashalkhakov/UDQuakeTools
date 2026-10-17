@@ -1,4 +1,5 @@
 #import "UDDeclBrowserTestCase.h"
+#import "UDWorkspace.h"
 
 #import <UDCodeKit/UDErrorsViewController.h>
 #import "UDDeclManagedObjects.h"

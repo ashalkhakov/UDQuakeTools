@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "idFileAccess.h"
 #import "idToken.h"
 
 /*
@@ -127,7 +128,6 @@ typedef struct punctuation_s
     int n;                            // punctuation id
 } punctuation_t;
 
-@class idFileSystem;
 
 @interface idLexer : NSObject {
     int                loaded;                    // set when a script file is loaded from file or memory
@@ -153,7 +153,7 @@ typedef struct punctuation_s
     bool               hadError;                  // set by idLexer::Error, even if the error is supressed
 }
 
-@property (weak, nonatomic) idFileSystem *fileSystem;
+@property (weak, nonatomic) id<idFileSystemReading>fileSystem;
 
 // When set, every error and warning is also appended here as
 // @{@"line": @(line), @"message": text, @"error": @(YES/NO), @"file": name} — whether or not
@@ -162,14 +162,14 @@ typedef struct punctuation_s
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *diagnostics;
 
 // constructor
-- (instancetype)initWithFileSystem:(idFileSystem *)fileSystem;
-- (instancetype)initWithFlags:(int)flags fileSystem:(idFileSystem *)fileSystem;
-- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)isOSPath fileSystem:(idFileSystem *)fileSystem error:(NSError **)error;
+- (instancetype)initWithFileSystem:(id<idFileSystemReading>)fileSystem;
+- (instancetype)initWithFlags:(int)flags fileSystem:(id<idFileSystemReading>)fileSystem;
+- (instancetype)initWithFileName:(NSString *)filename flags:(int)flags isOSPath:(BOOL)isOSPath fileSystem:(id<idFileSystemReading>)fileSystem error:(NSError **)error;
 - (instancetype)initWithBuffer:(const char *)ptr
                         length:(int)length
                           name:(NSString *)name
                          flags:(int)flags
-                    fileSystem:(idFileSystem *)fileSystem
+                    fileSystem:(id<idFileSystemReading>)fileSystem
                          error:(NSError **)error;
 
 // load a script from the given file at the given offset with the given length

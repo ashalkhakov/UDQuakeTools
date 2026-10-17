@@ -3,8 +3,8 @@
  * idWindow.h — a GUI's windows (ui/Window.h, Window.cpp, SimpleWindow.h),
  * ported. idWindow's members are public ivars, so its friends (the scripts,
  * the simple windows, the GUI) reach them as they do in C++. What was
- * savegame and demo support is not here; nor is the GUI editor's wrapper
- * (rvGEWindowWrapper), which the editor here replaces.
+ * savegame and demo support is not here. The GUI editor's wrapper of a
+ * window is the editor's (idWindowEditorWrapper).
  */
 
 #import <Foundation/Foundation.h>
@@ -12,8 +12,8 @@
 #import "idWinVar.h"
 #import "idRegExp.h"
 #import "idGuiScript.h"
+#import "idWindowEditorWrapper.h"
 
-@class rvGEWindowWrapper;
 @class idParser, idDeviceContext, idUserInterfaceLocal, idSimpleWindow, idMaterial, idDict, idWindow;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -276,7 +276,7 @@ extern const int idWindow_NumRegisterVars;
 @public
     /// The GUI editor's wrapper, while its manager is editing (the engine's
     /// "guied_wrapper" variable).
-    rvGEWindowWrapper *_Nullable guiedWrapper;
+    id<idWindowEditorWrapper> _Nullable guiedWrapper;
 
     NSMutableString *cmd;
 

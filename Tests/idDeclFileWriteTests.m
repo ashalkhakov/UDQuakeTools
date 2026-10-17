@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "idFileSystem.h"
+#import "UDWorkspace.h"
 #import "idDeclManager.h"
 #import "UDWorkspaceManager.h"
 

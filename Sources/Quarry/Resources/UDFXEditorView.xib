@@ -660,6 +660,10 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h90-sep">
+                                                <rect key="frame" x="8" y="299" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h90">
                                                 <rect key="frame" x="8" y="277" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -719,6 +723,10 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h95-sep">
+                                                <rect key="frame" x="8" y="216" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h95">
                                                 <rect key="frame" x="8" y="194" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

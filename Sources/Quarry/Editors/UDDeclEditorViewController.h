@@ -1,5 +1,6 @@
 #import "UDBaseEditorViewController.h"
 #import "UDReferencePicker.h"
+#import "UDExpressionEditor.h"
 #import <CoreData/CoreData.h>
 #import <UDCodeKit/UDDiagnosticStore.h>
 
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  * an object controller (from the subclass's XIB) whose content is the decl;
  * and a diagnostic store the Issues tab lists.
  */
-@interface UDDeclEditorViewController : UDBaseEditorViewController <UDSourceRepresenting>
+@interface UDDeclEditorViewController : UDBaseEditorViewController <UDSourceRepresenting, UDExpressionChecking>
 
 /** The backing NSDocument (undo, save, dirty). Made as the view loads. */
 @property (nonatomic, strong, nullable) UDDeclDocument *document;
@@ -65,6 +66,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)namesFor:(UDReferenceField *)field details:(NSMutableArray<NSString *> *)details;
 /// The picker up, if one is.
 @property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
+
+/// The expression field whose "ƒ" has tag @a tag (subclasses say; its kind
+/// is not used), what it may name, and what the engine says of a text of
+/// it (nil: it reads).
+- (nullable UDReferenceField *)expressionFieldForTag:(NSInteger)tag;
+- (NSArray<UDExpressionCategory *> *)expressionCategoriesFor:(UDReferenceField *)field;
+- (nullable NSString *)problemWithExpression:(NSString *)text for:(UDReferenceField *)field;
+/// An "ƒ" clicked: its field's expression in the expression editor, as a
+/// sheet; the text on OK set as the field's value (one edit).
+- (IBAction)editExpression:(nullable id)sender;
+@property (nonatomic, strong, readonly, nullable) UDExpressionEditor *expressionEditor;
 
 /// The line of the decl's text (1-based) where @a text first is, case
 /// ignored; 1 when it is not there. Where a diagnostic about it points.

@@ -137,6 +137,10 @@ typedef NS_ENUM(int, rvGEModifierType) {
 /// they do not read.
 - (BOOL)setScripts:(idDict *)scripts variables:(idDict *)variables of:(idWindow *)window named:(NSString *)name
            message:(NSString *_Nullable *_Nullable)message;
+/// (not the engine's) What idWindow::ParseExpression says of @a text in a
+/// window of this GUI's (@a window's, its variables and its neighbours'
+/// named as the game names them): nil when it reads, all of it.
+- (nullable NSString *)problemWithExpression:(NSString *)text in:(nullable idWindow *)window;
 
 /// rvGEWorkspace::EItemAlign
 typedef NS_ENUM(int, rvGEItemAlign) {

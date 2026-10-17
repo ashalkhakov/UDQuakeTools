@@ -42,6 +42,9 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 @property (nonatomic) BOOL filling;
 @property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
 @property (nonatomic) NSInteger pickedRow;
+@property (nonatomic, strong, readwrite, nullable) UDExpressionEditor *expressionEditor;
+/// What the expression editor edits: the condition (-1), or a variable's row.
+@property (nonatomic) NSInteger expressionRow;
 @end
 
 @implementation UDGuiScriptsController {
@@ -609,6 +612,7 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
         : [selected isKindOfClass:[UDGuiElseRow class]] ? @"Run when the if's condition is 0." : @"Choose a statement to edit it.";
     self.conditionLabel.hidden = !isIf;
     self.conditionField.hidden = !isIf;
+    self.conditionExpression.hidden = !isIf;
     self.conditionField.stringValue = isIf ? statement.condition : @"";
     self.conditionField.toolTip = @"An expression: of window variables (Window::name), the GUI's state (\"gui::name\"), time, numbers.";
 
@@ -766,27 +770,8 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
             [details addObject:[rvGEWindowWrapper stringFromWindowType:[rvGEWindowWrapper wrapperOf:w].windowType]];
         }
     } else {
-        // a window's variables: its own (Window::name) and the ones every
-        // window has that scripts set and transitions move
         field.title = @"A window's variable";
-        NSArray<NSString *> *common = [statement.command isEqualToString:@"transition"]
-            ? @[@"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor"]
-            : @[@"visible", @"text", @"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor", @"background", @"textscale", @"noevents"];
-        for (idWindow *w in windows) {
-            for (NSString *var in common) {
-                [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], var]];
-                [details addObject:@"window"];
-            }
-            idDict *variables = [rvGEWindowWrapper wrapperOf:w].variableDict;
-            for (int i = 0; i < [variables numKeyVals]; i++) {
-                NSString *key = [variables keyAtIndex:i];
-                NSRange quote = [key rangeOfString:@"\""];
-                NSString *name = quote.location == NSNotFound ? key :
-                    [[key substringFromIndex:quote.location] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\""]];
-                [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], name]];
-                [details addObject:@"variable"];
-            }
-        }
+        [self _variablesOf:windows transition:[statement.command isEqualToString:@"transition"] names:names details:details];
     }
     field.names = names;
     field.details = details;
@@ -805,6 +790,106 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
     if (picker.chosenName == nil || row < 0 || row >= (NSInteger)[self _fields].count) return;
     [self _fields][(NSUInteger)row].stringValue = picker.chosenName;
     [self statementEdited:[self _fields][(NSUInteger)row]];
+}
+
+/// The windows' variables, as Window::name: the ones every window has
+/// that scripts set (or transitions move), and each window's own.
+- (void)_variablesOf:(NSArray<idWindow *> *)windows transition:(BOOL)transition
+               names:(NSMutableArray<NSString *> *)names details:(NSMutableArray<NSString *> *)details {
+    NSArray<NSString *> *common = transition
+        ? @[@"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor"]
+        : @[@"visible", @"text", @"rect", @"backcolor", @"forecolor", @"matcolor", @"bordercolor", @"background", @"textscale", @"noevents"];
+    for (idWindow *w in windows) {
+        for (NSString *var in common) {
+            [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], var]];
+            [details addObject:@"window"];
+        }
+        idDict *variables = [rvGEWindowWrapper wrapperOf:w].variableDict;
+        for (int i = 0; i < [variables numKeyVals]; i++) {
+            NSString *key = [variables keyAtIndex:i];
+            NSRange quote = [key rangeOfString:@"\""];
+            NSString *name = quote.location == NSNotFound ? key :
+                [[key substringFromIndex:quote.location] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\""]];
+            [names addObject:[NSString stringWithFormat:@"%@::%@", [w getName], name]];
+            [details addObject:@"variable"];
+        }
+    }
+}
+
+#pragma mark - Expressions
+
+- (IBAction)editCondition:(id)sender {
+    rvGEScriptStatement *statement = [self.selectedStatement isKindOfClass:[rvGEScriptStatement class]] ? self.selectedStatement : nil;
+    if (statement == nil || !statement.isIf) {
+        NSBeep();
+        return;
+    }
+    [self _editExpression:statement.condition titled:@"The if's condition" row:-1];
+}
+
+- (IBAction)editVariable:(id)sender {
+    NSInteger row = self.variablesTable.selectedRow;
+    if (row < 0 || row >= (NSInteger)self.variableRows.count) {
+        NSBeep();
+        return;
+    }
+    NSArray<NSString *> *variable = self.variableRows[(NSUInteger)row];
+    [self _editExpression:variable[2] titled:[NSString stringWithFormat:@"The value of %@", variable[1]] row:row];
+}
+
+/// What a GUI's expression may name: the windows' variables (quoted, as the
+/// scripts name them), and the operators.
+- (NSArray<UDExpressionCategory *> *)_expressionCategories {
+    NSMutableArray<idWindow *> *windows = [NSMutableArray array];
+    [self _windowsUnder:[self.design.interface getDesktop] into:windows];
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    NSMutableArray<NSString *> *details = [NSMutableArray array];
+    [self _variablesOf:windows transition:NO names:names details:details];
+    NSMutableArray<UDExpressionEntry *> *variables = [NSMutableArray array];
+    for (NSUInteger i = 0; i < names.count; i++) {
+        [variables addObject:[UDExpressionEntry entryNamed:names[i] insertion:[NSString stringWithFormat:@"\"%@\"", names[i]]
+                                                   summary:[NSString stringWithFormat:@"A %@'s value, by its name.", details[i]]]];
+    }
+    [variables addObject:[UDExpressionEntry entryNamed:@"gui::" insertion:@"\"gui::\"" summary:@"The GUI's state, set by the game (gui::name)."]];
+    NSMutableArray<UDExpressionEntry *> *operators = [NSMutableArray array];
+    for (NSArray<NSString *> *op in @[@[@"+", @"Adds."], @[@"-", @"Subtracts."], @[@"*", @"Multiplies."], @[@"/", @"Divides."],
+                                      @[@"%", @"The remainder."], @[@"==", @"1 when equal, else 0."], @[@"!=", @"1 when not equal."],
+                                      @[@">", @"1 when greater."], @[@"<", @"1 when less."], @[@">=", @"1 when greater or equal."],
+                                      @[@"<=", @"1 when less or equal."], @[@"&&", @"1 when both are not 0."], @[@"||", @"1 when either is not 0."],
+                                      @[@"( )", @"Groups."]]) {
+        [operators addObject:[UDExpressionEntry entryNamed:op[0] insertion:[op[0] isEqualToString:@"( )"] ? @"( " : [NSString stringWithFormat:@" %@ ", op[0]]
+                                                   summary:op[1]]];
+    }
+    return @[[UDExpressionCategory categoryNamed:@"Variables" entries:variables],
+             [UDExpressionCategory categoryNamed:@"Operators" entries:operators]];
+}
+
+- (void)_editExpression:(NSString *)text titled:(NSString *)title row:(NSInteger)row {
+    NSWindow *window = self.pages.window;
+    if (window == nil || window.attachedSheet != nil) {
+        NSBeep();
+        return;
+    }
+    self.expressionRow = row;
+    self.expressionEditor = [[UDExpressionEditor alloc] initWithTitle:title text:text categories:[self _expressionCategories]];
+    self.expressionEditor.checker = self;
+    [self.expressionEditor beginSheetForWindow:window target:self action:@selector(_expressionEdited:)];
+}
+
+- (NSString *)expressionEditor:(UDExpressionEditor *)editor problemWith:(NSString *)text {
+    return [self.design problemWithExpression:text in:self.window];
+}
+
+/// The condition, or the variable's value, as edited.
+- (void)_expressionEdited:(UDExpressionEditor *)editor {
+    NSString *text = [editor.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (self.expressionRow < 0) {
+        self.conditionField.stringValue = text;
+        [self statementEdited:self.conditionField];
+    } else {
+        [self tableView:self.variablesTable setObjectValue:text forTableColumn:[self.variablesTable tableColumnWithIdentifier:@"value"]
+                    row:self.expressionRow];
+    }
 }
 
 @end

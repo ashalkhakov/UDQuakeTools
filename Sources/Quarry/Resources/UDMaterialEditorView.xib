@@ -1380,7 +1380,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="scroll x, y: the image moved by these each second (expressions of time, parms and tables)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f233">
-                                                <rect key="frame" x="96" y="802" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="802" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f233-c">
                                                     <font key="font" metaFont="system"/>
@@ -1395,6 +1395,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f233-expr">
+                                                <rect key="frame" x="232" y="801" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f233-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f233-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l236">
                                                 <rect key="frame" x="4" y="780" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1405,7 +1416,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="translate x, y: the same as scroll." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f235">
-                                                <rect key="frame" x="96" y="777" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="777" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f235-c">
                                                     <font key="font" metaFont="system"/>
@@ -1420,6 +1431,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f235-expr">
+                                                <rect key="frame" x="232" y="776" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f235-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f235-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l238">
                                                 <rect key="frame" x="4" y="755" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1430,7 +1452,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="scale x, y: the image scaled about its corner." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f237">
-                                                <rect key="frame" x="96" y="752" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="752" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f237-c">
                                                     <font key="font" metaFont="system"/>
@@ -1445,6 +1467,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f237-expr">
+                                                <rect key="frame" x="232" y="751" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f237-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f237-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l240">
                                                 <rect key="frame" x="4" y="730" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1455,7 +1488,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="centerScale x, y: the image scaled about its center." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f239">
-                                                <rect key="frame" x="96" y="727" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="727" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f239-c">
                                                     <font key="font" metaFont="system"/>
@@ -1470,6 +1503,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f239-expr">
+                                                <rect key="frame" x="232" y="726" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f239-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f239-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l242">
                                                 <rect key="frame" x="4" y="705" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1480,7 +1524,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="shear x, y: the image sheared about its center." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f241">
-                                                <rect key="frame" x="96" y="702" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="702" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f241-c">
                                                     <font key="font" metaFont="system"/>
@@ -1495,6 +1539,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f241-expr">
+                                                <rect key="frame" x="232" y="701" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f241-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f241-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l244">
                                                 <rect key="frame" x="4" y="680" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1505,7 +1560,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="rotate a: the image turned about its center by a full turns (an expression)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f243">
-                                                <rect key="frame" x="96" y="677" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="677" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f243-c">
                                                     <font key="font" metaFont="system"/>
@@ -1520,6 +1575,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f243-expr">
+                                                <rect key="frame" x="232" y="676" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f243-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f243-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h245">
                                                 <rect key="frame" x="8" y="642" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1548,7 +1614,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="color r, g, b, a: all four channels, an expression each." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f246">
-                                                <rect key="frame" x="96" y="568" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="568" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f246-c">
                                                     <font key="font" metaFont="system"/>
@@ -1563,6 +1629,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="7" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f246-expr">
+                                                <rect key="frame" x="232" y="567" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f246-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f246-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l249">
                                                 <rect key="frame" x="4" y="546" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1573,7 +1650,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="red: the red channel, an expression." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f248">
-                                                <rect key="frame" x="96" y="543" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="543" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f248-c">
                                                     <font key="font" metaFont="system"/>
@@ -1588,6 +1665,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="8" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f248-expr">
+                                                <rect key="frame" x="232" y="542" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f248-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f248-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l251">
                                                 <rect key="frame" x="4" y="521" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1598,7 +1686,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="green: the green channel, an expression." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f250">
-                                                <rect key="frame" x="96" y="518" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="518" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f250-c">
                                                     <font key="font" metaFont="system"/>
@@ -1613,6 +1701,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="9" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f250-expr">
+                                                <rect key="frame" x="232" y="517" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f250-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f250-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l253">
                                                 <rect key="frame" x="4" y="496" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1623,7 +1722,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="blue: the blue channel, an expression." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f252">
-                                                <rect key="frame" x="96" y="493" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="493" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f252-c">
                                                     <font key="font" metaFont="system"/>
@@ -1638,6 +1737,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="10" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f252-expr">
+                                                <rect key="frame" x="232" y="492" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f252-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f252-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l255">
                                                 <rect key="frame" x="4" y="471" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1648,7 +1758,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="alpha: the alpha channel, an expression." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f254">
-                                                <rect key="frame" x="96" y="468" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="468" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f254-c">
                                                     <font key="font" metaFont="system"/>
@@ -1663,6 +1773,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="11" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f254-expr">
+                                                <rect key="frame" x="232" y="467" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f254-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f254-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l257">
                                                 <rect key="frame" x="4" y="446" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1673,7 +1794,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="rgb: red, green and blue, one expression for the three." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f256">
-                                                <rect key="frame" x="96" y="443" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="443" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f256-c">
                                                     <font key="font" metaFont="system"/>
@@ -1688,6 +1809,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="12" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f256-expr">
+                                                <rect key="frame" x="232" y="442" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f256-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f256-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l259">
                                                 <rect key="frame" x="4" y="421" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1698,7 +1830,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="rgba: red, green, blue and alpha, one expression for the four." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f258">
-                                                <rect key="frame" x="96" y="418" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="418" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f258-c">
                                                     <font key="font" metaFont="system"/>
@@ -1713,6 +1845,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="13" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f258-expr">
+                                                <rect key="frame" x="232" y="417" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f258-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f258-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h260">
                                                 <rect key="frame" x="8" y="383" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1732,7 +1875,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="alphaTest: pixels whose alpha is below this (an expression) are not drawn." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f261">
-                                                <rect key="frame" x="96" y="359" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="359" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f261-c">
                                                     <font key="font" metaFont="system"/>
@@ -1747,6 +1890,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="14" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f261-expr">
+                                                <rect key="frame" x="232" y="358" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f261-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f261-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l264">
                                                 <rect key="frame" x="4" y="337" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1757,7 +1911,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="if: the stage is drawn only while this expression is not 0." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f263">
-                                                <rect key="frame" x="96" y="334" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="334" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f263-c">
                                                     <font key="font" metaFont="system"/>
@@ -1772,6 +1926,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Edit the expression" verticalHuggingPriority="750" fixedFrame="YES" tag="15" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f263-expr">
+                                                <rect key="frame" x="232" y="333" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f263-expr-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="editExpression:" target="-2" id="MTE-f263-expr-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l266">
                                                 <rect key="frame" x="4" y="312" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

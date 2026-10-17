@@ -31,6 +31,8 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
 @interface UDDeclEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
 @property (nonatomic, strong, nullable) UDReferenceField *pickedField;
+@property (nonatomic, strong, readwrite, nullable) UDExpressionEditor *expressionEditor;
+@property (nonatomic, strong, nullable) UDReferenceField *expressionField;
 @end
 
 @implementation UDDeclEditorViewController
@@ -347,6 +349,47 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     NSString *name = picker.chosenName;
     if (field == nil || name == nil) return;
     [field.controller setValue:name forKeyPath:[@"selection." stringByAppendingString:field.key]];
+}
+
+#pragma mark - Expressions
+
+- (UDReferenceField *)expressionFieldForTag:(NSInteger)tag {
+    return nil;
+}
+
+- (NSArray<UDExpressionCategory *> *)expressionCategoriesFor:(UDReferenceField *)field {
+    return @[];
+}
+
+- (NSString *)problemWithExpression:(NSString *)text for:(UDReferenceField *)field {
+    return nil;
+}
+
+- (IBAction)editExpression:(id)sender {
+    UDReferenceField *field = [self expressionFieldForTag:[sender tag]];
+    NSWindow *window = self.view.window;
+    if (field == nil || field.controller == nil || window == nil || window.attachedSheet != nil) {
+        NSBeep();
+        return;
+    }
+    id current = [field.controller valueForKeyPath:[@"selection." stringByAppendingString:field.key]];
+    self.expressionField = field;
+    self.expressionEditor = [[UDExpressionEditor alloc] initWithTitle:field.title
+                                                                 text:[current isKindOfClass:[NSString class]] ? current : @""
+                                                           categories:[self expressionCategoriesFor:field]];
+    self.expressionEditor.checker = self;
+    [self.expressionEditor beginSheetForWindow:window target:self action:@selector(_expressionEdited:)];
+}
+
+- (NSString *)expressionEditor:(UDExpressionEditor *)editor problemWith:(NSString *)text {
+    return self.expressionField != nil ? [self problemWithExpression:text for:self.expressionField] : nil;
+}
+
+/// The expression as the field's value (as its binding sets it).
+- (void)_expressionEdited:(UDExpressionEditor *)editor {
+    UDReferenceField *field = self.expressionField;
+    if (field == nil) return;
+    [field.controller setValue:editor.text forKeyPath:[@"selection." stringByAppendingString:field.key]];
 }
 
 - (void)declDidLoad {

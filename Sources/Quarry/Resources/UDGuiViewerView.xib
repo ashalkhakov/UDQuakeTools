@@ -94,6 +94,7 @@
                 <outlet property="statementHelp" destination="GUV-sc-statementhelp" id="GUV-sc-statementhelp-o"/>
                 <outlet property="conditionLabel" destination="GUV-sc-conditionlabel" id="GUV-sc-conditionlabel-o"/>
                 <outlet property="conditionField" destination="GUV-sc-condition" id="GUV-sc-condition-o"/>
+                <outlet property="conditionExpression" destination="GUV-sc-conditionexpr" id="GUV-sc-conditionexpr-o"/>
                 <outlet property="parameterLabel1" destination="GUV-sc-parmlabel1" id="GUV-sc-parmlabel1-o"/>
                 <outlet property="parameterField1" destination="GUV-sc-parm1" id="GUV-sc-parm1-o"/>
                 <outlet property="parameterPick1" destination="GUV-sc-parmpick1" id="GUV-sc-parmpick1-o"/>
@@ -1279,6 +1280,17 @@
                                             <action selector="addOrRemoveVariable:" target="GUV-sc" id="GUV-sc-addvariable-a"/>
                                         </connections>
                                     </segmentedControl>
+                                    <button toolTip="Edit the chosen variable's value" verticalHuggingPriority="750" fixedFrame="YES" tag="0" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-variableexpr">
+                                        <rect key="frame" x="82" y="14" width="24" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-variableexpr-c">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="editVariable:" target="GUV-sc" id="GUV-sc-variableexpr-a"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </view>
                         </tabViewItem>
@@ -1478,7 +1490,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-condition">
-                                                            <rect key="frame" x="84" y="165" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="165" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-condition-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1489,6 +1501,17 @@
                                                                 <action selector="statementEdited:" target="GUV-sc" id="GUV-sc-condition-a"/>
                                                             </connections>
                                                         </textField>
+                                                        <button toolTip="Edit the condition" verticalHuggingPriority="750" fixedFrame="YES" tag="0" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-conditionexpr">
+                                                            <rect key="frame" x="213" y="164" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-conditionexpr-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="editCondition:" target="GUV-sc" id="GUV-sc-conditionexpr-a"/>
+                                                            </connections>
+                                                        </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel1">
                                                             <rect key="frame" x="8" y="142" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

@@ -11,6 +11,8 @@
 #import "UDSoundEditorViewController.h"
 #import "UDParticleEditorViewController.h"
 #import "UDReferencePicker.h"
+#import "UDExpressionEditor.h"
+#import "UDExpressionTextStorage.h"
 #import "UDFXEditorViewController.h"
 #import "UDAFEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
@@ -819,6 +821,41 @@ static NSString *const UDFixtureParticles =
         XCTAssertTrue([picker.shownNames containsObject:@"textures/udtest/glow"], @"%@", picker.shownNames);
         [picker cancel:nil];
     }];
+}
+
+#pragma mark - Expressions
+
+- (void)testAnExpressionIsHighlightedAsItIsTyped {
+    NSArray<NSArray *> *tokens = [UDExpressionTextStorage tokensOf:@"flicker[ time * 2.5 ] + parm0 \"x\" nobody"
+                                                             known:[NSSet setWithObject:@"parm0"] tables:[NSSet setWithObject:@"flicker"]];
+    NSMutableArray<NSString *> *kinds = [NSMutableArray array];
+    for (NSArray *token in tokens) [kinds addObject:token.lastObject];
+    XCTAssertEqualObjects(kinds, (@[@"table", @"operator", @"operator", @"number", @"operator", @"operator", @"name", @"string"]),
+                          @"a table before [, numbers, a known name, a string; an unknown name left as it is");
+}
+
+- (void)testAStagesRegisterIsEditedAsAnExpression {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+    [editor.stagesController setSelectionIndex:0];
+    [self click:@selector(editExpression:) tag:1 under:editor.inspectorView sheetOver:editor.view.window with:^(UDExpressionEditor *expression) {
+        XCTAssertTrue([expression isKindOfClass:[UDExpressionEditor class]]);
+        [expression setText:@"time * nosuchname, 0"];
+        XCTAssertTrue([expression.status containsString:@"Bad term"], @"idMaterial::ParseTerm's warning: %@", expression.status);
+        [expression setText:@"time * 0.1, "];
+        [expression selectCategoryNamed:@"Parms"];
+        XCTAssertTrue([expression insertEntryNamed:@"parm4"]);
+        XCTAssertEqualObjects(expression.text, @"time * 0.1, parm4", @"inserted at the caret");
+        XCTAssertEqualObjects(expression.status, @"Reads as the engine reads it.");
+        [expression ok:nil];
+    }];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects([editor.stagesController valueForKeyPath:@"selection.scroll"], @"time * 0.1, parm4", @"the stage's scroll, as edited");
+    [editor.editorDocument.undoManager undo];
+    [editor.editingContext processPendingChanges];
+    [editor.stagesController setSelectionIndex:0];
+    XCTAssertNotEqualObjects([editor.stagesController valueForKeyPath:@"selection.scroll"], @"time * 0.1, parm4", @"one Undo");
 }
 
 #pragma mark - Help

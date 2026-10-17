@@ -132,11 +132,11 @@ Wherever an editor checks a reference (its Issues), it offers a picker for
 it too; wherever a value may be an expression, an expression editor. Both
 are ported and adapted from RDLKit and XFormsKit, which have them.
 
-- [ ] **A picker**: a sheet (modal, a sheet in Eau) with a table of the
+- [x] **A picker**: a sheet (modal, a sheet in Eau) with a table of the
       candidates and a quick filter by name (contains the text typed), the
       current value chosen; a button beside each field that takes a
       reference opens it.
-- [ ] Pickers wherever a reference is checked today:
+- [x] Pickers wherever a reference is checked today:
       - material: a stage's map, cube map, video map; editor image; light
         falloff image (images and materials);
       - particle: a stage's material; its speed, rotation, size and aspect
@@ -151,12 +151,13 @@ are ported and adapted from RDLKit and XFormsKit, which have them.
         variables (set, transition, setFocus, resetTime), sounds and
         named events;
       - PDA: picked inline, as it owns its emails, audio logs and videos.
-- [ ] **An expression editor**: a field's expression in a larger editor
+- [x] **An expression editor**: a field's expression in a larger editor
       with highlighting (the GUI's and the material's expression grammar),
       its tables, parms and variables offered, and checked as the engine
-      parses it. For a material's registers (scroll, scale, rotate, color,
-      alphaTest, if), a particle's and the GUI's (visible, rect, colors,
-      if conditions, transition values).
+      parses it. For a material's registers (scroll, translate, scale,
+      centerScale, shear, rotate, color, red, green, blue, alpha, rgb, rgba,
+      alphaTest, if), checked by idMaterial::Parse; for a GUI's if
+      conditions and variables, by idWindow::ParseExpression.
 
 ## 2. Offline editors (no engine needed)
 
@@ -251,7 +252,7 @@ In order of value against cost; LOC is the MFC original's size.
       glprogs/interaction.vfp run by an ARB program interpreter that knows
       just what it uses), then its ambient stages; its time on a slider.
 - [ ] **Material 3D preview** — on models, through the bridge.
-- [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
+- [x] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser
       and decl manager already ported in the libraries. The render system is

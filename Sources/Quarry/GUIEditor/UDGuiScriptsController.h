@@ -12,8 +12,9 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "UDExpressionEditor.h"
 
-@class rvGEWorkspace, idWindow, UDWorkspace, UDReferencePicker;
+@class rvGEWorkspace, idWindow, UDWorkspace, UDReferencePicker, UDExpressionEditor;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *key;
 @end
 
-@interface UDGuiScriptsController : NSObject <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface UDGuiScriptsController : NSObject <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, UDExpressionChecking>
 
 /// The design the scripts are of, and the workspace (where the pickers'
 /// names come from).
@@ -65,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTextField *statementHelp;
 @property (weak) IBOutlet NSTextField *conditionLabel;
 @property (weak) IBOutlet NSTextField *conditionField;
+@property (weak) IBOutlet NSButton *conditionExpression;
 @property (weak) IBOutlet NSTextField *parameterLabel1;
 @property (weak) IBOutlet NSTextField *parameterField1;
 @property (weak) IBOutlet NSButton *parameterPick1;
@@ -90,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// A parameter's "…" (its row, its tag): a window, a window's variable, a
 /// sound shader, picked.
 - (IBAction)pickParameter:(nullable id)sender;
+/// An "ƒ": the if's condition, or the chosen variable's value, in the
+/// expression editor (checked as idWindow::ParseExpression reads it).
+- (IBAction)editCondition:(nullable id)sender;
+- (IBAction)editVariable:(nullable id)sender;
+@property (nonatomic, strong, readonly, nullable) UDExpressionEditor *expressionEditor;
 
 /// The statement shown in the fields (the outline's chosen one), and the
 /// rows a drag moves (for the tests: what a drop does).

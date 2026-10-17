@@ -483,4 +483,35 @@ NSString *UDDoom3InstallPath(void) {
     [picker ok:nil];
 }
 
+- (void)click:(SEL)action tag:(NSInteger)tag under:(NSView *)view sheetOver:(NSWindow *)window
+         with:(void (^)(id controller))block {
+    __block NSButton *button = nil;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == action && [(NSButton *)candidate tag] == tag) {
+            button = (NSButton *)candidate;
+            return NO;
+        }
+        return YES;
+    }];
+    XCTAssertNotNil(button, @"a button of %@, tag %ld", NSStringFromSelector(action), (long)tag);
+    __block BOOL shown = NO;
+#ifdef GNUSTEP
+    [self whenModalWindowAppears:^(NSWindow *sheet) {
+        shown = YES;
+        block(sheet.windowController);
+    }];
+    [NSApp sendAction:button.action to:button.target from:button];
+#else
+    [NSApp sendAction:button.action to:button.target from:button];
+    NSWindow *sheet = window.attachedSheet;
+    XCTAssertNotNil(sheet, @"a sheet");
+    if (sheet != nil) {
+        shown = YES;
+        block(sheet.windowController);
+    }
+    [self spinUntil:^BOOL{ return window.attachedSheet == nil; } timeout:5];
+#endif
+    XCTAssertTrue(shown);
+}
+
 @end

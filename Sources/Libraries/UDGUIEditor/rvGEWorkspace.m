@@ -959,6 +959,33 @@ Applies the script text to the window's variables and scripts
     return YES;
 }
 
+- (NSString *)problemWithExpression:(NSString *)text in:(idWindow *)window {
+    if ( [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length == 0 ) {
+        return nil;
+    }
+    NSData *bytes __attribute__((objc_precise_lifetime)) = [text ud_latin1Buffer];
+    idParser *src = [[idParser alloc] initWithFlags:LEXFL_ALLOWMULTICHARLITERALS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                         fileSystem:nil];
+    NSMutableArray<NSDictionary *> *diagnostics = [NSMutableArray array];
+    src.diagnostics = diagnostics;
+    [src loadMemory:bytes.bytes length:(int)bytes.length - 1 name:@"" error:NULL];
+    // a window of this GUI's, under the one it is for, to find names from
+    idWindow *tempwin = [[idWindow alloc] initWithGui:self.interface];
+    idWinFloat *var = [[idWinFloat alloc] init];
+    [tempwin parseExpression:src var:var component:0];
+    NSString *error = UDFirstError( diagnostics );
+    if ( error != nil ) {
+        return error;
+    }
+    idToken token;
+    idToken_Init( &token );
+    if ( [src readToken:&token error:NULL] ) {
+        return [NSString stringWithFormat:@"'%@' after the expression", UDTokenLatin1String( &token )];
+    }
+    (void)window;
+    return nil;
+}
+
 /// GEItescriptsDlg_Apply's reading: @a parse's variables and scripts.
 - (BOOL)_readScriptsText:(NSString *)parse variables:(idDict *)variables scripts:(idDict *)scripts message:(NSString **)message {
 

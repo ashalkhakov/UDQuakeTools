@@ -119,6 +119,12 @@ NSString * _Nullable UDDoom3InstallPath(void);
 /// The picker's @a name chosen, and its OK.
 - (void)choose:(NSString *)name in:(UDReferencePicker *)picker;
 
+/// The button of @a action (and @a tag) under @a view clicked, and @a block
+/// run on the sheet it puts over @a window (its window controller; a modal
+/// window on GNUstep).
+- (void)click:(SEL)action tag:(NSInteger)tag under:(NSView *)view sheetOver:(NSWindow *)window
+         with:(void (^)(id controller))block;
+
 @end
 
 NS_ASSUME_NONNULL_END

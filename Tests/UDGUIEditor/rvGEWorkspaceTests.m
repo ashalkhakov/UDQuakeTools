@@ -532,4 +532,14 @@ static NSString *const UDCanvasGui =
     XCTAssertNotNil(message);
 }
 
+- (void)testAnExpressionIsCheckedAsTheWindowParsesIt {
+    idWindow *button = [self window:@"Button"];
+    XCTAssertNil([self.workspace problemWithExpression:@"\"Panel::visible\" == 1" in:button]);
+    XCTAssertNil([self.workspace problemWithExpression:@"( time * 0.001 ) + 2" in:button]);
+    XCTAssertNil([self.workspace problemWithExpression:@"" in:button], @"nothing: nothing wrong");
+    XCTAssertNil([self.workspace problemWithExpression:@"1 +" in:button], @"as the engine reads it: an empty term at the end, said nothing of");
+    XCTAssertEqualObjects([self.workspace problemWithExpression:@"( 1 + 2" in:button], @"line 1: couldn't find expected ')'", @"idParser's words");
+    XCTAssertEqualObjects([self.workspace problemWithExpression:@"1 2" in:button], @"'2' after the expression");
+}
+
 @end

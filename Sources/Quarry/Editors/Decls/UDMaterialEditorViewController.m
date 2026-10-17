@@ -1,4 +1,5 @@
 #import "UDMaterialEditorViewController.h"
+#import "idDeclManager.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclTextChecker.h"
 #import "UDImageProgram.h"
@@ -256,6 +257,73 @@ static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.materi
         case 5: return [UDReferenceField fieldTitled:@"A GUI" key:@"guisurf" controller:self.objectController kind:UDReferenceGuis];
     }
     return nil;
+}
+
+#pragma mark - Expressions
+
+/// A stage's registers' keywords (ParseStage's), by their fields' tags.
+static NSArray<NSArray<NSString *> *> *UDMaterialExpressionKeys(void) {
+    return @[@[@"scroll", @"scroll"], @[@"translate", @"translate"], @[@"scale", @"scale"], @[@"centerScale", @"centerScale"],
+             @[@"shear", @"shear"], @[@"rotate", @"rotate"], @[@"color", @"color"], @[@"red", @"red"], @[@"green", @"green"],
+             @[@"blue", @"blue"], @[@"alpha", @"alpha"], @[@"rgb", @"rgb"], @[@"rgba", @"rgba"], @[@"alphaTest", @"alphaTest"],
+             @[@"condition", @"if"]];
+}
+
+- (UDReferenceField *)expressionFieldForTag:(NSInteger)tag {
+    NSArray<NSArray<NSString *> *> *keys = UDMaterialExpressionKeys();
+    if (tag < 1 || tag > (NSInteger)keys.count) return nil;
+    NSArray<NSString *> *key = keys[(NSUInteger)tag - 1];
+    return [UDReferenceField fieldTitled:[NSString stringWithFormat:@"The stage's %@", key[1]] key:key[0]
+                              controller:self.stagesController kind:UDReferenceNames];
+}
+
+/// What idMaterial::ParseTerm reads: its registers, the tables (looked up
+/// as table[expression]), and the operators ParseExpressionPriority knows.
+- (NSArray<UDExpressionCategory *> *)expressionCategoriesFor:(UDReferenceField *)field {
+    NSMutableArray<UDExpressionEntry *> *parms = [NSMutableArray array];
+    [parms addObject:[UDExpressionEntry entryNamed:@"time" insertion:nil summary:@"The game's time, in seconds."]];
+    for (int i = 0; i < 12; i++) {
+        [parms addObject:[UDExpressionEntry entryNamed:[NSString stringWithFormat:@"parm%d", i] insertion:nil
+                                               summary:i < 4 ? @"The entity's shaderParm: its color (0-3, 1 when not set)." : @"The entity's shaderParm."]];
+    }
+    for (int i = 0; i < 8; i++) {
+        [parms addObject:[UDExpressionEntry entryNamed:[NSString stringWithFormat:@"global%d", i] insertion:nil
+                                               summary:@"A global shaderParm, the game's to set."]];
+    }
+    [parms addObject:[UDExpressionEntry entryNamed:@"fragmentPrograms" insertion:nil summary:@"1 when fragment programs are in use."]];
+    [parms addObject:[UDExpressionEntry entryNamed:@"sound" insertion:nil summary:@"The entity's sound's amplitude."]];
+    NSMutableArray<UDExpressionEntry *> *tables = [NSMutableArray array];
+    for (idDeclBase *decl in [self.workspace.declManager declsOfType:DECL_TABLE forceParse:NO]) {
+        [tables addObject:[UDExpressionEntry entryNamed:decl.name insertion:[decl.name stringByAppendingString:@"[ "]
+                                                summary:[NSString stringWithFormat:@"A table, looked up at an expression: %@[ time ]", decl.name]]];
+    }
+    NSMutableArray<UDExpressionEntry *> *operators = [NSMutableArray array];
+    for (NSArray<NSString *> *op in @[@[@"+", @"Adds."], @[@"-", @"Subtracts."], @[@"*", @"Multiplies."], @[@"/", @"Divides."],
+                                      @[@"%", @"The remainder."], @[@"==", @"1 when equal, else 0."], @[@"!=", @"1 when not equal."],
+                                      @[@">", @"1 when greater."], @[@"<", @"1 when less."], @[@">=", @"1 when greater or equal."],
+                                      @[@"<=", @"1 when less or equal."], @[@"&&", @"1 when both are not 0."], @[@"||", @"1 when either is not 0."],
+                                      @[@"( )", @"Groups."]]) {
+        [operators addObject:[UDExpressionEntry entryNamed:op[0] insertion:[op[0] isEqualToString:@"( )"] ? @"( " : [NSString stringWithFormat:@" %@ ", op[0]]
+                                                   summary:op[1]]];
+    }
+    UDExpressionCategory *tableCategory = [UDExpressionCategory categoryNamed:@"Tables" entries:tables];
+    tableCategory.tables = YES;
+    return @[[UDExpressionCategory categoryNamed:@"Parms" entries:parms], tableCategory,
+             [UDExpressionCategory categoryNamed:@"Operators" entries:operators]];
+}
+
+/// The text as idMaterial::Parse reads it: in a stage of its own, its
+/// keyword before it; the parse's first warning.
+- (NSString *)problemWithExpression:(NSString *)text for:(UDReferenceField *)field {
+    NSString *keyword = nil;
+    for (NSArray<NSString *> *key in UDMaterialExpressionKeys()) {
+        if ([key[0] isEqualToString:field.key]) keyword = key[1];
+    }
+    if (keyword == nil || [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length == 0) return nil;
+    NSString *material = [NSString stringWithFormat:@"{\n\t{\n\t\tblend add\n\t\tmap _white\n\t\t%@ %@\n\t}\n}\n", keyword, text];
+    UDMaterialParser *parser = [[UDMaterialParser alloc] initWithText:material name:@"_expression" declManager:self.workspace.declManager];
+    UDDeclTextProblem *problem = parser.problems.firstObject;
+    return problem != nil ? problem.message : nil;
 }
 
 #pragma mark - What the engine says

@@ -22,6 +22,7 @@
 #import "UDGuiItemPropertiesController.h"
 #import "UDGuiScriptsController.h"
 #import "UDReferencePicker.h"
+#import "UDExpressionEditor.h"
 #import "rvGEScript.h"
 #import "rvGESelectionMgr.h"
 #import "UDOverlay.h"
@@ -896,6 +897,28 @@ static NSString *const UDViewerScript =
           } picker:^UDReferencePicker *{ return scripts.referencePicker; }];
     XCTAssertTrue([variables containsObject:@"Label::text"], @"a window's variables: %@", variables);
     XCTAssertTrue([scripts.parameterPick2 isHidden], @"a value has no picker");
+}
+
+- (void)testAConditionIsEditedAsAnExpression {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    UDGuiScriptsController *scripts = editor.scriptsController;
+    [self chooseWindow:@"Go" in:editor];
+    [self openEvent:@"onAction" in:editor];
+    [scripts.statementsOutline deselectAll:nil];
+    [self add:@"if" in:editor];
+    [self click:@selector(editCondition:) tag:0 under:scripts.pages sheetOver:editor.view.window with:^(UDExpressionEditor *expression) {
+        [expression setText:@"( 1"];
+        XCTAssertTrue([expression.status containsString:@"')'"], @"idParser's: %@", expression.status);
+        [expression setText:@""];
+        [expression selectCategoryNamed:@"Variables"];
+        XCTAssertTrue([expression insertEntryNamed:@"Label::visible"]);
+        XCTAssertEqualObjects(expression.text, @"\"Label::visible\"");
+        XCTAssertEqualObjects(expression.status, @"Reads as the engine reads it.");
+        [expression ok:nil];
+    }];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"if \"Label::visible\" {"], @"%@", editor.designWorkspace.text);
 }
 
 #pragma mark - Commands

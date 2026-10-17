@@ -26,6 +26,8 @@ Quarry_OBJC_FILES = \
     Editors/UDImageViewerViewController.m \
     Editors/UDTopClipView.m \
     Editors/UDReferencePicker.m \
+    Editors/UDExpressionTextStorage.m \
+    Editors/UDExpressionEditor.m \
     Editors/Decls/UDPDAEditorViewController.m \
     Editors/UDDeclEditorViewController.m \
     Editors/Decls/UDTableEditorViewController.m \
@@ -89,6 +91,7 @@ Quarry_RESOURCE_FILES = \
     Resources/UDTransportBar.xib \
     Resources/UDGuiEditorOptions.xib \
     Resources/UDReferencePicker.xib \
+    Resources/UDExpressionEditor.xib \
     Resources/UDFXEditorView.xib \
     Resources/UDAFEditorView.xib \
     Resources/UDMaterialEditorView.xib \

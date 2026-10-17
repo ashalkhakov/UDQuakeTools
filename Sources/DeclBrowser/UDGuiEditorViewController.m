@@ -2,6 +2,7 @@
 #import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
 #import "UDGuiPlayer.h"
 #import "UDGuiView.h"
+#import "UDTransportController.h"
 #import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceItem.h"
 #import "idUserInterface.h"
@@ -42,8 +43,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// What the workspace was loaded from.
 @property (nonatomic, copy, nullable) NSString *designText;
 @property (nonatomic) BOOL playedBeforeDesigning;
-/// How long the slider is: the GUI's last time event, and a second.
-@property (nonatomic) int timelineLength;
+@property (nonatomic, strong, readwrite) UDTransportController *transport;
 /// The run's window for each of the design's (the design's window the key).
 @property (nonatomic, strong) NSMapTable<idWindow *, idWindow *> *runWindows;
 /// Whether the run is to be read again to hold the design as it is.
@@ -83,6 +83,11 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.player.action = @selector(playerDidDrawFrame:);
     self.guiView.player = self.player;
     self.player.view = self.guiView;
+    self.transport = [[UDTransportController alloc] init];
+    self.transport.playable = self.player;
+    self.transport.target = self;
+    self.transport.action = @selector(transportMoved:);
+    [self.transport installInView:self.transportView];
     self.fileText = self.editorTextView.string;
     self.shownText = self.fileText;
     [self _run];
@@ -149,8 +154,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         // deleted (not written)
         [self _mapRunWindow:[self.player.gui getDesktop] to:[self.designWorkspace.interface getDesktop]];
     }
-    self.timelineLength = [self _timelineLengthOf:[self.player.gui getDesktop]];
-    [self _showClock];
+    [self.transport update];
     [self _showDiagnostics];
     [self _fillNamedEvents];
     [self _showState:YES];
@@ -666,7 +670,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.guiView.designTarget = self;
     self.guiView.designAction = @selector(_designViewChanged:);
     self.guiView.designDelegate = self;
-    self.playButton.enabled = NO;
+    self.transport.allowsPlaying = NO;
     [self _renderDesign];
 }
 
@@ -674,7 +678,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.designing = NO;
     self.modeControl.selectedSegment = 0;
     self.guiView.workspace = nil;
-    self.playButton.enabled = YES;
+    self.transport.allowsPlaying = YES;
     // loaded as the game loads it, the design's edits in it, its hidden
     // windows as the file has them
     if (self.player.editing || self.runStale || ![[self _currentText] isEqualToString:self.runningText]) {
@@ -682,7 +686,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     }
     self.player.playing = self.playedBeforeDesigning;
     [self.guiView showFrame];
-    [self _showClock];
+    [self.transport update];
 }
 
 /// The workspace loaded from the text as it is (from the file, when that
@@ -948,18 +952,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 
 #pragma mark - The clock
 
-- (IBAction)togglePlaying:(id)sender {
-    self.player.playing = !self.player.playing;
-    [self _showClock];
-}
-
-- (IBAction)step:(id)sender {
-    self.player.playing = NO;
-    [self.player step];
-}
-
-- (IBAction)restart:(id)sender {
-    [self.player restart];
+/// The transport moved the player (restarted, sought, stepped): the state
+/// as it is now.
+- (void)transportMoved:(UDTransportController *)transport {
     [self _showState:YES];
 }
 
@@ -969,42 +964,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     } else {
         [self.guiView showFrame];
     }
-    [self _showClock];
+    [self.transport update];
     [self _showLog];
     [self _showState:NO];
-}
-
-- (IBAction)seek:(id)sender {
-    int time = (int)lround([sender doubleValue]);
-    [self.player seekTo:time];
-    [self _showState:YES];
-}
-
-- (void)_showClock {
-    int time = self.player.time;
-    self.timeLabel.stringValue = [NSString stringWithFormat:@"%.2f s", time / 1000.0];
-    self.playButton.title = self.player.playing && !self.designing ? @"Pause" : @"Play";
-    // the slider as long as the GUI's last time event, and a second; or as
-    // long as it has run
-    NSSlider *slider = self.timeSlider;
-    double length = MAX(MAX(self.timelineLength, 5000), time);
-    if (slider.maxValue != length) {
-        slider.maxValue = length;
-    }
-    slider.doubleValue = time;
-}
-
-/// The latest "onTime" of the GUI's windows, and a second.
-- (int)_timelineLengthOf:(nullable idWindow *)window {
-    if (window == nil) return 0;
-    int length = 0;
-    for (idTimeLineEvent *event in window->timeLineEvents) {
-        length = MAX(length, event->time + 1000);
-    }
-    for (int i = 0; i < [window getChildCount]; i++) {
-        length = MAX(length, [self _timelineLengthOf:[window getChild:i]]);
-    }
-    return length;
 }
 
 #pragma mark - Named events

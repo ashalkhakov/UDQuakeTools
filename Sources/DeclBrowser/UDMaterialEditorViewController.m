@@ -5,11 +5,13 @@
 #import "UDMaterialParser.h"
 #import "UDWorkspace.h"
 #import "UDParticlePreview.h"
+#import "UDTransportController.h"
 
 static UDDiagnosticSource const UDMaterialParseSource = @"parse";
 static UDDiagnosticSource const UDMaterialImagesSource = @"references";
 
 @interface UDMaterialEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDTransportController *transport;
 /// idMaterial::Parse of the text as it is now.
 @property (nonatomic, strong, nullable) UDMaterialParser *parser;
 @property (nonatomic) BOOL observingSelection;
@@ -49,25 +51,13 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
     if (self.materialPreviewView != nil) {
         self.materialPreview = [[UDParticlePreview alloc] initWithImageView:self.materialPreviewView workspace:self.workspace];
         self.materialPreview.materialName = self.material.name;
-        self.materialPreview.timeSlider = self.timeSlider;
-        self.materialPreview.timeLabel = self.timeLabel;
-        self.materialPreview.playButton = self.playButton;
+        self.transport = [[UDTransportController alloc] init];
+        self.transport.playable = self.materialPreview;
+        self.materialPreview.transport = self.transport;
+        [self.transport installInView:self.transportView];
         self.materialPreview.target = self;
         self.materialPreview.action = @selector(previewDidDraw:);
     }
-}
-
-- (IBAction)restartPreview:(id)sender {
-    [self.materialPreview restart];
-}
-
-- (IBAction)scrubPreview:(id)sender {
-    [self.materialPreview showTime:[sender intValue]];
-}
-
-- (IBAction)togglePreview:(id)sender {
-    self.materialPreview.playing = !self.materialPreview.playing;
-    self.playButton.title = self.materialPreview.playing ? @"Pause" : @"Play";
 }
 
 /// The preview's frame drawn: why it is not lit, if it is not.

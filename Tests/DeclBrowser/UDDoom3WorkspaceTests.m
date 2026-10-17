@@ -1,3 +1,4 @@
+#import "UDTransportController.h"
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclManagedObjects.h"
@@ -645,7 +646,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     editor.modeControl.selectedSegment = 1;
     [editor changeMode:editor.modeControl];
     editor.player.drawsPicture = YES;
-    [editor restart:nil];
+    [editor.transport restart:nil];
     double curtained = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);
 
     // as idSessionLocal::StartMenu starts it when there is no intro: the
@@ -653,8 +654,8 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     NSMenuItem *noIntro = [editor.namedEventPopUp itemWithTitle:@"NoIntro"];
     XCTAssertNotNil(noIntro);
     [NSApp sendAction:noIntro.action to:noIntro.target from:noIntro];
-    editor.timeSlider.doubleValue = 2000;
-    [NSApp sendAction:editor.timeSlider.action to:editor.timeSlider.target from:editor.timeSlider];
+    editor.transport.timeSlider.doubleValue = 2000;
+    [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];
     double shown = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);
     XCTAssertLessThan(curtained, 1.0, @"at time 0 the menu is behind its black curtain");
     XCTAssertGreaterThan(shown, 5.0, @"at 2 s it is there to design");

@@ -30,6 +30,7 @@ DeclBrowser_OBJC_FILES = \
     UDMaterialEditorViewController.m \
     UDParticlePreview.m \
     UDGuiPlayer.m \
+    UDTransportController.m \
     UDGuiView.m \
     UDGuiGLView.m \
     UDTabBadge.m \
@@ -78,6 +79,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDSoundEditorView.xib \
     Resources/UDParticleEditorView.xib \
     Resources/UDGuiViewerView.xib \
+    Resources/UDTransportBar.xib \
     Resources/UDFXEditorView.xib \
     Resources/UDAFEditorView.xib \
     Resources/UDMaterialEditorView.xib \

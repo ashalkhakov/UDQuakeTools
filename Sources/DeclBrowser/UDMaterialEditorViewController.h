@@ -1,6 +1,6 @@
 #import "UDDeclEditorViewController.h"
 
-@class UDDeclMaterial, UDParticlePreview;
+@class UDDeclMaterial, UDParticlePreview, UDTransportController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,9 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// (UDParticlePreview), its time, and why it is not lit, if it is not.
 @property (weak) IBOutlet NSImageView *materialPreviewView;
 @property (weak) IBOutlet NSTextField *lightingLabel;
-@property (weak) IBOutlet NSSlider *timeSlider;
-@property (weak) IBOutlet NSTextField *timeLabel;
-@property (weak) IBOutlet NSButton *playButton;
+/// The preview's time controls (UDTransportController's bar, in
+/// transportView).
+@property (weak) IBOutlet NSView *transportView;
+@property (nonatomic, strong, readonly, nullable) UDTransportController *transport;
 @property (nonatomic, strong, readonly, nullable) UDParticlePreview *materialPreview;
 
 /// + adds a stage, last, as MaterialDoc::AddStage does ("Stage N"); - takes
@@ -39,9 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)addLightingStage:(nullable id)sender;
 /// The selected stage's text to the pasteboard; a stage's text from it,
 /// after the selection.
-- (IBAction)restartPreview:(nullable id)sender;
-- (IBAction)scrubPreview:(nullable id)sender;
-- (IBAction)togglePreview:(nullable id)sender;
 - (IBAction)copy:(nullable id)sender;
 - (IBAction)paste:(nullable id)sender;
 

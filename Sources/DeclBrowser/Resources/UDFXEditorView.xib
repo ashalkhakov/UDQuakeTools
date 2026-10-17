@@ -12,11 +12,9 @@
                 <outlet property="objectController" destination="FXE-oc" id="UDF-o-objectController"/>
                 <outlet property="actionsController" destination="FXE-aac" id="UDF-o-actionsController"/>
                 <outlet property="actionsTable" destination="FXE-actions" id="UDF-o-actionsTable"/>
+                <outlet property="transportView" destination="FXE-transport" id="UDF-o-transport"/>
                 <outlet property="previewView" destination="FXE-preview" id="UDF-o-previewView"/>
                 <outlet property="timelineView" destination="FXE-timeline" id="UDF-o-timelineView"/>
-                <outlet property="timeSlider" destination="FXE-time" id="UDF-o-timeSlider"/>
-                <outlet property="timeLabel" destination="FXE-timelabel" id="UDF-o-timeLabel"/>
-                <outlet property="playButton" destination="FXE-play" id="UDF-o-playButton"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -799,50 +797,15 @@
                         <binding destination="FXE-aac" name="value" keyPath="selection.particleTrackVelocity" id="FXE-c50-b"/>
                     </connections>
                 </button>
-                <slider toolTip="preview time" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-time">
-                    <rect key="frame" x="20" y="134" width="246" height="20"/>
+                <customView toolTip="time controls" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-transport">
+                    <rect key="frame" x="20" y="130" width="200" height="56"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1000" tickMarkPosition="above" sliderType="linear" id="FXE-time-c"/>
-                    <connections>
-                        <action selector="scrubPreview:" target="-2" id="FXE-time-a"/>
-                    </connections>
-                </slider>
-                <textField toolTip="preview time label" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-timelabel">
-                    <rect key="frame" x="268" y="136" width="52" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="0.00 s" id="FXE-timelabel-c">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <button toolTip="play or pause preview" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-play">
-                    <rect key="frame" x="224" y="290" width="100" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="push" title="Pause" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-play-c">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="togglePreview:" target="-2" id="FXE-play-a"/>
-                    </connections>
-                </button>
+                </customView>
                 <imageView toolTip="fx preview" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-preview">
-                    <rect key="frame" x="20" y="160" width="200" height="200"/>
+                    <rect key="frame" x="30" y="188" width="180" height="180"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="FXE-preview-c"/>
                 </imageView>
-                <button toolTip="restart preview" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-restart">
-                    <rect key="frame" x="224" y="324" width="100" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="push" title="Restart" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-restart-c">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="restartPreview:" target="-2" id="FXE-restart-a"/>
-                    </connections>
-                </button>
                 <customView toolTip="fx timeline" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-timeline" customClass="UDFXTimelineView">
                     <rect key="frame" x="20" y="12" width="300" height="116"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

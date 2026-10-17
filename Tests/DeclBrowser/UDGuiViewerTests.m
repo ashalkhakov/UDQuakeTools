@@ -1,3 +1,4 @@
+#import "UDTransportController.h"
 #import "UDDeclBrowserTestCase.h"
 
 #import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
@@ -394,29 +395,29 @@ static NSString *const UDViewerScript =
 }
 
 - (void)slide:(UDGuiEditorViewController *)editor to:(double)time {
-    XCTAssertTrue([editor.timeSlider isEnabled]);
-    editor.timeSlider.doubleValue = time;
-    [NSApp sendAction:editor.timeSlider.action to:editor.timeSlider.target from:editor.timeSlider];
+    XCTAssertTrue([editor.transport.timeSlider isEnabled]);
+    editor.transport.timeSlider.doubleValue = time;
+    [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];
 }
 
 - (void)testTheSliderSeeksTheRunTheNamedEventsSentAgain {
     UDWorkspaceWindowController *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    [editor togglePlaying:nil];
+    [editor.transport togglePlaying:nil];
     XCTAssertFalse(editor.player.playing);
-    XCTAssertGreaterThanOrEqual(editor.timeSlider.maxValue, 1500, @"as long as its time events");
+    XCTAssertGreaterThanOrEqual(editor.transport.timeSlider.maxValue, 1500, @"as long as its time events");
     [self namedEvent:@"udtestLight" in:editor];
     [self slide:editor to:1000];
     XCTAssertEqual(editor.player.time, 1000);
-    XCTAssertEqualObjects(editor.timeLabel.stringValue, @"1.00 s");
+    XCTAssertEqualObjects(editor.transport.timeLabel.stringValue, @"1.00 s");
     XCTAssertTrue([self lampIsLitIn:editor], @"lit at 0.5 s: %@", [self var:@"backcolor" of:@"Lamp" in:editor]);
     [self slide:editor to:200];
     XCTAssertEqual(editor.player.time, 200);
     XCTAssertFalse([self lampIsLitIn:editor], @"back before it was lit");
     [self slide:editor to:1000];
     XCTAssertTrue([self lampIsLitIn:editor], @"the named event sent again on the way");
-    [editor restart:nil];
+    [editor.transport restart:nil];
     [self slide:editor to:1000];
     XCTAssertFalse([self lampIsLitIn:editor], @"Restart forgets it");
 }
@@ -425,8 +426,8 @@ static NSString *const UDViewerScript =
     UDWorkspaceWindowController *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
-    XCTAssertFalse([editor.playButton isEnabled], @"a design does not play");
-    XCTAssertTrue([editor.stepButton isEnabled]);
+    XCTAssertFalse([editor.transport.playButton isEnabled], @"a design does not play");
+    XCTAssertTrue([editor.transport.stepButton isEnabled]);
     [self namedEvent:@"udtestLight" in:editor];
     [self slide:editor to:1000];
     XCTAssertTrue([self lampIsLitIn:editor], @"the design drawn at 1 s");

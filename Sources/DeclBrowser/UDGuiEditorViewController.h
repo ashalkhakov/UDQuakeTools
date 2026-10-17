@@ -2,7 +2,7 @@
 #import "UDBaseEditorViewController.h"
 #import "UDGuiView.h"
 
-@class UDGuiPlayer, UDGuiView, rvGEWorkspace;
+@class UDGuiPlayer, UDGuiView, rvGEWorkspace, UDTransportController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,23 +22,20 @@ NS_ASSUME_NONNULL_BEGIN
 /// Run | Design: the GUI run, or designed (the GUI editor's workspace, its
 /// canvas: select, move and size its windows, with Undo).
 @property (nonatomic, readonly) BOOL designing;
-/// The text the player runs: the file's, the source's, or the design's as
-/// it was last edited (not during a drag: its windows are moved in the run
-/// as it goes, and it is run again when it ends).
+/// The text the player was last read from: the file's, the source's, or
+/// the design's (the design's edits since are made in the run as it is).
 @property (nonatomic, copy, readonly, nullable) NSString *runningText;
 @property (nonatomic, strong, readonly, nullable) rvGEWorkspace *designWorkspace;
 @property (weak) IBOutlet NSSegmentedControl *modeControl;
-@property (weak) IBOutlet NSButton *stepButton;
-@property (weak) IBOutlet NSButton *restartButton;
 - (IBAction)changeMode:(nullable id)sender;
 
 @property (strong) IBOutlet NSView *viewerView;
 @property (weak) IBOutlet UDGuiView *guiView;
-@property (weak) IBOutlet NSButton *playButton;
-@property (weak) IBOutlet NSTextField *timeLabel;
-/// The time, a video editor's: dragged, the GUI goes to it, running or
-/// designed.
-@property (weak) IBOutlet NSSlider *timeSlider;
+/// The time controls, the other editors' (UDTransportController's bar,
+/// in transportView): dragged, the GUI goes to it, running or designed;
+/// Play only running.
+@property (weak) IBOutlet NSView *transportView;
+@property (nonatomic, strong, readonly) UDTransportController *transport;
 @property (weak) IBOutlet NSPopUpButton *namedEventPopUp;
 /// The navigator's pane: the GUI's windows (rvGENavigator's), a check box
 /// hiding each in the design.
@@ -86,10 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTableView *stateTable;
 @property (weak) IBOutlet NSTableView *logTable;
 
-- (IBAction)togglePlaying:(nullable id)sender;
-- (IBAction)step:(nullable id)sender;
-- (IBAction)restart:(nullable id)sender;
-- (IBAction)seek:(nullable id)sender;
 /// A menu item's title, sent as a named event.
 - (IBAction)sendNamedEvent:(nullable id)sender;
 /// The + and − under the state: a new key, or the selected one taken off.

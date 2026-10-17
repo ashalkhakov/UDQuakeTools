@@ -101,7 +101,7 @@
     _playing = playing;
 }
 
-- (void)showTime:(int)msec {
+- (void)seekTo:(int)msec {
     self.playing = NO;
     [self renderAtTime:msec];
 }
@@ -215,11 +215,7 @@
     NSImage *picture = [[NSImage alloc] initWithSize:NSMakeSize(image.width, image.height)];
     [picture addRepresentation:rep];
     imageView.image = picture;
-    NSSlider *slider = self.timeSlider;
-    slider.maxValue = self.span;
-    slider.intValue = msec;
-    self.timeLabel.stringValue = [NSString stringWithFormat:@"%.2f s", msec / 1000.0];
-    self.playButton.title = self.playing ? @"Pause" : @"Play";
+    [self.transport update];
     id target = self.target;
     if (target != nil && self.action != NULL) {
         [NSApp sendAction:self.action to:target from:self];

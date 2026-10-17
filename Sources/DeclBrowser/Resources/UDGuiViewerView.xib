@@ -10,13 +10,9 @@
             <connections>
                 <outlet property="viewerView" destination="GUV-root" id="GUV-o-viewer"/>
                 <outlet property="guiView" destination="GUV-gui" id="GUV-o-gui"/>
-                <outlet property="playButton" destination="GUV-play" id="GUV-o-play"/>
-                <outlet property="timeLabel" destination="GUV-time" id="GUV-o-time"/>
-                <outlet property="timeSlider" destination="GUV-slider" id="GUV-o-slider"/>
+                <outlet property="transportView" destination="GUV-transport" id="GUV-o-transport"/>
                 <outlet property="namedEventPopUp" destination="GUV-events" id="GUV-o-events"/>
                 <outlet property="modeControl" destination="GUV-mode" id="GUV-o-mode"/>
-                <outlet property="stepButton" destination="GUV-step" id="GUV-o-step"/>
-                <outlet property="restartButton" destination="GUV-restart" id="GUV-o-restart"/>
                 <outlet property="stateTable" destination="GUV-state" id="GUV-o-state"/>
                 <outlet property="logTable" destination="GUV-log" id="GUV-o-log"/>
                 <outlet property="stateView" destination="GUV-tab-state-v" id="GUV-o-stateView"/>
@@ -41,56 +37,10 @@
             <rect key="frame" x="0.0" y="0.0" width="920" height="560"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button toolTip="Pause or play the GUI's clock" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-play">
-                    <rect key="frame" x="6" y="2" width="84" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="push" title="Pause" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-play-c">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="togglePlaying:" target="-2" id="GUV-play-a"/>
-                    </connections>
-                </button>
-                <button toolTip="One frame on (16 ms)" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-step">
-                    <rect key="frame" x="86" y="2" width="70" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="push" title="Step" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-step-c">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="step:" target="-2" id="GUV-step-a"/>
-                    </connections>
-                </button>
-                <button toolTip="Load the GUI again, from its time 0" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-restart">
-                    <rect key="frame" x="152" y="2" width="84" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="push" title="Restart" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-restart-c">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="restart:" target="-2" id="GUV-restart-a"/>
-                    </connections>
-                </button>
-                <slider toolTip="The GUI's time: drag to go to it" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-slider">
-                    <rect key="frame" x="242" y="8" width="580" height="20"/>
+                <customView toolTip="time controls" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-transport">
+                    <rect key="frame" x="6" y="2" width="908" height="56"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="10000" tickMarkPosition="above" sliderType="linear" id="GUV-slider-c"/>
-                    <connections>
-                        <action selector="seek:" target="-2" id="GUV-slider-a"/>
-                    </connections>
-                </slider>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-time">
-                    <rect key="frame" x="830" y="11" width="84" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="0.00 s" id="GUV-time-c">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
+                </customView>
                 <popUpButton toolTip="Send the GUI a named event, as the game does" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-events">
                     <rect key="frame" x="146" y="529" width="180" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -119,7 +69,7 @@
                     </connections>
                 </segmentedControl>
                 <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-gui" customClass="UDGuiView">
-                    <rect key="frame" x="0.0" y="38" width="920" height="484"/>
+                    <rect key="frame" x="0.0" y="62" width="920" height="460"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </customView>
             </subviews>

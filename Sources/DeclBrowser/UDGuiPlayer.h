@@ -1,4 +1,5 @@
 #import <AppKit/AppKit.h>
+#import "UDTransportController.h"
 
 @class UDWorkspace, idUserInterfaceManager, idUserInterfaceLocal, UDTriangleList, UDImage;
 
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  * What the GUI asks of the game is logged: the commands HandleEvent
  * returns and the ones it buffers, the sounds it plays, the warnings.
  */
-@interface UDGuiPlayer : NSObject
+@interface UDGuiPlayer : NSObject <UDTransportPlayable>
 
 - (instancetype)initWithWorkspace:(nullable UDWorkspace *)workspace;
 
@@ -40,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL playing;
 /// The GUI's time, in milliseconds since it was activated.
 @property (nonatomic, readonly) int time;
+/// How long its timeline is, for a slider: its windows' last "onTime" and
+/// a second (5 s at the least).
+@property (nonatomic, readonly) int span;
 /// One frame on: USERCMD_MSEC later, drawn. (Paused, the clock is still.)
 - (void)step;
 /// Whether its GUIs load as the GUI editor loads them (com_editors): every

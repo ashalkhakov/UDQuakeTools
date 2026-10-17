@@ -1,3 +1,4 @@
+#import "UDTransportController.h"
 #import "UDDeclBrowserTestCase.h"
 
 #import "UDDeclDocument.h"
@@ -837,14 +838,14 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
 
     // The slider dragged: paused there, that frame drawn.
-    editor.timeSlider.intValue = 600;
-    [NSApp sendAction:editor.timeSlider.action to:editor.timeSlider.target from:editor.timeSlider];
+    editor.transport.timeSlider.intValue = 600;
+    [NSApp sendAction:editor.transport.timeSlider.action to:editor.transport.timeSlider.target from:editor.transport.timeSlider];
     XCTAssertFalse(editor.preview.playing);
     XCTAssertEqual(editor.preview.time, 600);
     XCTAssertEqual(editor.timelineView.time, 600);
-    XCTAssertEqualObjects(editor.timeLabel.stringValue, @"0.60 s");
-    XCTAssertEqualObjects(editor.playButton.title, @"Play");
-    XCTAssertEqual((int)editor.timeSlider.maxValue, editor.preview.span, @"the slider over the FX's loop");
+    XCTAssertEqualObjects(editor.transport.timeLabel.stringValue, @"0.60 s");
+    XCTAssertEqualObjects(editor.transport.playButton.title, @"Play");
+    XCTAssertEqual((int)editor.transport.timeSlider.maxValue, editor.preview.span, @"the slider over the FX's loop");
 
     // An edit while paused: the same time, drawn again.
     [editor.actionsController setValue:@"0.25" forKeyPath:@"selection.duration"];
@@ -852,9 +853,17 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqual(editor.preview.time, 600);
 
     // Play: on from where it was.
-    [NSApp sendAction:editor.playButton.action to:editor.playButton.target from:editor.playButton];
+    [NSApp sendAction:editor.transport.playButton.action to:editor.transport.playButton.target from:editor.transport.playButton];
     XCTAssertTrue(editor.preview.playing);
-    XCTAssertEqualObjects(editor.playButton.title, @"Pause");
+    XCTAssertEqualObjects(editor.transport.playButton.title, @"Pause");
+
+    // Step: a frame on, paused.
+    [NSApp sendAction:editor.transport.playButton.action to:editor.transport.playButton.target from:editor.transport.playButton];
+    XCTAssertFalse(editor.preview.playing);
+    int before = editor.preview.time;
+    [NSApp sendAction:editor.transport.stepButton.action to:editor.transport.stepButton.target from:editor.transport.stepButton];
+    XCTAssertFalse(editor.preview.playing);
+    XCTAssertEqual(editor.preview.time, before + 16);
 }
 
 - (void)testTheMaterialPreviewDrawsItAsTheEngineDoes {

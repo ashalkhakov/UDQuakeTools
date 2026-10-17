@@ -2,11 +2,13 @@
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspace.h"
 #import "UDParticlePreview.h"
+#import "UDTransportController.h"
 #import "idDeclManager.h"
 
 static UDDiagnosticSource const UDParticleReferencesSource = @"references";
 
 @interface UDParticleEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDTransportController *transport;
 @property (nonatomic, strong, readwrite, nullable) UDParticlePreview *preview;
 @end
 
@@ -26,28 +28,16 @@ static UDDiagnosticSource const UDParticleReferencesSource = @"references";
     }
     if (self.previewView != nil) {
         self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
-        self.preview.timeSlider = self.timeSlider;
-        self.preview.timeLabel = self.timeLabel;
-        self.preview.playButton = self.playButton;
+        self.transport = [[UDTransportController alloc] init];
+        self.transport.playable = self.preview;
+        self.preview.transport = self.transport;
+        [self.transport installInView:self.transportView];
     }
 }
 
 - (void)editingContextDidChange {
     [self checkReferences];
     self.preview.stages = self.particle.stages;
-}
-
-- (IBAction)restartPreview:(id)sender {
-    [self.preview restart];
-}
-
-- (IBAction)scrubPreview:(id)sender {
-    [self.preview showTime:[sender intValue]];
-}
-
-- (IBAction)togglePreview:(id)sender {
-    self.preview.playing = !self.preview.playing;
-    self.playButton.title = self.preview.playing ? @"Pause" : @"Play";
 }
 
 #pragma mark - The stages (AddStage, RemoveStage)

@@ -49,6 +49,7 @@ DeclBrowserTests_OBJC_FILES = \
     $(APP_DIR)/UDMaterialEditorViewController.m \
     $(APP_DIR)/UDParticlePreview.m \
     $(APP_DIR)/UDGuiPlayer.m \
+    $(APP_DIR)/UDTransportController.m \
     $(APP_DIR)/UDGuiView.m \
     $(APP_DIR)/UDGuiGLView.m \
     $(APP_DIR)/UDTabBadge.m \
@@ -93,6 +94,7 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDSoundEditorView.xib \
     $(APP_DIR)/Resources/UDParticleEditorView.xib \
     $(APP_DIR)/Resources/UDGuiViewerView.xib \
+    $(APP_DIR)/Resources/UDTransportBar.xib \
     $(APP_DIR)/Resources/UDFXEditorView.xib \
     $(APP_DIR)/Resources/UDAFEditorView.xib \
     $(APP_DIR)/Resources/UDMaterialEditorView.xib \

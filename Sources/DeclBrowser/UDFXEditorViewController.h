@@ -1,6 +1,6 @@
 #import "UDDeclEditorViewController.h"
 
-@class UDDeclFX, UDFXTimelineView, UDParticlePreview;
+@class UDDeclFX, UDFXTimelineView, UDParticlePreview, UDTransportController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,21 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSImageView *previewView;
 @property (weak) IBOutlet UDFXTimelineView *timelineView;
 @property (nonatomic, strong, readonly, nullable) UDParticlePreview *preview;
-/// The preview's time: a slider (dragged, it pauses there), its label, and
-/// Play/Pause.
-@property (weak) IBOutlet NSSlider *timeSlider;
-@property (weak) IBOutlet NSTextField *timeLabel;
-@property (weak) IBOutlet NSButton *playButton;
+/// The preview's time controls (UDTransportController's bar, in
+/// transportView).
+@property (weak) IBOutlet NSView *transportView;
+@property (nonatomic, strong, readonly, nullable) UDTransportController *transport;
 
 /// + adds the default definition's action after the selection; - takes the
 /// selected one off.
 - (IBAction)addOrRemoveAction:(nullable id)sender;
-/// Plays the preview from the start again.
-- (IBAction)restartPreview:(nullable id)sender;
-/// The preview paused at the slider's time.
-- (IBAction)scrubPreview:(nullable id)sender;
-/// The preview played, or paused where it is.
-- (IBAction)togglePreview:(nullable id)sender;
 
 @end
 

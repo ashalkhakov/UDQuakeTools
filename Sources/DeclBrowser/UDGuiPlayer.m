@@ -126,8 +126,22 @@
     self.lastTick = [NSDate date];
     self.replayed = 0;
     self.visibilityVars = nil;
+    _span = MAX(5000, [UDGuiPlayer _timelineLengthOf:[self.gui getDesktop]]);
     [self _handleCommand:[self.gui activate:YES time:self.time]];
     return loaded;
+}
+
+/// The latest "onTime" of @a window's and its children's, and a second.
++ (int)_timelineLengthOf:(nullable idWindow *)window {
+    if (window == nil) return 0;
+    int length = 0;
+    for (idTimeLineEvent *event in window->timeLineEvents) {
+        length = MAX(length, event->time + 1000);
+    }
+    for (int i = 0; i < [window getChildCount]; i++) {
+        length = MAX(length, [self _timelineLengthOf:[window getChild:i]]);
+    }
+    return length;
 }
 
 #pragma mark - The clock

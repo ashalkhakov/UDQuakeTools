@@ -1,4 +1,5 @@
 #import <AppKit/AppKit.h>
+#import "UDTransportController.h"
 
 @class UDFXAction, UDFXActionState, UDParticleStage, UDWorkspace;
 
@@ -12,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  * while its view is in a window; an FX from its start again at its
  * Duration, as a "test" fx entity does.
  */
-@interface UDParticlePreview : NSObject
+@interface UDParticlePreview : NSObject <UDTransportPlayable>
 
 - (instancetype)initWithImageView:(NSImageView *)imageView workspace:(nullable UDWorkspace *)workspace;
 
@@ -34,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Whether it plays (YES at first); paused, it shows the time it is at.
 @property (nonatomic) BOOL playing;
 /// Paused at @a msec, that frame drawn: a time slider's.
-- (void)showTime:(int)msec;
+- (void)seekTo:(int)msec;
 /// The time it goes over, in milliseconds, from its start again after it:
 /// an FX's Duration and a frame; a particle system's stages' time offsets,
 /// and their cycles (two for a system that does not stop).
@@ -45,11 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// Duration in milliseconds.
 @property (nonatomic, copy, readonly) NSArray<UDFXActionState *> *fxStates;
 @property (nonatomic, readonly) int fxDuration;
-/// The controls it keeps up to date at each frame: a time slider (its range
-/// the span), a label of the time, a Play/Pause button.
-@property (nonatomic, weak, nullable) NSSlider *timeSlider;
-@property (nonatomic, weak, nullable) NSTextField *timeLabel;
-@property (nonatomic, weak, nullable) NSButton *playButton;
+/// The time controls it keeps up to date at each frame.
+@property (nonatomic, weak, nullable) UDTransportController *transport;
 /// Told the time at each frame drawn (an FX editor's timeline).
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;

@@ -60,11 +60,33 @@ NS_ASSUME_NONNULL_BEGIN
 /// The GUI's 640x480 in the view, and the scale it is drawn at.
 @property (nonatomic, readonly) NSRect guiRect;
 @property (nonatomic, readonly) CGFloat scale;
+
+/// rvGEWorkspace's zoom: one of its levels (EZoomLevel, 1 to 8: 25% to
+/// 300%), or UDGuiZoomFit, the GUI fitted to the view (not the engine's;
+/// the view opens so). Changed, the GUI centered again.
+@property (nonatomic) NSInteger zoom;
+/// The scale as a percentage, as the status bar shows it.
+@property (nonatomic, readonly) int zoomPercent;
+/// ZoomIn and ZoomOut: a level up or down (from fitted, the next one past
+/// the fitted scale); the wheel's with ⌘, and a pinch's.
+- (IBAction)zoomIn:(nullable id)sender;
+- (IBAction)zoomOut:(nullable id)sender;
+- (IBAction)zoomToFit:(nullable id)sender;
+/// How far the GUI is scrolled from centered, in the view's points (the
+/// engine's scroll bars): only while it is larger than the view.
+@property (nonatomic) NSPoint scrollOffset;
+/// Told after the zoom or the scroll changed (target-action; the sender
+/// is the view).
+@property (nonatomic, weak, nullable) id zoomTarget;
+@property (nonatomic, nullable) SEL zoomAction;
 /// A point of the view in the GUI's space (y down), and back.
 - (NSPoint)guiPointFromView:(NSPoint)point;
 - (NSPoint)viewPointFromGui:(NSPoint)point;
 
 @end
+
+/// UDGuiView's zoom when the GUI is fitted to the view.
+extern const NSInteger UDGuiZoomFit;
 
 /// The engine's key (keyNum_t) for a key event's key; 0 when it has none.
 int UDGuiKeyForEvent(NSEvent *event);

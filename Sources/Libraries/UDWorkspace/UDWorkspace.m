@@ -13,7 +13,10 @@
 #import "idDeclManager.h"
 #import "UDDeclIncrementalStore.h"
 
+NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWorkspaceToolSettingsDidChangeNotification";
+
 @implementation UDWorkspace {
+    NSDictionary *_toolSettings;
     NSPersistentStoreCoordinator *_declStoreCoordinator;
     id _startupTarget;             // while a background startup runs
     SEL _startupAction;
@@ -24,8 +27,23 @@
     if (self) {
         _rootDirectory = [rootDir copy];
         [self applySettingsFromDictionary:dict];
+        // the tools' own, not the settings sheet's (which applies a copy
+        // made while they may change)
+        _toolSettings = [dict[@"tools"] isKindOfClass:[NSDictionary class]] ? dict[@"tools"] : @{};
     }
     return self;
+}
+
+- (nullable NSDictionary *)settingsForTool:(NSString *)tool {
+    return _toolSettings[tool];
+}
+
+- (void)setSettings:(nullable NSDictionary *)settings forTool:(NSString *)tool {
+    NSMutableDictionary *tools = [_toolSettings mutableCopy] ?: [NSMutableDictionary dictionary];
+    tools[tool] = settings;
+    _toolSettings = tools;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UDWorkspaceToolSettingsDidChangeNotification object:self
+                                                      userInfo:@{@"tool": tool}];
 }
 
 - (void)applySettingsFromDictionary:(NSDictionary *)dict {
@@ -67,7 +85,7 @@
 }
 
 - (NSDictionary *)dictionaryRepresentation {
-    return @{
+    NSMutableDictionary *dict = [@{
         @"game": [UDGame gameWithType:self.game].identifier,
         @"pakFileExtension": self.pakFileExtension ?: @"",
         @"gamedir": self.gamedir ?: @"",
@@ -85,7 +103,11 @@
         @"com_SingleDeclFile": @(self.com_SingleDeclFile),
         @"com_singleDeclFileName": self.com_singleDeclFileName,
         @"com_singleDeclFileWriteMode": @(self.com_singleDeclFileWriteMode)
-    };
+    } mutableCopy];
+    if (_toolSettings.count > 0) {
+        dict[@"tools"] = _toolSettings;
+    }
+    return dict;
 }
 
 // ---------------------------------------------------------

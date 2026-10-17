@@ -36,6 +36,7 @@ Quarry_OBJC_FILES = \
     Editors/Decls/UDMaterialEditorViewController.m \
     Preview/UDParticlePreview.m \
     GUIEditor/UDGuiPlayer.m \
+    GUIEditor/UDGuiEditorOptionsController.m \
     Preview/UDTransportController.m \
     GUIEditor/UDGuiView.m \
     GUIEditor/UDGuiGLView.m \
@@ -82,6 +83,7 @@ Quarry_RESOURCE_FILES = \
     Resources/UDParticleEditorView.xib \
     Resources/UDGuiViewerView.xib \
     Resources/UDTransportBar.xib \
+    Resources/UDGuiEditorOptions.xib \
     Resources/UDFXEditorView.xib \
     Resources/UDAFEditorView.xib \
     Resources/UDMaterialEditorView.xib \

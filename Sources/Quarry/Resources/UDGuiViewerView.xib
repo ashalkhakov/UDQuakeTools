@@ -11,6 +11,7 @@
                 <outlet property="viewerView" destination="GUV-root" id="GUV-o-viewer"/>
                 <outlet property="guiView" destination="GUV-gui" id="GUV-o-gui"/>
                 <outlet property="transportView" destination="GUV-transport" id="GUV-o-transport"/>
+                <outlet property="statusField" destination="GUV-status" id="GUV-o-status"/>
                 <outlet property="namedEventPopUp" destination="GUV-events" id="GUV-o-events"/>
                 <outlet property="modeControl" destination="GUV-mode" id="GUV-o-mode"/>
                 <outlet property="stateTable" destination="GUV-state" id="GUV-o-state"/>
@@ -68,8 +69,17 @@
                         <action selector="changeMode:" target="-2" id="GUV-mode-a"/>
                     </connections>
                 </segmentedControl>
+                <textField toolTip="The triangles drawn, and the zoom" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-status">
+                    <rect key="frame" x="6" y="60" width="908" height="16"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Tris: 0   Zoom: 100%" id="GUV-status-c">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-gui" customClass="UDGuiView">
-                    <rect key="frame" x="0.0" y="62" width="920" height="460"/>
+                    <rect key="frame" x="0.0" y="78" width="920" height="444"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </customView>
             </subviews>

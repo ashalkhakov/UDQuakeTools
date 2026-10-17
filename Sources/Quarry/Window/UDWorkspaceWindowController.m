@@ -718,6 +718,46 @@ static const CGFloat UDEditorsMinimum = 400;
     }
 }
 
+#pragma mark - The GUI editor's View commands
+
+- (IBAction)toggleGrid:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)toggleGridSnap:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)showGuiEditorOptions:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)toggleStatusBar:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)zoomIn:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)zoomOut:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+- (IBAction)zoomToFit:(id)sender {
+    [self _sendToEditor:_cmd from:sender];
+}
+
+/// A command the selected editor takes when it has it.
+- (void)_sendToEditor:(SEL)action from:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor respondsToSelector:action]) {
+        [NSApp sendAction:action to:editor from:sender];
+    } else {
+        NSBeep();
+    }
+}
+
 #pragma mark - Jump to Definition
 
 - (IBAction)jumpToDefinition:(id)sender {
@@ -759,7 +799,10 @@ static const CGFloat UDEditorsMinimum = 400;
                [(UDTextEditorViewController *)editor validateMenuItem:menuItem];
     }
 
-    if (action == @selector(copy:) || action == @selector(paste:)) {
+    if (action == @selector(copy:) || action == @selector(paste:) || action == @selector(toggleGrid:)
+        || action == @selector(toggleGridSnap:) || action == @selector(showGuiEditorOptions:)
+        || action == @selector(toggleStatusBar:) || action == @selector(zoomIn:) || action == @selector(zoomOut:)
+        || action == @selector(zoomToFit:)) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
         return [editor respondsToSelector:action] &&
                (![editor respondsToSelector:@selector(validateMenuItem:)] || [(id)editor validateMenuItem:menuItem]);

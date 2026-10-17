@@ -383,4 +383,49 @@ static NSString *const UDCanvasGui =
     XCTAssertEqualObjects(names, (@[@"Button", @"Panel", @"Desktop"]), @"the child first, the desktop last");
 }
 
+#pragma mark - The options (GEOptions)
+
+- (void)testTheOptionsAreKeptAsTheEnginesRegistry {
+    rvGEOptions *options = [[rvGEOptions alloc] init];
+    XCTAssertFalse(options.gridVisible, @"rvGEOptions::Init's defaults");
+    XCTAssertEqual(options.gridWidth, 10);
+    XCTAssertTrue(options.statusBarVisible);
+    XCTAssertTrue(options.ignoreDesktopSelect);
+
+    options.gridVisible = YES;
+    options.gridSnap = YES;
+    options.gridWidth = 16;
+    options.gridHeight = 8;
+    options.gridColor = idVec4_Make(1, 0.5f, 0.25f, 0.5f);
+    options.selectionColor = idVec4_Make(0, 1, 0, 1);
+    options.ignoreDesktopSelect = NO;
+    options.statusBarVisible = NO;
+    options.lastOptionsPage = 1;
+    NSDictionary *registry = options.registry;
+    XCTAssertEqualObjects(registry[@"gridWidth"], @16, @"the engine's registry keys");
+    XCTAssertEqualObjects(registry[@"gridColor"], (@[@1, @0.5, @0.25, @1]), @"the grid's color saved opaque");
+
+    rvGEOptions *loaded = [[rvGEOptions alloc] init];
+    [loaded loadRegistry:registry];
+    XCTAssertTrue(loaded.gridVisible);
+    XCTAssertTrue(loaded.gridSnap);
+    XCTAssertEqual(loaded.gridWidth, 16);
+    XCTAssertEqual(loaded.gridHeight, 8);
+    XCTAssertEqual(loaded.gridColor.y, 0.5f);
+    XCTAssertEqual(loaded.gridColor.w, 1.0f);
+    XCTAssertEqual(loaded.selectionColor.y, 1.0f);
+    XCTAssertFalse(loaded.ignoreDesktopSelect);
+    XCTAssertFalse(loaded.statusBarVisible);
+    XCTAssertEqual(loaded.lastOptionsPage, 1);
+
+    // what the registry lacks keeps its default
+    rvGEOptions *partial = [[rvGEOptions alloc] init];
+    [partial loadRegistry:@{ @"gridSnap": @YES, @"gridColor": @"not a color" }];
+    XCTAssertTrue(partial.gridSnap);
+    XCTAssertEqual(partial.gridWidth, 10);
+    XCTAssertEqual(partial.gridColor.x, 0.2f);
+    [partial loadRegistry:nil];
+    XCTAssertTrue(partial.gridSnap);
+}
+
 @end

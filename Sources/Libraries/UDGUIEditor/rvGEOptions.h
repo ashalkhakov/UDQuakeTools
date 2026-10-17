@@ -2,8 +2,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * rvGEOptions.h — the GUI editor's options (tools/guied/GEOptions.h,
  * GEOptions.cpp), ported: the grid, snapping to it, the colors the
- * workspace draws with. The engine kept them in the registry; here the
- * application keeps them (its defaults are the engine's).
+ * workspace draws with, the status bar shown. The engine kept them in the
+ * registry (Software\id Software\DOOM3\Tools\GUIEditor); here, a
+ * dictionary by the registry's names, which the workspace they are used in
+ * keeps (UDWorkspace's toolSettings).
  */
 
 #import <Foundation/Foundation.h>
@@ -21,6 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL ignoreDesktopSelect;  // YES
 @property (nonatomic) idVec4 workspaceColor;     // 0 0 0 1
 @property (nonatomic) idVec4 selectionColor;     // 0.5 0.5 1 1
+@property (nonatomic) BOOL statusBarVisible;     // YES
+/// The options dialog's page last shown.
+@property (nonatomic) int lastOptionsPage;       // 0
+
+/// Load: the options from @a registry (each one not in it as it was).
+- (void)loadRegistry:(nullable NSDictionary *)registry;
+/// Save: the options as a registry to keep.
+- (NSDictionary *)registry;
 
 /// SnapRectToGrid: the sides asked for moved to the nearest grid line.
 - (void)snapRectToGrid:(idRectangle *)rect snapLeft:(BOOL)snapLeft snapTop:(BOOL)snapTop

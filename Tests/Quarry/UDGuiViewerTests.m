@@ -17,6 +17,8 @@
 #import "idDict.h"
 #import "rvGEWorkspace.h"
 #import "rvGEWindowWrapper.h"
+#import "rvGEOptions.h"
+#import "UDGuiEditorOptionsController.h"
 #import "rvGESelectionMgr.h"
 #import "UDOverlay.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
@@ -815,6 +817,139 @@ static NSString *const UDViewerScript =
     XCTAssertEqualObjects([editor.designWorkspace.selections[0] getName], @"Go1", @"a new window, named apart");
     XCTAssertTrue([editor.designWorkspace.text containsString:@"udtest_go"], @"its scripts with it");
     XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Paste");
+}
+
+#pragma mark - The options (GEOptions, GEOptionsDlg)
+
+- (BOOL)validate:(SEL)action in:(UDWorkspaceWindowController *)controller state:(NSControlStateValue *)state {
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"" action:action keyEquivalent:@""];
+    BOOL enabled = [controller validateMenuItem:item];
+    if (state != NULL) *state = item.state;
+    return enabled;
+}
+
+- (void)testTheGridCommandsAreKeptInTheWorkspace {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    rvGEOptions *options = editor.designWorkspace.options;
+    NSControlStateValue state;
+    XCTAssertTrue([self validate:@selector(toggleGrid:) in:controller state:&state], @"the View menu's, for the GUI's tab");
+    XCTAssertEqual(state, NSControlStateValueOff, @"no grid at first");
+
+    [NSApp sendAction:@selector(toggleGrid:) to:controller from:nil];
+    XCTAssertTrue(options.gridVisible);
+    [self validate:@selector(toggleGrid:) in:controller state:&state];
+    XCTAssertEqual(state, NSControlStateValueOn, @"checked");
+    [NSApp sendAction:@selector(toggleGridSnap:) to:controller from:nil];
+    XCTAssertTrue(options.gridSnap);
+
+    XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"gridVisible"], @YES, @"saved in the workspace");
+    XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"gridSnap"], @YES);
+    XCTAssertTrue([controller.document isDocumentEdited], @"which is saved with it");
+
+    // set elsewhere (another GUI's tab): this one's follow
+    NSMutableDictionary *registry = [options.registry mutableCopy];
+    registry[@"gridWidth"] = @25;
+    registry[@"gridVisible"] = @NO;
+    [editor.workspace setSettings:registry forTool:@"GUIEditor"];
+    XCTAssertEqual(options.gridWidth, 25);
+    XCTAssertFalse(options.gridVisible);
+}
+
+- (void)testTheOptionsSheetSetsTheOptions {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    rvGEOptions *options = editor.designWorkspace.options;
+    XCTAssertTrue([self validate:@selector(showGuiEditorOptions:) in:controller state:NULL]);
+
+    __block BOOL shown = NO;
+    void (^fill)(NSWindow *) = ^(NSWindow *sheet) {
+        shown = YES;
+        UDGuiEditorOptionsController *sheetController = sheet.windowController;
+        XCTAssertEqualObjects(sheetController.gridWidthField.stringValue, @"10", @"the options' own");
+        [self selectTabLabeled:@"Grid" inView:sheet.contentView];
+        [self typeText:@"32" intoField:sheetController.gridWidthField];
+        [[self buttonTitled:@"Show the grid" inView:sheet.contentView] performClick:nil];
+        [[self buttonTitled:@"OK" inView:sheet.contentView] performClick:nil];
+    };
+#ifdef GNUSTEP
+    // a sheet is a modal window there, run by -beginSheet:…
+    [self whenModalWindowAppears:fill];
+    [NSApp sendAction:@selector(showGuiEditorOptions:) to:controller from:nil];
+#else
+    [NSApp sendAction:@selector(showGuiEditorOptions:) to:controller from:nil];
+    NSWindow *sheet = controller.window.attachedSheet;
+    XCTAssertNotNil(sheet, @"a sheet over the workspace's window");
+    if (sheet != nil) fill(sheet);
+    [self spinUntil:^BOOL{ return controller.window.attachedSheet == nil; } timeout:5];
+#endif
+    XCTAssertTrue(shown);
+    XCTAssertEqual(options.gridWidth, 32);
+    XCTAssertTrue(options.gridVisible);
+    XCTAssertEqual(options.lastOptionsPage, 1, @"the page shown kept");
+    XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"gridWidth"], @32, @"saved in the workspace");
+}
+
+#pragma mark - Zoom and the status bar (GEWorkspace, GEStatusBar)
+
+- (void)testTheZoomGoesByTheEnginesLevels {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    UDGuiView *view = editor.guiView;
+    view.frameSize = NSMakeSize(800, 500);
+    XCTAssertEqual(view.zoom, UDGuiZoomFit, @"fitted as it opens");
+    XCTAssertEqualWithAccuracy(view.scale, 500.0 / 480.0, 0.001);
+
+    [NSApp sendAction:@selector(zoomIn:) to:controller from:nil];
+    XCTAssertEqual(view.zoom, 6, @"from fitted (104%), the next level up: 150%");
+    XCTAssertEqual(view.zoomPercent, 150);
+    XCTAssertTrue([editor.statusField.stringValue hasSuffix:@"Zoom: 150%"], @"%@", editor.statusField.stringValue);
+    XCTAssertEqualWithAccuracy(NSWidth(view.guiRect), 960, 0.5);
+    XCTAssertEqualWithAccuracy(editor.designWorkspace.rect.w, 960, 0.5, @"the design where the GUI is drawn");
+
+    // larger than the view: the wheel scrolls it, as far as its edges
+    view.scrollOffset = NSMakePoint(1000, 1000);
+    XCTAssertEqualWithAccuracy(view.scrollOffset.x, (960 - 800) / 2.0, 0.5);
+    XCTAssertEqualWithAccuracy(view.scrollOffset.y, (720 - 500) / 2.0, 0.5);
+    XCTAssertEqualWithAccuracy(NSMaxX(view.guiRect), 800, 1, @"its right edge at the view's");
+
+    [NSApp sendAction:@selector(zoomIn:) to:controller from:nil];
+    [NSApp sendAction:@selector(zoomIn:) to:controller from:nil];
+    [NSApp sendAction:@selector(zoomIn:) to:controller from:nil];
+    XCTAssertEqual(view.zoomPercent, 300, @"ZoomIn stops at the last level");
+    XCTAssertEqual(view.scrollOffset.x, 0, @"centered again");
+    for (int i = 0; i < 10; i++) [NSApp sendAction:@selector(zoomOut:) to:controller from:nil];
+    XCTAssertEqual(view.zoomPercent, 25, @"ZoomOut stops at 25%");
+    XCTAssertEqual(view.scrollOffset.y, 0, @"smaller than the view: nothing to scroll");
+    [NSApp sendAction:@selector(zoomToFit:) to:controller from:nil];
+    XCTAssertEqual(view.zoom, UDGuiZoomFit);
+    [NSApp sendAction:@selector(zoomOut:) to:controller from:nil];
+    XCTAssertEqual(view.zoomPercent, 100, @"from fitted (104%), the next level down");
+}
+
+- (void)testTheStatusBarIsShownAsTheOptionsHaveIt {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    NSTextField *status = editor.statusField;
+    XCTAssertFalse(status.isHidden, @"shown by default");
+    XCTAssertTrue([status.stringValue hasPrefix:@"Tris: "], @"%@", status.stringValue);
+    XCTAssertGreaterThan([[status.stringValue substringFromIndex:6] intValue], 0, @"the triangles drawn: %@", status.stringValue);
+    NSRect canvas = editor.guiView.frame;
+
+    NSControlStateValue state;
+    XCTAssertTrue([self validate:@selector(toggleStatusBar:) in:controller state:&state]);
+    XCTAssertEqual(state, NSControlStateValueOn);
+    [NSApp sendAction:@selector(toggleStatusBar:) to:controller from:nil];
+    XCTAssertTrue(status.isHidden);
+    XCTAssertGreaterThan(NSHeight(editor.guiView.frame), NSHeight(canvas), @"the canvas takes its place");
+    XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"statusBarVisible"], @NO, @"kept in the options");
+    [NSApp sendAction:@selector(toggleStatusBar:) to:controller from:nil];
+    XCTAssertFalse(status.isHidden);
+    XCTAssertEqual(NSHeight(editor.guiView.frame), NSHeight(canvas));
 }
 
 #pragma mark - GL

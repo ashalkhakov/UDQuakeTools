@@ -15,6 +15,13 @@
 #define UDCompositeCopy NSCompositeCopy
 #endif
 
+const NSInteger UDGuiZoomFit = 0;
+
+/// GEWorkspace.cpp's g_ZoomScales, by EZoomLevel (ZOOM_MIN's 0 is not a
+/// level: fitted, here).
+static const CGFloat UDGuiZoomScales[] = { 0, 0.25, 0.33, 0.50, 0.66, 1.0, 1.5, 2.0, 3.0 };
+enum { UDGuiZoomMin = 0, UDGuiZoomMax = sizeof(UDGuiZoomScales) / sizeof(UDGuiZoomScales[0]) };
+
 int UDGuiKeyForEvent(NSEvent *event) {
     NSString *characters = event.charactersIgnoringModifiers;
     if (characters.length == 0) return 0;
@@ -53,6 +60,7 @@ int UDGuiKeyForEvent(NSEvent *event) {
     UDGuiGLView *_glView;
     NSImage *_picture;
     UDOverlay *_overlay;
+    CGFloat _magnification;     // a pinch's, since it last zoomed
 }
 
 - (instancetype)initWithFrame:(NSRect)frame {
@@ -131,17 +139,107 @@ int UDGuiKeyForEvent(NSEvent *event) {
 
 #pragma mark - Geometry
 
-- (CGFloat)scale {
+- (CGFloat)_fittedScale {
     NSRect bounds = self.bounds;
     CGFloat scale = MIN(NSWidth(bounds) / VIRTUAL_WIDTH, NSHeight(bounds) / VIRTUAL_HEIGHT);
     return scale > 0 ? scale : 1;
 }
 
+/// GetZoomScale
+- (CGFloat)scale {
+    if (self.zoom > UDGuiZoomMin && self.zoom < UDGuiZoomMax) {
+        return UDGuiZoomScales[self.zoom];
+    }
+    return [self _fittedScale];
+}
+
+/// UpdateRectangle: centered, and moved by the scroll position.
 - (NSRect)guiRect {
     NSRect bounds = self.bounds;
     CGFloat scale = self.scale;
     NSSize size = NSMakeSize(VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale);
-    return NSMakeRect(floor(NSMidX(bounds) - size.width / 2), floor(NSMidY(bounds) - size.height / 2), size.width, size.height);
+    NSPoint offset = self.scrollOffset;
+    return NSMakeRect(floor(NSMidX(bounds) - size.width / 2 - offset.x), floor(NSMidY(bounds) - size.height / 2 - offset.y),
+                      size.width, size.height);
+}
+
+#pragma mark - Zoom
+
+- (int)zoomPercent {
+    return (int)(self.scale * 100.0f);
+}
+
+- (void)setZoom:(NSInteger)zoom {
+    if (zoom <= UDGuiZoomMin || zoom >= UDGuiZoomMax) zoom = UDGuiZoomFit;
+    _zoom = zoom;
+    _scrollOffset = NSZeroPoint;
+    [self _layoutChanged];
+}
+
+/// The scroll kept where the GUI still covers the view (none along a side
+/// it is smaller on).
+- (NSPoint)_clampedScroll:(NSPoint)offset {
+    NSRect bounds = self.bounds;
+    CGFloat scale = self.scale;
+    CGFloat maxX = MAX(0, (VIRTUAL_WIDTH * scale - NSWidth(bounds)) / 2);
+    CGFloat maxY = MAX(0, (VIRTUAL_HEIGHT * scale - NSHeight(bounds)) / 2);
+    return NSMakePoint(MAX(-maxX, MIN(maxX, offset.x)), MAX(-maxY, MIN(maxY, offset.y)));
+}
+
+- (void)setScrollOffset:(NSPoint)offset {
+    _scrollOffset = [self _clampedScroll:offset];
+    [self _layoutChanged];
+}
+
+/// ZoomIn
+- (IBAction)zoomIn:(id)sender {
+    NSInteger zoom = self.zoom;
+    if (zoom == UDGuiZoomFit) {
+        CGFloat fitted = [self _fittedScale];
+        for (zoom = UDGuiZoomMin + 1; zoom < UDGuiZoomMax - 1 && UDGuiZoomScales[zoom] <= fitted + 0.001; zoom++) {
+        }
+    } else {
+        zoom = zoom + 1;
+        if (zoom >= UDGuiZoomMax) {
+            zoom = UDGuiZoomMax - 1;
+        }
+    }
+    self.zoom = zoom;
+}
+
+/// ZoomOut
+- (IBAction)zoomOut:(id)sender {
+    NSInteger zoom = self.zoom;
+    if (zoom == UDGuiZoomFit) {
+        CGFloat fitted = [self _fittedScale];
+        for (zoom = UDGuiZoomMax - 1; zoom > UDGuiZoomMin + 1 && UDGuiZoomScales[zoom] >= fitted - 0.001; zoom--) {
+        }
+    } else {
+        zoom--;
+        if (zoom <= UDGuiZoomMin) {
+            zoom = UDGuiZoomMin + 1;
+        }
+    }
+    self.zoom = zoom;
+}
+
+- (IBAction)zoomToFit:(id)sender {
+    self.zoom = UDGuiZoomFit;
+}
+
+/// The GUI drawn where it now is, the design's overlay with it, and the
+/// owner told (UpdateScrollbars, UpdateTitle, InvalidateRect).
+- (void)_layoutChanged {
+    _glView.guiRect = self.guiRect;
+    _glView.needsDisplay = YES;
+    self.needsDisplay = YES;
+    if (self.workspace != nil) {
+        [self _designChanged];
+    }
+    id target = self.zoomTarget;
+    if (target != nil && self.zoomAction != NULL) {
+        [NSApp sendAction:self.zoomAction to:target from:self];
+    }
 }
 
 - (NSPoint)guiPointFromView:(NSPoint)point {
@@ -214,6 +312,7 @@ int UDGuiKeyForEvent(NSEvent *event) {
 - (void)setFrameSize:(NSSize)size {
     [super setFrameSize:size];
     [self _resetTracking];
+    _scrollOffset = [self _clampedScroll:_scrollOffset];
     _glView.guiRect = self.guiRect;
     if (self.workspace != nil) {
         [self _designChanged];      // the overlay is where the GUI is
@@ -353,8 +452,25 @@ static int UDEventMilliseconds(NSEvent *event) {
 - (void)otherMouseUp:(NSEvent *)event    { [self _button:K_MOUSE3 event:event down:NO]; }
 
 - (void)scrollWheel:(NSEvent *)event {
+    // WM_MOUSEWHEEL: the zoom, with ⌘ (the wheel alone scrolls here)
+    if ((event.modifierFlags & NSEventModifierFlagCommand) != 0) {
+        if (event.deltaY > 0) {
+            [self zoomIn:nil];
+        } else if (event.deltaY < 0) {
+            [self zoomOut:nil];
+        }
+        return;
+    }
     if (self.workspace != nil) {
-        [super scrollWheel:event];
+        // the scroll bars': the GUI moved, larger than the view
+#ifdef __APPLE__
+        CGFloat step = event.hasPreciseScrollingDeltas ? 1 : 10;
+        NSPoint delta = NSMakePoint(event.scrollingDeltaX * step, event.scrollingDeltaY * step);
+#else
+        NSPoint delta = NSMakePoint(event.deltaX * 10, event.deltaY * 10);
+#endif
+        NSPoint offset = self.scrollOffset;
+        self.scrollOffset = NSMakePoint(offset.x - delta.x, offset.y - delta.y);
         return;
     }
     CGFloat delta = event.deltaY;
@@ -364,6 +480,20 @@ static int UDEventMilliseconds(NSEvent *event) {
     [self.player key:key down:YES];
     [self.player key:key down:NO];
 }
+
+#ifdef __APPLE__
+/// A pinch: a level for every quarter it opens or closes.
+- (void)magnifyWithEvent:(NSEvent *)event {
+    _magnification += event.magnification;
+    if (_magnification > 0.25) {
+        _magnification = 0;
+        [self zoomIn:nil];
+    } else if (_magnification < -0.25) {
+        _magnification = 0;
+        [self zoomOut:nil];
+    }
+}
+#endif
 
 #pragma mark - Keys
 

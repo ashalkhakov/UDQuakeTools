@@ -14,6 +14,10 @@
 @class idFileSystem, idDeclManager;
 @class NSManagedObjectContext, NSPersistentStoreCoordinator;
 
+/// Posted when a tool's settings change (the object: the workspace; the
+/// user info's "tool": the tool's name).
+extern NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification;
+
 @interface UDWorkspace : NSObject <UDEngineSettings>
 
 // The root folder on the user's drive (e.g., "/Users/bob/Games/Doom3/d3xp")
@@ -65,6 +69,14 @@
 
 // Serialization
 - (instancetype)initWithDictionary:(NSDictionary *)dict rootDirectory:(NSString *)rootDir;
+
+/// The tools' own settings, kept with the workspace's (its
+/// dictionaryRepresentation's "tools"), each a dictionary by the tool's
+/// name: "GUIEditor" (rvGEOptions' registry). Set, it posts
+/// UDWorkspaceToolSettingsDidChangeNotification. Read from the dictionary
+/// the workspace is made with; applySettingsFromDictionary: leaves them.
+- (nullable NSDictionary *)settingsForTool:(NSString *)tool;
+- (void)setSettings:(nullable NSDictionary *)settings forTool:(NSString *)tool;
 - (NSDictionary *)dictionaryRepresentation;
 
 // Re-applies a settings dictionary (same keys as dictionaryRepresentation)

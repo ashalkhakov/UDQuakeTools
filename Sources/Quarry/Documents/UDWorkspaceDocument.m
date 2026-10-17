@@ -14,6 +14,27 @@
 
 @implementation UDWorkspaceDocument
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        // a tool's settings (the GUI editor's options) are the workspace's:
+        // changed, it is edited, and saved with them
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toolSettingsDidChange:)
+                                                     name:UDWorkspaceToolSettingsDidChangeNotification object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)_toolSettingsDidChange:(NSNotification *)notification {
+    if (notification.object == self.workspace) {
+        [self updateChangeCount:NSChangeDone];
+    }
+}
+
 - (void)makeWindowControllers {
     if (self.workspace != nil) {
         // Already configured (opened from file): start it, then its window.

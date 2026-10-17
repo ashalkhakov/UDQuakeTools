@@ -35,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// in transportView): dragged, the GUI goes to it, running or designed;
 /// Play only running.
 @property (weak) IBOutlet NSView *transportView;
+/// The status bar (rvGEStatusBar): the triangles drawn, and the zoom;
+/// shown as the options have it.
+@property (weak) IBOutlet NSTextField *statusField;
 @property (nonatomic, strong, readonly) UDTransportController *transport;
 @property (weak) IBOutlet NSPopUpButton *namedEventPopUp;
 /// The navigator's pane: the GUI's windows (rvGENavigator's), a check box
@@ -67,6 +70,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)pasteWindows:(nullable id)sender;
 - (IBAction)deleteWindows:(nullable id)sender;
 - (IBAction)showScripts:(nullable id)sender;
+/// View: Show Grid, Snap to Grid, GUI Editor Options… (GEApp's
+/// ID_GUIED_VIEW_*), the options kept in the workspace's settings.
+- (IBAction)toggleGrid:(nullable id)sender;
+- (IBAction)toggleGridSnap:(nullable id)sender;
+- (IBAction)showGuiEditorOptions:(nullable id)sender;
+/// ID_GUIED_VIEW_STATUSBAR
+- (IBAction)toggleStatusBar:(nullable id)sender;
+/// ID_GUIED_VIEW_ZOOMIN, ID_GUIED_VIEW_ZOOMOUT, and fitted again.
+- (IBAction)zoomIn:(nullable id)sender;
+- (IBAction)zoomOut:(nullable id)sender;
+- (IBAction)zoomToFit:(nullable id)sender;
 /// The inspector's Properties shown (a window double-clicked).
 - (IBAction)showProperties:(nullable id)sender;
 /// The inspector's Scripts (GEItemScriptsDlg): the selected window's

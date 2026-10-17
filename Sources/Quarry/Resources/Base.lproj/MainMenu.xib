@@ -683,6 +683,50 @@
                                     <action selector="toggleFullScreen:" target="-1" id="dU3-MA-1Rq"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="GEV-sep1"/>
+                            <menuItem title="Zoom In" keyEquivalent="=" id="GEV-zin">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="zoomIn:" target="-1" id="GEV-zin-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom Out" keyEquivalent="-" id="GEV-zout">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="zoomOut:" target="-1" id="GEV-zout-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom to Fit" keyEquivalent="0" id="GEV-zfit">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="zoomToFit:" target="-1" id="GEV-zfit-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="GEV-sep2"/>
+                            <menuItem title="Show Grid" id="GEV-grid">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleGrid:" target="-1" id="GEV-grid-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Snap to Grid" id="GEV-snap">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleGridSnap:" target="-1" id="GEV-snap-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Status Bar" id="GEV-status">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleStatusBar:" target="-1" id="GEV-status-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="GUI Editor Options…" id="GEV-opts">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showGuiEditorOptions:" target="-1" id="GEV-opts-a"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

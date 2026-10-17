@@ -21,9 +21,14 @@
 #import "rvGEModifier.h"
 #import "rvGESelectionMgr.h"
 #import "rvGEWindowWrapper.h"
+#import "rvGEOptions.h"
+#import "UDGuiEditorOptionsController.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 static UDDiagnosticSource const UDGuiParseSource = @"gui";
+/// The workspace's settings the editor's options are kept in (the
+/// engine's registry key, GUIED_REGISTRY).
+static NSString *const UDGuiEditorTool = @"GUIEditor";
 
 @interface UDGuiEditorViewController () <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate>
 @property (nonatomic, strong, readwrite) UDGuiPlayer *player;
@@ -68,6 +73,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// The window whose scripts the Scripts show, and their text as shown.
 @property (nonatomic, weak, nullable) idWindow *scriptsWindow;
 @property (nonatomic, copy, nullable) NSString *scriptsShownText;
+/// The options sheet, made the first time it is up.
+@property (nonatomic, strong, nullable) UDGuiEditorOptionsController *optionsController;
 @end
 
 @implementation UDGuiEditorViewController {
@@ -76,6 +83,10 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 @synthesize showsSource = _showsSource;
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -99,6 +110,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.transport.target = self;
     self.transport.action = @selector(transportMoved:);
     [self.transport installInView:self.transportView];
+    self.guiView.zoomTarget = self;
+    self.guiView.zoomAction = @selector(_zoomChanged:);
     self.fileText = self.editorTextView.string;
     self.shownText = self.fileText;
     [self _run];
@@ -109,6 +122,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.scriptsText.font = [NSFont userFixedPitchFontOfSize:11];
     [self _updateProperties];
     [self _updateScripts:YES];
+    [self _showStatusBar];
 
     // a canvas edited since its text was shown saves its text
     if ([self.document isKindOfClass:[UDTextFileDocument class]]) {
@@ -220,6 +234,10 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         self.designWorkspace = design;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
                                                      name:rvGESelectionDidChangeNotification object:design.selections];
+        // rvGEOptions::Init's Load: the options the workspace keeps
+        [design.options loadRegistry:[self.workspace settingsForTool:UDGuiEditorTool]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toolSettingsChanged:)
+                                                     name:UDWorkspaceToolSettingsDidChangeNotification object:self.workspace];
         [self _loadDesign];
     }
     return self.designWorkspace;
@@ -522,6 +540,24 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     if (action == @selector(showScripts:) || action == @selector(showProperties:)) {
         return selected == 1;
     }
+    if (action == @selector(toggleGrid:)) {
+        item.state = design.options.gridVisible ? NSControlStateValueOn : NSControlStateValueOff;
+        return design != nil;
+    }
+    if (action == @selector(toggleGridSnap:)) {
+        item.state = design.options.gridSnap ? NSControlStateValueOn : NSControlStateValueOff;
+        return design != nil;
+    }
+    if (action == @selector(toggleStatusBar:)) {
+        item.state = design.options.statusBarVisible ? NSControlStateValueOn : NSControlStateValueOff;
+        return design != nil;
+    }
+    if (action == @selector(zoomIn:) || action == @selector(zoomOut:) || action == @selector(zoomToFit:)) {
+        return self.guiView != nil;
+    }
+    if (action == @selector(showGuiEditorOptions:)) {
+        return design != nil && self.view.window.attachedSheet == nil;
+    }
     return [super validateMenuItem:item];
 }
 
@@ -592,6 +628,109 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 - (IBAction)deleteWindows:(id)sender {
     [self.designWorkspace deleteSelected];
     [self _designCommandDone];
+}
+
+#pragma mark - The options (GEOptions, GEOptionsDlg)
+
+/// rvGEOptions::Save: into the workspace, which saves with its document
+/// (the engine writes the registry).
+- (void)_saveOptions {
+    [self.workspace setSettings:self.designWorkspace.options.registry forTool:UDGuiEditorTool];
+}
+
+/// Another tab's options (or this one's) saved: the design's from them.
+- (void)_toolSettingsChanged:(NSNotification *)notification {
+    if (![notification.userInfo[@"tool"] isEqualToString:UDGuiEditorTool]) return;
+    rvGEWorkspace *design = self.designWorkspace;
+    if (design == nil) return;
+    [design.options loadRegistry:[self.workspace settingsForTool:UDGuiEditorTool]];
+    [self _showStatusBar];
+    if (self.designing) {
+        [self _renderDesign];
+    }
+}
+
+/// ID_GUIED_VIEW_STATUSBAR: rvGEStatusBar::Show, the options keeping it.
+- (IBAction)toggleStatusBar:(id)sender {
+    rvGEOptions *options = [self _design].options;
+    options.statusBarVisible = !options.statusBarVisible;
+    [self _saveOptions];
+}
+
+/// The status bar shown or not, as the options have it; the canvas down
+/// to the transport when it is not.
+- (void)_showStatusBar {
+    NSTextField *status = self.statusField;
+    if (status == nil) return;
+    BOOL visible = self.designWorkspace.options.statusBarVisible;
+    if (status.isHidden != !visible) {
+        status.hidden = !visible;
+        NSRect frame = self.guiView.frame;
+        CGFloat bottom = visible ? NSMaxY(status.frame) + 2 : NSMinY(status.frame) + 2;
+        frame.size.height = NSMaxY(frame) - bottom;
+        frame.origin.y = bottom;
+        self.guiView.frame = frame;
+    }
+    [self _updateStatusBar];
+}
+
+/// rvGEStatusBar::Update: " Tris: %d", " Zoom: %d%%".
+- (void)_updateStatusBar {
+    NSTextField *status = self.statusField;
+    if (status == nil || status.isHidden) return;
+    status.stringValue = [NSString stringWithFormat:@"Tris: %lu   Zoom: %d%%",
+                          (unsigned long)self.player.triangles.count, self.guiView.zoomPercent];
+}
+
+- (void)_zoomChanged:(id)sender {
+    [self _updateStatusBar];
+    if (!self.designing) {
+        [self.guiView showFrame];
+    }
+}
+
+- (IBAction)zoomIn:(id)sender {
+    [self.guiView zoomIn:sender];
+}
+
+- (IBAction)zoomOut:(id)sender {
+    [self.guiView zoomOut:sender];
+}
+
+- (IBAction)zoomToFit:(id)sender {
+    [self.guiView zoomToFit:sender];
+}
+
+/// ID_GUIED_VIEW_SHOWGRID
+- (IBAction)toggleGrid:(id)sender {
+    rvGEOptions *options = [self _design].options;
+    options.gridVisible = !options.gridVisible;
+    [self _saveOptions];
+}
+
+/// ID_GUIED_VIEW_SNAPTOGRID
+- (IBAction)toggleGridSnap:(id)sender {
+    rvGEOptions *options = [self _design].options;
+    options.gridSnap = !options.gridSnap;
+    [self _saveOptions];
+}
+
+/// ID_GUIED_VIEW_OPTIONS: GEOptionsDlg_DoModal, as a sheet.
+- (IBAction)showGuiEditorOptions:(id)sender {
+    NSWindow *window = self.view.window;
+    if (window == nil || window.attachedSheet != nil) return;
+    if (self.optionsController == nil) {
+        self.optionsController = [[UDGuiEditorOptionsController alloc] init];
+    }
+    [self.optionsController beginSheetForWindow:window options:[self _design].options
+                                         target:self action:@selector(_optionsApplied:)];
+}
+
+/// The sheet's OK (its options set already), or its Cancel (nil).
+- (void)_optionsApplied:(nullable id)sender {
+    if (sender != nil) {
+        [self _saveOptions];
+    }
 }
 
 - (IBAction)showScripts:(id)sender {
@@ -1030,6 +1169,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 - (void)playerDidDrawFrame:(UDGuiPlayer *)player {
+    [self _updateStatusBar];
     if (self.designing) {
         [self _showDesign];
     } else {

@@ -11,7 +11,8 @@ UDLIBS_DIR = ../../Sources/Libraries
 include $(UDLIBS_DIR)/Libraries.make
 
 UDWorkspaceTests_OBJC_FILES = \
-    UDGameDetectionTests.m
+    UDGameDetectionTests.m \
+    UDWorkspaceToolSettingsTests.m
 
 UDWorkspaceTests_INCLUDE_DIRS = \
     $(UDLIBS_INCLUDE_DIRS)

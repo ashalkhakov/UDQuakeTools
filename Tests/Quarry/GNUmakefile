@@ -55,6 +55,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/Editors/Decls/UDMaterialEditorViewController.m \
     $(APP_DIR)/Preview/UDParticlePreview.m \
     $(APP_DIR)/GUIEditor/UDGuiPlayer.m \
+    $(APP_DIR)/GUIEditor/UDGuiEditorOptionsController.m \
     $(APP_DIR)/Preview/UDTransportController.m \
     $(APP_DIR)/GUIEditor/UDGuiView.m \
     $(APP_DIR)/GUIEditor/UDGuiGLView.m \
@@ -97,6 +98,7 @@ QuarryTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDParticleEditorView.xib \
     $(APP_DIR)/Resources/UDGuiViewerView.xib \
     $(APP_DIR)/Resources/UDTransportBar.xib \
+    $(APP_DIR)/Resources/UDGuiEditorOptions.xib \
     $(APP_DIR)/Resources/UDFXEditorView.xib \
     $(APP_DIR)/Resources/UDAFEditorView.xib \
     $(APP_DIR)/Resources/UDMaterialEditorView.xib \

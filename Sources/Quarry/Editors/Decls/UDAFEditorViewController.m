@@ -6,6 +6,11 @@
 
 static UDDiagnosticSource const UDAFReferencesSource = @"references";
 
+@interface UDAFEditorViewController ()
+@property (nonatomic, copy, nullable) NSArray<UDEditorPane *> *panes;
+@property (nonatomic) BOOL observingSelection;
+@end
+
 @implementation UDAFEditorViewController
 
 - (instancetype)init {
@@ -16,13 +21,59 @@ static UDDiagnosticSource const UDAFReferencesSource = @"references";
     return (UDDeclAF *)self.declObject;
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.bodiesController addObserver:self forKeyPath:@"selectionIndexes" options:0 context:NULL];
+    [self.constraintsController addObserver:self forKeyPath:@"selectionIndexes" options:0 context:NULL];
+    self.observingSelection = YES;
+    // each column from its top
+    for (NSScrollView *scroll in @[self.figureScroll ?: [NSNull null], self.bodyScroll ?: [NSNull null],
+                                   self.constraintScroll ?: [NSNull null]]) {
+        if (![scroll isKindOfClass:[NSScrollView class]]) continue;
+        NSView *document = scroll.documentView;
+        [document scrollPoint:NSMakePoint(0, NSMaxY(document.bounds))];
+    }
+    [self showInspector];
+}
+
+- (void)dealloc {
+    if (_observingSelection) {
+        [_bodiesController removeObserver:self forKeyPath:@"selectionIndexes"];
+        [_constraintsController removeObserver:self forKeyPath:@"selectionIndexes"];
+    }
+}
+
+/// A body chosen lets the constraint go, and the other way round; the
+/// inspector shows what is chosen.
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    NSArrayController *other = object == self.bodiesController ? self.constraintsController
+                             : object == self.constraintsController ? self.bodiesController : nil;
+    if (other == nil) return;
+    if ([object selectionIndexes].count > 0 && other.selectionIndexes.count > 0) {
+        [other setSelectionIndexes:[NSIndexSet indexSet]];
+    }
+    [self showInspector];
+}
+
+- (NSArray<UDEditorPane *> *)inspectorPanes {
+    if (self.panes == nil && self.inspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    }
+    return self.panes ?: @[];
+}
+
+/// The inspector: the chosen body's keywords, the chosen constraint's, or
+/// the figure's settings.
+- (void)showInspector {
+    NSString *tab = self.bodiesController.selectionIndexes.count > 0 ? @"body"
+                  : self.constraintsController.selectionIndexes.count > 0 ? @"constraint" : @"figure";
+    [self.inspectorTabs selectTabViewItemWithIdentifier:tab];
+}
+
 - (void)declDidLoad {
-    if (self.figure.bodies.count > 0) {
-        [self.bodiesController setSelectionIndex:0];
-    }
-    if (self.figure.constraints.count > 0) {
-        [self.constraintsController setSelectionIndex:0];
-    }
+    // the figure's settings first, nothing chosen
+    [self.bodiesController setSelectionIndexes:[NSIndexSet indexSet]];
+    [self.constraintsController setSelectionIndexes:[NSIndexSet indexSet]];
 }
 
 - (void)editingContextDidChange {
@@ -162,8 +213,15 @@ static BOOL UDHasName(NSArray<NSString *> *names, NSString *name) {
 - (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
     NSArray *target = [self targetForDiagnostic:diagnostic];
     if (target == nil) return;
-    [self.tabView selectTabViewItemWithIdentifier:target[0]];
-    if (target.count < 2) return;
+    if ([target[0] isEqualToString:@"settings"] || target.count < 2) {
+        // the figure's settings; the bodies' problem, the first body's
+        [self.bodiesController setSelectionIndexes:[NSIndexSet indexSet]];
+        [self.constraintsController setSelectionIndexes:[NSIndexSet indexSet]];
+        if ([target[0] isEqualToString:@"bodies"] && [self.bodiesController.arrangedObjects count] > 0) {
+            [self.bodiesController setSelectionIndex:0];
+        }
+        return;
+    }
     NSUInteger row = [target[1] unsignedIntegerValue];
     BOOL isBody = [target[0] isEqualToString:@"bodies"];
     NSArrayController *controller = isBody ? self.bodiesController : self.constraintsController;

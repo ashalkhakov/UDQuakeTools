@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  DeclBrowser
+//  Quarry
 //
 //  Created by artyom on 8/1/26.
 //

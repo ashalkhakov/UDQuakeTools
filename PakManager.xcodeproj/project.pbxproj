@@ -608,7 +608,7 @@
 		F11B76E69140841478600956 /* UDZipWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */; };
 		53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */; };
-		6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */; };
+		6046DF8D5CD56900C2CB0851 /* UDQuarryTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 20707060EAB0C1D5F7FE8E9A /* UDQuarryTestCase.m */; };
 		919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */; };
 		E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */; };
 		08CA9BD0BF0CBF7D675E458B /* UDDeclEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A31E456696FDB41746734F9C /* UDDeclEditorTests.m */; };
@@ -2714,8 +2714,8 @@
 		92EF6AAA66CF173F39D35ED7 /* UDTableEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTableEditorViewController.m; sourceTree = "<group>"; };
 		EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclEditorViewController.m; sourceTree = "<group>"; };
 		DD00010000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DD00010500000000000000AA /* DeclBrowser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DeclBrowser-Info.plist"; sourceTree = "<group>"; };
-		DD00050000000000000000AA /* DeclBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeclBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD00010500000000000000AA /* Quarry-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Quarry-Info.plist"; sourceTree = "<group>"; };
+		DD00050000000000000000AA /* Quarry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quarry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE01000000000000000001AA /* UDDeclManagedObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclManagedObjects.h; sourceTree = "<group>"; };
 		1BA81542DE248DC6B489FB90 /* UDDeclParticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclParticle.h; sourceTree = "<group>"; };
 		C8D548B522A704D623AF89BC /* UDDeclPDA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclPDA.h; sourceTree = "<group>"; };
@@ -2828,13 +2828,13 @@
 		C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipWriterTests.m; sourceTree = "<group>"; };
 		DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDZipFixture.h; sourceTree = "<group>"; };
 		EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDZipFixture.m; sourceTree = "<group>"; };
-		E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclBrowserTestCase.h; sourceTree = "<group>"; };
-		20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclBrowserTestCase.m; sourceTree = "<group>"; };
+		E3E297669CC79C9322E44EC2 /* UDQuarryTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDQuarryTestCase.h; sourceTree = "<group>"; };
+		20707060EAB0C1D5F7FE8E9A /* UDQuarryTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDQuarryTestCase.m; sourceTree = "<group>"; };
 		368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPDAEditorTests.m; sourceTree = "<group>"; };
 		54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTableSkinEditorTests.m; sourceTree = "<group>"; };
 		A31E456696FDB41746734F9C /* UDDeclEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclEditorTests.m; sourceTree = "<group>"; };
 		E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDoom3WorkspaceTests.m; sourceTree = "<group>"; };
-		395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeclBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		395D2B3D3773407E57B6B678 /* QuarryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuarryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
@@ -3254,7 +3254,7 @@
 				ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */,
 				BB00000500000000000000AA /* Tests */,
 				AA00000400000000000000AA /* PakManager */,
-				DD00000400000000000000AA /* DeclBrowser */,
+				DD00000400000000000000AA /* Quarry */,
 				FF00000400000000000000AA /* UDLauncher */,
 				AA00000500000000000000AA /* UDCore */,
 				ED2000000000000000000006 /* LSPServerKit */,
@@ -3288,12 +3288,12 @@
 				64D61149FE7350ED17F3647B /* UDCommon.framework */,
 				D64ED218A483996F9CF44BE3 /* UDIdLib.framework */,
 				AA00050000000000000000AA /* PakManager.app */,
-				DD00050000000000000000AA /* DeclBrowser.app */,
+				DD00050000000000000000AA /* Quarry.app */,
 				AA00050100000000000000AA /* udpaktool */,
 				ED2000000000000000000005 /* LSPServerKit.framework */,
 				EC1E00000000000000000003 /* udscript-lsp */,
 				FF00050000000000000000AA /* UDLauncher.app */,
-				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
+				395D2B3D3773407E57B6B678 /* QuarryTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3396,7 +3396,7 @@
 				E7EB1444CFF2715E4789990F /* UDDecls */,
 				B0E490729963B34B395B34E2 /* UDArchives */,
 				E0467C857DF8586664E6C3B2 /* UDCommon */,
-				37E65B3E596BA91969F42366 /* DeclBrowser */,
+				37E65B3E596BA91969F42366 /* Quarry */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -3486,14 +3486,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		DD00000400000000000000AA /* DeclBrowser */ = {
+		DD00000400000000000000AA /* Quarry */ = {
 			isa = PBXGroup;
 			children = (
 				CEFC653F3027992800157501 /* Documents */,
 				CEFC651A3027933900157501 /* Window */,
 				CEFC6554302A077600157501 /* Resources */,
 				CE1CDC6F301E41220037DBA5 /* Assets.xcassets */,
-				DD00010500000000000000AA /* DeclBrowser-Info.plist */,
+				DD00010500000000000000AA /* Quarry-Info.plist */,
 				C736342910231F8D74351F93 /* ThirdParty/DMTabBar/DMTabBarItem.m */,
 				651703239E319D4BF8CCB714 /* ThirdParty/DMTabBar/DMTabBar.m */,
 				932342E93CE03E531C257071 /* ThirdParty/DMTabBar/DMTabBarItem.h */,
@@ -3505,8 +3505,8 @@
 				4D6F757E914240D18AF87DDC /* Preview */,
 				0E18561CEF64818B64FBE71E /* GUIEditor */,
 			);
-			name = DeclBrowser;
-			path = Sources/DeclBrowser;
+			name = Quarry;
+			path = Sources/Quarry;
 			sourceTree = "<group>";
 		};
 		FF00000400000000000000AA /* UDLauncher */ = {
@@ -3535,11 +3535,11 @@
 			name = UDUpdater;
 			sourceTree = "<group>";
 		};
-		37E65B3E596BA91969F42366 /* DeclBrowser */ = {
+		37E65B3E596BA91969F42366 /* Quarry */ = {
 			isa = PBXGroup;
 			children = (
-				E3E297669CC79C9322E44EC2 /* UDDeclBrowserTestCase.h */,
-				20707060EAB0C1D5F7FE8E9A /* UDDeclBrowserTestCase.m */,
+				E3E297669CC79C9322E44EC2 /* UDQuarryTestCase.h */,
+				20707060EAB0C1D5F7FE8E9A /* UDQuarryTestCase.m */,
 				368914A0CB4339FF34E59E00 /* UDPDAEditorTests.m */,
 				54E064E131747D735A3F21BD /* UDTableSkinEditorTests.m */,
 				A31E456696FDB41746734F9C /* UDDeclEditorTests.m */,
@@ -3547,7 +3547,7 @@
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
 			);
-			path = DeclBrowser;
+			path = Quarry;
 			sourceTree = "<group>";
 		};
 		EC1D00000000000000000002 /* Products */ = {
@@ -4205,9 +4205,9 @@
 			productReference = AA00050100000000000000AA /* udpaktool */;
 			productType = "com.apple.product-type.tool";
 		};
-		DD04000000000000000000AA /* Decl Browser */ = {
+		DD04000000000000000000AA /* Quarry */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */;
+			buildConfigurationList = DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Quarry" */;
 			buildPhases = (
 				EC1D0000000000000000000A /* Embed PlugIns */,
 				DD03000000000000000000AA /* Sources */,
@@ -4234,9 +4234,9 @@
 				ED1D00000000000000000006 /* PBXTargetDependency */,
 				EC1E00000000000000000010 /* PBXTargetDependency */,
 			);
-			name = "Decl Browser";
-			productName = DeclBrowser;
-			productReference = DD00050000000000000000AA /* DeclBrowser.app */;
+			name = "Quarry";
+			productName = Quarry;
+			productReference = DD00050000000000000000AA /* Quarry.app */;
 			productType = "com.apple.product-type.application";
 		};
 		FF04000000000000000000AA /* UDLauncher */ = {
@@ -4257,9 +4257,9 @@
 			productReference = FF00050000000000000000AA /* UDLauncher.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9D5D57CB7DB90240B958F42D /* DeclBrowserTests */ = {
+		9D5D57CB7DB90240B958F42D /* QuarryTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */;
+			buildConfigurationList = 123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "QuarryTests" */;
 			buildPhases = (
 				BA11F7945378D123ABFAC6A1 /* Sources */,
 				6EB93F75D308A90BE7FE30B3 /* Frameworks */,
@@ -4283,9 +4283,9 @@
 				ED1D00000000000000000007 /* PBXTargetDependency */,
 				EC1E00000000000000000014 /* PBXTargetDependency */,
 			);
-			name = DeclBrowserTests;
-			productName = DeclBrowserTests;
-			productReference = 395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */;
+			name = QuarryTests;
+			productName = QuarryTests;
+			productReference = 395D2B3D3773407E57B6B678 /* QuarryTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		E71977493C653CE069D4FD70 /* UDIdLib */ = {
@@ -4777,11 +4777,11 @@
 				E71977493C653CE069D4FD70 /* UDIdLib */,
 				ED200000000000000000000E /* LSPServerKit */,
 				AA04000000000000000000AA /* Pak Manager */,
-				DD04000000000000000000AA /* Decl Browser */,
+				DD04000000000000000000AA /* Quarry */,
 				AA04000100000000000000AA /* udpaktool */,
 				EC1E0000000000000000000B /* udscript-lsp */,
 				FF04000000000000000000AA /* UDLauncher */,
-				9D5D57CB7DB90240B958F42D /* DeclBrowserTests */,
+				9D5D57CB7DB90240B958F42D /* QuarryTests */,
 			);
 		};
 /* End PBXProject section */
@@ -4988,7 +4988,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6046DF8D5CD56900C2CB0851 /* UDDeclBrowserTestCase.m in Sources */,
+				6046DF8D5CD56900C2CB0851 /* UDQuarryTestCase.m in Sources */,
 				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
 				E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */,
 				08CA9BD0BF0CBF7D675E458B /* UDDeclEditorTests.m in Sources */,
@@ -6415,8 +6415,8 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
-				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
+				INFOPLIST_FILE = "Sources/Quarry/Quarry-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Quarry";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6425,7 +6425,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
-				PRODUCT_NAME = DeclBrowser;
+				PRODUCT_NAME = Quarry;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
@@ -6452,8 +6452,8 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
-				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
+				INFOPLIST_FILE = "Sources/Quarry/Quarry-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Quarry";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6461,7 +6461,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.declbrowser;
-				PRODUCT_NAME = DeclBrowser;
+				PRODUCT_NAME = Quarry;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -6569,10 +6569,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/Libraries/**",
-										"$(SRCROOT)/Sources/DeclBrowser",
-					"$(SRCROOT)/Sources/DeclBrowser/Documents",
-					"$(SRCROOT)/Sources/DeclBrowser/Window",
-					"$(SRCROOT)/Tests/DeclBrowser",
+										"$(SRCROOT)/Sources/Quarry",
+					"$(SRCROOT)/Sources/Quarry/Documents",
+					"$(SRCROOT)/Sources/Quarry/Window",
+					"$(SRCROOT)/Tests/Quarry",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6580,8 +6580,8 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
-				PRODUCT_NAME = DeclBrowserTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.QuarryTests;
+				PRODUCT_NAME = QuarryTests;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
@@ -6605,10 +6605,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/Libraries/**",
-										"$(SRCROOT)/Sources/DeclBrowser",
-					"$(SRCROOT)/Sources/DeclBrowser/Documents",
-					"$(SRCROOT)/Sources/DeclBrowser/Window",
-					"$(SRCROOT)/Tests/DeclBrowser",
+										"$(SRCROOT)/Sources/Quarry",
+					"$(SRCROOT)/Sources/Quarry/Documents",
+					"$(SRCROOT)/Sources/Quarry/Window",
+					"$(SRCROOT)/Tests/Quarry",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6616,8 +6616,8 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.DeclBrowserTests;
-				PRODUCT_NAME = DeclBrowserTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.QuarryTests;
+				PRODUCT_NAME = QuarryTests;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
@@ -8166,7 +8166,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */ = {
+		DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Quarry" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD05000000000000000000AA /* Debug */,
@@ -8184,7 +8184,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "DeclBrowserTests" */ = {
+		123B39965DD1CBC4A6701902 /* Build configuration list for PBXNativeTarget "QuarryTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A21877E3719F70D33F863672 /* Debug */,

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
  * rvGEWorkspace.m — tools/guied/GEWorkspace.cpp and GEWorkspaceFile.cpp,
- * ported (the file's half here; the window's in Decl Browser).
+ * ported (the file's half here; the window's in Quarry).
  */
 
 #import "rvGEWorkspace.h"

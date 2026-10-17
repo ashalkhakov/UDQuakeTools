@@ -1,6 +1,6 @@
 #import "UDTransportController.h"
 #import "UDWorkspace.h"
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
 #import "idFileSystem.h"
@@ -66,7 +66,7 @@ static NSString *const UDViewerScript =
     @"void udtest_main() {\n"
      "}\n";
 
-@interface UDGuiViewerTests : UDDeclBrowserTestCase
+@interface UDGuiViewerTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *basePath;
 @property (nonatomic, copy) NSString *savePath;
 @end

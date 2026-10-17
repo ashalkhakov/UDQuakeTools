@@ -1,5 +1,5 @@
 #import "UDTransportController.h"
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 
 #import "UDDeclManagedObjects.h"
 #import "UDMaterialParser.h"
@@ -29,7 +29,7 @@
 #import "idWindow.h"
 
 /**
- * The Decl Browser against a real Doom 3 install (see UDDoom3InstallPath:
+ * The Quarry against a real Doom 3 install (see UDDoom3InstallPath:
  * $UD_DOOM3_PATH, defaulting to /Volumes/ExtraSSD/games/DOOM 3). Every decl
  * here comes out of the retail pk4s through the ported file system.
  *
@@ -38,7 +38,7 @@
  * the install is also mounted read-only). Where no install is present the
  * cases log that and return, as they do on CI.
  */
-@interface UDDoom3WorkspaceTests : UDDeclBrowserTestCase
+@interface UDDoom3WorkspaceTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *installPath;
 @property (nonatomic, copy) NSString *savePath;
 @property (nonatomic, strong) NSDictionary<NSString *, NSArray *> *baseSnapshot;

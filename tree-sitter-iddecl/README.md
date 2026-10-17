@@ -1,7 +1,7 @@
 # TreeSitterIdDecl Grammar Bundle
 
 Doom 3's decl files (`.mtr`, `.skin`, `.sndshd`, `.def`, `.fx`, `.prt`,
-`.af`, `.pda`), and a decl's text in Decl Browser's editor: a tree-sitter
+`.af`, `.pda`), and a decl's text in Quarry's editor: a tree-sitter
 grammar written here, and the loadable bundle that gives it to UDCodeKit's
 editor (the app's PlugIns folder, beside idScript's and UDCodeKit's own).
 

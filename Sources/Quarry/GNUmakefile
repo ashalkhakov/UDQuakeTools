@@ -1,4 +1,4 @@
-APP_NAME = DeclBrowser
+APP_NAME = Quarry
 
 OBJC_RUNTIME_LIB = ng
 RUNTIME_VERSION = gnustep-2.0
@@ -7,12 +7,12 @@ GS_WITH_ARC = 1
 include $(GNUSTEP_MAKEFILES)/common.make
 
 UDLIBS_DIR = ../Libraries
-DECLBROWSER_DIR = .
-include DeclBrowser.include.make
+QUARRY_DIR = .
+include Quarry.include.make
 include $(UDLIBS_DIR)/Libraries.make
 
-# Source list synced with the Xcode DeclBrowser target (2026-08-20).
-DeclBrowser_OBJC_FILES = \
+# Source list synced with the Xcode Quarry target (2026-08-20).
+Quarry_OBJC_FILES = \
     Compat/UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m \
     ../UDUpdater/UDUpdater.m \
     App/main.m \
@@ -61,17 +61,17 @@ DeclBrowser_OBJC_FILES = \
     Window/UDWorkspaceOpeningController.m \
     Window/UDWorkspaceWindowController.m
 
-DeclBrowser_INCLUDE_DIRS = \
-    $(DECLBROWSER_INCLUDE_DIRS) \
+Quarry_INCLUDE_DIRS = \
+    $(QUARRY_INCLUDE_DIRS) \
     -I../UDUpdater \
     $(UDLIBS_INCLUDE_DIRS)
 
 # The data model is compiled to DeclModel.momd by FreeCoreData's momc via
 # coredata-model.make (included below), which adds the .momd to the app's
 # resources automatically.
-DeclBrowser_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
+Quarry_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
 
-DeclBrowser_RESOURCE_FILES = \
+Quarry_RESOURCE_FILES = \
     Resources/Base.lproj/MainMenu.xib \
     Resources/Base.lproj/UDWorkspaceWindow.xib \
     Resources/UDPDAEditorView.xib \
@@ -93,7 +93,7 @@ DeclBrowser_RESOURCE_FILES = \
     Resources/UDWorkspaceOpening.xib \
     Resources/en.lproj/UDImageViewerView.xib \
     en.lproj/UDTextEditorView.xib \
-    DeclBrowser-Info.plist
+    Quarry-Info.plist
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
@@ -115,7 +115,7 @@ ADDITIONAL_CPPFLAGS += -DUD_HAVE_GL
 ADDITIONAL_LDFLAGS += -lGL
 endif
 
-# Compiles $(DeclBrowser_XCDATAMODELD_FILES) with momc and bundles the
+# Compiles $(Quarry_XCDATAMODELD_FILES) with momc and bundles the
 # resulting .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData.
 include $(GNUSTEP_MAKEFILES)/coredata-model.make
 
@@ -129,7 +129,7 @@ UD_GRAMMARS = $(wildcard $(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit/*.bundle) \
     ../../tree-sitter-idscript/TreeSitterIdScript.bundle \
     ../../tree-sitter-iddecl/TreeSitterIdDecl.bundle
 after-all::
-	@mkdir -p $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns
-	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/`basename $$b`; \
-	    cp -R $$b $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/PlugIns/; done
-	@cp ../Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp $(GNUSTEP_BUILD_DIR)/DeclBrowser.app/
+	@mkdir -p $(GNUSTEP_BUILD_DIR)/Quarry.app/PlugIns
+	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/Quarry.app/PlugIns/`basename $$b`; \
+	    cp -R $$b $(GNUSTEP_BUILD_DIR)/Quarry.app/PlugIns/; done
+	@cp ../Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp $(GNUSTEP_BUILD_DIR)/Quarry.app/

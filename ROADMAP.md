@@ -5,7 +5,7 @@ script (maps through external tools), with the editors Doom 3 shipped (the MFC t
 `neo/tools` in dhewm3) recreated in Objective-C/AppKit — on macOS, Linux and
 Windows, and publish the result without leaving it.
 
-What exists today (October 2026): Decl Browser (workspace over a game
+What exists today (October 2026): Quarry (workspace over a game
 install, outline/filter/search of every registered decl type, tabs, undo,
 Save/Save All/Save As into `fs_savepath`), a structured PDA editor, raw text
 editing for everything else, Pak Manager (PAK/PAK2/Daikatana/PK3/PK4), the
@@ -59,14 +59,14 @@ These shape everything after them; each has a recommendation.
       (import the deleted VFS), `ObjectiveC2/blocks_runtime.h`, `idMath.h`,
       `Sources/GuiEd/GNUmakefile`, the empty GuiEd and QuakeEditor Xcode
       targets. (`.forgejo/` was never tracked.)
-- [x] UDLauncher still offers "GUI Editor"; Decl Browser's menu still says
+- [x] UDLauncher still offers "GUI Editor"; Quarry's menu still says
       "QuakeEditor" (bundle id `org.underivable.QuakeEditor`).
 - [x] README: drop `ARCHITECTURE.md` / `CLASS_STUBS.md` links (missing), the
       GUI Editor entry, and the list of shared schemes that are not shared.
 - [x] Bring Pak Manager and udpaktool into the root build and CI (they build
       against the installed libraries today), and ship Pak Manager in the
       AppImage and on the Mac.
-- [x] Ship Decl Browser on the Mac next to UDLauncher (libzip no longer
+- [x] Ship Quarry on the Mac next to UDLauncher (libzip no longer
       blocks it): `Makefile.apple` `all`/`install`, the macos.yml `apps`.
 - [x] `addScriptsToTree` drops the `.script` extension that `addGUIsToTree`
       keeps; check which one opening the item expects.
@@ -282,7 +282,7 @@ through UDCodeKit.
 - [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
       its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
       language server (clangd), with build and run from the editor.
-- [ ] idScript's bundle brings the adapter below, and Decl Browser debugs
+- [ ] idScript's bundle brings the adapter below, and Quarry debugs
       scripts with UDCodeKit's debugger UI.
 - [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
       `idBitMsg`, `DBMSG_*` — documented only by the source:
@@ -366,5 +366,5 @@ through UDCodeKit.
 - Open, edit, save, reopen round-trips the decl or file losslessly.
 - Dirty state, undo and redo work, including across saves.
 - Errors and broken references are shown before save.
-- A test in `Tests/DeclBrowser` drives the editor through its own window on
+- A test in `Tests/Quarry` drives the editor through its own window on
   a fixture written for the test (never game data), on macOS and GNUstep.

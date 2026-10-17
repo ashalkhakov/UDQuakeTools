@@ -1,4 +1,4 @@
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 
 #import "UDWorkspaceDocument.h"
 #import "UDEditorTabManager.h"
@@ -15,7 +15,7 @@ NSString *UDDoom3InstallPath(void) {
     return [[NSFileManager defaultManager] isReadableFileAtPath:pak] ? path : nil;
 }
 
-@interface UDDeclBrowserTestCase ()
+@interface UDQuarryTestCase ()
 @property (nonatomic, copy, readwrite) NSString *scratchDirectory;
 @property (nonatomic, strong) NSMutableArray<UDWorkspaceDocument *> *openDocuments;
 @end
@@ -67,7 +67,7 @@ NSString *UDDoom3InstallPath(void) {
 
 @end
 
-@implementation UDDeclBrowserTestCase
+@implementation UDQuarryTestCase
 
 // Per case rather than +setUp: GNUstep's XCTest does not call +setUp, and
 // nothing that touches a font may run before the shared application exists.

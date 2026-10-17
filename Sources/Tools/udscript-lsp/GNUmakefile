@@ -13,7 +13,7 @@ udscript-lsp_OBJC_FILES = main.m UDScriptLanguageServer.m
 
 udscript-lsp_INCLUDE_DIRS = $(UDLIBS_INCLUDE_DIRS) -I../../LSPServerKit
 
-# It ships in Decl Browser, beside its executable (Decl Browser's
+# It ships in Quarry, beside its executable (Quarry's
 # GNUmakefile copies it there), not on its own.
 STANDARD_INSTALL = no
 

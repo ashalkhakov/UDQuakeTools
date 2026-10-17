@@ -1,4 +1,4 @@
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 
 #import "UDDeclManagedObjects.h"
 #import "UDEditorTabManager.h"
@@ -162,7 +162,7 @@ static NSString *const UDEventsScript =
      "// Waits a while.\n"
      "scriptEvent\tvoid\twait( float seconds );\n";
 
-@interface UDPakInstallTests : UDDeclBrowserTestCase
+@interface UDPakInstallTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *installPath;
 @property (nonatomic, copy) NSString *savePath;
 @property (nonatomic, strong) NSDictionary<NSString *, NSData *> *installSnapshot;

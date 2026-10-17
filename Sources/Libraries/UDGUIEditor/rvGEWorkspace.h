@@ -5,7 +5,7 @@
  * (every window kept, each with its rvGEWindowWrapper) and written back as
  * the editor writes it.
  *
- * Its window — the view, its events, its cursor — is Decl Browser's
+ * Its window — the view, its events, its cursor — is Quarry's
  * (UDGuiView); this is the rest: the selection, the edits, what the mouse
  * does to them (HandleLButtonDown, HandleMouseMove, HandleLButtonUp, given
  * the window's points), and what is drawn over the GUI.

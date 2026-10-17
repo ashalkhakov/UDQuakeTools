@@ -17,8 +17,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9D5D57CB7DB90240B958F42D"
-            BuildableName = "DeclBrowserTests.xctest"
-            BlueprintName = "DeclBrowserTests"
+            BuildableName = "QuarryTests.xctest"
+            BlueprintName = "QuarryTests"
             ReferencedContainer = "container:PakManager.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -40,8 +40,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9D5D57CB7DB90240B958F42D"
-               BuildableName = "DeclBrowserTests.xctest"
-               BlueprintName = "DeclBrowserTests"
+               BuildableName = "QuarryTests.xctest"
+               BlueprintName = "QuarryTests"
                ReferencedContainer = "container:PakManager.xcodeproj">
             </BuildableReference>
          </TestableReference>

@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
- * Decl Browser — standalone declaration browser app entry point.
+ * Quarry — standalone declaration browser app entry point.
  */
 
 #import <AppKit/AppKit.h>

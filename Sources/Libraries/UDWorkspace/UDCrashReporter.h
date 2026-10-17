@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Frames resolve to "module(symbol+0x…) [address]"; for stripped binaries
  * the module+address pair still feeds addr2line. Build the app with
- * -rdynamic (see the DeclBrowser GNUmakefile) so the executable's own
+ * -rdynamic (see the Quarry GNUmakefile) so the executable's own
  * symbols resolve too.
  *
  * On macOS this is a no-op — the system crash reporter is better.

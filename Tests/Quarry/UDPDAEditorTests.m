@@ -1,4 +1,4 @@
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 #import "UDWorkspace.h"
 
 #import "UDDeclManagedObjects.h"
@@ -55,7 +55,7 @@ static NSString *const UDDanglingPDA =
  * Save, and checks the decl file that was written and what a freshly
  * opened workspace reads back.
  */
-@interface UDPDAEditorTests : UDDeclBrowserTestCase
+@interface UDPDAEditorTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *basePath;
 @property (nonatomic, copy) NSString *savePath;
 @end

@@ -1,6 +1,6 @@
 #import "UDTransportController.h"
 #import "UDWorkspace.h"
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 
 #import "UDDeclDocument.h"
 #import "UDEditorTabManager.h"
@@ -129,7 +129,7 @@ static NSString *const UDFixtureParticles =
  * The decl editor, MFC's DialogDeclEditor and DialogDeclNew, driven against
  * loose decl files written for the test (no game data).
  */
-@interface UDDeclEditorTests : UDDeclBrowserTestCase
+@interface UDDeclEditorTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *basePath;
 @property (nonatomic, copy) NSString *savePath;
 @end

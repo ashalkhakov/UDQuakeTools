@@ -1,5 +1,5 @@
 # The libraries' unit tests, a bundle each (Tests/<library>), and
-# LSPServerKit's; Decl Browser's are Tests/DeclBrowser's, run on their own.
+# LSPServerKit's; Quarry's are Tests/Quarry's, run on their own.
 include $(GNUSTEP_MAKEFILES)/common.make
 
 SUBPROJECTS = UDCommon UDArchives UDDecls UDUI UDGUIEditor UDScripts UDWorkspace LSPServerKit

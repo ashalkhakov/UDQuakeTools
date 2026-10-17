@@ -2,9 +2,9 @@
 
 UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archives and
 idTech 4 (Doom 3) decls, on the way to authoring whole mods (`ROADMAP.md`).
-It ships as a single AppImage on Linux containing the launcher and Decl Browser,
+It ships as a single AppImage on Linux containing the launcher and Quarry,
 and for macOS as UDLauncher, which updates itself (UDLauncher ▸ Check for
-Updates…). Decl Browser builds and is tested on the Mac as well; archives
+Updates…). Quarry builds and is tested on the Mac as well; archives
 need nothing beyond zlib on either system (the minizip reader that came with
 the Doom 3 file system reads them, UDZipWriter writes them).
 
@@ -12,7 +12,7 @@ the Doom 3 file system reads them, UDZipWriter writes them).
 
 - **UDLauncher** — entry point: a simple window with buttons to launch the other tools
 - **Pak Manager** — manage pak/pk3/pk4 archive files
-- **Decl Browser** — browse, search and edit the decls of a Doom 3 install or mod
+- **Quarry** — browse, search and edit the decls of a Doom 3 install or mod
   (a structured PDA editor; the other decl types as text), saving overrides
 - **udpaktool** — command-line listing and extraction of archives
 
@@ -31,9 +31,9 @@ the Doom 3 file system reads them, UDZipWriter writes them).
   - `UDWorkspace`: the workspace, games and their detection
 - `Sources/UDLauncher`: Launcher application linking bundled tools
 - `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
-- `Sources/DeclBrowser`: Decl Browser GUI app
+- `Sources/Quarry`: Quarry GUI app
 - `Sources/Tools/udpaktool`: CLI utility target
-- `Tests/<library>`: each library's unit tests; `Tests/DeclBrowser`: tests driving the Decl Browser app
+- `Tests/<library>`: each library's unit tests; `Tests/Quarry`: tests driving the Quarry app
 - `Scripts`: the AppImage desktop entry and smoke test (the build and packaging
   themselves are gnustep-release-actions')
 
@@ -73,7 +73,7 @@ the Doom 3 file system reads them, UDZipWriter writes them).
 ### macOS (Xcode)
 
 Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
-`Decl Browser`, `udpaktool` or `UDLauncher`), with Sparkle's XCFramework in
+`Quarry`, `udpaktool` or `UDLauncher`), with Sparkle's XCFramework in
 `.deps/` (gnustep-release-actions' `scripts/deps.sh apple` fetches the version
 `.github/pins.env` names). What CI builds and checks there is
 `Makefile.apple`: `make -f Makefile.apple`, `check`, `install`.
@@ -89,7 +89,7 @@ linux` unpacks both). Then:
 
 ```bash
 . /opt/gnustep/System/Library/Makefiles/GNUstep.sh
-make && make check && make install   # the libraries, the launcher, Decl Browser; the tests
+make && make check && make install   # the libraries, the launcher, Quarry; the tests
 ```
 
 ## AppImage Packaging
@@ -97,7 +97,7 @@ make && make check && make install   # the libraries, the launcher, Decl Browser
 `UDQuakeTools-<version>-x86_64.AppImage` is made by
 [gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
 `appimage`, the same as every app's image: the launcher (UDLauncher) as the
-entry point, Decl Browser, the libraries, FreeCoreData and the GNUstep runtime. What
+entry point, Quarry, the libraries, FreeCoreData and the GNUstep runtime. What
 is UDQuakeTools' own is `.github/release/appimage.conf` (what `make install`
 put in the prefix goes in it) and its smoke test, `Scripts/appimage-smoke.sh`;
 the desktop entry is in `Scripts/appimage`. CI makes and
@@ -111,7 +111,7 @@ The suites, on both systems:
 - `Tests/<library>` — each library's: the archive codecs (and `UDZipWriter`
   against the Doom 3 reader), the ported file system and decl manager, the
   decl incremental store, the GUI code and its editor, the script index.
-- `Tests/DeclBrowser` — Decl Browser, driven through its own windows: a
+- `Tests/Quarry` — Quarry, driven through its own windows: a
   workspace opens, the outline is expanded and a row selected, fields are
   typed into, the PDA editor's email sheet is filled in and OKed, File ▸
   Save is sent; then the decl file written and a freshly opened workspace
@@ -128,7 +128,7 @@ The suites, on both systems:
 Running them:
 
 - macOS: `make -f Makefile.apple check`, or the `Libraries` (unit) and
-  `DeclBrowserTests` schemes in Xcode.
+  `QuarryTests` schemes in Xcode.
 - GNUstep: `make check` (under `xvfb-run` when there is no display), after
   `make`. To include the Doom 3 cases in docker, mount the install read-only
   and point at it:

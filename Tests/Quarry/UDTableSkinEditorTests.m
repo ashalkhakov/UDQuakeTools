@@ -1,4 +1,4 @@
-#import "UDDeclBrowserTestCase.h"
+#import "UDQuarryTestCase.h"
 #import "UDWorkspace.h"
 
 #import <UDCodeKit/UDErrorsViewController.h>
@@ -31,7 +31,7 @@ static NSString *const UDFixtureSkin =
  * the test (no game data), as the PDA editor's are: opened from the outline,
  * edited through their own lists and buttons, saved with File > Save.
  */
-@interface UDTableSkinEditorTests : UDDeclBrowserTestCase
+@interface UDTableSkinEditorTests : UDQuarryTestCase
 @property (nonatomic, copy) NSString *basePath;
 @property (nonatomic, copy) NSString *savePath;
 @end

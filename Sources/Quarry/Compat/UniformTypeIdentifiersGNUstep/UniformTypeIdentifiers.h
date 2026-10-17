@@ -10,7 +10,7 @@
 //
 //  It resolves the very same
 //      #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
-//  line the macOS build uses: the DeclBrowser GNUmakefile passes -I../UDCore
+//  line the macOS build uses: the Quarry GNUmakefile passes -I../UDCore
 //  and this header lives in UDCore/UniformTypeIdentifiers/, so the angle
 //  include finds it on GNUstep — while on macOS the system framework wins
 //  and this file is never seen.

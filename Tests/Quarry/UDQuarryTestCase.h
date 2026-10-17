@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString * _Nullable UDDoom3InstallPath(void);
 
 /**
- * Base class for the Decl Browser cases. They drive the app the way a user
+ * Base class for the Quarry cases. They drive the app the way a user
  * does — a workspace document opens its window, the outline is expanded and
  * a row selected, text is typed into the editors' fields through the field
  * editor, File > Save is sent — and then check both the UI and what landed
@@ -23,7 +23,7 @@ NSString * _Nullable UDDoom3InstallPath(void);
  * Every case gets a fresh scratch directory (removed afterwards) to use as
  * fs_savepath, so saving never writes anywhere else.
  */
-@interface UDDeclBrowserTestCase : XCTestCase
+@interface UDQuarryTestCase : XCTestCase
 
 /// Per-case scratch directory; removed in -tearDown.
 @property (nonatomic, copy, readonly) NSString *scratchDirectory;

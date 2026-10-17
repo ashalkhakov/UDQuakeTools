@@ -216,26 +216,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDEE852338BBD364D2F63387 /* UDIdLib.framework in Frameworks */,
+				C33239DCE369DB7216B40BF5 /* UDCommon.framework in Frameworks */,
+				01F5DD198A6A9AC11A9F5B60 /* UDArchives.framework in Frameworks */,
+				15D96D9D0CCCA0DA96A17C50 /* UDImages.framework in Frameworks */,
+				A1614516CF4C64534063EDFB /* UDDecls.framework in Frameworks */,
+				75671BF4BB707AC880309985 /* UDRenderer.framework in Frameworks */,
+				E6CA29BF464805032DB8A031 /* UDUI.framework in Frameworks */,
+				7008831C13393FB951E0DB8A /* UDGUIEditor.framework in Frameworks */,
+				939143C30620152C9DE4565E /* UDScripts.framework in Frameworks */,
+				FACB9F1ABD6DA22B7A2E4217 /* UDWorkspace.framework in Frameworks */,
 				EC1E00000000000000000007 /* Foundation.framework in Frameworks */,
-				EC1E00000000000000000008 /* UDCore.framework in Frameworks */,
 				ED2000000000000000000015 /* LSPServerKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EC1E00000000000000000007 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
-		EC1E00000000000000000008 /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		EC1E00000000000000000009 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		EC1E0000000000000000000A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = EC1E00000000000000000009 /* PBXContainerItemProxy */;
-		};
 		EC1E0000000000000000000B /* udscript-lsp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC1E0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-lsp" */;
@@ -246,7 +242,16 @@
 			buildRules = (
 			);
 			dependencies = (
-				EC1E0000000000000000000A /* PBXTargetDependency */,
+				5BA00751A05094147B9D52D0 /* PBXTargetDependency */,
+				64CC2667D58317E0A7A95BDA /* PBXTargetDependency */,
+				9CC77A22C64A7241A90913EB /* PBXTargetDependency */,
+				8E265B0683E40FE831AF7B97 /* PBXTargetDependency */,
+				8CE3DD18A1D91E5E17FC314D /* PBXTargetDependency */,
+				33194A79C0A3E304BCABEF2A /* PBXTargetDependency */,
+				E6E95013173EAC9564C7AF5B /* PBXTargetDependency */,
+				C66D06B3624AECC0B64E9C16 /* PBXTargetDependency */,
+				633FB812DA13CB8C837F999A /* PBXTargetDependency */,
+				0C961060315D574D55D99FBC /* PBXTargetDependency */,
 				ED2000000000000000000017 /* PBXTargetDependency */,
 			);
 			name = "udscript-lsp";
@@ -371,14 +376,6 @@
 		CC02001300000000000000AA /* UDArchiveMutation.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00020600000000000000AA /* UDArchiveMutation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC02001400000000000000AA /* UDContentSource.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00020800000000000000AA /* UDContentSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC02001500000000000000AA /* UDDirectoryNode.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00020700000000000000AA /* UDDirectoryNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC03010000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
-		CC04010000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CC04020000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CC04040000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		CC04050000000000000000AA /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */; };
 		CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */; };
 		CE07E8833000D2F6007ED480 /* idToken.h in Headers */ = {isa = PBXBuildFile; fileRef = CE07E8823000D2F6007ED480 /* idToken.h */; };
@@ -451,7 +448,6 @@
 		C6BFBB0DB7C1401FD501217E /* rvGEWorkspaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */; };
 		CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = CED0148A302DDCA2009517DE /* UDBitMsg.h */; };
 		CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED0148B302DDCA2009517DE /* UDBitMsg.m */; };
-		CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
 		CEFC59D630357317001E2179 /* DeclModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D430357317001E2179 /* DeclModel.xcdatamodeld */; };
 		CEFC59D83035994A001E2179 /* UDDeclIncrementalStore.h in Headers */ = {isa = PBXBuildFile; fileRef = CEFC59D73035993E001E2179 /* UDDeclIncrementalStore.h */; };
 		CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC59D93035BF9C001E2179 /* UDDeclIncrementalStore.m */; };
@@ -697,8 +693,6 @@
 		104EEEE72E01A8DF60557FED /* UDPDAAudioEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA5D2D8302B717800AFE5B9 /* UDPDAAudioEditorView.xib */; };
 		F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
 		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
-		224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; };
-		0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC00050000000000000000AA /* UDCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
 		7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */; };
 		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
@@ -728,44 +722,158 @@
 		EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000003 /* LSPKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC1D00000000000000000009 /* TreeSitterIdScript.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = EC1D00000000000000000005 /* TreeSitterIdScript.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ED1D00000000000000000009 /* TreeSitterIdDecl.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = ED1D00000000000000000005 /* TreeSitterIdDecl.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		691BF72C81669928C4A0D953 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		5B52A75C73B66A8B8FA5034C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		DEF38144E2674A66EDB9FC2C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		A2A427B2ED605F0DF669729D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		5FE5C9365F5C1E0BEECCBAD7 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		A524D2DD6CAE202D9E8A05E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		9190FDF6DCB2DE7611AA222C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		5AAFD122C57F1282B899D052 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		9C6DEFCE7908557CF008D193 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		558B85C7F11C6E4EAC338136 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		AE16F6E8B8F72BABC8901087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		3A5DF1E867D94875E3FC0A15 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		246E24D46E5795B80E841B97 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		9A13DE242AAA298C4D1D6B3A /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		1A2C670E6048014D8AECD3C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		529C8B6A8839F5ECBAFB3D26 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		90E4E32FBCBD39E164FE11B9 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		075883BE043E06E248695274 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		6C23A2EC978641554342D376 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		55715C3FA645D63F2FBF7AB3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		08C861A04C71A89A2DEE6F14 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		834DD9228EBF43E6116D77F1 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		CF3DE6FD9D3F9670BD983119 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		1D8DD0A3EBDAA11E17B43C04 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		C7100A86F3306EC57E33BA9C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		8C7412C7E5D73AE42B50FAC5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		160057B5F59F410D5A6C6F9D /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		D69B0F0F8FB80EB0A7DD076A /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		C674654F2DD6B9418202BF56 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		0CE3F1C812B94BE1B6399385 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		56AA1E6C9F22353941EAA4A7 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		E94CE08F6E1EC55424F60CD0 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		4A68379172BE017C1F4F7D57 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		84771EC2A627380414A2488C /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		82DD87AEE7E611DA1DD09FD6 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		C1D6B7971C4C566108930C2A /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		D3E97B5A519600CDBDA8FF07 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		3E61AF7B54CFDA40B80FE54C /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		FFB4A01E7405AB161F0731E7 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		1FFF612EE8FFD24CA091CC63 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		61DA27D6BC032F34E770375E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		690D6AD988774BC18628D7D3 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		639E0E23C6C456308E0D1B79 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEFC59D2303572CE001E2179 /* CoreData.framework */; };
+		D84234C3FD776D89660368C4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
+		AA5C83BFAC622C9A4EA51A50 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		BFB34CCC76BFCBA12796B28B /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		6831A76FA0C0D7AC787B4EC0 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		5C59EBEB6E0EC7DD2A616350 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		045B92587007692E3ADF281E /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		EDEE852338BBD364D2F63387 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		C33239DCE369DB7216B40BF5 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		01F5DD198A6A9AC11A9F5B60 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		15D96D9D0CCCA0DA96A17C50 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		A1614516CF4C64534063EDFB /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		75671BF4BB707AC880309985 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		E6CA29BF464805032DB8A031 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		7008831C13393FB951E0DB8A /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		939143C30620152C9DE4565E /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		FACB9F1ABD6DA22B7A2E4217 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		EF7A3ACFA9CEB0C459E3F1D6 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		C2A361F7FD344D9AB32A017D /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		AA2BDBFF06ADDE1D4D8E5801 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		103854CA2707F44EBA9F5855 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		238641AF9DC3467AF9239A48 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		C79263A6F6C71BA1BB656F9A /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		B9B793B252D0AD04639FD63B /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		2EB3E616DBB3F347C649A71A /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		39792760BB560AD480EDE41E /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		D6C31E6C4438081486D3A30E /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		EC74DDFF492727B6AC829A39 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6527A2F564B61461DA9955AE /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		326398F4E167215764D88651 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F229B776936ADB34D0F56E9E /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9854AD3DB38F131989F23860 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		548F3D8F467E09D2CCF4098F /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		34BF2415931C6D1173E08499 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F012AF429A5477F4F1957F31 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		093EC2C86E955A7867B816CA /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8304D39BED8BE8E1DD8AD4B3 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D42E00B8F2CEAFF81742EDCD /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		C6FCDE473231EAAE8C508382 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		68585909F69A5BC1B020D46E /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		B50439F6E1F999352F888D75 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		89F19F2E97A27D56919E9CD8 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		C79FA1D4497C4639B888192B /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		E14F4D34C2D85AEA5A5C40BF /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		571E232067493188ADEE65E2 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		640DFB303D06FC1AB942AD0C /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		E00BE7F58CDE982B06C7D9FD /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		34795F5E2DAAC4E9681D98C1 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		44FE17D8AB6E71FCE965A5A9 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		369389319BC8D9236C527C70 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A377B5588B0CD6AA2104C614 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7C47BBB766A791ABD068C38D /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0720D1A6CA59A595ACB37296 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2F4021059B1FD33CF145D27C /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B1BE6E315C9884FCCC85F058 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EA25B13689D4A645679655CC /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		160F05405573F7B28F7DDEDC /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6324210A902985681F1BDE30 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		60B670F99EFA6E18A7BEFF8A /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		D903491F7EE3BEEBD5723A44 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		3681F9FBEE3B01B79BA3F810 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		B58AA7EC8EA1001F7572276F /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		0BC7FC8D6124AEBC23EB45E0 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		99EAF02A50B3D1E1BC4401AA /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		E366AF1608E68400585E5AAA /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		02411B2E66AEC8FE20051936 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		BC32C60847DDF5D17346903E /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		F1578F420EBF8F12752C8C80 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		BE51F269189E1EAED1B9D97B /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		35A44A3EE34E818C082E3C38 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		ABE9C9197336970632D6836E /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		2FA40F355BDFF3496FA623F5 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		C927CE32C62156124DF8F87C /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		21E13EC4ED6937C3EF83794D /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		C8C169F77E1BF1AD25E6CF95 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		95A1946D77CAD4F3DD316AD1 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		BB453AB0E678D4DC31B6E3BF /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		9B68D763882A50A75D9767D5 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E583E6C828029CD990E8D720 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80F8DAC12BA504AA1E97F64C /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5BE3853544A4A73C19877F2E /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0D0CE554D006E8CE7E96F973 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		27EAEF19A79126B442F4D0C4 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2E303DB3A44E7C3455782FAB /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		44927D6142417DEAE921DA71 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0FC9E940FE746E6C265B8ECA /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		847FE9BD1E3CC209CB763154 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		68527CEF0FAD475EBD05B108 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		63ED11D84B282204E3EE2131 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		C03B6EACA00E51C275F874F9 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		930A8A14DFCE0229F51BBB81 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		91EE876C3E14AB70E86693D4 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		4077D89DEFFB7000CC547CAE /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		942A1FBE20573D270C3CA94F /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		FA5DDA755A727E8233E67703 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		6911BCDA32ADFEFE985CB1F0 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		E1C005E6080AFA23070E8B04 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		008ABED2464FDF9E484B606B /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7CD34BB0A15575F1D54BFCB5 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C8632DF9BB941E7A6F65EEDF /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		86985C9BCA72AD51F0EA5364 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4B58B0C2EE4889EB0CA3681D /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B14336F8ADBDCF9D1DE0225 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B930E19DB77B4C2EFC4D292B /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1CF4A9DFFB8753EF97166911 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		920ABD62F922BFB31C130C06 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D983723F89E50339368A2D58 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		CC07010000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		CC07020000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		CC07040000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		CC07050000000000000000AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
-		EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CC04000000000000000000AA;
-			remoteInfo = UDCore;
-		};
 		EC1D00000000000000000003 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */;
@@ -808,6 +916,629 @@
 			remoteGlobalIDString = 1DDE76BB13881D15A3714902;
 			remoteInfo = TreeSitterIdDecl;
 		};
+		A74F7B2F3E9F46E98465A698 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		8F2BA82622928D1EF9FE2C1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		B2DB8182A892C6908FAEB88A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		1067F814C9D09E338B685E88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		D7448C114082E90904F266D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		7AB4EFC5F6791A3247DEFC4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		8829A7BFA81F187AF30962BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		2BAABCDEB318D91A89C29713 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		201818F1FC65122E9DEC776B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		571F11F58C8484FD19549070 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		D6EF234506F50A36FE1A012B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		37EFD6C84E4828B90A9F5BBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		2599A675A9DBE03983561F56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		BCE3F1F7B28452BE227069EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		C52E096D6DDFD30E8A4E9F2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		1CCCB8F1EA43A7DEF90FD3DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		CAFA16C4234F544C214C9CB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		3D807E7F49A3B9BF403B4DAF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		C528E3C0CB1C7E91FBAC6732 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		36E33F016E8D77BCEAFF47CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		00ECE2C89D99F501AF72C820 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		BBFB7B041C0C42872F112D07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		B2ACD9705A9DC4273E2D62D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		B9E69A7B9CF67C2767EF2DE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		5EB4CB8D2869980F06C9050D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		0C7C23AE2FDFB5B8E4C861BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		DD392D4194CFE03F1F0C3B56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		F35C82221DC4E5298443F1DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		C0418D92653677C0F01CD209 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		3398E814EDA64EA61A587BFF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		D5459C6CA5813935AAA9D8F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		A8CAEC783CCBD80FE540D6C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		66C383F75AD7C5BD61D34B77 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		385E181C09608F8581F7A23C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		B0880D55084C55B5245824FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		3241B79E9435D37AC3F69EBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		5F16A85056B2E3A07F039063 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		516247D58E74B2D27CF1F5E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		9EDFFC0038990BB61D502E98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		75E3129DB5EB9A0D3F74FBE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		F878FB50E9F9A9A8AFDD84EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		2665752340A306B3A5EDB7C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		5B94A1CCD94F945B18B0577F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		947776D6AAB6D88E55E5D65F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		A74CB5D2BBE6330118B5358B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		4EFEC047EFF0D2ED5120CFDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		3216E9AF8390227E77FDAF0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		FC6CA5339694F292014F8BD0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		3802DFEDDE1A82F8E2347FB5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		6C2F02D70EF04BA2CDF58529 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		58A0144E4BAC19D01AA0D2C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		DE91A57E804E2363709F3842 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		31C2C4F4DD93359E938167B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		5292C4946D1A149186EC7A37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		02618CDDE409F553192AB339 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		1E2866CF2F864EFAB4944552 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		0B8F81955DAC594BE095EF32 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		1DF4B35C1AAAE12EE70211DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		825599BF82DAB44A16C98042 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		D335B867C58FC81BC8185598 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		8CC04138BBE3D3160BC07C0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		6BA0B03F109F4FC9ECE52A97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		B96619C3596FDD35121AF8BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		66885BA80B0F28F229AEA641 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		7736D6404D40A7539A6D167D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		9B7DE846294B1DC689A29B18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		7C4CFFA221F59CB6030AE75C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		6E074E4001EE370B0515065A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		1274197D8D50A851098AD00D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		40ED5168B8A57034084508A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		C076033D63B9E8303098BC72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		3C3C7A54C07A3E1EE65B289F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		AA8590BE7E6FF551C6DE5578 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		00C4BF0F33DB17C71A3E8E2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		111FB51188A35B2749A90F93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		61816323B55634F0F034CB42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		1A8FF8A8E362FA4F5CA809AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		C7FB4BB210A321EC234A6C45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		E1579D74D5A95F7A1C39CC27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		D5E140B31F03FA832968E0EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		1FAEF449BD397394678BC6DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		8F99722E9D0B1C962D720FB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		B58AACA48ADAC714543F3588 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		6C95D4F7BA9D8877A961B14D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		8B72783CD05F48E4FBAE5018 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		4AE0E7BCF67B28A9B634ADD6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		1A6BE116549964FADA5E3D19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		E401D5CED0D66E0C80325B92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		84F9DD95B1BCC119F91E9C22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -817,7 +1548,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CC04010100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				EC74DDFF492727B6AC829A39 /* UDIdLib.framework in Embed Frameworks */,
+				6527A2F564B61461DA9955AE /* UDCommon.framework in Embed Frameworks */,
+				326398F4E167215764D88651 /* UDArchives.framework in Embed Frameworks */,
+				F229B776936ADB34D0F56E9E /* UDImages.framework in Embed Frameworks */,
+				9854AD3DB38F131989F23860 /* UDDecls.framework in Embed Frameworks */,
+				548F3D8F467E09D2CCF4098F /* UDRenderer.framework in Embed Frameworks */,
+				34BF2415931C6D1173E08499 /* UDUI.framework in Embed Frameworks */,
+				F012AF429A5477F4F1957F31 /* UDGUIEditor.framework in Embed Frameworks */,
+				093EC2C86E955A7867B816CA /* UDScripts.framework in Embed Frameworks */,
+				8304D39BED8BE8E1DD8AD4B3 /* UDWorkspace.framework in Embed Frameworks */,
 				BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -829,7 +1569,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CC04050100000000000000AA /* UDCore.framework in Embed Frameworks */,
+				9B68D763882A50A75D9767D5 /* UDIdLib.framework in Embed Frameworks */,
+				E583E6C828029CD990E8D720 /* UDCommon.framework in Embed Frameworks */,
+				80F8DAC12BA504AA1E97F64C /* UDArchives.framework in Embed Frameworks */,
+				5BE3853544A4A73C19877F2E /* UDImages.framework in Embed Frameworks */,
+				0D0CE554D006E8CE7E96F973 /* UDDecls.framework in Embed Frameworks */,
+				27EAEF19A79126B442F4D0C4 /* UDRenderer.framework in Embed Frameworks */,
+				2E303DB3A44E7C3455782FAB /* UDUI.framework in Embed Frameworks */,
+				44927D6142417DEAE921DA71 /* UDGUIEditor.framework in Embed Frameworks */,
+				0FC9E940FE746E6C265B8ECA /* UDScripts.framework in Embed Frameworks */,
+				847FE9BD1E3CC209CB763154 /* UDWorkspace.framework in Embed Frameworks */,
 				ED200000000000000000001E /* LSPServerKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -841,11 +1590,20 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				34795F5E2DAAC4E9681D98C1 /* UDIdLib.framework in Embed Frameworks */,
+				44FE17D8AB6E71FCE965A5A9 /* UDCommon.framework in Embed Frameworks */,
+				369389319BC8D9236C527C70 /* UDArchives.framework in Embed Frameworks */,
+				A377B5588B0CD6AA2104C614 /* UDImages.framework in Embed Frameworks */,
+				7C47BBB766A791ABD068C38D /* UDDecls.framework in Embed Frameworks */,
+				0720D1A6CA59A595ACB37296 /* UDRenderer.framework in Embed Frameworks */,
+				2F4021059B1FD33CF145D27C /* UDUI.framework in Embed Frameworks */,
+				B1BE6E315C9884FCCC85F058 /* UDGUIEditor.framework in Embed Frameworks */,
+				EA25B13689D4A645679655CC /* UDScripts.framework in Embed Frameworks */,
+				160F05405573F7B28F7DDEDC /* UDWorkspace.framework in Embed Frameworks */,
 				EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */,
 				EC0D00000000000000000007 /* UDPieceTable.xcframework in Embed Frameworks */,
 				EC0D00000000000000000009 /* LSPKit.xcframework in Embed Frameworks */,
 				91883B1DD4E6D550C4C1A71C /* Sparkle.xcframework in Embed Frameworks */,
-				CC04020100000000000000AA /* UDCore.framework in Embed Frameworks */,
 				ED2000000000000000000021 /* LSPServerKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -868,10 +1626,19 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				008ABED2464FDF9E484B606B /* UDIdLib.framework in Embed Frameworks */,
+				7CD34BB0A15575F1D54BFCB5 /* UDCommon.framework in Embed Frameworks */,
+				C8632DF9BB941E7A6F65EEDF /* UDArchives.framework in Embed Frameworks */,
+				86985C9BCA72AD51F0EA5364 /* UDImages.framework in Embed Frameworks */,
+				4B58B0C2EE4889EB0CA3681D /* UDDecls.framework in Embed Frameworks */,
+				8B14336F8ADBDCF9D1DE0225 /* UDRenderer.framework in Embed Frameworks */,
+				B930E19DB77B4C2EFC4D292B /* UDUI.framework in Embed Frameworks */,
+				1CF4A9DFFB8753EF97166911 /* UDGUIEditor.framework in Embed Frameworks */,
+				920ABD62F922BFB31C130C06 /* UDScripts.framework in Embed Frameworks */,
+				D983723F89E50339368A2D58 /* UDWorkspace.framework in Embed Frameworks */,
 				EC0D0000000000000000000B /* UDCodeKit.xcframework in Embed Frameworks */,
 				EC0D0000000000000000000D /* UDPieceTable.xcframework in Embed Frameworks */,
 				EC0D0000000000000000000F /* LSPKit.xcframework in Embed Frameworks */,
-				0AA9954D6419ED1B0F9185FC /* UDCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -941,7 +1708,6 @@
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		CC00050000000000000000AA /* UDCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditorTests.m; sourceTree = "<group>"; };
 		CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveWorkflowTests.m; sourceTree = "<group>"; };
 		CE07E8823000D2F6007ED480 /* idToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idToken.h; sourceTree = "<group>"; };
@@ -1245,6 +2011,16 @@
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC1D00000000000000000001 /* TreeSitterIdScript.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdScript.xcodeproj; path = "tree-sitter-idscript/TreeSitterIdScript.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		ED1D00000000000000000001 /* TreeSitterIdDecl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TreeSitterIdDecl.xcodeproj; path = "tree-sitter-iddecl/TreeSitterIdDecl.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		D64ED218A483996F9CF44BE3 /* UDIdLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDIdLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		64D61149FE7350ED17F3647B /* UDCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6062E05CA860510F66A068FD /* UDArchives.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDArchives.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FACB25E92A25FD977D8DEF9B /* UDImages.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDImages.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDDecls.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		06E31A0099EC60E5A3021E10 /* UDRenderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDRenderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EECADD4F76AD8E51C286C5B1 /* UDUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDGUIEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C21974321174D5857F81AFC5 /* UDScripts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDScripts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDWorkspace.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1252,8 +2028,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF7A3ACFA9CEB0C459E3F1D6 /* UDIdLib.framework in Frameworks */,
+				C2A361F7FD344D9AB32A017D /* UDCommon.framework in Frameworks */,
+				AA2BDBFF06ADDE1D4D8E5801 /* UDArchives.framework in Frameworks */,
+				103854CA2707F44EBA9F5855 /* UDImages.framework in Frameworks */,
+				238641AF9DC3467AF9239A48 /* UDDecls.framework in Frameworks */,
+				C79263A6F6C71BA1BB656F9A /* UDRenderer.framework in Frameworks */,
+				B9B793B252D0AD04639FD63B /* UDUI.framework in Frameworks */,
+				2EB3E616DBB3F347C649A71A /* UDGUIEditor.framework in Frameworks */,
+				39792760BB560AD480EDE41E /* UDScripts.framework in Frameworks */,
+				D6C31E6C4438081486D3A30E /* UDWorkspace.framework in Frameworks */,
 				AA01003000000000000000AA /* Cocoa.framework in Frameworks */,
-				CC04010000000000000000AA /* UDCore.framework in Frameworks */,
 				6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1262,8 +2047,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6324210A902985681F1BDE30 /* UDIdLib.framework in Frameworks */,
+				60B670F99EFA6E18A7BEFF8A /* UDCommon.framework in Frameworks */,
+				D903491F7EE3BEEBD5723A44 /* UDArchives.framework in Frameworks */,
+				3681F9FBEE3B01B79BA3F810 /* UDImages.framework in Frameworks */,
+				B58AA7EC8EA1001F7572276F /* UDDecls.framework in Frameworks */,
+				0BC7FC8D6124AEBC23EB45E0 /* UDRenderer.framework in Frameworks */,
+				99EAF02A50B3D1E1BC4401AA /* UDUI.framework in Frameworks */,
+				E366AF1608E68400585E5AAA /* UDGUIEditor.framework in Frameworks */,
+				02411B2E66AEC8FE20051936 /* UDScripts.framework in Frameworks */,
+				BC32C60847DDF5D17346903E /* UDWorkspace.framework in Frameworks */,
 				AA02001000000000000000AA /* Foundation.framework in Frameworks */,
-				CC04040000000000000000AA /* UDCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1271,19 +2065,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1578F420EBF8F12752C8C80 /* UDIdLib.framework in Frameworks */,
+				BE51F269189E1EAED1B9D97B /* UDCommon.framework in Frameworks */,
+				35A44A3EE34E818C082E3C38 /* UDArchives.framework in Frameworks */,
+				ABE9C9197336970632D6836E /* UDImages.framework in Frameworks */,
+				2FA40F355BDFF3496FA623F5 /* UDDecls.framework in Frameworks */,
+				C927CE32C62156124DF8F87C /* UDRenderer.framework in Frameworks */,
+				21E13EC4ED6937C3EF83794D /* UDUI.framework in Frameworks */,
+				C8C169F77E1BF1AD25E6CF95 /* UDGUIEditor.framework in Frameworks */,
+				95A1946D77CAD4F3DD316AD1 /* UDScripts.framework in Frameworks */,
+				BB453AB0E678D4DC31B6E3BF /* UDWorkspace.framework in Frameworks */,
 				ED200000000000000000001D /* LSPServerKit.framework in Frameworks */,
 				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
 				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
-				CC04050000000000000000AA /* UDCore.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CC03000200000000000000AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CEFC59D3303572CE001E2179 /* CoreData.framework in Frameworks */,
-				CC03010000000000000000AA /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1291,13 +2085,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D42E00B8F2CEAFF81742EDCD /* UDIdLib.framework in Frameworks */,
+				C6FCDE473231EAAE8C508382 /* UDCommon.framework in Frameworks */,
+				68585909F69A5BC1B020D46E /* UDArchives.framework in Frameworks */,
+				B50439F6E1F999352F888D75 /* UDImages.framework in Frameworks */,
+				89F19F2E97A27D56919E9CD8 /* UDDecls.framework in Frameworks */,
+				C79FA1D4497C4639B888192B /* UDRenderer.framework in Frameworks */,
+				E14F4D34C2D85AEA5A5C40BF /* UDUI.framework in Frameworks */,
+				571E232067493188ADEE65E2 /* UDGUIEditor.framework in Frameworks */,
+				640DFB303D06FC1AB942AD0C /* UDScripts.framework in Frameworks */,
+				E00BE7F58CDE982B06C7D9FD /* UDWorkspace.framework in Frameworks */,
 				902F0A0371C8BE1A7CAEAB3A /* OpenGL.framework in Frameworks */,
 				EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */,
 				EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */,
 				EC0D00000000000000000008 /* LSPKit.xcframework in Frameworks */,
 				32C2B179FE387F7737A99C85 /* Sparkle.xcframework in Frameworks */,
 				DD01001000000000000000AA /* Cocoa.framework in Frameworks */,
-				CC04020000000000000000AA /* UDCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1314,13 +2117,141 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68527CEF0FAD475EBD05B108 /* UDIdLib.framework in Frameworks */,
+				63ED11D84B282204E3EE2131 /* UDCommon.framework in Frameworks */,
+				C03B6EACA00E51C275F874F9 /* UDArchives.framework in Frameworks */,
+				930A8A14DFCE0229F51BBB81 /* UDImages.framework in Frameworks */,
+				91EE876C3E14AB70E86693D4 /* UDDecls.framework in Frameworks */,
+				4077D89DEFFB7000CC547CAE /* UDRenderer.framework in Frameworks */,
+				942A1FBE20573D270C3CA94F /* UDUI.framework in Frameworks */,
+				FA5DDA755A727E8233E67703 /* UDGUIEditor.framework in Frameworks */,
+				6911BCDA32ADFEFE985CB1F0 /* UDScripts.framework in Frameworks */,
+				E1C005E6080AFA23070E8B04 /* UDWorkspace.framework in Frameworks */,
 				AF7E50172F726A0C78A3C8E9 /* OpenGL.framework in Frameworks */,
 				EC0D0000000000000000000A /* UDCodeKit.xcframework in Frameworks */,
 				EC0D0000000000000000000C /* UDPieceTable.xcframework in Frameworks */,
 				EC0D0000000000000000000E /* LSPKit.xcframework in Frameworks */,
 				F3CCCA829427E4B36F2572FF /* XCTest.framework in Frameworks */,
 				478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */,
-				224919AD813B12DAF7F5DFDC /* UDCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6725634B8587962A52727DDA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				691BF72C81669928C4A0D953 /* CoreData.framework in Frameworks */,
+				5B52A75C73B66A8B8FA5034C /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B07AFAB99961C709DD3A17A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEF38144E2674A66EDB9FC2C /* CoreData.framework in Frameworks */,
+				A2A427B2ED605F0DF669729D /* Cocoa.framework in Frameworks */,
+				5FE5C9365F5C1E0BEECCBAD7 /* UDIdLib.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9719116987016F65CEBDE1D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A524D2DD6CAE202D9E8A05E3 /* CoreData.framework in Frameworks */,
+				9190FDF6DCB2DE7611AA222C /* Cocoa.framework in Frameworks */,
+				5AAFD122C57F1282B899D052 /* UDIdLib.framework in Frameworks */,
+				9C6DEFCE7908557CF008D193 /* UDCommon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CBBFD7C2ACE83DB1BB2FB1EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				558B85C7F11C6E4EAC338136 /* CoreData.framework in Frameworks */,
+				AE16F6E8B8F72BABC8901087 /* Cocoa.framework in Frameworks */,
+				3A5DF1E867D94875E3FC0A15 /* UDIdLib.framework in Frameworks */,
+				246E24D46E5795B80E841B97 /* UDCommon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CAA063DB6DD9636276A7C3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A13DE242AAA298C4D1D6B3A /* CoreData.framework in Frameworks */,
+				1A2C670E6048014D8AECD3C5 /* Cocoa.framework in Frameworks */,
+				529C8B6A8839F5ECBAFB3D26 /* UDIdLib.framework in Frameworks */,
+				90E4E32FBCBD39E164FE11B9 /* UDCommon.framework in Frameworks */,
+				075883BE043E06E248695274 /* UDImages.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		804778C52AA228F5CA8B159D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C23A2EC978641554342D376 /* CoreData.framework in Frameworks */,
+				55715C3FA645D63F2FBF7AB3 /* Cocoa.framework in Frameworks */,
+				08C861A04C71A89A2DEE6F14 /* UDIdLib.framework in Frameworks */,
+				834DD9228EBF43E6116D77F1 /* UDCommon.framework in Frameworks */,
+				CF3DE6FD9D3F9670BD983119 /* UDImages.framework in Frameworks */,
+				1D8DD0A3EBDAA11E17B43C04 /* UDDecls.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1E300949851E484EBD940CF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7100A86F3306EC57E33BA9C /* CoreData.framework in Frameworks */,
+				8C7412C7E5D73AE42B50FAC5 /* Cocoa.framework in Frameworks */,
+				160057B5F59F410D5A6C6F9D /* UDIdLib.framework in Frameworks */,
+				D69B0F0F8FB80EB0A7DD076A /* UDCommon.framework in Frameworks */,
+				C674654F2DD6B9418202BF56 /* UDImages.framework in Frameworks */,
+				0CE3F1C812B94BE1B6399385 /* UDDecls.framework in Frameworks */,
+				56AA1E6C9F22353941EAA4A7 /* UDRenderer.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		54306FA1EF4A4E2AED16AA3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E94CE08F6E1EC55424F60CD0 /* CoreData.framework in Frameworks */,
+				4A68379172BE017C1F4F7D57 /* Cocoa.framework in Frameworks */,
+				84771EC2A627380414A2488C /* UDIdLib.framework in Frameworks */,
+				82DD87AEE7E611DA1DD09FD6 /* UDCommon.framework in Frameworks */,
+				C1D6B7971C4C566108930C2A /* UDImages.framework in Frameworks */,
+				D3E97B5A519600CDBDA8FF07 /* UDDecls.framework in Frameworks */,
+				3E61AF7B54CFDA40B80FE54C /* UDRenderer.framework in Frameworks */,
+				FFB4A01E7405AB161F0731E7 /* UDUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF4938532FCCB443072B1695 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FFF612EE8FFD24CA091CC63 /* CoreData.framework in Frameworks */,
+				61DA27D6BC032F34E770375E /* Cocoa.framework in Frameworks */,
+				690D6AD988774BC18628D7D3 /* UDIdLib.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E03B0B07A46357C76D67A5F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				639E0E23C6C456308E0D1B79 /* CoreData.framework in Frameworks */,
+				D84234C3FD776D89660368C4 /* Cocoa.framework in Frameworks */,
+				AA5C83BFAC622C9A4EA51A50 /* UDIdLib.framework in Frameworks */,
+				BFB34CCC76BFCBA12796B28B /* UDCommon.framework in Frameworks */,
+				6831A76FA0C0D7AC787B4EC0 /* UDArchives.framework in Frameworks */,
+				5C59EBEB6E0EC7DD2A616350 /* UDImages.framework in Frameworks */,
+				045B92587007692E3ADF281E /* UDDecls.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1349,6 +2280,16 @@
 		AA00000300000000000000AA /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */,
+				C21974321174D5857F81AFC5 /* UDScripts.framework */,
+				F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */,
+				EECADD4F76AD8E51C286C5B1 /* UDUI.framework */,
+				06E31A0099EC60E5A3021E10 /* UDRenderer.framework */,
+				28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */,
+				FACB25E92A25FD977D8DEF9B /* UDImages.framework */,
+				6062E05CA860510F66A068FD /* UDArchives.framework */,
+				64D61149FE7350ED17F3647B /* UDCommon.framework */,
+				D64ED218A483996F9CF44BE3 /* UDIdLib.framework */,
 				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
 				AA00050000000000000000AA /* PakManager.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
@@ -1356,7 +2297,6 @@
 				ED2000000000000000000005 /* LSPServerKit.framework */,
 				EC1E00000000000000000003 /* udscript-lsp */,
 				FF00050000000000000000AA /* UDLauncher.app */,
-				CC00050000000000000000AA /* UDCore.framework */,
 				395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */,
 			);
 			name = Products;
@@ -1981,38 +2921,115 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		CC03000100000000000000AA /* Headers */ = {
+		F67643E7C65B99A188C86369 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				CE3FA37330076E560048F206 /* idStr.h in Headers */,
+				CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */,
+				CECEB2F63018C04600F88078 /* UDEndian.h in Headers */,
+				DDE31DC5AAD1756E9C22D4B5 /* idLangDict.h in Headers */,
+				EF88F042BC708D757173477B /* idDict.h in Headers */,
+				07292F50A723010BDA7A8E1C /* idStrPool.h in Headers */,
+				E8FEA4EE1F8DDB31EC7792F9 /* idMath.h in Headers */,
+				50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */,
+				CE07E8873000D984007ED480 /* idLexer.h in Headers */,
+				43E41A1B2C8FE1A5B2E119F7 /* idFileAccess.h in Headers */,
+				CE3FA382300C683E0048F206 /* sys.h in Headers */,
+				CECEB2F23017B96D00F88078 /* MD5.h in Headers */,
+				CE3FA369300172100048F206 /* idParser.h in Headers */,
+				CE07E8833000D2F6007ED480 /* idToken.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A86207CA95E2421B17DB25F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				CE3FA36D3004FBF60048F206 /* idFileSystem.h in Headers */,
 				CE3FA3793007ED5D0048F206 /* unzip.h in Headers */,
-				CED0148C302DDCA2009517DE /* UDBitMsg.h in Headers */,
 				CC02000E00000000000000AA /* UDGame.h in Headers */,
-				CC02000F00000000000000AA /* UDGameDetectionService.h in Headers */,
+				CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */,
+				76756ABA0B14E2A5AFB864F2 /* UDEngineSettings.h in Headers */,
+				509413079B1031AFCD9FBC81 /* idLangDict+Common.h in Headers */,
+				713E5322772E5EE5B5728E38 /* idCVarSystem.h in Headers */,
+				CE3FA392300E59920048F206 /* idDeclManager.h in Headers */,
+				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		40A9CB9A44EEE6F47B696A13 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				CC02001000000000000000AA /* UDArchive.h in Headers */,
-				CECEB2F63018C04600F88078 /* UDEndian.h in Headers */,
 				CC02001100000000000000AA /* UDArchiveEditor.h in Headers */,
 				CC02001200000000000000AA /* UDArchiveEntry.h in Headers */,
 				CC02001300000000000000AA /* UDArchiveMutation.h in Headers */,
 				CC02001400000000000000AA /* UDContentSource.h in Headers */,
 				CC02001500000000000000AA /* UDDirectoryNode.h in Headers */,
-				CE3FA36F3004FC2A0048F206 /* idFile.h in Headers */,
-				76756ABA0B14E2A5AFB864F2 /* UDEngineSettings.h in Headers */,
-				509413079B1031AFCD9FBC81 /* idLangDict+Common.h in Headers */,
+				DC02000000000000000000AA /* UDArchiveCodec.h in Headers */,
+				DC02000100000000000000AA /* UDCodecRegistry.h in Headers */,
+				DC02000200000000000000AA /* UDDaikatanaPAKCodec.h in Headers */,
+				DC02000300000000000000AA /* UDPAK2Codec.h in Headers */,
+				DC02000400000000000000AA /* UDPAKCodec.h in Headers */,
+				DC02000500000000000000AA /* UDPAKEntrySource.h in Headers */,
+				DC02000600000000000000AA /* UDPK3Codec.h in Headers */,
+				DC02000700000000000000AA /* UDPK3ZIPEntrySource.h in Headers */,
+				DC02000800000000000000AA /* UDPK4Codec.h in Headers */,
+				DC02000900000000000000AA /* UDStagedFileSource.h in Headers */,
+				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4344C0AE46C72AE28E3E1C30 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2770A0AE62561B8C472C647E /* UDImageProgram.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FBE2BA1651EF48D7FC24AF5B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				CEFC59D83035994A001E2179 /* UDDeclIncrementalStore.h in Headers */,
 				EE01000000000000000002AA /* UDDeclManagedObjects.h in Headers */,
 				FD867A106D6D48F7F7E84B73 /* UDDeclParticle.h in Headers */,
 				EB3587E5EB9A7C65FA21CD8F /* UDDeclPDA.h in Headers */,
 				CCFE5E80FEE39A83E8F3A886 /* UDDeclFX.h in Headers */,
 				988709565C2965097916B34C /* UDDeclAF.h in Headers */,
-				2770A0AE62561B8C472C647E /* UDImageProgram.h in Headers */,
 				BFFBE6ACB9EC2001C8304813 /* UDMaterialParser.h in Headers */,
 				0C1B7D75C686DFDFE9C30645 /* UDDeclMaterial.h in Headers */,
+				4B406E13D964DD9ED18B17F6 /* UDDeclSound.h in Headers */,
+				B64288C898E04A9E5C524230 /* UDDeclEntityDef.h in Headers */,
+				46308D1178A591454324C448 /* UDDeclSkin.h in Headers */,
+				AF48ED51E0FDCF8F46D2438E /* UDDeclTable.h in Headers */,
+				FD213879379259F858B820BA /* UDDeclElement.h in Headers */,
+				5830E987D64405FE5E1DE09B /* UDDeclRawText.h in Headers */,
+				D02A9C547C9CEB1E6383C98A /* UDDeclBase.h in Headers */,
+				93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8E939D8A8E14BEA824CC1244 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				BAE673DC0103B476A1F7AFB7 /* UDSoftwareRenderer.h in Headers */,
 				C825B09B3DCB4352E26E1E78 /* UDFXModel.h in Headers */,
 				5CE0592AB3401285E17CB225 /* UDARBProgram.h in Headers */,
+				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
+				CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */,
+				47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29BFFD3A4807F9C490E745A0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				FE7248A09DAE35AC620A94AB /* idRenderWindow.h in Headers */,
 				D2D4F78A62053FBC28232E4D /* idMarkerWindow.h in Headers */,
 				C13E0FB5FAD30F00FD3933D4 /* idFieldWindow.h in Headers */,
@@ -2023,57 +3040,43 @@
 				4E18C44BB393C597DD30E954 /* idSliderWindow.h in Headers */,
 				EB8CF2D704CB991D53084636 /* idUserInterface.h in Headers */,
 				E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */,
-				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
 				14CC3EF91B74FD716076483C /* idWindow.h in Headers */,
 				0F7C767754D5E25F16F6F911 /* idWindowEditorWrapper.h in Headers */,
+				CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */,
+				F7591715089EA88330F0827A /* idRegExp.h in Headers */,
+				1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5A0E84880A763B4C2BFD0D59 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */,
 				8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */,
 				2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */,
 				D2C0BEB1121CA52FDD24EE38 /* rvGEOptions.h in Headers */,
 				20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */,
 				6BED93D2967B9FCBEECCE6C3 /* rvGEWindowWrapper.h in Headers */,
-				CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */,
-				F7591715089EA88330F0827A /* idRegExp.h in Headers */,
-				1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */,
-				713E5322772E5EE5B5728E38 /* idCVarSystem.h in Headers */,
-				DDE31DC5AAD1756E9C22D4B5 /* idLangDict.h in Headers */,
-				EF88F042BC708D757173477B /* idDict.h in Headers */,
-				07292F50A723010BDA7A8E1C /* idStrPool.h in Headers */,
-				E8FEA4EE1F8DDB31EC7792F9 /* idMath.h in Headers */,
-				CC4E18567B4F6D933A452C69 /* UDParticleModel.h in Headers */,
-				50F1F4DF0AE8663B2C1746B0 /* UDSourceTokens.h in Headers */,
-				47B297A9BB6F0FD15E86B9B1 /* UDMD5Mesh.h in Headers */,
-				4B406E13D964DD9ED18B17F6 /* UDDeclSound.h in Headers */,
-				B64288C898E04A9E5C524230 /* UDDeclEntityDef.h in Headers */,
-				46308D1178A591454324C448 /* UDDeclSkin.h in Headers */,
-				AF48ED51E0FDCF8F46D2438E /* UDDeclTable.h in Headers */,
-				FD213879379259F858B820BA /* UDDeclElement.h in Headers */,
-				5830E987D64405FE5E1DE09B /* UDDeclRawText.h in Headers */,
-				D02A9C547C9CEB1E6383C98A /* UDDeclBase.h in Headers */,
-				CE07E8873000D984007ED480 /* idLexer.h in Headers */,
-				43E41A1B2C8FE1A5B2E119F7 /* idFileAccess.h in Headers */,
-				CE3FA382300C683E0048F206 /* sys.h in Headers */,
-				CECEB2F23017B96D00F88078 /* MD5.h in Headers */,
-				DC02000000000000000000AA /* UDArchiveCodec.h in Headers */,
-				CE3FA369300172100048F206 /* idParser.h in Headers */,
-				DC02000100000000000000AA /* UDCodecRegistry.h in Headers */,
-				DC02000200000000000000AA /* UDDaikatanaPAKCodec.h in Headers */,
-				DC02000300000000000000AA /* UDPAK2Codec.h in Headers */,
-				DC02000400000000000000AA /* UDPAKCodec.h in Headers */,
-				DC02000500000000000000AA /* UDPAKEntrySource.h in Headers */,
-				DC02000600000000000000AA /* UDPK3Codec.h in Headers */,
-				DC02000700000000000000AA /* UDPK3ZIPEntrySource.h in Headers */,
-				DC02000800000000000000AA /* UDPK4Codec.h in Headers */,
-				DC02000900000000000000AA /* UDStagedFileSource.h in Headers */,
-				CE3FA386300E43810048F206 /* UDWorkspace.h in Headers */,
-				CE3FA392300E59920048F206 /* idDeclManager.h in Headers */,
-				CE07E8833000D2F6007ED480 /* idToken.h in Headers */,
-				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
-				CE3FA37D3007F3320048F206 /* ioapi.h in Headers */,
-				F11B76E69140841478600956 /* UDZipWriter.h in Headers */,
-				93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BADF96CF0D3610DFDBB1FA48 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				5C0E00000000000000000002 /* UDScriptEvents.h in Headers */,
 				5C0F00000000000000000002 /* UDScriptIndex.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E996766C505047E9F561A6B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC02000F00000000000000AA /* UDGameDetectionService.h in Headers */,
+				CE3FA386300E43810048F206 /* UDWorkspace.h in Headers */,
+				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2092,7 +3095,16 @@
 			buildRules = (
 			);
 			dependencies = (
-				CC07010100000000000000AA /* PBXTargetDependency */,
+				2117B37A42C7F817DBA58027 /* PBXTargetDependency */,
+				07136F5C2C2C598DADCEFA92 /* PBXTargetDependency */,
+				A33BC89B8116C5B1CA6E4FE6 /* PBXTargetDependency */,
+				87F4F8E9AD52BE640222D6F7 /* PBXTargetDependency */,
+				98CEDE2C04B8E7B977C225CA /* PBXTargetDependency */,
+				D14978C20DF6B267412BA506 /* PBXTargetDependency */,
+				93848FEC72E5E7DD06CA4756 /* PBXTargetDependency */,
+				516F9F8FC97B7CBD1E3F3E99 /* PBXTargetDependency */,
+				F4F6F48BBC80A13DB0B45CF0 /* PBXTargetDependency */,
+				0E8D8AFBB0EB346468B4454A /* PBXTargetDependency */,
 			);
 			name = "Pak Manager";
 			productName = "Pak Manager";
@@ -2109,7 +3121,16 @@
 			buildRules = (
 			);
 			dependencies = (
-				CC07040100000000000000AA /* PBXTargetDependency */,
+				7DA776B7427E0CECDBE6B2D6 /* PBXTargetDependency */,
+				227C3D7BC84C1DB4C3B1F1D0 /* PBXTargetDependency */,
+				029904D2AF004EAED5488439 /* PBXTargetDependency */,
+				8B54E6AA9E7B5F5C02033BC8 /* PBXTargetDependency */,
+				4F51CE0393E0EEFE3A1E8DE2 /* PBXTargetDependency */,
+				94E841C80A33DDCFD033EA73 /* PBXTargetDependency */,
+				A07D58BFFDD5392CBDBF9212 /* PBXTargetDependency */,
+				54A85FD2799270C6A5E258FA /* PBXTargetDependency */,
+				E02C8BDFBB3877F637BC5FF3 /* PBXTargetDependency */,
+				459B51BF1595266CC95502EE /* PBXTargetDependency */,
 			);
 			name = udpaktool;
 			productName = udpaktool;
@@ -2127,30 +3148,22 @@
 			buildRules = (
 			);
 			dependencies = (
-				CC07050100000000000000AA /* PBXTargetDependency */,
+				9D0A85B24F287CE8488A9FE5 /* PBXTargetDependency */,
+				024551B71C3F4FDE3F5F5BDD /* PBXTargetDependency */,
+				908FF1D741AEC7AC54D9A20F /* PBXTargetDependency */,
+				D88FAE2495FB7610C4E274CF /* PBXTargetDependency */,
+				2F3F16720609DFAB5E60DD89 /* PBXTargetDependency */,
+				8DF36D8B8E239769846E9AF9 /* PBXTargetDependency */,
+				65F6663505A2D63F413C4D42 /* PBXTargetDependency */,
+				E3F0D98E73E82845C6B88A81 /* PBXTargetDependency */,
+				E7E6BCE48D47463A9FD4107C /* PBXTargetDependency */,
+				394F9F4589921CD34CCAB9EB /* PBXTargetDependency */,
 				ED2000000000000000000020 /* PBXTargetDependency */,
 			);
 			name = UDQuakeToolsTests;
 			productName = UDQuakeToolsTests;
 			productReference = BB00000000000000000000AA /* UDQuakeToolsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		CC04000000000000000000AA /* UDCore */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CC06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDCore" */;
-			buildPhases = (
-				CC03000000000000000000AA /* Sources */,
-				CC03000100000000000000AA /* Headers */,
-				CC03000200000000000000AA /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = UDCore;
-			productName = UDCore;
-			productReference = CC00050000000000000000AA /* UDCore.framework */;
-			productType = "com.apple.product-type.framework";
 		};
 		DD04000000000000000000AA /* Decl Browser */ = {
 			isa = PBXNativeTarget;
@@ -2167,10 +3180,19 @@
 			buildRules = (
 			);
 			dependencies = (
+				E3311B8321E46BA849A2B250 /* PBXTargetDependency */,
+				58FB4ADAE722F9E7A76AAD7C /* PBXTargetDependency */,
+				520AA4A19B5082BCA16BAE3C /* PBXTargetDependency */,
+				8E96CE12B45D2E0914B00BFF /* PBXTargetDependency */,
+				6FFCC24DA70BE06C45D0097F /* PBXTargetDependency */,
+				7755D72F14FC2AF04233F0AB /* PBXTargetDependency */,
+				A94131CA29EC3564F60F6D20 /* PBXTargetDependency */,
+				17D5D954976523FCC72940B2 /* PBXTargetDependency */,
+				A39A18BF6C3E55751F06B4CD /* PBXTargetDependency */,
+				82F80178ACEBD99D2F9D2F4B /* PBXTargetDependency */,
 				EC1D00000000000000000006 /* PBXTargetDependency */,
 				ED1D00000000000000000006 /* PBXTargetDependency */,
 				EC1E00000000000000000010 /* PBXTargetDependency */,
-				CC07020100000000000000AA /* PBXTargetDependency */,
 			);
 			name = "Decl Browser";
 			productName = DeclBrowser;
@@ -2207,15 +3229,223 @@
 			buildRules = (
 			);
 			dependencies = (
+				71B29B0C69A22289A1C816EB /* PBXTargetDependency */,
+				BF2F6DC54D28220045199AC0 /* PBXTargetDependency */,
+				E1733CAC4697720E3A63232A /* PBXTargetDependency */,
+				5B9C7F8756C8792B29CE084B /* PBXTargetDependency */,
+				C86F5D5C363B4DB5A964F6C2 /* PBXTargetDependency */,
+				DD50DB205C27A165F3FE0859 /* PBXTargetDependency */,
+				D337A16A80724FC63ACE0C3E /* PBXTargetDependency */,
+				5635439B067929AD22BC52AE /* PBXTargetDependency */,
+				BED5BF3DE3FA27D14045A447 /* PBXTargetDependency */,
+				A13EA8B03E15B32F76747D5D /* PBXTargetDependency */,
 				EC1D00000000000000000007 /* PBXTargetDependency */,
 				ED1D00000000000000000007 /* PBXTargetDependency */,
 				EC1E00000000000000000014 /* PBXTargetDependency */,
-				18EAAA5C20CA24F3294E116C /* PBXTargetDependency */,
 			);
 			name = DeclBrowserTests;
 			productName = DeclBrowserTests;
 			productReference = 395D2B3D3773407E57B6B678 /* DeclBrowserTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E71977493C653CE069D4FD70 /* UDIdLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E251E116F7C70F52A5284B8B /* Build configuration list for PBXNativeTarget "UDIdLib" */;
+			buildPhases = (
+				362C43F5C77C17639487FB70 /* Sources */,
+				F67643E7C65B99A188C86369 /* Headers */,
+				6725634B8587962A52727DDA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UDIdLib;
+			productName = UDIdLib;
+			productReference = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		02765894139EB401B2243F2E /* UDCommon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DAB9B416D2CFA91644093506 /* Build configuration list for PBXNativeTarget "UDCommon" */;
+			buildPhases = (
+				11C1C2B4A85329370349E70A /* Sources */,
+				4A86207CA95E2421B17DB25F /* Headers */,
+				4B07AFAB99961C709DD3A17A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				63534CCE2ECE2FC046B5AA66 /* PBXTargetDependency */,
+			);
+			name = UDCommon;
+			productName = UDCommon;
+			productReference = 64D61149FE7350ED17F3647B /* UDCommon.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		DCB9414176BEDEF4DAF97BF0 /* UDArchives */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08CE989D224F16595B6A3B80 /* Build configuration list for PBXNativeTarget "UDArchives" */;
+			buildPhases = (
+				05BFAE9C30A8C97CBF1B4A8E /* Sources */,
+				40A9CB9A44EEE6F47B696A13 /* Headers */,
+				C9719116987016F65CEBDE1D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4A95C29DDA9AD6749D719DF5 /* PBXTargetDependency */,
+				5F7A1FB5703A1EB4F4F93DCB /* PBXTargetDependency */,
+			);
+			name = UDArchives;
+			productName = UDArchives;
+			productReference = 6062E05CA860510F66A068FD /* UDArchives.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		9921947C6187716263FA03BD /* UDImages */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6AE858C8448AA0A6BA2E3E18 /* Build configuration list for PBXNativeTarget "UDImages" */;
+			buildPhases = (
+				F0891877856EFA9B5C82782A /* Sources */,
+				4344C0AE46C72AE28E3E1C30 /* Headers */,
+				CBBFD7C2ACE83DB1BB2FB1EC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B8CDFFC5FEE9C9F8B914094D /* PBXTargetDependency */,
+				8BA07F43B53325724E51140A /* PBXTargetDependency */,
+			);
+			name = UDImages;
+			productName = UDImages;
+			productReference = FACB25E92A25FD977D8DEF9B /* UDImages.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		AEFCFFF22B9A4D807C22B1F7 /* UDDecls */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91552AED3B21FFBE5177540F /* Build configuration list for PBXNativeTarget "UDDecls" */;
+			buildPhases = (
+				86A7C056E466BC5CC18B9FBB /* Sources */,
+				FBE2BA1651EF48D7FC24AF5B /* Headers */,
+				0CAA063DB6DD9636276A7C3B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A33E87CB4E0D05C07D2B1499 /* PBXTargetDependency */,
+				A3F5AA1B3F7F7A585ABD61C5 /* PBXTargetDependency */,
+				778B36BBE704126B9D300745 /* PBXTargetDependency */,
+			);
+			name = UDDecls;
+			productName = UDDecls;
+			productReference = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		C5E83F5220F979289293F7E4 /* UDRenderer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BEA0BF7ED659319CBF7E0B8B /* Build configuration list for PBXNativeTarget "UDRenderer" */;
+			buildPhases = (
+				D0898061936464935D41A87D /* Sources */,
+				8E939D8A8E14BEA824CC1244 /* Headers */,
+				804778C52AA228F5CA8B159D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EBCE64C8D331D60D89FA4949 /* PBXTargetDependency */,
+				163291ACA4BD452FADA44E26 /* PBXTargetDependency */,
+				CF33C1222A1B764AC8F5ED7A /* PBXTargetDependency */,
+				574900B400697ADC8A72B759 /* PBXTargetDependency */,
+			);
+			name = UDRenderer;
+			productName = UDRenderer;
+			productReference = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A90AAC2F3E6321A51AD2C446 /* UDUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2C2EF355450F5444B54E704 /* Build configuration list for PBXNativeTarget "UDUI" */;
+			buildPhases = (
+				6FF431EDF75D6740339E246E /* Sources */,
+				29BFFD3A4807F9C490E745A0 /* Headers */,
+				1E300949851E484EBD940CF3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				806471283795F5F82B3E36DA /* PBXTargetDependency */,
+				0059ED43C55D1D7D8ABDFDDD /* PBXTargetDependency */,
+				E60EA29551105CBCF7206CA3 /* PBXTargetDependency */,
+				1A63639406F413372A51BDEB /* PBXTargetDependency */,
+				CF8469F49DADEF69044AA30C /* PBXTargetDependency */,
+			);
+			name = UDUI;
+			productName = UDUI;
+			productReference = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E46730EF3450F659D3F20211 /* Build configuration list for PBXNativeTarget "UDGUIEditor" */;
+			buildPhases = (
+				143F0B233B975E49B770BFC2 /* Sources */,
+				5A0E84880A763B4C2BFD0D59 /* Headers */,
+				54306FA1EF4A4E2AED16AA3E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				618CE387DCE31FEFF1F069F1 /* PBXTargetDependency */,
+				4D096BBFD832350A07DF0651 /* PBXTargetDependency */,
+				F0E1EA93B04268CB975DFD95 /* PBXTargetDependency */,
+				FB7C1EA6BF9BF9D9E8F437A5 /* PBXTargetDependency */,
+				E89D25BD59656F5900C2D336 /* PBXTargetDependency */,
+				3F3F0659139B08554416955B /* PBXTargetDependency */,
+			);
+			name = UDGUIEditor;
+			productName = UDGUIEditor;
+			productReference = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		2F846BFEF6B2DFFE06A6B88F /* UDScripts */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 97283251129BA798F7150574 /* Build configuration list for PBXNativeTarget "UDScripts" */;
+			buildPhases = (
+				9F5F155CC55683E5787F5B02 /* Sources */,
+				BADF96CF0D3610DFDBB1FA48 /* Headers */,
+				BF4938532FCCB443072B1695 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DAD88512A562CE3E01CDFEBA /* PBXTargetDependency */,
+			);
+			name = UDScripts;
+			productName = UDScripts;
+			productReference = C21974321174D5857F81AFC5 /* UDScripts.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		45DDFC20A8F45BC4A2794B6D /* UDWorkspace */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2A123CD442A11A819E66DCBB /* Build configuration list for PBXNativeTarget "UDWorkspace" */;
+			buildPhases = (
+				AB4047399565A53D25165D0F /* Sources */,
+				0E996766C505047E9F561A6B /* Headers */,
+				9E03B0B07A46357C76D67A5F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				21F733A801B7A7E87346558F /* PBXTargetDependency */,
+				C6F7771C055C74C7598DAC49 /* PBXTargetDependency */,
+				E227DA7F7253A37058F1A3C2 /* PBXTargetDependency */,
+				9EB5D94FF37FE792E68D04EF /* PBXTargetDependency */,
+				C48313E65EE4443081450FAE /* PBXTargetDependency */,
+			);
+			name = UDWorkspace;
+			productName = UDWorkspace;
+			productReference = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -2263,7 +3493,16 @@
 			);
 			projectRoot = "";
 			targets = (
-				CC04000000000000000000AA /* UDCore */,
+				45DDFC20A8F45BC4A2794B6D /* UDWorkspace */,
+				2F846BFEF6B2DFFE06A6B88F /* UDScripts */,
+				9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */,
+				A90AAC2F3E6321A51AD2C446 /* UDUI */,
+				C5E83F5220F979289293F7E4 /* UDRenderer */,
+				AEFCFFF22B9A4D807C22B1F7 /* UDDecls */,
+				9921947C6187716263FA03BD /* UDImages */,
+				DCB9414176BEDEF4DAF97BF0 /* UDArchives */,
+				02765894139EB401B2243F2E /* UDCommon */,
+				E71977493C653CE069D4FD70 /* UDIdLib */,
 				ED200000000000000000000E /* LSPServerKit */,
 				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
@@ -2439,98 +3678,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CC03000000000000000000AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CE3FA36B3001746A0048F206 /* idParser.m in Sources */,
-				CE3FA384300C68550048F206 /* compat.m in Sources */,
-				CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */,
-				62EB92AEEB8BFD57B9EA8A28 /* UDDeclParticle.m in Sources */,
-				435824388359A714EB86E18F /* UDDeclPDA.m in Sources */,
-				C8E7760B682F983037F3AEF8 /* UDDeclFX.m in Sources */,
-				03FB7A3F029FE4C6804B278D /* UDDeclAF.m in Sources */,
-				8DDA1B2EAC11F54EA45F15A9 /* UDImageProgram.m in Sources */,
-				B6BFE013658430BF7252954C /* UDMaterialParser.m in Sources */,
-				6917835E62C48088D4186043 /* UDDeclMaterial.m in Sources */,
-				2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */,
-				D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */,
-				149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */,
-				91248DA27F7CA4220E9D63D7 /* idRenderWindow.m in Sources */,
-				F24A6957E5F442C60BF8E56F /* idMarkerWindow.m in Sources */,
-				34B1A9DC85F136BD6B35AEEF /* idFieldWindow.m in Sources */,
-				C9BD31CF9AE1D310DF6E2CB0 /* idBindWindow.m in Sources */,
-				9AA57244A4FE73A088C91CF7 /* idListWindow.m in Sources */,
-				D6F21723F3E8F85DFDCADB12 /* idChoiceWindow.m in Sources */,
-				792114C24F6E4AC3141E6FE4 /* idEditWindow.m in Sources */,
-				62CE3F6A1DF351D2F2F77942 /* idSliderWindow.m in Sources */,
-				EBBBE57818273C42978114C9 /* idUserInterface.m in Sources */,
-				CA2E02DD33B1C11CF37A185B /* idDeviceContext.m in Sources */,
-				21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */,
-				71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */,
-				FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */,
-				D498330BD324478801E0B61C /* UDOverlay.m in Sources */,
-				5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */,
-				7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */,
-				3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */,
-				BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */,
-				3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */,
-				300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */,
-				8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */,
-				5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */,
-				3C670BBE25910D48BAC6BC1E /* idCVarSystem.m in Sources */,
-				9AD721BAAC3F29C3E9E2C99B /* idLangDict.m in Sources */,
-				A127A7D61121CD580996284B /* idDict.m in Sources */,
-				14D8F6216E794E9563A7A255 /* idStrPool.m in Sources */,
-				00910D7B86E6E51C370F1408 /* idMath.m in Sources */,
-				A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */,
-				61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */,
-				C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */,
-				DCF0B058CB138FA10817B4D2 /* UDDeclSound.m in Sources */,
-				856DE3101B36AE841252ECCB /* UDDeclEntityDef.m in Sources */,
-				534739E42C22B612948EFC6D /* UDDeclSkin.m in Sources */,
-				F76419F42D26572B27DEC1DD /* UDDeclTable.m in Sources */,
-				8A4D8EBABBAD8873A28F99EA /* UDDeclElement.m in Sources */,
-				9DACB3A41D62CF25A176AAFA /* UDDeclRawText.m in Sources */,
-				4CF7C118627B59091CBFE6B9 /* UDDeclBase.m in Sources */,
-				80AA9869AC9D2ABB7D31E43F /* UDDeclCodec.m in Sources */,
-				CE3FA380300B93A40048F206 /* idFileSystem.m in Sources */,
-				CECEB2F43017B97E00F88078 /* MD5.m in Sources */,
-				CC01000F00000000000000AA /* UDGame.m in Sources */,
-				CC01001000000000000000AA /* UDGameDetectionService.m in Sources */,
-				CE07E8893000D9A0007ED480 /* idLexer.m in Sources */,
-				CE3FA37B3007ED710048F206 /* unzip.c in Sources */,
-				CE3FA37F3007F3410048F206 /* ioapi.c in Sources */,
-				CC01001100000000000000AA /* UDArchive.m in Sources */,
-				CC01001200000000000000AA /* UDArchiveEditor.m in Sources */,
-				CC01001300000000000000AA /* UDArchiveEntry.m in Sources */,
-				CC01001400000000000000AA /* UDArchiveMutation.m in Sources */,
-				CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */,
-				CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */,
-				CE3FA37530076E5C0048F206 /* idStr.m in Sources */,
-				CC01001500000000000000AA /* UDDirectoryNode.m in Sources */,
-				CEFC59D630357317001E2179 /* DeclModel.xcdatamodeld in Sources */,
-				DC01000000000000000000AA /* UDCodecRegistry.m in Sources */,
-				DC01000100000000000000AA /* UDPAKCodec.m in Sources */,
-				DC01000200000000000000AA /* UDPAKEntrySource.m in Sources */,
-				DC01000300000000000000AA /* UDStagedFileSource.m in Sources */,
-				DC01000400000000000000AA /* UDPAK2Codec.m in Sources */,
-				DC01000500000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
-				DC01000600000000000000AA /* UDPK3Codec.m in Sources */,
-				CE3FA394300E68B20048F206 /* idDeclManager.m in Sources */,
-				CE3FA3773007B81F0048F206 /* idFile.m in Sources */,
-				2557DBC6A66F1543D6A4D9E5 /* idLangDict+Common.m in Sources */,
-				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
-				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
-				CE07E8853000D33B007ED480 /* idToken.m in Sources */,
-				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
-				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
-				D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */,
-				5C0E00000000000000000001 /* UDScriptEvents.m in Sources */,
-				5C0F00000000000000000001 /* UDScriptIndex.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DD03000000000000000000AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2651,34 +3798,164 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		362C43F5C77C17639487FB70 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE3FA36B3001746A0048F206 /* idParser.m in Sources */,
+				CE3FA384300C68550048F206 /* compat.m in Sources */,
+				9AD721BAAC3F29C3E9E2C99B /* idLangDict.m in Sources */,
+				A127A7D61121CD580996284B /* idDict.m in Sources */,
+				14D8F6216E794E9563A7A255 /* idStrPool.m in Sources */,
+				00910D7B86E6E51C370F1408 /* idMath.m in Sources */,
+				61E57FD8CD884B1018C3A6A5 /* UDSourceTokens.m in Sources */,
+				CECEB2F43017B97E00F88078 /* MD5.m in Sources */,
+				CE07E8893000D9A0007ED480 /* idLexer.m in Sources */,
+				CED0148D302DDCA2009517DE /* UDBitMsg.m in Sources */,
+				CE3FA37530076E5C0048F206 /* idStr.m in Sources */,
+				CE07E8853000D33B007ED480 /* idToken.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		11C1C2B4A85329370349E70A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C670BBE25910D48BAC6BC1E /* idCVarSystem.m in Sources */,
+				CE3FA380300B93A40048F206 /* idFileSystem.m in Sources */,
+				CC01000F00000000000000AA /* UDGame.m in Sources */,
+				CE3FA37B3007ED710048F206 /* unzip.c in Sources */,
+				CE3FA37F3007F3410048F206 /* ioapi.c in Sources */,
+				CE3FA394300E68B20048F206 /* idDeclManager.m in Sources */,
+				CE3FA3773007B81F0048F206 /* idFile.m in Sources */,
+				2557DBC6A66F1543D6A4D9E5 /* idLangDict+Common.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BFAE9C30A8C97CBF1B4A8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC01001100000000000000AA /* UDArchive.m in Sources */,
+				CC01001200000000000000AA /* UDArchiveEditor.m in Sources */,
+				CC01001300000000000000AA /* UDArchiveEntry.m in Sources */,
+				CC01001400000000000000AA /* UDArchiveMutation.m in Sources */,
+				CC01001500000000000000AA /* UDDirectoryNode.m in Sources */,
+				DC01000000000000000000AA /* UDCodecRegistry.m in Sources */,
+				DC01000100000000000000AA /* UDPAKCodec.m in Sources */,
+				DC01000200000000000000AA /* UDPAKEntrySource.m in Sources */,
+				DC01000300000000000000AA /* UDStagedFileSource.m in Sources */,
+				DC01000400000000000000AA /* UDPAK2Codec.m in Sources */,
+				DC01000500000000000000AA /* UDDaikatanaPAKCodec.m in Sources */,
+				DC01000600000000000000AA /* UDPK3Codec.m in Sources */,
+				DC01000700000000000000AA /* UDPK3ZIPEntrySource.m in Sources */,
+				DC01000800000000000000AA /* UDPK4Codec.m in Sources */,
+				9DA2713402EF4DF3B5CA7471 /* UDZipWriter.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F0891877856EFA9B5C82782A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DDA1B2EAC11F54EA45F15A9 /* UDImageProgram.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		86A7C056E466BC5CC18B9FBB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEFC59DA3035BF9D001E2179 /* UDDeclIncrementalStore.m in Sources */,
+				62EB92AEEB8BFD57B9EA8A28 /* UDDeclParticle.m in Sources */,
+				435824388359A714EB86E18F /* UDDeclPDA.m in Sources */,
+				C8E7760B682F983037F3AEF8 /* UDDeclFX.m in Sources */,
+				03FB7A3F029FE4C6804B278D /* UDDeclAF.m in Sources */,
+				B6BFE013658430BF7252954C /* UDMaterialParser.m in Sources */,
+				6917835E62C48088D4186043 /* UDDeclMaterial.m in Sources */,
+				DCF0B058CB138FA10817B4D2 /* UDDeclSound.m in Sources */,
+				856DE3101B36AE841252ECCB /* UDDeclEntityDef.m in Sources */,
+				534739E42C22B612948EFC6D /* UDDeclSkin.m in Sources */,
+				F76419F42D26572B27DEC1DD /* UDDeclTable.m in Sources */,
+				8A4D8EBABBAD8873A28F99EA /* UDDeclElement.m in Sources */,
+				9DACB3A41D62CF25A176AAFA /* UDDeclRawText.m in Sources */,
+				4CF7C118627B59091CBFE6B9 /* UDDeclBase.m in Sources */,
+				80AA9869AC9D2ABB7D31E43F /* UDDeclCodec.m in Sources */,
+				CEFC59D630357317001E2179 /* DeclModel.xcdatamodeld in Sources */,
+				D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D0898061936464935D41A87D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E74F20AA124A237B7679E7F /* UDSoftwareRenderer.m in Sources */,
+				D3A13F4E7942CB2E8B734566 /* UDFXModel.m in Sources */,
+				149F83DA4F0450D5193BBF57 /* UDARBProgram.m in Sources */,
+				21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */,
+				A365CFC5E3D8816521CBA077 /* UDParticleModel.m in Sources */,
+				C2D158329DCB69BCC6FD687A /* UDMD5Mesh.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6FF431EDF75D6740339E246E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91248DA27F7CA4220E9D63D7 /* idRenderWindow.m in Sources */,
+				F24A6957E5F442C60BF8E56F /* idMarkerWindow.m in Sources */,
+				34B1A9DC85F136BD6B35AEEF /* idFieldWindow.m in Sources */,
+				C9BD31CF9AE1D310DF6E2CB0 /* idBindWindow.m in Sources */,
+				9AA57244A4FE73A088C91CF7 /* idListWindow.m in Sources */,
+				D6F21723F3E8F85DFDCADB12 /* idChoiceWindow.m in Sources */,
+				792114C24F6E4AC3141E6FE4 /* idEditWindow.m in Sources */,
+				62CE3F6A1DF351D2F2F77942 /* idSliderWindow.m in Sources */,
+				EBBBE57818273C42978114C9 /* idUserInterface.m in Sources */,
+				CA2E02DD33B1C11CF37A185B /* idDeviceContext.m in Sources */,
+				71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */,
+				FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */,
+				300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */,
+				8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */,
+				5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		143F0B233B975E49B770BFC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D498330BD324478801E0B61C /* UDOverlay.m in Sources */,
+				5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */,
+				7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */,
+				3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */,
+				BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */,
+				3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F5F155CC55683E5787F5B02 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C0E00000000000000000001 /* UDScriptEvents.m in Sources */,
+				5C0F00000000000000000001 /* UDScriptIndex.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB4047399565A53D25165D0F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC01001000000000000000AA /* UDGameDetectionService.m in Sources */,
+				CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */,
+				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		CC07010100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = CC07010000000000000000AA /* PBXContainerItemProxy */;
-		};
-		CC07020100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = CC07020000000000000000AA /* PBXContainerItemProxy */;
-		};
-		CC07040100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = CC07040000000000000000AA /* PBXContainerItemProxy */;
-		};
-		CC07050100000000000000AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = CC07050000000000000000AA /* PBXContainerItemProxy */;
-		};
-		18EAAA5C20CA24F3294E116C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CC04000000000000000000AA /* UDCore */;
-			targetProxy = EAD41C4E0533DEF4D6FC6AF6 /* PBXContainerItemProxy */;
-		};
 		EC1D00000000000000000006 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TreeSitterIdScript;
@@ -2698,6 +3975,451 @@
 			isa = PBXTargetDependency;
 			name = TreeSitterIdDecl;
 			targetProxy = ED1D00000000000000000008 /* PBXContainerItemProxy */;
+		};
+		63534CCE2ECE2FC046B5AA66 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = A74F7B2F3E9F46E98465A698 /* PBXContainerItemProxy */;
+		};
+		4A95C29DDA9AD6749D719DF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 8F2BA82622928D1EF9FE2C1E /* PBXContainerItemProxy */;
+		};
+		5F7A1FB5703A1EB4F4F93DCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = B2DB8182A892C6908FAEB88A /* PBXContainerItemProxy */;
+		};
+		B8CDFFC5FEE9C9F8B914094D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 1067F814C9D09E338B685E88 /* PBXContainerItemProxy */;
+		};
+		8BA07F43B53325724E51140A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = D7448C114082E90904F266D8 /* PBXContainerItemProxy */;
+		};
+		A33E87CB4E0D05C07D2B1499 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 7AB4EFC5F6791A3247DEFC4A /* PBXContainerItemProxy */;
+		};
+		A3F5AA1B3F7F7A585ABD61C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 8829A7BFA81F187AF30962BC /* PBXContainerItemProxy */;
+		};
+		778B36BBE704126B9D300745 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 2BAABCDEB318D91A89C29713 /* PBXContainerItemProxy */;
+		};
+		EBCE64C8D331D60D89FA4949 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 201818F1FC65122E9DEC776B /* PBXContainerItemProxy */;
+		};
+		163291ACA4BD452FADA44E26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 571F11F58C8484FD19549070 /* PBXContainerItemProxy */;
+		};
+		CF33C1222A1B764AC8F5ED7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = D6EF234506F50A36FE1A012B /* PBXContainerItemProxy */;
+		};
+		574900B400697ADC8A72B759 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 37EFD6C84E4828B90A9F5BBE /* PBXContainerItemProxy */;
+		};
+		806471283795F5F82B3E36DA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 2599A675A9DBE03983561F56 /* PBXContainerItemProxy */;
+		};
+		0059ED43C55D1D7D8ABDFDDD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = BCE3F1F7B28452BE227069EA /* PBXContainerItemProxy */;
+		};
+		E60EA29551105CBCF7206CA3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = C52E096D6DDFD30E8A4E9F2D /* PBXContainerItemProxy */;
+		};
+		1A63639406F413372A51BDEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 1CCCB8F1EA43A7DEF90FD3DB /* PBXContainerItemProxy */;
+		};
+		CF8469F49DADEF69044AA30C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = CAFA16C4234F544C214C9CB4 /* PBXContainerItemProxy */;
+		};
+		618CE387DCE31FEFF1F069F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 3D807E7F49A3B9BF403B4DAF /* PBXContainerItemProxy */;
+		};
+		4D096BBFD832350A07DF0651 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = C528E3C0CB1C7E91FBAC6732 /* PBXContainerItemProxy */;
+		};
+		F0E1EA93B04268CB975DFD95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 36E33F016E8D77BCEAFF47CA /* PBXContainerItemProxy */;
+		};
+		FB7C1EA6BF9BF9D9E8F437A5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 00ECE2C89D99F501AF72C820 /* PBXContainerItemProxy */;
+		};
+		E89D25BD59656F5900C2D336 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = BBFB7B041C0C42872F112D07 /* PBXContainerItemProxy */;
+		};
+		3F3F0659139B08554416955B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = B2ACD9705A9DC4273E2D62D0 /* PBXContainerItemProxy */;
+		};
+		DAD88512A562CE3E01CDFEBA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = B9E69A7B9CF67C2767EF2DE4 /* PBXContainerItemProxy */;
+		};
+		21F733A801B7A7E87346558F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 5EB4CB8D2869980F06C9050D /* PBXContainerItemProxy */;
+		};
+		C6F7771C055C74C7598DAC49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 0C7C23AE2FDFB5B8E4C861BE /* PBXContainerItemProxy */;
+		};
+		E227DA7F7253A37058F1A3C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = DD392D4194CFE03F1F0C3B56 /* PBXContainerItemProxy */;
+		};
+		9EB5D94FF37FE792E68D04EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = F35C82221DC4E5298443F1DB /* PBXContainerItemProxy */;
+		};
+		C48313E65EE4443081450FAE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = C0418D92653677C0F01CD209 /* PBXContainerItemProxy */;
+		};
+		5BA00751A05094147B9D52D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 3398E814EDA64EA61A587BFF /* PBXContainerItemProxy */;
+		};
+		64CC2667D58317E0A7A95BDA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = D5459C6CA5813935AAA9D8F4 /* PBXContainerItemProxy */;
+		};
+		9CC77A22C64A7241A90913EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = A8CAEC783CCBD80FE540D6C6 /* PBXContainerItemProxy */;
+		};
+		8E265B0683E40FE831AF7B97 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 66C383F75AD7C5BD61D34B77 /* PBXContainerItemProxy */;
+		};
+		8CE3DD18A1D91E5E17FC314D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 385E181C09608F8581F7A23C /* PBXContainerItemProxy */;
+		};
+		33194A79C0A3E304BCABEF2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = B0880D55084C55B5245824FE /* PBXContainerItemProxy */;
+		};
+		E6E95013173EAC9564C7AF5B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 3241B79E9435D37AC3F69EBC /* PBXContainerItemProxy */;
+		};
+		C66D06B3624AECC0B64E9C16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 5F16A85056B2E3A07F039063 /* PBXContainerItemProxy */;
+		};
+		633FB812DA13CB8C837F999A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 516247D58E74B2D27CF1F5E1 /* PBXContainerItemProxy */;
+		};
+		0C961060315D574D55D99FBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 9EDFFC0038990BB61D502E98 /* PBXContainerItemProxy */;
+		};
+		2117B37A42C7F817DBA58027 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 75E3129DB5EB9A0D3F74FBE7 /* PBXContainerItemProxy */;
+		};
+		07136F5C2C2C598DADCEFA92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = F878FB50E9F9A9A8AFDD84EA /* PBXContainerItemProxy */;
+		};
+		A33BC89B8116C5B1CA6E4FE6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 2665752340A306B3A5EDB7C7 /* PBXContainerItemProxy */;
+		};
+		87F4F8E9AD52BE640222D6F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 5B94A1CCD94F945B18B0577F /* PBXContainerItemProxy */;
+		};
+		98CEDE2C04B8E7B977C225CA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 947776D6AAB6D88E55E5D65F /* PBXContainerItemProxy */;
+		};
+		D14978C20DF6B267412BA506 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = A74CB5D2BBE6330118B5358B /* PBXContainerItemProxy */;
+		};
+		93848FEC72E5E7DD06CA4756 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 4EFEC047EFF0D2ED5120CFDC /* PBXContainerItemProxy */;
+		};
+		516F9F8FC97B7CBD1E3F3E99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 3216E9AF8390227E77FDAF0D /* PBXContainerItemProxy */;
+		};
+		F4F6F48BBC80A13DB0B45CF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = FC6CA5339694F292014F8BD0 /* PBXContainerItemProxy */;
+		};
+		0E8D8AFBB0EB346468B4454A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 3802DFEDDE1A82F8E2347FB5 /* PBXContainerItemProxy */;
+		};
+		E3311B8321E46BA849A2B250 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 6C2F02D70EF04BA2CDF58529 /* PBXContainerItemProxy */;
+		};
+		58FB4ADAE722F9E7A76AAD7C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 58A0144E4BAC19D01AA0D2C6 /* PBXContainerItemProxy */;
+		};
+		520AA4A19B5082BCA16BAE3C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = DE91A57E804E2363709F3842 /* PBXContainerItemProxy */;
+		};
+		8E96CE12B45D2E0914B00BFF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 31C2C4F4DD93359E938167B3 /* PBXContainerItemProxy */;
+		};
+		6FFCC24DA70BE06C45D0097F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 5292C4946D1A149186EC7A37 /* PBXContainerItemProxy */;
+		};
+		7755D72F14FC2AF04233F0AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 02618CDDE409F553192AB339 /* PBXContainerItemProxy */;
+		};
+		A94131CA29EC3564F60F6D20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 1E2866CF2F864EFAB4944552 /* PBXContainerItemProxy */;
+		};
+		17D5D954976523FCC72940B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 0B8F81955DAC594BE095EF32 /* PBXContainerItemProxy */;
+		};
+		A39A18BF6C3E55751F06B4CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 1DF4B35C1AAAE12EE70211DD /* PBXContainerItemProxy */;
+		};
+		82F80178ACEBD99D2F9D2F4B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 825599BF82DAB44A16C98042 /* PBXContainerItemProxy */;
+		};
+		7DA776B7427E0CECDBE6B2D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = D335B867C58FC81BC8185598 /* PBXContainerItemProxy */;
+		};
+		227C3D7BC84C1DB4C3B1F1D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 8CC04138BBE3D3160BC07C0E /* PBXContainerItemProxy */;
+		};
+		029904D2AF004EAED5488439 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 6BA0B03F109F4FC9ECE52A97 /* PBXContainerItemProxy */;
+		};
+		8B54E6AA9E7B5F5C02033BC8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = B96619C3596FDD35121AF8BB /* PBXContainerItemProxy */;
+		};
+		4F51CE0393E0EEFE3A1E8DE2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 66885BA80B0F28F229AEA641 /* PBXContainerItemProxy */;
+		};
+		94E841C80A33DDCFD033EA73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 7736D6404D40A7539A6D167D /* PBXContainerItemProxy */;
+		};
+		A07D58BFFDD5392CBDBF9212 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 9B7DE846294B1DC689A29B18 /* PBXContainerItemProxy */;
+		};
+		54A85FD2799270C6A5E258FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 7C4CFFA221F59CB6030AE75C /* PBXContainerItemProxy */;
+		};
+		E02C8BDFBB3877F637BC5FF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 6E074E4001EE370B0515065A /* PBXContainerItemProxy */;
+		};
+		459B51BF1595266CC95502EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 1274197D8D50A851098AD00D /* PBXContainerItemProxy */;
+		};
+		9D0A85B24F287CE8488A9FE5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 40ED5168B8A57034084508A8 /* PBXContainerItemProxy */;
+		};
+		024551B71C3F4FDE3F5F5BDD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = C076033D63B9E8303098BC72 /* PBXContainerItemProxy */;
+		};
+		908FF1D741AEC7AC54D9A20F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 3C3C7A54C07A3E1EE65B289F /* PBXContainerItemProxy */;
+		};
+		D88FAE2495FB7610C4E274CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = AA8590BE7E6FF551C6DE5578 /* PBXContainerItemProxy */;
+		};
+		2F3F16720609DFAB5E60DD89 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 00C4BF0F33DB17C71A3E8E2E /* PBXContainerItemProxy */;
+		};
+		8DF36D8B8E239769846E9AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 111FB51188A35B2749A90F93 /* PBXContainerItemProxy */;
+		};
+		65F6663505A2D63F413C4D42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 61816323B55634F0F034CB42 /* PBXContainerItemProxy */;
+		};
+		E3F0D98E73E82845C6B88A81 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 1A8FF8A8E362FA4F5CA809AA /* PBXContainerItemProxy */;
+		};
+		E7E6BCE48D47463A9FD4107C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = C7FB4BB210A321EC234A6C45 /* PBXContainerItemProxy */;
+		};
+		394F9F4589921CD34CCAB9EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = E1579D74D5A95F7A1C39CC27 /* PBXContainerItemProxy */;
+		};
+		71B29B0C69A22289A1C816EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = D5E140B31F03FA832968E0EA /* PBXContainerItemProxy */;
+		};
+		BF2F6DC54D28220045199AC0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 1FAEF449BD397394678BC6DB /* PBXContainerItemProxy */;
+		};
+		E1733CAC4697720E3A63232A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 8F99722E9D0B1C962D720FB0 /* PBXContainerItemProxy */;
+		};
+		5B9C7F8756C8792B29CE084B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = B58AACA48ADAC714543F3588 /* PBXContainerItemProxy */;
+		};
+		C86F5D5C363B4DB5A964F6C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 6C95D4F7BA9D8877A961B14D /* PBXContainerItemProxy */;
+		};
+		DD50DB205C27A165F3FE0859 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 8B72783CD05F48E4FBAE5018 /* PBXContainerItemProxy */;
+		};
+		D337A16A80724FC63ACE0C3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 4AE0E7BCF67B28A9B634ADD6 /* PBXContainerItemProxy */;
+		};
+		5635439B067929AD22BC52AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 1A6BE116549964FADA5E3D19 /* PBXContainerItemProxy */;
+		};
+		BED5BF3DE3FA27D14045A447 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = E401D5CED0D66E0C80325B92 /* PBXContainerItemProxy */;
+		};
+		A13EA8B03E15B32F76747D5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 84F9DD95B1BCC119F91E9C22 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3034,88 +4756,6 @@
 			};
 			name = Release;
 		};
-		CC05000000000000000000AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = YES;
-				FRAMEWORK_VERSION = A;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/Libraries/**",
-									);
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
-				OTHER_LDFLAGS = "-lz";
-				PRODUCT_NAME = UDCore;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Debug;
-		};
-		CC05000100000000000000AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_VERSION = A;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/Libraries/**",
-									);
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCore;
-				OTHER_LDFLAGS = "-lz";
-				PRODUCT_NAME = UDCore;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
 		DD05000000000000000000AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3348,6 +4988,888 @@
 			};
 			name = Release;
 		};
+		6D128E60FCD01CEA62F703EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDIdLib;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDIdLib;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		0E1D994BF5A219CF2F4F8AE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDIdLib;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDIdLib;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		F98FF0A9B06AAB1839EF0F0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCommon;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDCommon;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		7AF33FBBFF8A12976A3E7F90 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCommon;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDCommon;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		6F8F8F3E67C73C5F5C7F2593 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDArchives",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDArchives/Formats",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDArchives;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDArchives;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		7770AA1B8EEBDB0C57148661 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDArchives",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDArchives/Formats",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDArchives;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDArchives;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		1D378E01703C868623F9D0E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDImages;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDImages;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		0E71D226AEC7C71EE036BE86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDImages;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDImages;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		28EFA031535275CEED6B8B1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDDecls;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDDecls;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		2FF5E9D30EAB97041A1B737F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDDecls;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDDecls;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		CA4E43E7CF9433C10F45A36D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDRenderer;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDRenderer;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		12C46946879D3B362198C962 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDRenderer;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDRenderer;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		45A730624DCF6E70C9100626 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDUI",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDUI;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDUI;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		8DD76FED494F11AD31D3741B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDUI",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDUI;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDUI;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		1C22131716E55EB26E19AFF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDGUIEditor",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+					"$(SRCROOT)/Sources/Libraries/UDUI",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDGUIEditor;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDGUIEditor;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		1A13D2442EB6402DC3DD8850 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDGUIEditor",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDRenderer",
+					"$(SRCROOT)/Sources/Libraries/UDUI",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDGUIEditor;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDGUIEditor;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		52504356EF038EA49E64066E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDScripts",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDScripts;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDScripts;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		B927DB7E0B1B2A56D540BF14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDScripts",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDScripts;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDScripts;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		3B7A161A16E5762AFF4C041E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDWorkspace",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDArchives",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDArchives/Formats",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDWorkspace;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDWorkspace;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		34D2E5896A6C3ECFD5ECF995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/UDWorkspace",
+					"$(SRCROOT)/Sources/Libraries/UDIdLib",
+					"$(SRCROOT)/Sources/Libraries/UDCommon",
+					"$(SRCROOT)/Sources/Libraries/UDArchives",
+					"$(SRCROOT)/Sources/Libraries/UDImages",
+					"$(SRCROOT)/Sources/Libraries/UDDecls",
+					"$(SRCROOT)/Sources/Libraries/UDArchives/Formats",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDWorkspace;
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = UDWorkspace;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3387,15 +5909,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CC06000000000000000000AA /* Build configuration list for PBXNativeTarget "UDCore" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CC05000000000000000000AA /* Debug */,
-				CC05000100000000000000AA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DD06000000000000000000AA /* Build configuration list for PBXNativeTarget "Decl Browser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3419,6 +5932,96 @@
 			buildConfigurations = (
 				A21877E3719F70D33F863672 /* Debug */,
 				EF44BC6BA9E8B20DCEAAA1C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E251E116F7C70F52A5284B8B /* Build configuration list for PBXNativeTarget "UDIdLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D128E60FCD01CEA62F703EE /* Debug */,
+				0E1D994BF5A219CF2F4F8AE3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DAB9B416D2CFA91644093506 /* Build configuration list for PBXNativeTarget "UDCommon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F98FF0A9B06AAB1839EF0F0F /* Debug */,
+				7AF33FBBFF8A12976A3E7F90 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08CE989D224F16595B6A3B80 /* Build configuration list for PBXNativeTarget "UDArchives" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F8F8F3E67C73C5F5C7F2593 /* Debug */,
+				7770AA1B8EEBDB0C57148661 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6AE858C8448AA0A6BA2E3E18 /* Build configuration list for PBXNativeTarget "UDImages" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D378E01703C868623F9D0E1 /* Debug */,
+				0E71D226AEC7C71EE036BE86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		91552AED3B21FFBE5177540F /* Build configuration list for PBXNativeTarget "UDDecls" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28EFA031535275CEED6B8B1C /* Debug */,
+				2FF5E9D30EAB97041A1B737F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BEA0BF7ED659319CBF7E0B8B /* Build configuration list for PBXNativeTarget "UDRenderer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA4E43E7CF9433C10F45A36D /* Debug */,
+				12C46946879D3B362198C962 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2C2EF355450F5444B54E704 /* Build configuration list for PBXNativeTarget "UDUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				45A730624DCF6E70C9100626 /* Debug */,
+				8DD76FED494F11AD31D3741B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E46730EF3450F659D3F20211 /* Build configuration list for PBXNativeTarget "UDGUIEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C22131716E55EB26E19AFF2 /* Debug */,
+				1A13D2442EB6402DC3DD8850 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		97283251129BA798F7150574 /* Build configuration list for PBXNativeTarget "UDScripts" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52504356EF038EA49E64066E /* Debug */,
+				B927DB7E0B1B2A56D540BF14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2A123CD442A11A819E66DCBB /* Build configuration list for PBXNativeTarget "UDWorkspace" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B7A161A16E5762AFF4C041E /* Debug */,
+				34D2E5896A6C3ECFD5ECF995 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

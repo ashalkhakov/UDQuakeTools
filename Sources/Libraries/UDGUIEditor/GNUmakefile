@@ -15,6 +15,7 @@ UDGUIEditor_OBJC_FILES = \
     rvGEOptions.m \
     rvGEModifier.m \
     rvGESelectionMgr.m \
+    rvGETransformer.m \
     UDOverlay.m
 
 UDGUIEditor_INCLUDE_DIRS = $(call ud_own_includes,UDGUIEditor)
@@ -26,6 +27,7 @@ UDGUIEditor_HEADER_FILES = \
     rvGEOptions.h \
     rvGEModifier.h \
     rvGESelectionMgr.h \
+    rvGETransformer.h \
     UDOverlay.h
 
 ADDITIONAL_LIB_DIRS += $(call ud_own_lib_dirs,UDGUIEditor)

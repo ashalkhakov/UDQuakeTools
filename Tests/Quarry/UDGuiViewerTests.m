@@ -19,6 +19,7 @@
 #import "rvGEWindowWrapper.h"
 #import "rvGEOptions.h"
 #import "UDGuiEditorOptionsController.h"
+#import "UDGuiItemPropertiesController.h"
 #import "rvGESelectionMgr.h"
 #import "UDOverlay.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
@@ -221,11 +222,11 @@ static NSString *const UDViewerScript =
     XCTAssertFalse([controller.inspectorPlaceholder isHidden], @"and the pane says so");
 
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 4u, @"a GUI has its properties, its scripts, its state and its log");
+    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 5u, @"a GUI has its properties, its layout, its scripts, its state and its log");
     XCTAssertTrue([controller.inspectorPlaceholder isHidden]);
     XCTAssertEqual(editor.propertiesView.superview, controller.inspectorHost, @"the properties are shown first");
 
-    controller.inspectorTabBar.selectedIndex = 3;
+    controller.inspectorTabBar.selectedIndex = 4;
     [NSApp sendAction:@selector(inspectorTabChanged:) to:controller from:controller.inspectorTabBar];
     XCTAssertEqual(editor.logView.superview, controller.inspectorHost, @"the log, when it is chosen");
     XCTAssertNil(editor.propertiesView.superview);
@@ -716,6 +717,83 @@ static NSString *const UDViewerScript =
     [table.dataSource tableView:table setObjectValue:@"0.5" forTableColumn:[table tableColumnWithIdentifier:@"value"] row:row];
     XCTAssertGreaterThanOrEqual([self propertyRow:@"textscale" in:editor], 0, @"the new property is the window's");
     XCTAssertTrue([editor.designWorkspace.text containsString:@"textscale\t0.5"], @"%@", editor.designWorkspace.text);
+}
+
+#pragma mark - Item properties (GEItemPropsDlg) and Layout (GETransformer)
+
+- (void)testTheItemPropertiesPagesShowAndEditTheChosenWindow {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    XCTAssertTrue([editor.propertiesTabs isHidden], @"no window chosen yet");
+    UDGuiItemPropertiesController *props = editor.itemProperties;
+
+    [self chooseWindow:@"Panel" in:editor];
+    XCTAssertFalse([editor.propertiesTabs isHidden]);
+    XCTAssertEqualObjects(props.nameField.stringValue, @"Panel");
+    XCTAssertEqualObjects(props.typeField.stringValue, @"windowDef");
+    XCTAssertFalse(props.visibleButton.isEnabled, @"its visible is an expression");
+    XCTAssertEqual(props.useBackColorButton.state, NSControlStateValueOn);
+    NSColor *back = [props.backColorWell.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    XCTAssertEqualWithAccuracy(back.blueComponent, 0.5, 0.001);
+    XCTAssertFalse(props.backgroundField.isEnabled, @"no material: its controls off");
+
+    [self chooseWindow:@"Lamp" in:editor];
+    XCTAssertEqual(props.noTimeButton.state, NSControlStateValueOn);
+
+    // the Text page: the text, quoted, one Item Properties edit
+    [self chooseWindow:@"Label" in:editor];
+    editor.propertiesPages.selectedSegment = 2;
+    [editor selectPropertiesPage:editor.propertiesPages];
+    XCTAssertEqualObjects(editor.propertiesTabs.selectedTabViewItem.label, @"Text");
+    XCTAssertEqual(props.useTextButton.state, NSControlStateValueOn);
+    XCTAssertEqualObjects(props.textField.stringValue, @"ready");
+    props.textField.stringValue = @"steady";
+    [props textChanged:props.textField];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"text\t\"steady\""], @"%@", editor.designWorkspace.text);
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Item Properties");
+    XCTAssertEqualObjects(props.textField.stringValue, @"steady", @"shown as it is now");
+    [editor.editorDocument.undoManager undo];
+    XCTAssertEqualObjects(props.textField.stringValue, @"ready", @"and undone");
+
+    // the Image page: a border, in the well's color
+    [self chooseWindow:@"Go" in:editor];
+    props.borderSizeField.stringValue = @"2";
+    [props imageChanged:props.borderSizeField];
+    XCTAssertTrue(props.borderColorWell.isEnabled, @"a border: its color");
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"bordersize\t2"], @"%@", editor.designWorkspace.text);
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"bordercolor\t0,0,0,1"], @"%@", editor.designWorkspace.text);
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"backcolor\t0.8, 0.2, 0.2, 1"], @"the back color as it was: %@", editor.designWorkspace.text);
+
+    // the General page: not shown
+    props.visibleButton.state = NSControlStateValueOff;
+    [props generalChanged:props.visibleButton];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"visible\t0"], @"%@", editor.designWorkspace.text);
+}
+
+- (void)testTheLayoutMovesAndSizesTheSelection {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    XCTAssertFalse([editor.layoutPlaceholder isHidden], @"nothing chosen");
+    XCTAssertTrue([editor.layoutXField isHidden]);
+
+    [self chooseWindow:@"Go" in:editor];
+    XCTAssertTrue([editor.layoutPlaceholder isHidden]);
+    XCTAssertEqualObjects(editor.layoutXField.stringValue, @"400");
+    XCTAssertEqualObjects(editor.layoutYField.stringValue, @"300");
+    XCTAssertEqualObjects(editor.layoutWField.stringValue, @"160");
+    XCTAssertEqualObjects(editor.layoutHField.stringValue, @"60");
+
+    editor.layoutXField.stringValue = @"420";
+    [editor layoutChanged:editor.layoutXField];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 420, 0.5);
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Transform Move");
+    editor.layoutWField.stringValue = @"200";
+    [editor layoutChanged:editor.layoutWField];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].w, 200, 0.5);
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Transform Size");
+    XCTAssertEqualObjects(editor.layoutXField.stringValue, @"420", @"the fields as the window is");
 }
 
 #pragma mark - Scripts

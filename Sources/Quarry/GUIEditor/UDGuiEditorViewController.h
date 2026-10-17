@@ -2,7 +2,7 @@
 #import "UDBaseEditorViewController.h"
 #import "UDGuiView.h"
 
-@class UDGuiPlayer, UDGuiView, rvGEWorkspace, UDTransportController;
+@class UDGuiItemPropertiesController, UDGuiPlayer, UDGuiView, rvGEWorkspace, UDTransportController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,13 +44,29 @@ NS_ASSUME_NONNULL_BEGIN
 /// hiding each in the design.
 @property (strong) IBOutlet NSView *windowsView;
 @property (weak) IBOutlet NSOutlineView *windowsOutline;
-/// The inspector's Properties (rvGEProperties): the selected window's state
+/// The inspector's Properties: GEItemPropsDlg's pages (General, Image,
+/// Text) and, as Keys, rvGEProperties' list: the selected window's state
 /// keys, edited as the window reads them, each a Property Change.
 @property (strong) IBOutlet NSView *propertiesView;
+@property (strong) IBOutlet UDGuiItemPropertiesController *itemProperties;
+@property (weak) IBOutlet NSSegmentedControl *propertiesPages;
+@property (weak) IBOutlet NSTabView *propertiesTabs;
+- (IBAction)selectPropertiesPage:(nullable id)sender;
 @property (weak) IBOutlet NSTableView *propertiesTable;
 @property (weak) IBOutlet NSTextField *propertiesMessage;
 @property (weak) IBOutlet NSTextField *propertiesPlaceholder;
 - (IBAction)addProperty:(nullable id)sender;
+
+/// The inspector's Layout (GETransformer): the selection's position and
+/// size, from the parent of the bottom-most selected window; an edit a
+/// Transform Move or a Transform Size.
+@property (strong) IBOutlet NSView *layoutView;
+@property (weak) IBOutlet NSTextField *layoutPlaceholder;
+@property (weak) IBOutlet NSTextField *layoutXField;
+@property (weak) IBOutlet NSTextField *layoutYField;
+@property (weak) IBOutlet NSTextField *layoutWField;
+@property (weak) IBOutlet NSTextField *layoutHField;
+- (IBAction)layoutChanged:(nullable id)sender;
 
 /// The design's menu (rvGEWorkspace's popup, IDR_GUIED_ITEM_POPUP): New,
 /// Select (filled with the windows under the click), Arrange, Align, Make

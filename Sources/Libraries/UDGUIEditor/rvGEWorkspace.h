@@ -116,6 +116,11 @@ typedef NS_ENUM(int, rvGEModifierType) {
 /// values without their quotes, when one window is selected; else nil.
 - (nullable NSArray<NSArray<NSString *> *> *)properties;
 
+/// EditSelectedProperties, after GEItemPropsDlg's OK: the one selected
+/// window's state set to @a dict, as one "Item Properties" edit; NO when
+/// not just one window is selected.
+- (BOOL)applyItemProperties:(idDict *)dict;
+
 /// GEItemScriptsDlg's Init: @a window's variables ("definefloat\t\"x\"",
 /// a tab, its value), a blank line, its scripts (each its name on a line,
 /// its braced text after, a blank line).

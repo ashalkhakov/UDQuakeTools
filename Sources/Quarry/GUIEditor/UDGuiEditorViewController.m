@@ -23,6 +23,8 @@
 #import "rvGEWindowWrapper.h"
 #import "rvGEOptions.h"
 #import "UDGuiEditorOptionsController.h"
+#import "UDGuiItemPropertiesController.h"
+#import "rvGETransformer.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 static UDDiagnosticSource const UDGuiParseSource = @"gui";
@@ -73,6 +75,8 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 /// The window whose scripts the Scripts show, and their text as shown.
 @property (nonatomic, weak, nullable) idWindow *scriptsWindow;
 @property (nonatomic, copy, nullable) NSString *scriptsShownText;
+/// The Layout's transformer (of the design).
+@property (nonatomic, strong, nullable) rvGETransformer *transformer;
 /// The options sheet, made the first time it is up.
 @property (nonatomic, strong, nullable) UDGuiEditorOptionsController *optionsController;
 @end
@@ -200,6 +204,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     if (_panes == nil) {
         _panes = @[
             [UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.propertiesView],
+            [UDEditorPane paneWithTitle:@"Layout" letters:@"La" red:0.42 green:0.58 blue:0.40 view:self.layoutView],
             [UDEditorPane paneWithTitle:@"Scripts" letters:@"Sc" red:0.70 green:0.50 blue:0.30 view:self.scriptsView],
             [UDEditorPane paneWithTitle:@"State" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.stateView],
             [UDEditorPane paneWithTitle:@"Log" letters:@"L" red:0.55 green:0.45 blue:0.30 view:self.logView],
@@ -232,6 +237,9 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         design.modifiers.target = self;
         design.modifiers.action = @selector(_designEdited:);
         self.designWorkspace = design;
+        self.itemProperties.workspace = design;
+        self.itemProperties.fileSystem = self.workspace.fileSystem;
+        self.transformer = [[rvGETransformer alloc] initWithWorkspace:design];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
                                                      name:rvGESelectionDidChangeNotification object:design.selections];
         // rvGEOptions::Init's Load: the options the workspace keeps
@@ -408,20 +416,62 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 
 #pragma mark - Properties (rvGEProperties)
 
-/// rvGEProperties::Update: the one selected window's state keys, or the
-/// placeholder; the row being added after them.
+/// The item properties' pages, rvGEProperties::Update's keys (the row
+/// being added after them), or the placeholder; and the Layout.
 - (void)_updateProperties {
+    [self _updateLayout];
     NSTableView *table = self.propertiesTable;
     if (table == nil || table.editedRow >= 0) return;
+    BOOL shown = [self.itemProperties update];
     NSArray<NSArray<NSString *> *> *rows = [self.designWorkspace properties];
     if (rows != nil && self.pendingProperty != nil) {
         rows = [rows arrayByAddingObject:@[self.pendingProperty, @""]];
     }
     if (rows == nil) self.pendingProperty = nil;
     self.propertyRows = rows;
-    self.propertiesPlaceholder.hidden = rows != nil;
-    table.enclosingScrollView.hidden = rows == nil;
+    shown = shown && rows != nil;
+    self.propertiesPlaceholder.hidden = shown;
+    self.propertiesTabs.hidden = !shown;
+    self.propertiesPages.hidden = !shown;
     [table reloadData];
+}
+
+/// The page shown: General, Image, Text, Keys.
+- (IBAction)selectPropertiesPage:(id)sender {
+    NSInteger page = self.propertiesPages.selectedSegment;
+    if (page >= 0 && page < self.propertiesTabs.numberOfTabViewItems) {
+        [self.propertiesTabs selectTabViewItemAtIndex:page];
+    }
+}
+
+#pragma mark - Layout (GETransformer)
+
+/// rvGETransformer::Update: the fields, or the placeholder.
+- (void)_updateLayout {
+    if (self.layoutView == nil) return;
+    idRectangle rect;
+    BOOL state = [self.transformer update:&rect];
+    NSArray<NSTextField *> *fields = @[self.layoutXField, self.layoutYField, self.layoutWField, self.layoutHField];
+    float values[4] = { rect.x, rect.y, rect.w, rect.h };
+    for (NSUInteger i = 0; i < fields.count; i++) {
+        fields[i].stringValue = state ? [NSString stringWithFormat:@"%d", (int)values[i]] : @"";
+        fields[i].enabled = state;
+    }
+    for (NSView *view in self.layoutView.subviews) {
+        view.hidden = view == self.layoutPlaceholder ? state : !state;
+    }
+}
+
+/// EN_KILLFOCUS: the field's number applied.
+- (IBAction)layoutChanged:(id)sender {
+    rvGETransformerField field;
+    if (sender == self.layoutXField) field = rvGETransformerX;
+    else if (sender == self.layoutYField) field = rvGETransformerY;
+    else if (sender == self.layoutWField) field = rvGETransformerW;
+    else if (sender == self.layoutHField) field = rvGETransformerH;
+    else return;
+    [self.transformer setField:field value:atoi([sender stringValue].UTF8String)];
+    [self _updateLayout];
 }
 
 - (IBAction)addProperty:(id)sender {

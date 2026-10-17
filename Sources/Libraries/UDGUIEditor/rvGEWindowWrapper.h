@@ -106,4 +106,11 @@ typedef NS_ENUM(int, rvGEWindowType) {
 /// rather than numbers, commas and signs.
 BOOL rvGE_IsExpression(NSString *s);
 
+/// StringFromVec4 (guied.cpp): "r,g,b,a", each as idStr::FloatArrayToString
+/// writes it.
+NSString *rvGE_StringFromVec4(idVec4 v);
+
+/// idStr::StripQuotes: a leading quote, and then a trailing one, gone.
+NSString *rvGE_StripQuotes(NSString *s);
+
 NS_ASSUME_NONNULL_END

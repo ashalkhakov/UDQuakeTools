@@ -605,6 +605,35 @@ Verifies that the given state key value is valid for the given key
 
 /*
 ================
+StringFromVec4
+
+Returns a clean string version of the given vec4
+================
+*/
+NSString *rvGE_StringFromVec4(idVec4 v) {
+    return [NSString stringWithFormat:@"%@,%@,%@,%@",
+            idStr_FloatArrayToString( &v.x, 1, 8 ),
+            idStr_FloatArrayToString( &v.y, 1, 8 ),
+            idStr_FloatArrayToString( &v.z, 1, 8 ),
+            idStr_FloatArrayToString( &v.w, 1, 8 )];
+}
+
+/// idStr::StripQuotes
+NSString *rvGE_StripQuotes(NSString *s) {
+    if ( ![s hasPrefix:@"\""] ) {
+        return s;
+    }
+    NSUInteger end = s.length;
+    // Remove the trailing quote first
+    if ( end > 1 && [s characterAtIndex:end - 1] == '"' ) {
+        end--;
+    }
+    // Strip the leading quote now
+    return [s substringWithRange:NSMakeRange(1, end - 1)];
+}
+
+/*
+================
 IsExpression
 
 Returns true if the given string is an expression

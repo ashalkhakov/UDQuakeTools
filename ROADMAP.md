@@ -248,9 +248,12 @@ In order of value against cost; LOC is the MFC original's size.
       there, the named events sent on the way sent again), so the main
       menu, sent NoIntro, is designed as it shows at 2 s, not behind its
       black curtain.
-      What is left of tools/guied: its item properties dialog (a form over
-      the state keys the Properties list already edits), and its options
-      (grid, colors) as settings. The port interprets as well as draws: GUI scripts, named events,
+      The rest of tools/guied is in too: its item properties dialog is the
+      Properties pane (General, Image, Text, and the keys as Keys), its
+      transformer the Layout pane (Xcode's Size inspector), its options a
+      sheet kept with the workspace, its status bar (triangles, zoom) under
+      the canvas, and its zoom levels (⌘-wheel, a pinch, the View menu).
+      The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

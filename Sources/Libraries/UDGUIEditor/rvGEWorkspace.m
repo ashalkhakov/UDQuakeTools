@@ -791,20 +791,6 @@ Add the specific modifier for the given window
 
 #pragma mark - rvGEProperties
 
-/// idStr::StripQuotes
-static NSString *UDStripQuotes(NSString *s) {
-    if ( ![s hasPrefix:@"\""] ) {
-        return s;
-    }
-    NSUInteger end = s.length;
-    // Remove the trailing quote first
-    if ( end > 1 && [s characterAtIndex:end - 1] == '"' ) {
-        end--;
-    }
-    // Strip the leading quote now
-    return [s substringWithRange:NSMakeRange(1, end - 1)];
-}
-
 /*
 ================
 rvGEProperties::Update
@@ -820,7 +806,7 @@ Update the properties in the window
     NSMutableArray<NSArray<NSString *> *> *rows = [NSMutableArray array];
     idDict *state = mWrapper.stateDict;
     for ( int i = 0; i < [state numKeyVals]; i ++ ) {
-        [rows addObject:@[ [state keyAtIndex:i], UDStripQuotes( [state valueAtIndex:i] ) ]];
+        [rows addObject:@[ [state keyAtIndex:i], rvGE_StripQuotes( [state valueAtIndex:i] ) ]];
     }
     return rows;
 }
@@ -850,6 +836,27 @@ Add a state modifier for the given key / value pair
     [tempstate set:name value:tempvalue];
 
     [self.modifiers append:[[rvGEStateModifier alloc] initWithName:@"Property Change" window:mWrapper.window dict:tempstate]];
+    self.modified = YES;
+
+    return YES;
+}
+
+#pragma mark - GEItemPropsDlg
+
+/*
+================
+rvGEWorkspace::EditSelectedProperties
+
+The item properties' state applied to the one selected window
+================
+*/
+- (BOOL)applyItemProperties:(idDict *)dict {
+    rvGESelectionMgr *mSelections = self.selections;
+    if ( ![mSelections num] || [mSelections num] > 1 ) {
+        return NO;
+    }
+
+    [self.modifiers append:[[rvGEStateModifier alloc] initWithName:@"Item Properties" window:mSelections[0] dict:dict]];
     self.modified = YES;
 
     return YES;

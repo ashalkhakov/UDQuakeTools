@@ -4,6 +4,7 @@
 #import "rvGESelectionMgr.h"
 #import "rvGEModifier.h"
 #import "rvGEOptions.h"
+#import "rvGETransformer.h"
 #import "UDOverlay.h"
 #import "idUserInterface.h"
 #import "idWindow.h"
@@ -426,6 +427,47 @@ static NSString *const UDCanvasGui =
     XCTAssertEqual(partial.gridColor.x, 0.2f);
     [partial loadRegistry:nil];
     XCTAssertTrue(partial.gridSnap);
+}
+
+#pragma mark - The transformer (GETransformer) and the item properties
+
+- (void)testTheTransformerIsFromTheParentOfTheBottomMostSelected {
+    rvGETransformer *transformer = [[rvGETransformer alloc] initWithWorkspace:self.workspace];
+    idRectangle rect;
+    XCTAssertFalse([transformer update:&rect], @"nothing selected: nothing to transform");
+
+    [self.workspace.selections set:[self window:@"Button"]];
+    XCTAssertTrue([transformer update:&rect]);
+    XCTAssertEqual(rect.x, 10, @"from the panel it is in");
+    XCTAssertEqual(rect.y, 10);
+    XCTAssertEqual(rect.w, 50);
+    XCTAssertEqual(rect.h, 20);
+
+    [transformer setField:rvGETransformerX value:30];
+    XCTAssertEqual([self rectOf:@"Button"].x, 30, @"moved by the difference");
+    XCTAssertEqualObjects(self.workspace.modifiers.undoModifier.name, @"Transform Move");
+    [transformer setField:rvGETransformerH value:25];
+    XCTAssertEqual([self rectOf:@"Button"].h, 25, @"sized by it");
+    XCTAssertEqualObjects(self.workspace.modifiers.undoModifier.name, @"Transform Size");
+    rvGEModifier *last = self.workspace.modifiers.undoModifier;
+    [transformer setField:rvGETransformerW value:50];
+    XCTAssertEqual(self.workspace.modifiers.undoModifier, last, @"the same number is no edit");
+}
+
+- (void)testItemPropertiesAreOneEditOfTheSelectedWindow {
+    XCTAssertFalse([self.workspace applyItemProperties:[[idDict alloc] init]], @"no window selected");
+    idWindow *label = [self window:@"Label"];
+    [self.workspace.selections set:label];
+    idDict *dict = [[rvGEWindowWrapper wrapperOf:label].stateDict copy];
+    [dict set:@"text" value:@"\"steady\""];
+    [dict set:@"forecolor" value:rvGE_StringFromVec4(idVec4_Make(1, 0.5f, 0, 1))];
+    XCTAssertTrue([self.workspace applyItemProperties:dict]);
+    XCTAssertEqualObjects(self.workspace.modifiers.undoModifier.name, @"Item Properties");
+    XCTAssertEqualObjects([[rvGEWindowWrapper wrapperOf:label].stateDict getString:@"forecolor"], @"1,0.5,0,1",
+                          @"StringFromVec4: no trailing zeros");
+    XCTAssertTrue([self.workspace.text containsString:@"\"steady\""], @"%@", self.workspace.text);
+    [self.workspace.modifiers undo];
+    XCTAssertTrue([self.workspace.text containsString:@"\"ready\""], @"undone");
 }
 
 @end

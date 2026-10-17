@@ -37,6 +37,7 @@ Quarry_OBJC_FILES = \
     Preview/UDParticlePreview.m \
     GUIEditor/UDGuiPlayer.m \
     GUIEditor/UDGuiEditorOptionsController.m \
+    GUIEditor/UDGuiItemPropertiesController.m \
     Preview/UDTransportController.m \
     GUIEditor/UDGuiView.m \
     GUIEditor/UDGuiGLView.m \

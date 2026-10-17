@@ -471,6 +471,7 @@
 		A40044A6C58C3809DDF2174A /* UDGuiView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CD2BD211C45BCC10418142 /* UDGuiView.m */; };
 		4B3F566AD0A40BA815CF61C9 /* UDGuiPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */; };
 		711BB4C133DB33F8D6F2F6C5 /* UDGuiEditorOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E42598212706C9B9B64803 /* UDGuiEditorOptionsController.m */; };
+		95D7FBDB9D58E17AC9183495 /* UDGuiItemPropertiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0049319AA52D1E25B336A9 /* UDGuiItemPropertiesController.m */; };
 		712605D501072FEF9C0625B8 /* UDTransportController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0285F90CD6A9569047EE3274 /* UDTransportController.m */; };
 		00A3DDA9AB6D60C94BEF372D /* UDFXTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 481364967D51A060DC767609 /* UDFXTimelineView.m */; };
 		31C6A263CFA825AE8DBFAEF7 /* UDParticleEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */; };
@@ -525,6 +526,7 @@
 		0F7C767754D5E25F16F6F911 /* idWindowEditorWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7239320AF18331857C368FBA /* idWindowEditorWrapper.h */; };
 		D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBBC2EB095057556025E74B /* UDOverlay.h */; };
 		8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */; };
+		C4536B7EA92AE745259C6874 /* rvGETransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = FEB135F27F1A24611C518250 /* rvGETransformer.h */; };
 		2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */ = {isa = PBXBuildFile; fileRef = E236E8273E29B39057FD009D /* rvGEModifier.h */; };
 		D2C0BEB1121CA52FDD24EE38 /* rvGEOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 056F4578ECACCB0458CF1F20 /* rvGEOptions.h */; };
 		20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = EA93624848048D705DD34DEC /* rvGEWorkspace.h */; };
@@ -572,6 +574,7 @@
 		FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */; };
 		D498330BD324478801E0B61C /* UDOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EC089D5DF5BC259AD5D93F /* UDOverlay.m */; };
 		5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */; };
+		7227B72BE31E2AF1880A5BBF /* rvGETransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = F16E820A4EE1F1D6EFDEA3AF /* rvGETransformer.m */; };
 		7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */ = {isa = PBXBuildFile; fileRef = C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */; };
 		3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 107BA026A2668B89D87A745E /* rvGEOptions.m */; };
 		BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */; };
@@ -640,6 +643,7 @@
 		999A8D0CD6429A874E5AAAC4 /* UDGuiView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CD2BD211C45BCC10418142 /* UDGuiView.m */; };
 		70EA60F918EF638BACE3197F /* UDGuiPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */; };
 		93C3CF948841FF7D0C5B36C4 /* UDGuiEditorOptionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E42598212706C9B9B64803 /* UDGuiEditorOptionsController.m */; };
+		C5096CC86DB998C3A3534B35 /* UDGuiItemPropertiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0049319AA52D1E25B336A9 /* UDGuiItemPropertiesController.m */; };
 		6087231361C3101117CDCD79 /* UDTransportController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0285F90CD6A9569047EE3274 /* UDTransportController.m */; };
 		F7F31350FFEBC9461C0D39C2 /* UDFXTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 481364967D51A060DC767609 /* UDFXTimelineView.m */; };
 		CC99F238C0AB926281A94AE9 /* UDParticleEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */; };
@@ -2630,6 +2634,7 @@
 		BC8058C48C854AB54DF43004 /* UDGuiView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiView.h; sourceTree = "<group>"; };
 		7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiPlayer.h; sourceTree = "<group>"; };
 		10143D0AE2C2FBE06C3BE774 /* UDGuiEditorOptionsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiEditorOptionsController.h; sourceTree = "<group>"; };
+		0DFE92886FF12D2C4C18ACBA /* UDGuiItemPropertiesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGuiItemPropertiesController.h; sourceTree = "<group>"; };
 		60EE84BD28A596CBC514BBFA /* UDTransportController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTransportController.h; sourceTree = "<group>"; };
 		ABBB3E1D8BD921C103C6E55E /* UDFXTimelineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFXTimelineView.h; sourceTree = "<group>"; };
 		04DCF0BDBBF47EF8B3956C02 /* UDParticleEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDParticleEditorViewController.h; sourceTree = "<group>"; };
@@ -2715,6 +2720,7 @@
 		93CD2BD211C45BCC10418142 /* UDGuiView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiView.m; sourceTree = "<group>"; };
 		54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiPlayer.m; sourceTree = "<group>"; };
 		26E42598212706C9B9B64803 /* UDGuiEditorOptionsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiEditorOptionsController.m; sourceTree = "<group>"; };
+		0E0049319AA52D1E25B336A9 /* UDGuiItemPropertiesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiItemPropertiesController.m; sourceTree = "<group>"; };
 		0285F90CD6A9569047EE3274 /* UDTransportController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTransportController.m; sourceTree = "<group>"; };
 		481364967D51A060DC767609 /* UDFXTimelineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFXTimelineView.m; sourceTree = "<group>"; };
 		3284B8D968DEF44D0FF9070A /* UDParticleEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDParticleEditorViewController.m; sourceTree = "<group>"; };
@@ -2751,6 +2757,7 @@
 		7239320AF18331857C368FBA /* idWindowEditorWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindowEditorWrapper.h; sourceTree = "<group>"; };
 		FFBBC2EB095057556025E74B /* UDOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDOverlay.h; sourceTree = "<group>"; };
 		C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGESelectionMgr.h; sourceTree = "<group>"; };
+		FEB135F27F1A24611C518250 /* rvGETransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGETransformer.h; sourceTree = "<group>"; };
 		E236E8273E29B39057FD009D /* rvGEModifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEModifier.h; sourceTree = "<group>"; };
 		056F4578ECACCB0458CF1F20 /* rvGEOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEOptions.h; sourceTree = "<group>"; };
 		EA93624848048D705DD34DEC /* rvGEWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEWorkspace.h; sourceTree = "<group>"; };
@@ -2798,6 +2805,7 @@
 		CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWindow.m; sourceTree = "<group>"; };
 		84EC089D5DF5BC259AD5D93F /* UDOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDOverlay.m; sourceTree = "<group>"; };
 		12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGESelectionMgr.m; sourceTree = "<group>"; };
+		F16E820A4EE1F1D6EFDEA3AF /* rvGETransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGETransformer.m; sourceTree = "<group>"; };
 		C52AFE12D44F5834ACBC7285 /* rvGEModifier.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEModifier.m; sourceTree = "<group>"; };
 		107BA026A2668B89D87A745E /* rvGEOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEOptions.m; sourceTree = "<group>"; };
 		9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWorkspace.m; sourceTree = "<group>"; };
@@ -3680,7 +3688,9 @@
 				056F4578ECACCB0458CF1F20 /* rvGEOptions.h */,
 				107BA026A2668B89D87A745E /* rvGEOptions.m */,
 				C8E5C10207BA1EE7E415E300 /* rvGESelectionMgr.h */,
+				FEB135F27F1A24611C518250 /* rvGETransformer.h */,
 				12AC228BFF03433F94EF4A9D /* rvGESelectionMgr.m */,
+				F16E820A4EE1F1D6EFDEA3AF /* rvGETransformer.m */,
 				AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */,
 				C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */,
 				EA93624848048D705DD34DEC /* rvGEWorkspace.h */,
@@ -3872,8 +3882,10 @@
 				936BAB3FC1597215BA4B670D /* UDGuiGLView.m */,
 				7EBFBC20426F0D35867D07AD /* UDGuiPlayer.h */,
 				10143D0AE2C2FBE06C3BE774 /* UDGuiEditorOptionsController.h */,
+				0DFE92886FF12D2C4C18ACBA /* UDGuiItemPropertiesController.h */,
 				54D41400C2635A6D3CB325C6 /* UDGuiPlayer.m */,
 				26E42598212706C9B9B64803 /* UDGuiEditorOptionsController.m */,
+				0E0049319AA52D1E25B336A9 /* UDGuiItemPropertiesController.m */,
 				BC8058C48C854AB54DF43004 /* UDGuiView.h */,
 				93CD2BD211C45BCC10418142 /* UDGuiView.m */,
 			);
@@ -4135,6 +4147,7 @@
 			files = (
 				D15BA7C54B665B092DC49DB6 /* UDOverlay.h in Headers */,
 				8B264B92C7B1FCCE7A25C45A /* rvGESelectionMgr.h in Headers */,
+				C4536B7EA92AE745259C6874 /* rvGETransformer.h in Headers */,
 				2B5602F9A5136D1B5035BA0F /* rvGEModifier.h in Headers */,
 				D2C0BEB1121CA52FDD24EE38 /* rvGEOptions.h in Headers */,
 				20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */,
@@ -4966,6 +4979,7 @@
 				A40044A6C58C3809DDF2174A /* UDGuiView.m in Sources */,
 				4B3F566AD0A40BA815CF61C9 /* UDGuiPlayer.m in Sources */,
 				711BB4C133DB33F8D6F2F6C5 /* UDGuiEditorOptionsController.m in Sources */,
+				95D7FBDB9D58E17AC9183495 /* UDGuiItemPropertiesController.m in Sources */,
 				712605D501072FEF9C0625B8 /* UDTransportController.m in Sources */,
 				00A3DDA9AB6D60C94BEF372D /* UDFXTimelineView.m in Sources */,
 				31C6A263CFA825AE8DBFAEF7 /* UDParticleEditorViewController.m in Sources */,
@@ -5033,6 +5047,7 @@
 				999A8D0CD6429A874E5AAAC4 /* UDGuiView.m in Sources */,
 				70EA60F918EF638BACE3197F /* UDGuiPlayer.m in Sources */,
 				93C3CF948841FF7D0C5B36C4 /* UDGuiEditorOptionsController.m in Sources */,
+				C5096CC86DB998C3A3534B35 /* UDGuiItemPropertiesController.m in Sources */,
 				6087231361C3101117CDCD79 /* UDTransportController.m in Sources */,
 				F7F31350FFEBC9461C0D39C2 /* UDFXTimelineView.m in Sources */,
 				CC99F238C0AB926281A94AE9 /* UDParticleEditorViewController.m in Sources */,
@@ -5187,6 +5202,7 @@
 			files = (
 				D498330BD324478801E0B61C /* UDOverlay.m in Sources */,
 				5089453314DFD83B5F606D84 /* rvGESelectionMgr.m in Sources */,
+				7227B72BE31E2AF1880A5BBF /* rvGETransformer.m in Sources */,
 				7AEFD0EF58B0E35F0A8A514A /* rvGEModifier.m in Sources */,
 				3ECBA05F9F57BBA185949EEA /* rvGEOptions.m in Sources */,
 				BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */,

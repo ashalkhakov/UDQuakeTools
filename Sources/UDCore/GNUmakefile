@@ -67,6 +67,8 @@ UDCore_OBJC_FILES = \
     idRegExp.m \
     idGuiScript.m \
     idWindow.m \
+    rvGEWindowWrapper.m \
+    rvGEWorkspace.m \
     idSimpleWindow.m \
     idGuiModel.m \
     idDeviceContext.m \
@@ -138,6 +140,8 @@ UDCore_HEADER_FILES = \
     idRegExp.h \
     idGuiScript.h \
     idWindow.h \
+    rvGEWindowWrapper.h \
+    rvGEWorkspace.h \
     idGuiModel.h \
     idDeviceContext.h \
     idUserInterface.h \

@@ -67,6 +67,13 @@ typedef struct indent_s {
     int                  skip;                        // > 0 if skipping conditional code
     idToken *            token;                        // last read token
     const char*          marker_p;
+    // Not in the engine: the bounds of the buffer marker_p is in, and where
+    // the last directive read from it begins (its whitespace before the
+    // '#'), so that GetStringFromMarker ends there when the parser has read
+    // on into an #include's buffer (see -stringFromMarker:clean:error:).
+    const char*          markerBufferStart_p;
+    const char*          markerBufferEnd_p;
+    const char*          markerDirective_p;
 }
 
 @property (weak, nonatomic) idFileSystem *fileSystem;

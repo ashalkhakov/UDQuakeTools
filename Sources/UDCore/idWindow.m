@@ -5,6 +5,8 @@
  */
 
 #import "idWindow.h"
+#import "rvGEWindowWrapper.h"
+#import "idLexer.h"
 #import "idUserInterface.h"
 #import "idDeviceContext.h"
 #import "idDict.h"
@@ -2221,6 +2223,32 @@ idWindow::SetInitialState
 
 /*
 ================
+idWindow::Parse's GUI editor support: what was parsed since the parser's
+marker, as the wrapper keeps it
+================
+*/
+- (NSString *)editorTextFromMarkerOf:(idParser *)src clean:(BOOL)clean {
+    NSMutableString *str = [NSMutableString string];
+    [src stringFromMarker:str clean:clean error:NULL];
+    return str;
+}
+
+/// A script since the marker, its braces' text: "Parse it one more time to
+/// knock unwanted tabs out".
+- (NSString *)editorScriptFromMarkerOf:(idParser *)src {
+    // Grab the string from the last marker
+    NSString *str = [self editorTextFromMarkerOf:src clean:NO];
+
+    // Parse it one more time to knock unwanted tabs out
+    NSData *bytes __attribute__((objc_precise_lifetime)) = [str ud_latin1Buffer];
+    idLexer *src2 = [[idLexer alloc] initWithBuffer:bytes.bytes length:(int)bytes.length - 1 name:@"" flags:[src flags] fileSystem:nil error:NULL];
+    NSMutableString *out = [NSMutableString string];
+    [src2 parseBracedSectionExact:out tabs:1 skippingCommentsAndStrings:YES error:NULL];
+    return out;
+}
+
+/*
+================
 idWindow::Parse
 ================
 */
@@ -2247,7 +2275,16 @@ idWindow::Parse
 
     BOOL ret = YES;
 
+    // attach a window wrapper to the window if the gui editor is running
+    BOOL editing = [gui manager].editing;
+    if ( editing ) {
+        (void)[[rvGEWindowWrapper alloc] initWithWindow:self type:WT_NORMAL];
+    }
+
     while( !TokenIs( &token, "}" ) ) {
+        // track what was parsed so we can maintain it for the guieditor
+        [src setMarker];
+
         if ( TokenIs( &token, "windowDef" ) || TokenIs( &token, "animationDef" ) ) {
             if (TokenIs( &token, "animationDef" )) {
                 [visible setData:NO];
@@ -2321,13 +2358,24 @@ idWindow::Parse
                 return NO;
             }
 
-            rvNamedEvent* ev = [[rvNamedEvent alloc] initWithName:UDTokenLatin1String( &token )];
+            NSString *eventName = UDTokenLatin1String( &token );
+            rvNamedEvent* ev = [[rvNamedEvent alloc] initWithName:eventName];
+
+            [src setMarker];
 
             if ( ![self parseScript:src list:ev->mEvent timeParm:NULL elseBlock:NO] ) {
                 ret = NO;
                 break;
             }
 
+            // If we are in the gui editor then add the internal var to the
+            // the wrapper
+            if ( editing ) {
+                // Save the script. (The engine's key is "onEvent name", which
+                // its editor writes back as it is, and Parse does not read:
+                // its keyword is onNamedEvent.)
+                [guiedWrapper.scriptDict set:[NSString stringWithFormat:@"onNamedEvent %@", eventName] value:[self editorScriptFromMarkerOf:src]];
+            }
             [namedEvents addObject:ev];
         }
         else if ( TokenIs( &token, "onTime" ) ) {
@@ -2339,9 +2387,20 @@ idWindow::Parse
             }
             ev->time = atoi(token.text);
 
+            // reset the mark since we dont want it to include the time
+            [src setMarker];
+
             if (![self parseScript:src list:ev->event timeParm:&ev->time elseBlock:NO]) {
                 ret = NO;
                 break;
+            }
+
+            // add the script to the wrappers script list
+            // If we are in the gui editor then add the internal var to the
+            // the wrapper
+            if ( editing ) {
+                // Save the script
+                [guiedWrapper.scriptDict set:[NSString stringWithFormat:@"onTime %d", ev->time] value:[self editorScriptFromMarkerOf:src]];
             }
 
             // this is a timeline event
@@ -2355,8 +2414,19 @@ idWindow::Parse
             [varf setName:work];
             [definedVars addObject:varf];
 
+            // add the float to the editors wrapper dict
+            // Set the marker after the float name
+            [src setMarker];
+
             // Read in the float
             [regList addReg:work type:REG_FLOAT parser:src window:self var:varf];
+
+            // If we are in the gui editor then add the float to the defines
+            if ( editing ) {
+                // Grab the string from the last marker and save it in the wrapper
+                [guiedWrapper.variableDict set:[NSString stringWithFormat:@"definefloat\t\"%@\"", UDTokenLatin1String( &token )]
+                                         value:[self editorTextFromMarkerOf:src clean:YES]];
+            }
         }
         else if ( TokenIs( &token, "definevec4" ) ) {
             [src readToken:&token error:NULL];
@@ -2364,12 +2434,24 @@ idWindow::Parse
             idWinVec4 *var = [[idWinVec4 alloc] init];
             [var setName:work];
 
+            // set the marker so we can determine what was parsed
+            // set the marker after the vec4 name
+            [src setMarker];
+
             // FIXME: how about we add the var to the desktop instead of this window so it won't get deleted
             //        when this window is destoyed which even happens during parsing with simple windows ?
             //definedVars.Append(var);
             idWindow *desktop = [gui getDesktop];
             [desktop->definedVars addObject:var];
             [desktop->regList addReg:work type:REG_VEC4 parser:src window:desktop var:var];
+
+            // store the original vec4 for the editor
+            // If we are in the gui editor then add the float to the defines
+            if ( editing ) {
+                // Grab the string from the last marker and save it in the wrapper
+                [guiedWrapper.variableDict set:[NSString stringWithFormat:@"definevec4\t\"%@\"", UDTokenLatin1String( &token )]
+                                         value:[self editorTextFromMarkerOf:src clean:YES]];
+            }
         }
         else if ( TokenIs( &token, "float" ) ) {
             [src readToken:&token error:NULL];
@@ -2378,14 +2460,44 @@ idWindow::Parse
             [varf setName:work];
             [definedVars addObject:varf];
 
+            // add the float to the editors wrapper dict
+            // set the marker to after the float name
+            [src setMarker];
+
             // Parse the float
             [regList addReg:work type:REG_FLOAT parser:src window:self var:varf];
+
+            // If we are in the gui editor then add the float to the defines
+            if ( editing ) {
+                // Grab the string from the last marker and save it in the wrapper
+                [guiedWrapper.variableDict set:[NSString stringWithFormat:@"float\t\"%@\"", UDTokenLatin1String( &token )]
+                                         value:[self editorTextFromMarkerOf:src clean:YES]];
+            }
         }
         else if ([self parseScriptEntry:UDTokenLatin1String( &token ) parser:src]) {
+            // add the script to the wrappers script list
+            // If we are in the gui editor then add the internal var to the
+            // the wrapper
+            if ( editing ) {
+                // Save the script
+                [guiedWrapper.scriptDict set:UDTokenLatin1String( &token ) value:[self editorScriptFromMarkerOf:src]];
+            }
         } else if ([self parseInternalVar:UDTokenLatin1String( &token ) parser:src]) {
+            // gui editor support
+            // If we are in the gui editor then add the internal var to the
+            // the wrapper
+            if ( editing ) {
+                [guiedWrapper setStateKey:UDTokenLatin1String( &token ) value:[self editorTextFromMarkerOf:src clean:NO] update:NO];
+            }
         }
         else {
             [self parseRegEntry:UDTokenLatin1String( &token ) parser:src];
+            // hook into the main window parsing for the gui editor
+            // If we are in the gui editor then add the internal var to the
+            // the wrapper
+            if ( editing ) {
+                [guiedWrapper setStateKey:UDTokenLatin1String( &token ) value:[self editorTextFromMarkerOf:src clean:NO] update:NO];
+            }
         }
         if ( ![src readToken:&token error:NULL] ) {
             [src error:NULL format:@"Unexpected end of file"];
@@ -2400,6 +2512,13 @@ idWindow::Parse
 
     [self setupFromState];
     [self postParse];
+
+    // hook into the main window parsing for the gui editor
+    // If we are in the gui editor then add the internal var to the
+    // the wrapper
+    if ( editing ) {
+        [guiedWrapper finish];
+    }
 
     return ret;
 }

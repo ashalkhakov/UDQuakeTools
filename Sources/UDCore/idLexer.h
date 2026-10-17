@@ -227,6 +227,9 @@ typedef struct punctuation_s
 - (BOOL)parseBracedSection:(NSMutableString *)str error:(NSError **)error;
 // parse a braced section into a string, maintaining indents and newlines
 - (BOOL)parseBracedSectionExact:(NSMutableString *)str tabs:(int)tabs error:(NSError **)error;
+// The same for the GUI editor, a brace in a comment or a string not counted
+// (not in the engine).
+- (BOOL)parseBracedSectionExact:(NSMutableString *)str tabs:(int)tabs skippingCommentsAndStrings:(BOOL)skipping error:(NSError **)error;
 // parse the rest of the line
 - (BOOL)parseRestOfLine:(NSMutableString *)str error:(NSError **)error;
 // retrieves the white space characters before the last read token
@@ -262,6 +265,8 @@ typedef struct punctuation_s
 // print a warning message
 - (void)warning:(NSString *)format, ...;
 // returns true if Error() was called with LEXFL_NOFATALERRORS or LEXFL_NOERRORS set
+- (const char*)buffer;
+- (int)bufferLength;
 - (BOOL)hadError;
 
 + (void)setBaseFolder:(NSString *)folder;

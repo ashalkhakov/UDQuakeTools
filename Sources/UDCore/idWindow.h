@@ -13,6 +13,7 @@
 #import "idRegExp.h"
 #import "idGuiScript.h"
 
+@class rvGEWindowWrapper;
 @class idParser, idDeviceContext, idUserInterfaceLocal, idSimpleWindow, idMaterial, idDict, idWindow;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -273,6 +274,10 @@ extern const int idWindow_NumRegisterVars;
 
 @interface idWindow : NSObject <idWinBackgroundTarget> {
 @public
+    /// The GUI editor's wrapper, while its manager is editing (the engine's
+    /// "guied_wrapper" variable).
+    rvGEWindowWrapper *_Nullable guiedWrapper;
+
     NSMutableString *cmd;
 
     float actualX;                  // physical coords

@@ -349,7 +349,7 @@ NSString *idStr_FloatArrayToString(const float *array, int length, int precision
 /// idStr::Icmp, Icmpn, Cmpn: id's order, Icmp ignoring the case of A–Z only.
 - (int)ud_icmp:(NSString *)text;
 /// [self ud_icmp:text] == 0, without copying strings of different lengths
-- (BOOL)ud_iequals:(nullable NSString *)text;
+- (BOOL)ud_iequals:(NSString *)text;
 - (int)ud_icmpn:(NSString *)text length:(NSInteger)n;
 - (int)ud_cmpn:(NSString *)text length:(NSInteger)n;
 /// idStr::ToLower: A–Z and 0xC0–0xDF lowered.

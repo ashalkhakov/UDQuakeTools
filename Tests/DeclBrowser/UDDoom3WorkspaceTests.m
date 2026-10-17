@@ -22,6 +22,10 @@
 #import "UDGuiGLView.h"
 #import "UDGuiEditorViewController.h"
 #import "UDSoftwareRenderer.h"
+#import "rvGEWorkspace.h"
+#import "rvGEWindowWrapper.h"
+#import "idDict.h"
+#import "idWindow.h"
 
 /**
  * The Decl Browser against a real Doom 3 install (see UDDoom3InstallPath:
@@ -515,6 +519,87 @@
     }
     XCTAssertLessThan(off, samples / 50, @"GL (%@) should draw the menu as the software renderer does: %ld of %ld off",
                       gl.glDescription, (long)off, (long)samples);
+}
+
+/// The window names of @a window and its children, depth first, with
+/// their types as the editor writes them.
+static void UDCollectWindows(idWindow *window, NSMutableArray<NSString *> *out) {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if (wrapper == nil || wrapper.deleted) return;
+    [out addObject:[NSString stringWithFormat:@"%@ %@", [rvGEWindowWrapper stringFromWindowType:wrapper.windowType], [window getName]]];
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        UDCollectWindows([wrapper childAtIndex:i], out);
+    }
+}
+
+/// Whether a window of @a window's has a state key that is no name (a stray
+/// token in its file: "*" of a "*/" whose "/*" is gone).
+static BOOL UDHasStrayStateKeys(idWindow *window) {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if (wrapper == nil) return NO;
+    NSCharacterSet *nameStart = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"];
+    for (int i = 0; i < [wrapper.stateDict numKeyVals]; i++) {
+        NSString *key = [wrapper.stateDict keyAtIndex:i];
+        if (key.length == 0 || ![nameStart characterIsMember:[key characterAtIndex:0]]) return YES;
+    }
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        if (UDHasStrayStateKeys([wrapper childAtIndex:i])) return YES;
+    }
+    return NO;
+}
+
+- (void)testEveryRetailGuiIsWrittenBackAsTheEditorWritesIt {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
+    [manager managerInit];
+    rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];
+    idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
+    NSUInteger guis = 0;
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    NSMutableArray<NSString *> *strays = [NSMutableArray array];
+    for (NSString *name in list.list) {
+        @autoreleasepool {
+            if (![editor loadFile:name]) {
+                [problems addObject:[NSString stringWithFormat:@"%@: did not load", name]];
+                continue;
+            }
+            NSMutableArray<NSString *> *windows = [NSMutableArray array];
+            UDCollectWindows([editor.interface getDesktop], windows);
+            BOOL stray = UDHasStrayStateKeys([editor.interface getDesktop]);
+            NSString *written = editor.text;
+            // read back from what was written, and written again
+            if (![editor loadText:written path:name]) {
+                [problems addObject:[NSString stringWithFormat:@"%@: what the editor wrote does not load", name]];
+                continue;
+            }
+            for (NSDictionary *d in editor.interface.diagnostics) {
+                [problems addObject:[NSString stringWithFormat:@"%@: written: %@:%@ %@", name, d[@"file"], d[@"line"], d[@"message"]]];
+            }
+            NSMutableArray<NSString *> *rereadWindows = [NSMutableArray array];
+            UDCollectWindows([editor.interface getDesktop], rereadWindows);
+            if (![rereadWindows isEqualToArray:windows]) {
+                [problems addObject:[NSString stringWithFormat:@"%@: its windows are not the same read back (%lu, %lu)", name,
+                                     (unsigned long)windows.count, (unsigned long)rereadWindows.count]];
+            }
+            // what the editor writes it reads back and writes the same, but
+            // for a file with stray tokens: the main menu's "*/" in
+            // OptionsGame (its "/*" commented out) is a state key "*", which,
+            // written beside "visible", joins its expression when read back
+            NSString *again = editor.text;
+            if (stray) {
+                [strays addObject:name];
+            } else if (![again isEqualToString:written]) {
+                [problems addObject:[NSString stringWithFormat:@"%@: written again, it is not the same", name]];
+            }
+            guis++;
+        }
+    }
+    XCTAssertGreaterThan(guis, 500U, @"the retail GUIs are listed");
+    XCTAssertEqual(problems.count, 0U, @"rvGEWorkspace::WriteWindow writes what reads back the same: %@", problems);
+    XCTAssertEqualObjects(strays, @[@"guis/mainmenu.gui"], @"the retail GUIs with stray tokens");
 }
 
 #pragma mark - Editing

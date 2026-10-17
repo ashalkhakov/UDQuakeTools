@@ -1,4 +1,5 @@
 #import "idParser.h"
+#import "idStr.h"
 #import "idFile.h"
 #import "idFileSystem.h"
 
@@ -406,6 +407,9 @@ static define_t *defineFromString(const char *string) {
             // set the marker based on the start of the token read in
             if (!self->marker_p ) {
                 self->marker_p = token->whiteSpaceEnd_p;
+                self->markerBufferStart_p = [self->scriptstack buffer];
+                self->markerBufferEnd_p = self->markerBufferStart_p + [self->scriptstack bufferLength];
+                self->markerDirective_p = NULL;
             }
             return YES;
         }
@@ -2133,6 +2137,10 @@ int PC_OperatorPriority(int op) {
         }
         // check for precompiler directives
         if (token->type == TT_PUNCTUATION && token->text[0] == '#' && token->text[1] == '\0') {
+            // where the marked text stops if this directive leaves its buffer
+            if (self->marker_p && token->whiteSpaceStart_p >= self->markerBufferStart_p && token->whiteSpaceStart_p <= self->markerBufferEnd_p) {
+                self->markerDirective_p = token->whiteSpaceStart_p;
+            }
             // read the precompiler directive
             if (![self readDirective:error]) {
                 return NO;
@@ -2589,6 +2597,9 @@ int PC_OperatorPriority(int op) {
 
 -(void)setMarker {
     marker_p = NULL;
+    markerBufferStart_p = NULL;
+    markerBufferEnd_p = NULL;
+    markerDirective_p = NULL;
 }
 
 -(void)stringFromMarker:(NSMutableString *)str clean:(BOOL)clean error:(NSError **)error {
@@ -2604,6 +2615,14 @@ int PC_OperatorPriority(int op) {
     } else {
         p = (char*)[self->scriptstack scriptPointer];
     }
+
+    // Not in the engine ("FIXME: this is very bad code"): having read on into
+    // an #include's buffer, the end is in another buffer than the marker, and
+    // the engine's text ran from the marker to the end of its own. The marked
+    // text ends where the #include began instead.
+    if (self->markerBufferStart_p != NULL && (p < self->markerBufferStart_p || p > self->markerBufferEnd_p) && self->markerDirective_p != NULL) {
+        p = (char*)self->markerDirective_p;
+    }
     
     // Set the end character to NULL to give us a complete string
     save = *p;
@@ -2617,10 +2636,10 @@ int PC_OperatorPriority(int op) {
         idToken_Init(&token);
 
         while ([temp readToken:&token error:error]) {
-            [str appendFormat:@"%s", token.text];
+            [str appendString:[NSString ud_stringWithLatin1:token.text]];
         }
     } else {
-        [str setString:[NSString stringWithFormat:@"%s", marker_p]];
+        [str setString:[NSString ud_stringWithLatin1:marker_p]];
     }
     
     // restore the character we set to NULL

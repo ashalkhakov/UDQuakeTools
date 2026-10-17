@@ -532,6 +532,8 @@
 		E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */ = {isa = PBXBuildFile; fileRef = D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */; };
 		7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */ = {isa = PBXBuildFile; fileRef = A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */; };
 		14CC3EF91B74FD716076483C /* idWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBE249827AAF111537E815F /* idWindow.h */; };
+		20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = EA93624848048D705DD34DEC /* rvGEWorkspace.h */; };
+		6BED93D2967B9FCBEECCE6C3 /* rvGEWindowWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */; };
 		CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CB740118B731208062C3B6B /* idGuiScript.h */; };
 		F7591715089EA88330F0827A /* idRegExp.h in Headers */ = {isa = PBXBuildFile; fileRef = 53049CA0968E0953B66F23CE /* idRegExp.h */; };
 		1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B34F3D384DF609685676F89 /* idWinVar.h */; };
@@ -573,6 +575,8 @@
 		21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EDFA4996907856A58FD832BB /* idGuiModel.m */; };
 		71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */; };
 		FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */; };
+		BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */; };
+		3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */; };
 		300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */ = {isa = PBXBuildFile; fileRef = F08015F811AF8060B27F068B /* idGuiScript.m */; };
 		8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */ = {isa = PBXBuildFile; fileRef = CAC3D29085F68079F61091E9 /* idRegExp.m */; };
 		5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */ = {isa = PBXBuildFile; fileRef = D20D58546873E10F1A43336C /* idWinVar.m */; };
@@ -1102,6 +1106,8 @@
 		D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeviceContext.h; sourceTree = "<group>"; };
 		A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiModel.h; sourceTree = "<group>"; };
 		FFBE249827AAF111537E815F /* idWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWindow.h; sourceTree = "<group>"; };
+		EA93624848048D705DD34DEC /* rvGEWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEWorkspace.h; sourceTree = "<group>"; };
+		AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rvGEWindowWrapper.h; sourceTree = "<group>"; };
 		7CB740118B731208062C3B6B /* idGuiScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idGuiScript.h; sourceTree = "<group>"; };
 		53049CA0968E0953B66F23CE /* idRegExp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idRegExp.h; sourceTree = "<group>"; };
 		9B34F3D384DF609685676F89 /* idWinVar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idWinVar.h; sourceTree = "<group>"; };
@@ -1143,6 +1149,8 @@
 		EDFA4996907856A58FD832BB /* idGuiModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiModel.m; sourceTree = "<group>"; };
 		D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idSimpleWindow.m; sourceTree = "<group>"; };
 		CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWindow.m; sourceTree = "<group>"; };
+		9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWorkspace.m; sourceTree = "<group>"; };
+		C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rvGEWindowWrapper.m; sourceTree = "<group>"; };
 		F08015F811AF8060B27F068B /* idGuiScript.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idGuiScript.m; sourceTree = "<group>"; };
 		CAC3D29085F68079F61091E9 /* idRegExp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idRegExp.m; sourceTree = "<group>"; };
 		D20D58546873E10F1A43336C /* idWinVar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idWinVar.m; sourceTree = "<group>"; };
@@ -1370,6 +1378,8 @@
 				EDFA4996907856A58FD832BB /* idGuiModel.m */,
 				D145DE8EB5D5C992B06D7591 /* idSimpleWindow.m */,
 				CEDC05D5A2B9308C3B7F7A5A /* idWindow.m */,
+				9B1966088F5E4B962205A6BC /* rvGEWorkspace.m */,
+				C1E7DA3BF4F6285167C70463 /* rvGEWindowWrapper.m */,
 				F08015F811AF8060B27F068B /* idGuiScript.m */,
 				CAC3D29085F68079F61091E9 /* idRegExp.m */,
 				D20D58546873E10F1A43336C /* idWinVar.m */,
@@ -1412,6 +1422,8 @@
 				D5C93EF0D91EDA5352929D9B /* idDeviceContext.h */,
 				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
 				FFBE249827AAF111537E815F /* idWindow.h */,
+				EA93624848048D705DD34DEC /* rvGEWorkspace.h */,
+				AD312F86FBF559939983A143 /* rvGEWindowWrapper.h */,
 				7CB740118B731208062C3B6B /* idGuiScript.h */,
 				53049CA0968E0953B66F23CE /* idRegExp.h */,
 				9B34F3D384DF609685676F89 /* idWinVar.h */,
@@ -1839,6 +1851,8 @@
 				E69E3D634826876AC1A7FBD5 /* idDeviceContext.h in Headers */,
 				7DB87109E5B00662FF08F3F7 /* idGuiModel.h in Headers */,
 				14CC3EF91B74FD716076483C /* idWindow.h in Headers */,
+				20A09AA6E116E6B47AA710E7 /* rvGEWorkspace.h in Headers */,
+				6BED93D2967B9FCBEECCE6C3 /* rvGEWindowWrapper.h in Headers */,
 				CA947BC20841364DCD2EF762 /* idGuiScript.h in Headers */,
 				F7591715089EA88330F0827A /* idRegExp.h in Headers */,
 				1A7C4050594255FB5BC2C53C /* idWinVar.h in Headers */,
@@ -2272,6 +2286,8 @@
 				21BB9EC5A345126C4430F8F3 /* idGuiModel.m in Sources */,
 				71589C75BEED93398C026539 /* idSimpleWindow.m in Sources */,
 				FD8CD9D49364818AB9F08401 /* idWindow.m in Sources */,
+				BAF9CC4371B4D9481FA7BCDA /* rvGEWorkspace.m in Sources */,
+				3C7EF90AA549048AA666F485 /* rvGEWindowWrapper.m in Sources */,
 				300F017961018B13C5A6C6DF /* idGuiScript.m in Sources */,
 				8542AA857C61DBD36FE339A0 /* idRegExp.m in Sources */,
 				5FFE5D8EA57BAA38E565A510 /* idWinVar.m in Sources */,

@@ -115,6 +115,10 @@ static NSString *baseFolder;
     return self->buffer;
 }
 
+- (int)bufferLength {
+    return self->length;
+}
+
 - (const char*)scriptPointer {
     return self->script_p;
 }
@@ -1315,7 +1319,7 @@ static NSString *baseFolder;
 // RAVEN END
                 if (doTabs) {
                     skipWhite = YES;
-                    [str appendFormat:@"%C", c];
+                    [str appendFormat:@"%C", (unichar)(unsigned char)c];
                     continue;
                 }
                 break;
@@ -1342,9 +1346,113 @@ static NSString *baseFolder;
                 [str appendString:@"\t"];
             }
         }
-        [str appendFormat:@"%C", c];
+        [str appendFormat:@"%C", (unichar)(unsigned char)c];
     }
     
+    return YES;
+}
+
+/*
+=================
+idLexer::ParseBracedSectionExact, for the GUI editor
+
+Not in the engine: the same, but a brace in a comment (a line or a block one) or in a
+string is not one of the section's. The engine's counts every brace, so its
+GUI editor cut a script short at a commented-out "}" (the retail pda.gui,
+mainmenu.gui, sentrybot.gui, decon.gui have them) and wrote the rest of the
+file as text after it.
+=================
+*/
+-(BOOL)parseBracedSectionExact:(NSMutableString *)str tabs:(int)tabs skippingCommentsAndStrings:(BOOL)skipping error:(NSError **)error {
+    int     depth;
+    BOOL    doTabs;
+    BOOL    skipWhite;
+    BOOL    inLineComment = NO, inBlockComment = NO, inString = NO;
+
+    if (!skipping) {
+        return [self parseBracedSectionExact:str tabs:tabs error:error];
+    }
+
+    [str setString:@""];
+
+    if (![self expectTokenString:@"{" error:error]) {
+        return NO;
+    }
+
+    [str setString:@"{"];
+    depth = 1;
+    skipWhite = NO;
+    doTabs = tabs >= 0;
+
+    while (depth && *self->script_p) {
+        char c = *self->script_p++;
+        BOOL opaque = inLineComment || inBlockComment || inString;
+
+        if (inLineComment && c == '\n') {
+            inLineComment = NO;
+        } else if (inBlockComment && c == '*' && *self->script_p == '/') {
+            inBlockComment = NO;
+            [str appendString:@"*/"];
+            self->script_p++;
+            continue;
+        } else if (inString && c == '\\' && *self->script_p != '\0') {
+            [str appendFormat:@"%C%C", (unichar)(unsigned char)c, (unichar)(unsigned char)*self->script_p];
+            self->script_p++;
+            continue;
+        } else if (inString && c == '"') {
+            inString = NO;
+        } else if (!opaque && c == '/' && *self->script_p == '/') {
+            inLineComment = YES;
+        } else if (!opaque && c == '/' && *self->script_p == '*') {
+            inBlockComment = YES;
+        } else if (!opaque && c == '"') {
+            inString = YES;
+        }
+
+        switch (c) {
+            case '\t':
+            case ' ': {
+                if (skipWhite) {
+                    continue;
+                }
+                break;
+            }
+            case '\n': {
+                line++;
+                if (doTabs) {
+                    skipWhite = YES;
+                    [str appendFormat:@"%C", (unichar)(unsigned char)c];
+                    continue;
+                }
+                break;
+            }
+            case '{': {
+                if (opaque) break;
+                depth++;
+                tabs++;
+                break;
+            }
+            case '}': {
+                if (opaque) break;
+                depth--;
+                tabs--;
+                break;
+            }
+        }
+
+        if (skipWhite) {
+            int i = tabs;
+            if (c == '{' && !opaque) {
+                i--;
+            }
+            skipWhite = NO;
+            for ( ; i > 0; i-- ) {
+                [str appendString:@"\t"];
+            }
+        }
+        [str appendFormat:@"%C", (unichar)(unsigned char)c];
+    }
+
     return YES;
 }
 

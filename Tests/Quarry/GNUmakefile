@@ -58,6 +58,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/GUIEditor/UDGuiPlayer.m \
     $(APP_DIR)/GUIEditor/UDGuiEditorOptionsController.m \
     $(APP_DIR)/GUIEditor/UDGuiItemPropertiesController.m \
+    $(APP_DIR)/GUIEditor/UDGuiScriptsController.m \
     $(APP_DIR)/Preview/UDTransportController.m \
     $(APP_DIR)/GUIEditor/UDGuiView.m \
     $(APP_DIR)/GUIEditor/UDGuiGLView.m \

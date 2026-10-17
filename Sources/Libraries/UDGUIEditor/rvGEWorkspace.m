@@ -24,6 +24,7 @@
 #import "idParser.h"
 #import "rvGEOptions.h"
 #import "rvGEModifier.h"
+#import "rvGEScript.h"
 #import "UDOverlay.h"
 
 /// SCREEN_WIDTH, SCREEN_HEIGHT: the GUI's.
@@ -918,9 +919,48 @@ Applies the script text to the window's variables and scripts
 ================
 */
 - (BOOL)setScriptsText:(NSString *)parse of:(idWindow *)window message:(NSString **)message {
-    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
     idDict *variables = [[idDict alloc] init];
     idDict *scripts = [[idDict alloc] init];
+    if ( ![self _readScriptsText:parse variables:variables scripts:scripts message:message] ) {
+        return NO;
+    }
+    [self.modifiers append:[[rvGEScriptsModifier alloc] initWithName:@"Scripts Change" window:window variables:variables scripts:scripts]];
+    self.modified = YES;
+    return YES;
+}
+
+/// (not the engine's) The scripts editor's edits: @a window's variables and
+/// scripts as these, one edit named @a name, read as Apply reads its text.
+- (BOOL)setScripts:(idDict *)scripts variables:(idDict *)variables of:(idWindow *)window named:(NSString *)name
+           message:(NSString **)message {
+    NSMutableString *text = [NSMutableString string];
+    for ( int i = 0; i < [variables numKeyVals]; i ++ ) {
+        [text appendFormat:@"%@\t%@\n", [variables keyAtIndex:i], [variables valueAtIndex:i]];
+    }
+    for ( int i = 0; i < [scripts numKeyVals]; i ++ ) {
+        [text appendFormat:@"%@\n%@\n\n", [scripts keyAtIndex:i], [scripts valueAtIndex:i]];
+    }
+    idDict *readVariables = [[idDict alloc] init];
+    idDict *readScripts = [[idDict alloc] init];
+    if ( ![self _readScriptsText:text variables:readVariables scripts:readScripts message:message] ) {
+        return NO;
+    }
+    // each script read as its statements, too: commands the run knows
+    for ( int i = 0; i < [readScripts numKeyVals]; i ++ ) {
+        NSString *why = nil;
+        if ( [[readScripts keyAtIndex:i] caseInsensitiveCompare:@"scriptDef"] != NSOrderedSame &&
+             ![rvGEScript statementsFromText:[readScripts valueAtIndex:i] message:&why] ) {
+            if ( message ) *message = [NSString stringWithFormat:@"%@: %@", [readScripts keyAtIndex:i], why];
+            return NO;
+        }
+    }
+    [self.modifiers append:[[rvGEScriptsModifier alloc] initWithName:name window:window variables:readVariables scripts:readScripts]];
+    self.modified = YES;
+    return YES;
+}
+
+/// GEItescriptsDlg_Apply's reading: @a parse's variables and scripts.
+- (BOOL)_readScriptsText:(NSString *)parse variables:(idDict *)variables scripts:(idDict *)scripts message:(NSString **)message {
 
     NSData *bytes __attribute__((objc_precise_lifetime)) = [parse ud_latin1Buffer];
     // the engine's parser throws on an error; this one says so (in its
@@ -1024,9 +1064,6 @@ Applies the script text to the window's variables and scripts
     }
     #undef UDFAIL
 
-    [self.modifiers append:[[rvGEScriptsModifier alloc] initWithName:@"Scripts Change" window:window variables:variables scripts:scripts]];
-    self.modified = YES;
-    (void)wrapper;
     return YES;
 }
 

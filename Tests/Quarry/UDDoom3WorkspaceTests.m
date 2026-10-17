@@ -24,6 +24,8 @@
 #import "UDGuiEditorViewController.h"
 #import "UDSoftwareRenderer.h"
 #import "rvGEWorkspace.h"
+#import "rvGEScript.h"
+#import "rvGEWindowWrapper.h"
 #import "rvGEWindowWrapper.h"
 #import "idDict.h"
 #import "idWindow.h"
@@ -658,6 +660,53 @@ static BOOL UDHasStrayStateKeys(idWindow *window) {
     XCTAssertGreaterThan(guis, 500U, @"the retail GUIs are listed");
     XCTAssertEqual(problems.count, 0U, @"rvGEWorkspace::WriteWindow writes what reads back the same: %@", problems);
     XCTAssertEqualObjects(strays, @[@"guis/mainmenu.gui"], @"the retail GUIs with stray tokens");
+}
+
+static void UDCollectScripts(idWindow *window, NSString *gui, NSMutableArray<NSString *> *problems, NSUInteger *count) {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    idDict *scripts = wrapper.scriptDict;
+    for (int i = 0; i < [scripts numKeyVals]; i++) {
+        NSString *key = [scripts keyAtIndex:i];
+        if ([key caseInsensitiveCompare:@"scriptDef"] == NSOrderedSame) continue;
+        NSString *message = nil;
+        NSArray<rvGEScriptStatement *> *statements = [rvGEScript statementsFromText:[scripts valueAtIndex:i] message:&message];
+        (*count)++;
+        if (statements == nil) {
+            [problems addObject:[NSString stringWithFormat:@"%@ %@ %@: %@", gui, [window getName], key, message]];
+            continue;
+        }
+        NSString *written = [rvGEScript textFromStatements:statements];
+        NSArray<rvGEScriptStatement *> *again = [rvGEScript statementsFromText:written message:&message];
+        if (again == nil || ![[rvGEScript textFromStatements:again] isEqualToString:written]) {
+            [problems addObject:[NSString stringWithFormat:@"%@ %@ %@: written, it does not read the same", gui, [window getName], key]];
+        }
+    }
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        UDCollectScripts([wrapper childAtIndex:i], gui, problems, count);
+    }
+}
+
+- (void)testEveryRetailGuisScriptsReadAsStatements {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
+    [manager managerInit];
+    rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];
+    idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    NSUInteger scripts = 0;
+    for (NSString *name in list.list) {
+        @autoreleasepool {
+            if ([editor loadFile:name]) {
+                UDCollectScripts([editor.interface getDesktop], name, problems, &scripts);
+            }
+        }
+    }
+    XCTAssertGreaterThan(scripts, 10000U, @"the retail GUIs' scripts");
+    XCTAssertEqual(problems.count, 0U, @"%lu of %lu: %@", (unsigned long)problems.count, (unsigned long)scripts,
+                   [problems subarrayWithRange:NSMakeRange(0, MIN(problems.count, 40U))]);
 }
 
 /// The mean brightness of what GL draws of the GUI (0-255).

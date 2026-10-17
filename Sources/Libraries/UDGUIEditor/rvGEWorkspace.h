@@ -132,6 +132,11 @@ typedef NS_ENUM(int, rvGEModifierType) {
 /// scripts, as one undoable "Scripts Change" (the engine's changed them as
 /// they were); NO, and what is wrong in @a message, for text it cannot read.
 - (BOOL)setScriptsText:(NSString *)text of:(idWindow *)window message:(NSString *_Nullable *_Nullable)message;
+/// (not the engine's) The scripts editor's edits: @a window's variables and
+/// scripts set to these, as one edit named @a name; NO, and why, when
+/// they do not read.
+- (BOOL)setScripts:(idDict *)scripts variables:(idDict *)variables of:(idWindow *)window named:(NSString *)name
+           message:(NSString *_Nullable *_Nullable)message;
 
 /// rvGEWorkspace::EItemAlign
 typedef NS_ENUM(int, rvGEItemAlign) {

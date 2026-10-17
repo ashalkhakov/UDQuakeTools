@@ -20,6 +20,8 @@
 #import "rvGEOptions.h"
 #import "UDGuiEditorOptionsController.h"
 #import "UDGuiItemPropertiesController.h"
+#import "UDGuiScriptsController.h"
+#import "rvGEScript.h"
 #import "rvGESelectionMgr.h"
 #import "UDOverlay.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
@@ -539,8 +541,10 @@ static NSString *const UDViewerScript =
 
     // its scripts
     [self chooseWindow:@"Lamp" in:editor];
-    editor.scriptsText.string = [editor.scriptsText.string stringByReplacingOccurrencesOfString:@"0 1 0 1" withString:@"0 1 1 1"];
-    [editor applyScripts:nil];
+    [self openEvent:@"onTime 500" in:editor];
+    [self chooseStatementAtRow:0 in:editor];
+    editor.scriptsController.parameterField2.stringValue = @"0 1 1 1";
+    [editor.scriptsController statementEdited:editor.scriptsController.parameterField2];
     XCTAssertEqualObjects(editor.runningText, ranText, @"scripts: not read again");
     NSString *script = [[rvGEWindowWrapper wrapperOf:[self runWindow:@"Lamp" in:editor]].scriptDict getString:@"onTime 500"];
     XCTAssertTrue([script containsString:@"0 1 1 1"], @"the run's lamp read again: %@", script);
@@ -581,9 +585,10 @@ static NSString *const UDViewerScript =
     NSOutlineView *outline = editor.windowsOutline;
     NSMutableArray<NSString *> *rows = [NSMutableArray array];
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
-        [rows addObject:[(idWindow *)[outline itemAtRow:row] getName]];
+        [rows addObject:[self rowName:row of:outline]];
     }
-    XCTAssertEqualObjects(rows, (@[@"Desktop", @"Panel", @"Label", @"Go", @"Lamp"]), @"the desktop open, its windows in it");
+    XCTAssertEqualObjects(rows, (@[@"Desktop", @"\u0192 onNamedEvent udtestLight", @"\u0192 onNamedEvent udtestRename",
+                                   @"Panel", @"Label", @"Go", @"Lamp"]), @"the desktop open, its events and its windows in it");
 
     [self openOutlinePath:@"script/udtest.script" inController:controller];
     XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own, @"a script's tab has no windows");
@@ -596,7 +601,7 @@ static NSString *const UDViewerScript =
     NSOutlineView *outline = editor.windowsOutline;
     NSInteger row = -1;
     for (NSInteger i = 0; i < outline.numberOfRows; i++) {
-        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:@"Go"]) row = i;
+        if ([[self rowName:i of:outline] isEqualToString:@"Go"]) row = i;
     }
     XCTAssertGreaterThanOrEqual(row, 0);
     [outline selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
@@ -613,7 +618,7 @@ static NSString *const UDViewerScript =
     [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:editor.guiView];
     NSOutlineView *outline = editor.windowsOutline;
     XCTAssertEqual(outline.selectedRowIndexes.count, 1u);
-    XCTAssertEqualObjects([(idWindow *)[outline itemAtRow:outline.selectedRow] getName], @"Go", @"clicked on the canvas, chosen in the navigator");
+    XCTAssertEqualObjects([self rowName:outline.selectedRow of:outline], @"Go", @"clicked on the canvas, chosen in the navigator");
 }
 
 - (void)testTheEyeHidesAWindowInTheDesignOnly {
@@ -624,7 +629,7 @@ static NSString *const UDViewerScript =
     NSTableColumn *eye = [outline tableColumnWithIdentifier:@"visible"];
     idWindow *panel = nil;
     for (NSInteger i = 0; i < outline.numberOfRows; i++) {
-        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:@"Panel"]) panel = [outline itemAtRow:i];
+        if ([[self rowName:i of:outline] isEqualToString:@"Panel"]) panel = [outline itemAtRow:i];
     }
     XCTAssertNotNil(panel);
     XCTAssertEqualObjects([outline.dataSource outlineView:outline objectValueForTableColumn:eye byItem:panel], @YES);
@@ -668,7 +673,7 @@ static NSString *const UDViewerScript =
 - (void)chooseWindow:(NSString *)name in:(UDGuiEditorViewController *)editor {
     NSOutlineView *outline = editor.windowsOutline;
     for (NSInteger i = 0; i < outline.numberOfRows; i++) {
-        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:name]) {
+        if ([[self rowName:i of:outline] isEqualToString:name]) {
             [outline selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)i] byExtendingSelection:NO];
         }
     }
@@ -756,26 +761,112 @@ static NSString *const UDViewerScript =
 
 #pragma mark - Scripts
 
-- (void)testTheChosenWindowsScriptsAreEditedAndApplied {
+/// The Scripts' events table's row of @a key opened (a double-click).
+- (void)openEvent:(NSString *)key in:(UDGuiEditorViewController *)editor {
+    UDGuiScriptsController *scripts = editor.scriptsController;
+    NSInteger row = -1;
+    for (NSInteger i = 0; i < [scripts numberOfRowsInTableView:scripts.eventsTable]; i++) {
+        if ([[scripts tableView:scripts.eventsTable objectValueForTableColumn:[scripts.eventsTable tableColumnWithIdentifier:@"event"] row:i] isEqual:key]) row = i;
+    }
+    XCTAssertGreaterThanOrEqual(row, 0, @"%@ in the events", key);
+    [scripts.eventsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [scripts openEvent:nil];
+}
+
+- (void)chooseStatementAtRow:(NSInteger)row in:(UDGuiEditorViewController *)editor {
+    [editor.scriptsController.statementsOutline selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+}
+
+- (NSString *)statementAtRow:(NSInteger)row in:(UDGuiEditorViewController *)editor {
+    NSOutlineView *outline = editor.scriptsController.statementsOutline;
+    return [outline.dataSource outlineView:outline objectValueForTableColumn:outline.tableColumns.firstObject byItem:[outline itemAtRow:row]];
+}
+
+- (void)add:(NSString *)command in:(UDGuiEditorViewController *)editor {
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:command action:@selector(addStatement:) keyEquivalent:@""];
+    item.representedObject = command;
+    [editor.scriptsController addStatement:item];
+}
+
+- (void)testAWindowsScriptsAreEditedAsStatements {
     UDWorkspaceWindowController *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertFalse([editor.scriptsPlaceholder isHidden]);
+    UDGuiScriptsController *scripts = editor.scriptsController;
+    NSUndoManager *undo = editor.editorDocument.undoManager;
+    XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"none");
+
+    // a window's: its events, and a row of each under it in the navigator
     [self chooseWindow:@"Go" in:editor];
-    NSString *text = editor.scriptsText.string;
-    XCTAssertTrue([text containsString:@"onAction"], @"%@", text);
-    XCTAssertTrue([text containsString:@"udtest_go"], @"%@", text);
+    XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"window");
+    XCTAssertEqual([scripts numberOfRowsInTableView:scripts.eventsTable], 1);
 
-    editor.scriptsText.string = [text stringByReplacingOccurrencesOfString:@"udtest_go" withString:@"udtest_went"];
-    [editor applyScripts:nil];
-    XCTAssertTrue([editor.designWorkspace.text containsString:@"udtest_went"], @"the scripts are the window's");
-    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Scripts Change");
-    [editor.editorDocument.undoManager undo];
-    XCTAssertTrue([editor.scriptsText.string containsString:@"udtest_go"], @"Undo shows the scripts as they were");
+    // an event's: its statements, one chosen, its parameters named
+    [self openEvent:@"onAction" in:editor];
+    XCTAssertEqualObjects(editor.selectedEvent.key, @"onAction");
+    NSOutlineView *navigator = editor.windowsOutline;
+    XCTAssertEqualObjects([self rowName:navigator.selectedRow of:navigator], @"\u0192 onAction", @"its row, under Go, chosen in the navigator");
+    XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"event");
+    XCTAssertEqualObjects(scripts.eventPopUp.titleOfSelectedItem, @"onAction");
+    XCTAssertEqual(scripts.statementsOutline.numberOfRows, 2);
+    XCTAssertEqualObjects([self statementAtRow:1 in:editor], @"set \"cmd\" \"udtest_go\"");
+    [self chooseStatementAtRow:1 in:editor];
+    XCTAssertEqualObjects(scripts.parameterLabel1.stringValue, @"Variable:");
+    XCTAssertEqualObjects(scripts.parameterField2.stringValue, @"udtest_go");
+    XCTAssertTrue([scripts.parameterField1.toolTip containsString:@"gui::name"], @"%@", scripts.parameterField1.toolTip);
+    scripts.parameterField2.stringValue = @"udtest_went";
+    [scripts statementEdited:scripts.parameterField2];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"set \"cmd\" \"udtest_went\""], @"%@", editor.designWorkspace.text);
+    XCTAssertEqualObjects(undo.undoActionName, @"Statement Change");
+    [undo undo];
+    XCTAssertEqualObjects([self statementAtRow:1 in:editor], @"set \"cmd\" \"udtest_go\"", @"Undo shows it as it was");
 
-    editor.scriptsText.string = @"onWhatever\n{\n}\n";
-    [editor applyScripts:nil];
-    XCTAssertTrue([editor.scriptsMessage.stringValue hasPrefix:@"Script error"], @"%@", editor.scriptsMessage.stringValue);
+    // added after the chosen one, filled in, moved first, taken off
+    [self chooseStatementAtRow:1 in:editor];
+    [self add:@"localSound" in:editor];
+    XCTAssertEqual(scripts.statementsOutline.numberOfRows, 3);
+    XCTAssertEqualObjects(undo.undoActionName, @"Add Statement");
+    XCTAssertEqual(scripts.statementsOutline.selectedRow, 2, @"the new one chosen");
+    scripts.parameterField1.stringValue = @"guisounds_click";
+    [scripts statementEdited:scripts.parameterField1];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"localSound \"guisounds_click\""], @"%@", editor.designWorkspace.text);
+    XCTAssertTrue([scripts moveStatement:scripts.selectedStatement toParent:nil index:0]);
+    XCTAssertEqualObjects([self statementAtRow:0 in:editor], @"localSound \"guisounds_click\"");
+    XCTAssertEqualObjects(undo.undoActionName, @"Move Statement");
+
+    // an if, a statement in it, its condition
+    [scripts.statementsOutline deselectAll:nil];
+    [self add:@"if" in:editor];
+    XCTAssertEqualObjects([self statementAtRow:3 in:editor], @"if 1");
+    scripts.conditionField.stringValue = @"\"gui::clicked\" == 1";
+    [scripts statementEdited:scripts.conditionField];
+    [self add:@"evalRegs" in:editor];
+    XCTAssertEqual([editor.scriptsController.statementsOutline levelForRow:4], 1, @"in the if");
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"if \"gui::clicked\" == 1 {"], @"%@", editor.designWorkspace.text);
+    [self chooseStatementAtRow:4 in:editor];
+    [scripts removeStatement:nil];
+    XCTAssertEqual(scripts.statementsOutline.numberOfRows, 4);
+
+    // a new event: a time, then another time
+    [self chooseWindow:@"Go" in:editor];
+    NSMenuItem *time = [[NSMenuItem alloc] initWithTitle:@"onTime" action:@selector(addEvent:) keyEquivalent:@""];
+    time.representedObject = @"onTime";
+    [scripts addEvent:time];
+    XCTAssertEqualObjects(editor.selectedEvent.key, @"onTime 0", @"opened");
+    scripts.eventParameterField.stringValue = @"250";
+    [scripts changeEvent:scripts.eventParameterField];
+    XCTAssertEqualObjects(editor.selectedEvent.key, @"onTime 250");
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"onTime 250"], @"%@", editor.designWorkspace.text);
+
+    // a variable
+    [self chooseWindow:@"Go" in:editor];
+    NSSegmentedControl *plus = [[NSSegmentedControl alloc] init];
+    plus.segmentCount = 2;
+    plus.selectedSegment = 0;
+    [scripts addOrRemoveVariable:plus];
+    XCTAssertEqual([scripts numberOfRowsInTableView:scripts.variablesTable], 1);
+    [scripts tableView:scripts.variablesTable setObjectValue:@"0.5" forTableColumn:[scripts.variablesTable tableColumnWithIdentifier:@"value"] row:0];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"definefloat\t\"variable1\"\t0.5"], @"%@", editor.designWorkspace.text);
 }
 
 #pragma mark - Commands
@@ -788,11 +879,18 @@ static NSString *const UDViewerScript =
     [view keyDown:event];
 }
 
+/// A navigator row's name: a window's, or an event's ("\u0192 onAction").
+- (NSString *)rowName:(NSInteger)row of:(NSOutlineView *)outline {
+    return [outline.dataSource outlineView:outline objectValueForTableColumn:[outline tableColumnWithIdentifier:@"name"] byItem:[outline itemAtRow:row]];
+}
+
 - (NSArray<NSString *> *)navigatorNamesIn:(UDGuiEditorViewController *)editor {
     NSOutlineView *outline = editor.windowsOutline;
     NSMutableArray<NSString *> *names = [NSMutableArray array];
     for (NSInteger i = 0; i < outline.numberOfRows; i++) {
-        [names addObject:[(idWindow *)[outline itemAtRow:i] getName]];
+        // the windows' rows (not their events')
+        NSString *name = [self rowName:i of:outline];
+        if (![name hasPrefix:@"\u0192 "]) [names addObject:name];
     }
     return names;
 }

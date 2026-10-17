@@ -24,6 +24,8 @@
 #import "rvGEOptions.h"
 #import "UDGuiEditorOptionsController.h"
 #import "UDGuiItemPropertiesController.h"
+#import "UDGuiScriptsController.h"
+#import "rvGEScript.h"
 #import "rvGETransformer.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
@@ -68,9 +70,9 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 /// The navigator's selection being set from the design's (not the other
 /// way round).
 @property (nonatomic) BOOL syncingWindows;
-/// The window whose scripts the Scripts show, and their text as shown.
-@property (nonatomic, weak, nullable) idWindow *scriptsWindow;
-@property (nonatomic, copy, nullable) NSString *scriptsShownText;
+/// The event chosen in the navigator; the rows of the windows' events.
+@property (nonatomic, strong, readwrite, nullable) UDGuiEventNode *selectedEvent;
+@property (nonatomic, strong) NSMapTable<idWindow *, NSMutableDictionary<NSString *, UDGuiEventNode *> *> *eventNodes;
 /// The Layout's transformer (of the design).
 @property (nonatomic, strong, nullable) rvGETransformer *transformer;
 /// The options sheet, made the first time it is up.
@@ -119,7 +121,8 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     [self _design];
     self.windowsOutline.target = self;
     self.windowsOutline.doubleAction = @selector(showProperties:);
-    self.scriptsText.font = [NSFont userFixedPitchFontOfSize:11];
+    self.scriptsController.target = self;
+    self.scriptsController.action = @selector(_scriptsShowEvent:);
     [self _updateProperties];
     [self _updateScripts:YES];
     [self _showStatusBar];
@@ -234,6 +237,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         design.modifiers.action = @selector(_designEdited:);
         self.designWorkspace = design;
         self.itemProperties.workspace = design;
+        self.scriptsController.workspace = design;
         self.itemProperties.fileSystem = self.workspace.fileSystem;
         self.transformer = [[rvGETransformer alloc] initWithWorkspace:design];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
@@ -287,6 +291,16 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         for (idWindow *parent in parents) {
             [outline expandItem:parent];
         }
+        // the event chosen of the one window: its row
+        UDGuiEventNode *event = self.selectedEvent;
+        if (event != nil && event.window == window && [design.selections num] == 1) {
+            [outline expandItem:window];
+            NSInteger row = [outline rowForItem:event];
+            if (row >= 0) {
+                [rows addIndex:(NSUInteger)row];
+                continue;
+            }
+        }
         NSInteger row = [outline rowForItem:window];
         if (row >= 0) [rows addIndex:(NSUInteger)row];
     }
@@ -307,25 +321,44 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     return children;
 }
 
+/// A window's rows in the navigator: its events (not the engine's), then
+/// its children.
+- (NSArray *)_rowsOf:(idWindow *)window {
+    if (![window isKindOfClass:[idWindow class]]) return @[];
+    NSMutableArray *rows = [NSMutableArray array];
+    idDict *scripts = [rvGEWindowWrapper wrapperOf:window].scriptDict;
+    for (int i = 0; i < [scripts numKeyVals]; i++) {
+        [rows addObject:[self eventNodeOf:window key:[scripts keyAtIndex:i]]];
+    }
+    [rows addObjectsFromArray:[self _childrenOf:window]];
+    return rows;
+}
+
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
     if (item == nil) {
         return [self.designWorkspace.interface getDesktop] != nil ? 1 : 0;
     }
-    return (NSInteger)[self _childrenOf:item].count;
+    return (NSInteger)[self _rowsOf:item].count;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
     if (item == nil) {
         return [self.designWorkspace.interface getDesktop];
     }
-    return [self _childrenOf:item][(NSUInteger)index];
+    return [self _rowsOf:item][(NSUInteger)index];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
-    return [self _childrenOf:item].count > 0;
+    return [self _rowsOf:item].count > 0;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)column byItem:(id)item {
+    if ([item isKindOfClass:[UDGuiEventNode class]]) {
+        // an event's row: its key, with the scripts' sign
+        if ([column.identifier isEqualToString:@"name"]) return [@"\u0192 " stringByAppendingString:[(UDGuiEventNode *)item key]];
+        if ([column.identifier isEqualToString:@"scripts"]) return @"";
+        return nil;
+    }
     rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:item];
     if ([column.identifier isEqualToString:@"visible"]) {
         return @(!wrapper.hidden);
@@ -342,6 +375,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 
 /// The eye: HideWindow, UnhideWindow (an edit of the design, undone as one).
 - (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column byItem:(id)item {
+    if (![item isKindOfClass:[idWindow class]]) return;
     if ([column.identifier isEqualToString:@"locked"]) {
         // the lock: the window (and its children) not chosen on the canvas;
         // the editor's alone, as the eye's is
@@ -364,6 +398,14 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 
 /// A window under a hidden one is drawn disabled, as the engine's are.
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)column item:(id)item {
+    // an event's row has no eye and no lock
+    BOOL event = [item isKindOfClass:[UDGuiEventNode class]];
+    if ([cell isKindOfClass:[NSButtonCell class]]) {
+        [cell setTransparent:event];
+    }
+    if (event) {
+        item = [(UDGuiEventNode *)item window];
+    }
     BOOL disabled = NO;
     for (idWindow *parent = [(idWindow *)item getParent]; parent != nil; parent = [parent getParent]) {
         if ([rvGEWindowWrapper wrapperOf:parent].hidden) disabled = YES;
@@ -371,6 +413,10 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     if ([cell respondsToSelector:@selector(setEnabled:)]) {
         [cell setEnabled:!disabled];
     }
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)column item:(id)item {
+    return [item isKindOfClass:[idWindow class]];
 }
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification {
@@ -391,10 +437,17 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     NSOutlineView *outline = self.windowsOutline;
     NSMutableArray<idWindow *> *chosen = [NSMutableArray array];
     NSIndexSet *rows = outline.selectedRowIndexes;
+    UDGuiEventNode *event = nil;
     for (NSUInteger row = rows.firstIndex; row != NSNotFound; row = [rows indexGreaterThanIndex:row]) {
         id item = [outline itemAtRow:(NSInteger)row];
-        if (item != nil) [chosen addObject:item];
+        // an event's row: its window, the event shown in the Scripts
+        if ([item isKindOfClass:[UDGuiEventNode class]]) {
+            event = rows.count == 1 ? item : nil;
+            item = [(UDGuiEventNode *)item window];
+        }
+        if (item != nil && [chosen indexOfObjectIdenticalTo:item] == NSNotFound) [chosen addObject:item];
     }
+    self.selectedEvent = event;
     self.syncingWindows = YES;
     for (idWindow *window in design.selections.windows) {
         if ([chosen indexOfObjectIdenticalTo:window] == NSNotFound) [design.selections remove:window];
@@ -403,6 +456,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         [design.selections add:window expand:NO];
     }
     self.syncingWindows = NO;
+    [self _updateScripts:YES];
     if (!self.designing && chosen.count > 0) {
         [self _enterDesign];
     } else if (self.designing) {
@@ -458,53 +512,60 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     }
 }
 
-#pragma mark - Scripts (GEItemScriptsDlg)
+#pragma mark - Scripts (UDGuiScriptsController)
 
-/// The one selected window's scripts in the text, unless the text is
-/// being edited (and @a always is NO); the placeholder for none or many.
+/// The Scripts: the one selected window's events and variables, or its
+/// event chosen in the navigator; nothing for none or many.
 - (void)_updateScripts:(BOOL)always {
-    NSTextView *textView = self.scriptsText;
-    if (textView == nil) return;
     rvGEWorkspace *design = self.designWorkspace;
     idWindow *window = [design.selections num] == 1 ? design.selections[0] : nil;
-    BOOL edited = self.scriptsShownText != nil && ![textView.string isEqualToString:self.scriptsShownText];
-    if (!always && edited && window == self.scriptsWindow) return;
-    self.scriptsWindow = window;
-    self.scriptsPlaceholder.hidden = window != nil;
-    textView.enclosingScrollView.hidden = window == nil;
-    NSString *text = window != nil ? [design scriptsTextOf:window] : @"";
-    [self _forgetScriptsTyping];
-    textView.string = text;
-    self.scriptsShownText = text;
-    self.scriptsMessage.stringValue = @"";
-}
-
-/// The text view's own edits off the document's undo stack (the design's
-/// edits are on it).
-- (void)_forgetScriptsTyping {
-    NSUndoManager *undoManager = self.document.undoManager;
-    [undoManager removeAllActionsWithTarget:self.scriptsText.textStorage];
-    [undoManager removeAllActionsWithTarget:self.scriptsText];
-}
-
-- (IBAction)applyScripts:(id)sender {
-    idWindow *window = self.scriptsWindow;
-    if (window == nil) {
-        NSBeep();
-        return;
+    UDGuiEventNode *event = self.selectedEvent;
+    rvGEWindowWrapper *wrapper = window ? [rvGEWindowWrapper wrapperOf:window] : nil;
+    if (event != nil && (event.window != window || [wrapper.scriptDict getString:event.key defaultString:nil] == nil)) {
+        self.selectedEvent = nil;
+        event = nil;
     }
-    NSString *message = nil;
-    if (![self.designWorkspace setScriptsText:self.scriptsText.string of:window message:&message]) {
-        // the engine's "Script Error" box, in the pane
-        self.scriptsMessage.stringValue = [NSString stringWithFormat:@"Script error: %@", message ?: @""];
-        NSBeep();
-        return;
-    }
-    [self _updateScripts:YES];
+    [self.scriptsController showWindow:window event:event.key];
 }
 
-- (IBAction)revertScripts:(id)sender {
+- (UDGuiEventNode *)eventNodeOf:(idWindow *)window key:(NSString *)key {
+    if (self.eventNodes == nil) {
+        self.eventNodes = [NSMapTable weakToStrongObjectsMapTable];
+    }
+    NSMutableDictionary<NSString *, UDGuiEventNode *> *nodes = [self.eventNodes objectForKey:window];
+    if (nodes == nil) {
+        nodes = [NSMutableDictionary dictionary];
+        [self.eventNodes setObject:nodes forKey:window];
+    }
+    UDGuiEventNode *node = nodes[key];
+    if (node == nil) {
+        node = [[UDGuiEventNode alloc] init];
+        node.window = window;
+        node.key = key;
+        nodes[key] = node;
+    }
+    return node;
+}
+
+/// The Scripts' controller opened an event (or its window): its row chosen
+/// in the navigator, the window in the design, the Scripts shown.
+- (void)_scriptsShowEvent:(UDGuiScriptsController *)controller {
+    idWindow *window = controller.window;
+    if (window == nil) return;
+    NSString *key = controller.eventKey;
+    // the window the one chosen (its selection set first: an event chosen
+    // goes with a window going)
+    rvGESelectionMgr *selections = self.designWorkspace.selections;
+    if ([selections num] != 1 || selections[0] != window) {
+        [selections set:window];
+    }
+    self.selectedEvent = key != nil ? [self eventNodeOf:window key:key] : nil;
+    self.syncingWindows = YES;
+    [self.windowsOutline reloadData];
+    self.syncingWindows = NO;
+    [self _updateNavigatorSelections];
     [self _updateScripts:YES];
+    [self showScripts:nil];
 }
 
 #pragma mark - The design's menu

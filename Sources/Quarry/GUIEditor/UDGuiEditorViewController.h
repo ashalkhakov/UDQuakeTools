@@ -2,7 +2,7 @@
 #import "UDBaseEditorViewController.h"
 #import "UDGuiView.h"
 
-@class UDGuiItemPropertiesController, UDGuiPlayer, UDGuiView, rvGEWorkspace, UDTransportController;
+@class UDGuiItemPropertiesController, UDGuiScriptsController, UDGuiEventNode, idWindow, UDGuiPlayer, UDGuiView, rvGEWorkspace, UDTransportController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -93,14 +93,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)zoomToFit:(nullable id)sender;
 /// The inspector's Properties shown (a window double-clicked).
 - (IBAction)showProperties:(nullable id)sender;
-/// The inspector's Scripts (GEItemScriptsDlg): the selected window's
-/// variables and scripts as text, applied as one Scripts Change.
+/// The inspector's Scripts (UDGuiScriptsController, not the engine's
+/// text): the selected window's events and variables, or the event chosen
+/// under it in the navigator, its statements; each edit one Undo.
 @property (strong) IBOutlet NSView *scriptsView;
-@property (weak) IBOutlet NSTextView *scriptsText;
-@property (weak) IBOutlet NSTextField *scriptsMessage;
-@property (weak) IBOutlet NSTextField *scriptsPlaceholder;
-- (IBAction)applyScripts:(nullable id)sender;
-- (IBAction)revertScripts:(nullable id)sender;
+@property (strong) IBOutlet UDGuiScriptsController *scriptsController;
+/// The event chosen in the navigator (its row under its window), if one is.
+@property (nonatomic, strong, readonly, nullable) UDGuiEventNode *selectedEvent;
+/// A window's event's row in the navigator, made once for a key.
+- (UDGuiEventNode *)eventNodeOf:(idWindow *)window key:(NSString *)key;
 /// The inspector's panes: the state, and the log.
 @property (strong) IBOutlet NSView *stateView;
 @property (strong) IBOutlet NSView *logView;

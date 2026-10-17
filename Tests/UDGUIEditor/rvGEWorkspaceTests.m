@@ -5,6 +5,7 @@
 #import "rvGEModifier.h"
 #import "rvGEOptions.h"
 #import "rvGETransformer.h"
+#import "rvGEScript.h"
 #import "UDOverlay.h"
 #import "idUserInterface.h"
 #import "idWindow.h"
@@ -468,6 +469,67 @@ static NSString *const UDCanvasGui =
     XCTAssertTrue([self.workspace.text containsString:@"\"steady\""], @"%@", self.workspace.text);
     [self.workspace.modifiers undo];
     XCTAssertTrue([self.workspace.text containsString:@"\"ready\""], @"undone");
+}
+
+#pragma mark - Scripts as statements
+
+- (void)testAScriptIsReadAsItsStatements {
+    NSString *text = @"{\n\tset \"gui::clicked\" \"1\" ;\n\ttransition \"Panel::rect\" \"0 0 10 10\" \"0 0 20 20\" \"500\" ;\n"
+                      "\tif ( \"gui::x\" == 1 ) {\n\t\tresetTime \"Panel\" \"0\" ;\n\t} else if \"gui::y\" {\n\t\tshowCursor 0 ;\n\t}\n\tendGame ;\n}";
+    NSString *message = nil;
+    NSArray<rvGEScriptStatement *> *statements = [rvGEScript statementsFromText:text message:&message];
+    XCTAssertNotNil(statements, @"%@", message);
+    XCTAssertEqual(statements.count, 4U);
+    XCTAssertEqualObjects(statements[0].command, @"set");
+    XCTAssertEqualObjects(statements[0].arguments, (@[@"gui::clicked", @"1"]), @"its parameters, no quotes");
+    XCTAssertEqualObjects(statements[1].arguments[3], @"500");
+    rvGEScriptStatement *test = statements[2];
+    XCTAssertTrue(test.isIf);
+    XCTAssertEqualObjects(test.condition, @"( \"gui::x\" == 1 )");
+    XCTAssertEqualObjects(test.statements[0].command, @"resetTime");
+    XCTAssertEqual(test.elseStatements.count, 1U, @"else if: an if alone in the else block");
+    XCTAssertEqualObjects(test.elseStatements[0].condition, @"\"gui::y\"");
+    XCTAssertEqualObjects(test.elseStatements[0].statements[0].arguments, (@[@"0"]));
+    XCTAssertEqualObjects(statements[3].command, @"endGame");
+    XCTAssertEqualObjects(statements[0].summary, @"set \"gui::clicked\" \"1\"");
+
+    // written back, it reads the same
+    NSString *written = [rvGEScript textFromStatements:statements];
+    XCTAssertTrue([written hasPrefix:@"{\n\tset \"gui::clicked\" \"1\" ;\n"], @"%@", written);
+    NSArray<rvGEScriptStatement *> *again = [rvGEScript statementsFromText:written message:NULL];
+    XCTAssertEqualObjects([rvGEScript textFromStatements:again], written);
+
+    XCTAssertNil([rvGEScript statementsFromText:@"{ frobnicate 1 ; }" message:&message]);
+    XCTAssertEqualObjects(message, @"Unknown script call frobnicate", @"idGuiScript::Parse's words");
+    XCTAssertEqualObjects([rvGEScript parameterNamesOf:@"transition"], (@[@"Variable", @"From", @"To", @"Time", @"Accel", @"Decel"]));
+    XCTAssertEqual([rvGEScriptStatement statementWithCommand:@"transition"].arguments.count, 4U, @"as many as it needs");
+    XCTAssertEqualObjects([rvGEScript keyOfEvent:@"onTime" parameter:@"500"], @"onTime 500");
+    XCTAssertEqualObjects([rvGEScript parameterOfKey:@"onNamedEvent NoIntro"], @"NoIntro");
+}
+
+- (void)testAScriptsEditIsOneUndo {
+    idWindow *button = [self window:@"Button"];
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:button];
+    NSString *action = [wrapper.scriptDict getString:@"onAction"];
+    NSMutableArray<rvGEScriptStatement *> *statements = [rvGEScript statementsFromText:action message:NULL];
+    XCTAssertEqual(statements.count, 1U);
+    rvGEScriptStatement *sound = [rvGEScriptStatement statementWithCommand:@"localSound"];
+    sound.arguments[0] = @"guisounds_click";
+    [statements addObject:sound];
+    idDict *scripts = [wrapper.scriptDict copy];
+    [scripts set:@"onAction" value:[rvGEScript textFromStatements:statements]];
+    [scripts set:@"onTime 100" value:@"{\n\tevalRegs ;\n}"];
+    XCTAssertTrue([self.workspace setScripts:scripts variables:[wrapper.variableDict copy] of:button named:@"Add Statement" message:NULL]);
+    XCTAssertEqualObjects(self.workspace.modifiers.undoModifier.name, @"Add Statement");
+    XCTAssertTrue([self.workspace.text containsString:@"localSound \"guisounds_click\""], @"%@", self.workspace.text);
+    XCTAssertTrue([self.workspace.text containsString:@"onTime 100"], @"%@", self.workspace.text);
+    [self.workspace.modifiers undo];
+    XCTAssertFalse([self.workspace.text containsString:@"guisounds_click"], @"undone");
+
+    NSString *message = nil;
+    [scripts set:@"onAction" value:@"{ set ; "];
+    XCTAssertFalse([self.workspace setScripts:scripts variables:[wrapper.variableDict copy] of:button named:@"Statement Change" message:&message]);
+    XCTAssertNotNil(message);
 }
 
 @end

@@ -2,7 +2,7 @@
 # The idScript grammar bundle on GNUstep: the principal class, the
 # generated parser, LanguageInfo.plist and the highlights query. Its
 # references to UDCodeKit are left for the app, which links it, to resolve
-# when it loads the bundle; Decl Browser copies it into its PlugIns.
+# when it loads the bundle; Quarry copies it into its PlugIns.
 #
 BUNDLE_NAME = TreeSitterIdScript
 BUNDLE_EXTENSION = .bundle

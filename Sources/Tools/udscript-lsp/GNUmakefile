@@ -6,20 +6,23 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDLIBS_DIR = ../../Libraries
+include $(UDLIBS_DIR)/Libraries.make
+
 udscript-lsp_OBJC_FILES = main.m UDScriptLanguageServer.m
 
-udscript-lsp_INCLUDE_DIRS = -I../../UDCore -I../../LSPServerKit
+udscript-lsp_INCLUDE_DIRS = $(UDLIBS_INCLUDE_DIRS) -I../../LSPServerKit
 
-# It ships in Decl Browser, beside its executable (Decl Browser's
+# It ships in Quarry, beside its executable (Quarry's
 # GNUmakefile copies it there), not on its own.
 STANDARD_INSTALL = no
 
-# UDCore's decl layer is Core Data, which on GNUstep is FreeCoreData; the
-# library does not pull it in by itself, so whatever links UDCore links it.
+# the libraries's decl layer is Core Data, which on GNUstep is FreeCoreData; the
+# library does not pull it in by itself, so whatever links the libraries links it.
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-# UDCore and LSPServerKit from the tree, built first (the root GNUmakefile).
-ADDITIONAL_LIB_DIRS += -L../../UDCore/$(GNUSTEP_OBJ_DIR_NAME) -L../../LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore -lLSPServerKit
+# the libraries and LSPServerKit from the tree, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) -L../../LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
+ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lLSPServerKit
 
 include $(GNUSTEP_MAKEFILES)/tool.make

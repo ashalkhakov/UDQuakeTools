@@ -9,7 +9,7 @@
 //  for AppImageUpdate, Gear Lever and the like (gnustep-release-actions' appimage).
 //
 //  UDUpdater-Apple.m is the macOS one (Xcode), UDUpdater.m the GNUstep one
-//  (GNUmakefile); every app — UDLauncher, DeclBrowser, PakManager — compiles
+//  (GNUmakefile); every app — UDLauncher, Quarry, PakManager — compiles
 //  them from here. Each app has its own appcast (appcast-<App>.xml).
 //
 

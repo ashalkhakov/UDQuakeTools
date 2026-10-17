@@ -10,7 +10,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import "../UDCore/UDGame.h"
+#import "UDGame.h"
 
 @class UDArchive;
 @class UDArchiveEditor;

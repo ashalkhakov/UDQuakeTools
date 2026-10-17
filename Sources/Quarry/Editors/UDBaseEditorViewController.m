@@ -1,0 +1,141 @@
+#import "UDBaseEditorViewController.h"
+#import "UDBaseDocument.h"
+#import "UDFileItem.h"
+#import "UDDeclItem.h"
+#import "UDTextEditorViewController.h"
+#import "UDGuiEditorViewController.h"
+#import "UDImageViewerViewController.h"
+#import "UDPDAEditorViewController.h"
+#import "UDTableEditorViewController.h"
+#import "UDSkinEditorViewController.h"
+#import "UDEntityDefEditorViewController.h"
+#import "UDSoundEditorViewController.h"
+#import "UDParticleEditorViewController.h"
+#import "UDFXEditorViewController.h"
+#import "UDAFEditorViewController.h"
+#import "UDMaterialEditorViewController.h"
+#ifdef GNUSTEP
+#import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
+#else
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
+
+@implementation UDBaseEditorViewController
+
+- (UDBaseDocument *)editorDocument {
+    // Subclasses each declare their own typed `document` property; pick it
+    // up generically via KVC so the base class needs no storage of its own.
+    if ([self respondsToSelector:NSSelectorFromString(@"document")]) {
+        id document = [self valueForKey:@"document"];
+        if ([document isKindOfClass:[UDBaseDocument class]]) {
+            return document;
+        }
+    }
+    return nil;
+}
+
++ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace {
+    
+    if (item.kind == UDWorkspaceItemKindGroup) {
+        return nil;
+    }
+
+    if (item.kind == UDWorkspaceItemKindFile) {
+        UDFileItem *fileItem = (UDFileItem *)item;
+        NSString *uti = fileItem.fileUTI ?: @"";
+        
+        // Image types
+        if (@available(macOS 11.0, *)) {
+            UTType *fileType = [UTType typeWithIdentifier:uti];
+            if ([fileType conformsToType:UTTypeImage]) {
+                UDImageViewerViewController *vc = [[UDImageViewerViewController alloc] init];
+                vc.item = item;
+                vc.workspace = workspace;
+                return vc;
+            }
+        } else {
+            if (UTTypeConformsTo((__bridge CFStringRef)uti, kUTTypeImage)) {
+                UDImageViewerViewController *vc = [[UDImageViewerViewController alloc] init];
+                vc.item = item;
+                vc.workspace = workspace;
+                return vc;
+            }
+        }
+        
+        // A GUI, running
+        if ([fileItem.path.pathExtension caseInsensitiveCompare:@"gui"] == NSOrderedSame) {
+            UDGuiEditorViewController *vc = [[UDGuiEditorViewController alloc] init];
+            vc.item = item;
+            vc.workspace = workspace;
+            return vc;
+        }
+
+        // Default: text editor
+        UDTextEditorViewController *vc = [[UDTextEditorViewController alloc] init];
+        vc.item = item;
+        vc.workspace = workspace;
+        return vc;
+    }
+    
+    if (item.kind == UDWorkspaceItemKindDecl) {
+        UDDeclItem *declItem = (UDDeclItem *)item;
+        
+        // The structured editors; the rest, as text.
+        Class editorClass = declItem.type == DECL_PDA ? [UDPDAEditorViewController class]
+                          : declItem.type == DECL_TABLE ? [UDTableEditorViewController class]
+                          : declItem.type == DECL_SKIN ? [UDSkinEditorViewController class]
+                          : declItem.type == DECL_ENTITYDEF || declItem.type == DECL_MAPDEF ? [UDEntityDefEditorViewController class]
+                          : declItem.type == DECL_SOUND ? [UDSoundEditorViewController class]
+                          : declItem.type == DECL_PARTICLE ? [UDParticleEditorViewController class]
+                          : declItem.type == DECL_FX ? [UDFXEditorViewController class]
+                          : declItem.type == DECL_AF ? [UDAFEditorViewController class]
+                          : declItem.type == DECL_MATERIAL ? [UDMaterialEditorViewController class] : Nil;
+        if (editorClass != Nil) {
+            UDBaseEditorViewController *vc = [[editorClass alloc] init];
+            vc.item = item;
+            vc.workspace = workspace;
+            return vc;
+        } else {
+            // Default: text editor
+            UDTextEditorViewController *vc = [[UDTextEditorViewController alloc] init];
+            vc.item = item;
+            vc.workspace = workspace;
+            return vc;
+        }
+    }
+    
+    return nil;
+}
+
+@end
+
+@implementation NSView (UDGNUstepLayoutFixes)
+
+- (void)ud_disableScrollerAutohideRecursively {
+#if !defined(__APPLE__)
+    if ([self isKindOfClass:[NSScrollView class]]) {
+        [(NSScrollView *)self setAutohidesScrollers:NO];
+    }
+    for (NSView *subview in self.subviews) {
+        [subview ud_disableScrollerAutohideRecursively];
+    }
+#endif
+}
+
+@end
+
+@implementation UDEditorPane
+
++ (instancetype)paneWithTitle:(NSString *)title letters:(NSString *)letters
+                          red:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue view:(NSView *)view {
+    UDEditorPane *pane = [[self alloc] init];
+    pane->_title = [title copy];
+    pane->_letters = [letters copy];
+    pane->_red = red;
+    pane->_green = green;
+    pane->_blue = blue;
+    pane->_view = view;
+    return pane;
+}
+
+@end

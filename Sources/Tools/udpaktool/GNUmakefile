@@ -6,18 +6,20 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+UDLIBS_DIR = ../../Libraries
+include $(UDLIBS_DIR)/Libraries.make
+
 udpaktool_OBJC_FILES = main.m
 
 udpaktool_INCLUDE_DIRS = \
-    -I../../UDCore \
-    -I../../UDFormats
+    $(UDLIBS_INCLUDE_DIRS)
 
-# UDCore's decl layer is Core Data, which on GNUstep is FreeCoreData; the
-# library does not pull it in by itself, so whatever links UDCore links it.
+# the libraries's decl layer is Core Data, which on GNUstep is FreeCoreData; the
+# library does not pull it in by itself, so whatever links the libraries links it.
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-# UDCore from the tree, built first (the root GNUmakefile).
-ADDITIONAL_LIB_DIRS += -L../../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore
+# the libraries from the tree, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
+ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS)
 
 include $(GNUSTEP_MAKEFILES)/tool.make

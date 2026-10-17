@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDFXEditorViewController">
+            <connections>
+                <outlet property="view" destination="FXE-root" id="UDF-o-view"/>
+                <outlet property="objectController" destination="FXE-oc" id="UDF-o-objectController"/>
+                <outlet property="actionsController" destination="FXE-aac" id="UDF-o-actionsController"/>
+                <outlet property="actionsTable" destination="FXE-actions" id="UDF-o-actionsTable"/>
+                <outlet property="previewView" destination="FXE-preview" id="UDF-o-previewView"/>
+                <outlet property="timelineView" destination="FXE-timeline" id="UDF-o-timelineView"/>
+                <outlet property="transportView" destination="FXE-transport" id="UDF-o-transportView"/>
+                <outlet property="inspectorView" destination="FXE-inspector" id="UDF-o-inspectorView"/>
+                <outlet property="inspectorTabs" destination="FXE-itabs" id="UDF-o-inspectorTabs"/>
+                <outlet property="effectScroll" destination="FXE-escroll" id="UDF-o-effectScroll"/>
+                <outlet property="actionScroll" destination="FXE-ascroll" id="UDF-o-actionScroll"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <objectController objectClassName="UDDeclFX" id="FXE-oc" userLabel="Object Controller">
+            <classReference key="objectClass" className="UDDeclFX"/>
+        </objectController>
+        <arrayController avoidsEmptySelection="NO" objectClassName="UDFXAction" id="FXE-aac" userLabel="UDFXAction Array Controller">
+            <classReference key="objectClass" className="UDFXAction"/>
+            <connections>
+                <binding destination="FXE-oc" name="contentArray" keyPath="selection.actions" id="FXE-aac-b"/>
+            </connections>
+        </arrayController>
+        <customView id="FXE-root">
+            <rect key="frame" x="0.0" y="0.0" width="900" height="680"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <imageView toolTip="fx preview" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-preview">
+                    <rect key="frame" x="20" y="340" width="320" height="320"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="FXE-preview-c"/>
+                </imageView>
+                <customView toolTip="time controls" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-transport">
+                    <rect key="frame" x="20" y="280" width="320" height="56"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
+                <customView toolTip="fx timeline" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-timeline" customClass="UDFXTimelineView">
+                    <rect key="frame" x="360" y="280" width="520" height="380"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                </customView>
+                <scrollView fixedFrame="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-actions-s">
+                    <rect key="frame" x="20" y="37" width="860" height="237"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" id="FXE-actions-cv">
+                        <rect key="frame" x="1" y="1" width="858" height="235"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="22" headerView="FXE-actions-h" id="FXE-actions">
+                                <rect key="frame" x="0.0" y="0.0" width="858" height="207"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <size key="intercellSpacing" width="17" height="0.0"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                        <tableColumn identifier="name" editable="NO" width="160" minWidth="30" maxWidth="1000" id="FXE-actions-name">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="FXE-actions-name-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="FXE-aac" name="value" keyPath="arrangedObjects.name" id="FXE-actions-name-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                        <tableColumn identifier="kind" editable="NO" width="110" minWidth="30" maxWidth="1000" id="FXE-actions-kind">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Kind">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="FXE-actions-kind-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="FXE-aac" name="value" keyPath="arrangedObjects.kind" id="FXE-actions-kind-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                        <tableColumn identifier="data" editable="NO" width="269" minWidth="30" maxWidth="1000" id="FXE-actions-data">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Uses">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="FXE-actions-data-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="FXE-aac" name="value" keyPath="arrangedObjects.data" id="FXE-actions-data-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <outlet property="dataSource" destination="-2" id="FXE-actions-ds"/>
+                                    <binding destination="FXE-aac" name="content" keyPath="arrangedObjects" id="FXE-actions-bc"/>
+                                    <binding destination="FXE-aac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="FXE-actions-bc" id="FXE-actions-bs"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-actions-hs">
+                        <rect key="frame" x="1" y="221" width="858" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-actions-vs">
+                        <rect key="frame" x="844" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <tableHeaderView key="headerView" wantsLayer="YES" id="FXE-actions-h">
+                        <rect key="frame" x="0.0" y="0.0" width="858" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tableHeaderView>
+                </scrollView>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-actions-pm">
+                    <rect key="frame" x="20" y="12" width="69" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="selectOne" id="FXE-actions-pm-c">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment label="+" width="32"/>
+                            <segment label="-" width="32" tag="1"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="addOrRemoveAction:" target="-2" id="FXE-actions-pm-a"/>
+                    </connections>
+                </segmentedControl>
+            </subviews>
+        </customView>
+        <customView id="FXE-inspector" userLabel="Inspector">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tabView type="noTabsNoBorder" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-itabs">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <font key="font" metaFont="system"/>
+                    <tabViewItems>
+                        <tabViewItem label="FX" identifier="fx" id="FXE-ie">
+                            <view key="view" id="FXE-ie-v">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-escroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="FXE-escroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="FXE-escroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="81"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h4">
+                                                <rect key="frame" x="8" y="51" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="FX" id="FXE-h4-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l6">
+                                                <rect key="frame" x="4" y="28" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bind To:" id="FXE-l6-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="bindTo: the joint of the entity the whole effect is bound to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f5">
+                                                <rect key="frame" x="96" y="25" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f5-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-oc" name="value" keyPath="selection.bindTo" id="FXE-f5-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-escroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-escroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Action" identifier="action" id="FXE-ia">
+                            <view key="view" id="FXE-ia-v">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-ascroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="FXE-ascroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="FXE-ascroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="737"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h58">
+                                                <rect key="frame" x="8" y="707" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Action" id="FXE-h58-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l60">
+                                                <rect key="frame" x="4" y="684" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Name:" id="FXE-l60-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="name: what later actions call this one (their uselight, usemodel, attachlight, fire)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f59">
+                                                <rect key="frame" x="96" y="681" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f59-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.name" id="FXE-f59-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l62">
+                                                <rect key="frame" x="4" y="659" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Kind:" id="FXE-l62-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="What the action does: light, uselight (change an earlier light), attachlight, model, usemodel, particle, decal, sound, shake, attachentity, launch (a projectile), shockwave." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-p61">
+                                                <rect key="frame" x="96" y="653" width="160" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="light" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FXE-p61-i0" id="FXE-p61-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="FXE-p61-m">
+                                                        <items>
+                                                            <menuItem title="light" state="on" id="FXE-p61-i0"/>
+                                                            <menuItem title="uselight" id="FXE-p61-i1"/>
+                                                            <menuItem title="attachlight" id="FXE-p61-i2"/>
+                                                            <menuItem title="model" id="FXE-p61-i3"/>
+                                                            <menuItem title="usemodel" id="FXE-p61-i4"/>
+                                                            <menuItem title="particle" id="FXE-p61-i5"/>
+                                                            <menuItem title="decal" id="FXE-p61-i6"/>
+                                                            <menuItem title="sound" id="FXE-p61-i7"/>
+                                                            <menuItem title="shake" id="FXE-p61-i8"/>
+                                                            <menuItem title="attachentity" id="FXE-p61-i9"/>
+                                                            <menuItem title="launch" id="FXE-p61-i10"/>
+                                                            <menuItem title="shockwave" id="FXE-p61-i11"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="selectedValue" keyPath="selection.kind" id="FXE-p61-b"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l64">
+                                                <rect key="frame" x="4" y="632" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Uses:" id="FXE-l64-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="What it uses: the light's material, the model, the particle, the decal's material, the sound shader, the entityDef or projectile; or, for the use kinds, an earlier action's name." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f63">
+                                                <rect key="frame" x="96" y="629" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f63-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.data" id="FXE-f63-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose what the action uses" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f63-pick">
+                                                <rect key="frame" x="232" y="628" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-f63-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="FXE-f63-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l66">
+                                                <rect key="frame" x="4" y="607" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fire:" id="FXE-l66-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fire: the action starts when the named one does." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f65">
+                                                <rect key="frame" x="96" y="604" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f65-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.fire" id="FXE-f65-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose the action that starts it" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f65-pick">
+                                                <rect key="frame" x="232" y="603" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-f65-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="FXE-f65-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l68">
+                                                <rect key="frame" x="4" y="573" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Delay:" id="FXE-l68-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="delay: seconds after the effect starts before the action does." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f67">
+                                                <rect key="frame" x="96" y="570" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f67-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.delay" id="FXE-f67-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l70">
+                                                <rect key="frame" x="4" y="548" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Duration:" id="FXE-l70-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="duration: seconds the action lasts." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f69">
+                                                <rect key="frame" x="96" y="545" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f69-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.duration" id="FXE-f69-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l72">
+                                                <rect key="frame" x="4" y="523" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Restart:" id="FXE-l72-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="restart: seconds after it ends before it starts again; 0 runs it once." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f71">
+                                                <rect key="frame" x="96" y="520" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f71-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.restart" id="FXE-f71-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l75">
+                                                <rect key="frame" x="4" y="498" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Random:" id="FXE-l75-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="random a, b: the delay is a random time between these two, in place of delay." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f73">
+                                                <rect key="frame" x="96" y="495" width="78" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f73-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.random1" id="FXE-f73-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField toolTip="random a, b: the delay is a random time between these two, in place of delay." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f74">
+                                                <rect key="frame" x="178" y="495" width="78" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f74-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.random2" id="FXE-f74-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l77">
+                                                <rect key="frame" x="4" y="473" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade In:" id="FXE-l77-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeIn: seconds the action takes to fade in." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f76">
+                                                <rect key="frame" x="96" y="470" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f76-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.fadeIn" id="FXE-f76-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l79">
+                                                <rect key="frame" x="4" y="448" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade Out:" id="FXE-l79-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeOut: seconds, at its end, the action takes to fade out." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f78">
+                                                <rect key="frame" x="96" y="445" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f78-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.fadeOut" id="FXE-f78-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l81">
+                                                <rect key="frame" x="4" y="423" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Size:" id="FXE-l81-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="size: the decal's or model's size." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f80">
+                                                <rect key="frame" x="96" y="420" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f80-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.size" id="FXE-f80-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l83">
+                                                <rect key="frame" x="4" y="398" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Rotate:" id="FXE-l83-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="rotate: the decal's or model's turn, in degrees." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f82">
+                                                <rect key="frame" x="96" y="395" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f82-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.rotate" id="FXE-f82-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l85">
+                                                <rect key="frame" x="4" y="364" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Offset:" id="FXE-l85-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="offset x y z: where the action is, from the effect's origin (its joint)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f84">
+                                                <rect key="frame" x="96" y="361" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f84-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.offset" id="FXE-f84-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l87">
+                                                <rect key="frame" x="4" y="339" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Axis:" id="FXE-l87-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="axis x y z: the direction the action faces." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f86">
+                                                <rect key="frame" x="96" y="336" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f86-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.axis" id="FXE-f86-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l89">
+                                                <rect key="frame" x="4" y="314" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angle:" id="FXE-l89-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="angle pitch yaw roll: the direction the action faces, as angles." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f88">
+                                                <rect key="frame" x="96" y="311" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f88-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.angle" id="FXE-f88-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h90">
+                                                <rect key="frame" x="8" y="277" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Light" id="FXE-h90-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l92">
+                                                <rect key="frame" x="4" y="256" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Color:" id="FXE-l92-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="light material, r, g, b, radius: the light's color." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f91">
+                                                <rect key="frame" x="96" y="253" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f91-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.lightColor" id="FXE-f91-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l94">
+                                                <rect key="frame" x="4" y="231" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Radius:" id="FXE-l94-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="The light's radius, in units." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f93">
+                                                <rect key="frame" x="96" y="228" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f93-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.lightRadius" id="FXE-f93-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h95">
+                                                <rect key="frame" x="8" y="194" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Shake" id="FXE-h95-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l97">
+                                                <rect key="frame" x="4" y="173" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Time:" id="FXE-l97-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="shake: seconds the view shakes." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f96">
+                                                <rect key="frame" x="96" y="170" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f96-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.shakeTime" id="FXE-f96-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l99">
+                                                <rect key="frame" x="4" y="148" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Amplitude:" id="FXE-l99-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="shake: how hard the view shakes." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f98">
+                                                <rect key="frame" x="96" y="145" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f98-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.shakeAmplitude" id="FXE-f98-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l101">
+                                                <rect key="frame" x="4" y="123" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Distance:" id="FXE-l101-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="shake: how far from the effect a player is shaken." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f100">
+                                                <rect key="frame" x="96" y="120" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f100-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.shakeDistance" id="FXE-f100-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l103">
+                                                <rect key="frame" x="4" y="98" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Impulse:" id="FXE-l103-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="shake: the push given to objects in reach." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f102">
+                                                <rect key="frame" x="96" y="95" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f102-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.shakeImpulse" id="FXE-f102-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="shakeFalloff: the shake weakens with distance." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c104">
+                                                <rect key="frame" x="10" y="70" width="124" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Falloff" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c104-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.shakeFalloff" id="FXE-c104-b"/>
+                                                </connections>
+                                            </button>
+                                            <button toolTip="ignoreMaster: the action is not bound to the effect's owner." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c105">
+                                                <rect key="frame" x="138" y="70" width="124" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Ignore master" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c105-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.ignoreMaster" id="FXE-c105-b"/>
+                                                </connections>
+                                            </button>
+                                            <button toolTip="noshadows: the light casts no shadows." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c106">
+                                                <rect key="frame" x="10" y="40" width="124" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="No shadows" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c106-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.noshadows" id="FXE-c106-b"/>
+                                                </connections>
+                                            </button>
+                                            <button toolTip="trackOrigin: the action follows the effect's origin as it moves." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c107">
+                                                <rect key="frame" x="138" y="40" width="124" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Track origin" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c107-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.trackOrigin" id="FXE-c107-b"/>
+                                                </connections>
+                                            </button>
+                                            <button toolTip="particleTrackVelocity: the particles move with the effect." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-c108">
+                                                <rect key="frame" x="10" y="20" width="250" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Particle tracks velocity" bezelStyle="regularSquare" imagePosition="left" inset="2" id="FXE-c108-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="FXE-aac" name="value" keyPath="selection.particleTrackVelocity" id="FXE-c108-b"/>
+                                                </connections>
+                                            </button>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h90-sep">
+                                                <rect key="frame" x="8" y="299" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h95-sep">
+                                                <rect key="frame" x="8" y="216" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-ascroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-ascroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                    </tabViewItems>
+                </tabView>
+            </subviews>
+        </customView>
+    </objects>
+</document>

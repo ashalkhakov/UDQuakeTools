@@ -1,0 +1,1549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="UDParticleEditorViewController">
+            <connections>
+                <outlet property="view" destination="PTE-root" id="UDP-o-view"/>
+                <outlet property="objectController" destination="PTE-oc" id="UDP-o-objectController"/>
+                <outlet property="stagesController" destination="PTE-sac" id="UDP-o-stagesController"/>
+                <outlet property="stagesTable" destination="PTE-stages" id="UDP-o-stagesTable"/>
+                <outlet property="previewView" destination="PTE-preview" id="UDP-o-previewView"/>
+                <outlet property="transportView" destination="PTE-transport" id="UDP-o-transportView"/>
+                <outlet property="inspectorView" destination="PTE-inspector" id="UDP-o-inspectorView"/>
+                <outlet property="inspectorTabs" destination="PTE-itabs" id="UDP-o-inspectorTabs"/>
+                <outlet property="particleScroll" destination="PTE-pscroll" id="UDP-o-particleScroll"/>
+                <outlet property="stageScroll" destination="PTE-sscroll" id="UDP-o-stageScroll"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <objectController objectClassName="UDDeclParticle" id="PTE-oc" userLabel="Object Controller">
+            <classReference key="objectClass" className="UDDeclParticle"/>
+        </objectController>
+        <arrayController avoidsEmptySelection="NO" objectClassName="UDParticleStage" id="PTE-sac" userLabel="UDParticleStage Array Controller">
+            <classReference key="objectClass" className="UDParticleStage"/>
+            <connections>
+                <binding destination="PTE-oc" name="contentArray" keyPath="selection.stages" id="PTE-sac-b"/>
+            </connections>
+        </arrayController>
+        <customView id="PTE-root">
+            <rect key="frame" x="0.0" y="0.0" width="900" height="640"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <imageView toolTip="particle preview" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-preview">
+                    <rect key="frame" x="20" y="300" width="320" height="320"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="PTE-preview-c"/>
+                </imageView>
+                <customView toolTip="time controls" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-transport">
+                    <rect key="frame" x="20" y="240" width="320" height="56"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
+                <scrollView fixedFrame="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-stages-s">
+                    <rect key="frame" x="20" y="37" width="860" height="197"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" id="PTE-stages-cv">
+                        <rect key="frame" x="1" y="1" width="858" height="195"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="22" headerView="PTE-stages-h" id="PTE-stages">
+                                <rect key="frame" x="0.0" y="0.0" width="858" height="167"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <size key="intercellSpacing" width="17" height="0.0"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                        <tableColumn identifier="stage" editable="NO" width="80" minWidth="30" maxWidth="1000" id="PTE-stages-stage">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Stage">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="PTE-stages-stage-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                        </tableColumn>
+                                        <tableColumn identifier="material" editable="NO" width="412" minWidth="30" maxWidth="1000" id="PTE-stages-material">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Material">
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="PTE-stages-material-c">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="PTE-sac" name="value" keyPath="arrangedObjects.material" id="PTE-stages-material-b">
+                                                    <dictionary key="options">
+                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <outlet property="dataSource" destination="-2" id="PTE-stages-ds"/>
+                                    <binding destination="PTE-sac" name="content" keyPath="arrangedObjects" id="PTE-stages-bc"/>
+                                    <binding destination="PTE-sac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="PTE-stages-bc" id="PTE-stages-bs"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PTE-stages-hs">
+                        <rect key="frame" x="1" y="181" width="858" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PTE-stages-vs">
+                        <rect key="frame" x="844" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <tableHeaderView key="headerView" wantsLayer="YES" id="PTE-stages-h">
+                        <rect key="frame" x="0.0" y="0.0" width="858" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tableHeaderView>
+                </scrollView>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-stages-pm">
+                    <rect key="frame" x="20" y="12" width="69" height="23"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="selectOne" id="PTE-stages-pm-c">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment label="+" width="32"/>
+                            <segment label="-" width="32" tag="1"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="addOrRemoveStage:" target="-2" id="PTE-stages-pm-a"/>
+                    </connections>
+                </segmentedControl>
+            </subviews>
+        </customView>
+        <customView id="PTE-inspector" userLabel="Inspector">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tabView type="noTabsNoBorder" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-itabs">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <font key="font" metaFont="system"/>
+                    <tabViewItems>
+                        <tabViewItem label="Particle" identifier="particle" id="PTE-ip">
+                            <view key="view" id="PTE-ip-v">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-pscroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="PTE-pscroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="PTE-pscroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="600"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h7">
+                                                <rect key="frame" x="8" y="570" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Particle" id="PTE-h7-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l9">
+                                                <rect key="frame" x="4" y="547" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Depth Hack:" id="PTE-l9-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f8">
+                                                <rect key="frame" x="96" y="544" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f8-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-oc" name="value" keyPath="selection.depthHack" id="PTE-f8-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PTE-pscroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PTE-pscroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Stage" identifier="stage" id="PTE-is">
+                            <view key="view" id="PTE-is-v">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-sscroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="PTE-sscroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="PTE-sscroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="1391"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h115">
+                                                <rect key="frame" x="8" y="1361" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Particle" id="PTE-h115-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l117">
+                                                <rect key="frame" x="4" y="1338" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Depth Hack:" id="PTE-l117-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f116">
+                                                <rect key="frame" x="96" y="1335" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f116-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-oc" name="value" keyPath="selection.depthHack" id="PTE-f116-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h118">
+                                                <rect key="frame" x="8" y="1301" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Stage" id="PTE-h118-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l120">
+                                                <rect key="frame" x="4" y="1278" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Material:" id="PTE-l120-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="material: what each particle is drawn with." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119">
+                                                <rect key="frame" x="96" y="1275" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f119-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.material" id="PTE-f119-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose a material or an image" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119-pick">
+                                                <rect key="frame" x="232" y="1274" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f119-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f119-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l122">
+                                                <rect key="frame" x="4" y="1253" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Count:" id="PTE-l122-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="count: how many particles one cycle of the stage spawns." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f121">
+                                                <rect key="frame" x="96" y="1250" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f121-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.totalParticles" id="PTE-f121-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="count: how many particles one cycle of the stage spawns." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s123">
+                                                <rect key="frame" x="162" y="1250" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="4096" tickMarkPosition="above" sliderType="linear" id="PTE-s123-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.totalParticles" id="PTE-s123-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l125">
+                                                <rect key="frame" x="4" y="1228" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Time:" id="PTE-l125-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="time: how many seconds each particle lives." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f124">
+                                                <rect key="frame" x="96" y="1225" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f124-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.particleLife" id="PTE-f124-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="time: how many seconds each particle lives." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s126">
+                                                <rect key="frame" x="162" y="1225" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="10" tickMarkPosition="above" sliderType="linear" id="PTE-s126-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.particleLife" id="PTE-s126-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l128">
+                                                <rect key="frame" x="4" y="1203" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Cycles:" id="PTE-l128-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="cycles: how many times the stage runs its cycle before it stops; 0 runs it for ever." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f127">
+                                                <rect key="frame" x="96" y="1200" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f127-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.cycles" id="PTE-f127-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l130">
+                                                <rect key="frame" x="4" y="1178" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bunching:" id="PTE-l130-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="bunching: how the particles come out over a cycle: 1 evenly over its time, 0 all at its first instant." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f129">
+                                                <rect key="frame" x="96" y="1175" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f129-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.spawnBunching" id="PTE-f129-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="bunching: how the particles come out over a cycle: 1 evenly over its time, 0 all at its first instant." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s131">
+                                                <rect key="frame" x="162" y="1175" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s131-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.spawnBunching" id="PTE-s131-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l133">
+                                                <rect key="frame" x="4" y="1153" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Time Offset:" id="PTE-l133-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="timeOffset: seconds the stage waits before it starts." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f132">
+                                                <rect key="frame" x="96" y="1150" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f132-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.timeOffset" id="PTE-f132-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l135">
+                                                <rect key="frame" x="4" y="1128" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Dead Time:" id="PTE-l135-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="deadTime: seconds after each cycle before the next one starts." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f134">
+                                                <rect key="frame" x="96" y="1125" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f134-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.deadTime" id="PTE-f134-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h136">
+                                                <rect key="frame" x="8" y="1091" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Emission" id="PTE-h136-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l138">
+                                                <rect key="frame" x="4" y="1068" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Distribution:" id="PTE-l138-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="distribution: where particles start: rect (a box), cylinder, sphere." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p137">
+                                                <rect key="frame" x="96" y="1062" width="160" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="rect" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p137-i0" id="PTE-p137-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="PTE-p137-m">
+                                                        <items>
+                                                            <menuItem title="rect" state="on" id="PTE-p137-i0"/>
+                                                            <menuItem title="cylinder" id="PTE-p137-i1"/>
+                                                            <menuItem title="sphere" id="PTE-p137-i2"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="selectedIndex" keyPath="selection.distributionType" id="PTE-p137-b"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l140">
+                                                <rect key="frame" x="4" y="1041" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="" id="PTE-l140-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="The shape's size: x y z, and for a cylinder or a sphere a ring fraction (0 fills it; near 1, only its shell)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f139">
+                                                <rect key="frame" x="96" y="1038" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f139-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.distributionParms" id="PTE-f139-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="randomDistribution: particles start at random points of the shape; off, spread over it in order." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c141">
+                                                <rect key="frame" x="94" y="1013" width="160" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Random distribution" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c141-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.randomDistribution" id="PTE-c141-b"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l143">
+                                                <rect key="frame" x="4" y="992" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Direction:" id="PTE-l143-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="direction: where particles head: cone (within an angle of up), outward (away from the shape's center)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p142">
+                                                <rect key="frame" x="96" y="986" width="160" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="cone" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p142-i0" id="PTE-p142-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="PTE-p142-m">
+                                                        <items>
+                                                            <menuItem title="cone" state="on" id="PTE-p142-i0"/>
+                                                            <menuItem title="outward" id="PTE-p142-i1"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="selectedIndex" keyPath="selection.directionType" id="PTE-p142-b"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l145">
+                                                <rect key="frame" x="4" y="965" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="" id="PTE-l145-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="The cone's angle in degrees, or outward's upward bias." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f144">
+                                                <rect key="frame" x="96" y="962" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f144-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.directionParms" id="PTE-f144-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l147">
+                                                <rect key="frame" x="4" y="940" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Orientation:" id="PTE-l147-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="orientation: how a particle faces: view (the viewer), aimed (along its path, as a trail), x, y, z (flat across that axis)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p146">
+                                                <rect key="frame" x="96" y="934" width="160" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="view" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p146-i0" id="PTE-p146-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="PTE-p146-m">
+                                                        <items>
+                                                            <menuItem title="view" state="on" id="PTE-p146-i0"/>
+                                                            <menuItem title="aimed" id="PTE-p146-i1"/>
+                                                            <menuItem title="x" id="PTE-p146-i2"/>
+                                                            <menuItem title="y" id="PTE-p146-i3"/>
+                                                            <menuItem title="z" id="PTE-p146-i4"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="selectedIndex" keyPath="selection.orientation" id="PTE-p146-b"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l149">
+                                                <rect key="frame" x="4" y="913" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="" id="PTE-l149-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="For aimed: the number of trail segments and the time they cover." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f148">
+                                                <rect key="frame" x="96" y="910" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f148-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.orientationParms" id="PTE-f148-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l151">
+                                                <rect key="frame" x="4" y="888" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Custom Path:" id="PTE-l151-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="customPath: a path in place of speed and gravity: standard (none), helix, flies, orbit, drip." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-p150">
+                                                <rect key="frame" x="96" y="882" width="160" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="standard" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="PTE-p150-i0" id="PTE-p150-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="message"/>
+                                                    <menu key="menu" id="PTE-p150-m">
+                                                        <items>
+                                                            <menuItem title="standard" state="on" id="PTE-p150-i0"/>
+                                                            <menuItem title="helix" id="PTE-p150-i1"/>
+                                                            <menuItem title="flies" id="PTE-p150-i2"/>
+                                                            <menuItem title="orbit" id="PTE-p150-i3"/>
+                                                            <menuItem title="drip" id="PTE-p150-i4"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="selectedIndex" keyPath="selection.customPathType" id="PTE-p150-b"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l153">
+                                                <rect key="frame" x="4" y="861" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="" id="PTE-l153-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="The path's numbers: helix sizeX sizeY sizeZ radialSpeed climbSpeed; flies radialSpeed axialSpeed size; orbit radius speed." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f152">
+                                                <rect key="frame" x="96" y="858" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f152-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.customPathParms" id="PTE-f152-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h154">
+                                                <rect key="frame" x="8" y="824" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Speed" id="PTE-h154-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l156">
+                                                <rect key="frame" x="4" y="801" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="From:" id="PTE-l156-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Speed at the particle's birth (units a second); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f155">
+                                                <rect key="frame" x="96" y="798" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f155-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.speedFrom" id="PTE-f155-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Speed at the particle's birth (units a second); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s157">
+                                                <rect key="frame" x="162" y="798" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s157-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.speedFrom" id="PTE-s157-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l159">
+                                                <rect key="frame" x="4" y="776" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="To:" id="PTE-l159-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Speed at the particle's death (units a second)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f158">
+                                                <rect key="frame" x="96" y="773" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f158-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.speedTo" id="PTE-f158-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Speed at the particle's death (units a second)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s160">
+                                                <rect key="frame" x="162" y="773" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s160-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.speedTo" id="PTE-s160-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l162">
+                                                <rect key="frame" x="4" y="751" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Table:" id="PTE-l162-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="A table decl speed is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161">
+                                                <rect key="frame" x="96" y="748" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f161-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.speedTable" id="PTE-f161-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161-pick">
+                                                <rect key="frame" x="232" y="747" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f161-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f161-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h163">
+                                                <rect key="frame" x="8" y="714" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Rotation" id="PTE-h163-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l165">
+                                                <rect key="frame" x="4" y="691" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="From:" id="PTE-l165-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="How fast it turns at the particle's birth (degrees a second; half the particles turn the other way); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f164">
+                                                <rect key="frame" x="96" y="688" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f164-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.rotationFrom" id="PTE-f164-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="How fast it turns at the particle's birth (degrees a second; half the particles turn the other way); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s166">
+                                                <rect key="frame" x="162" y="688" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="100" tickMarkPosition="above" sliderType="linear" id="PTE-s166-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.rotationFrom" id="PTE-s166-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l168">
+                                                <rect key="frame" x="4" y="666" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="To:" id="PTE-l168-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="How fast it turns at the particle's death (degrees a second; half the particles turn the other way)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f167">
+                                                <rect key="frame" x="96" y="663" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f167-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.rotationTo" id="PTE-f167-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="How fast it turns at the particle's death (degrees a second; half the particles turn the other way)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s169">
+                                                <rect key="frame" x="162" y="663" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="100" tickMarkPosition="above" sliderType="linear" id="PTE-s169-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.rotationTo" id="PTE-s169-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l171">
+                                                <rect key="frame" x="4" y="641" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Table:" id="PTE-l171-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="A table decl how fast it turns is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170">
+                                                <rect key="frame" x="96" y="638" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f170-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.rotationTable" id="PTE-f170-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170-pick">
+                                                <rect key="frame" x="232" y="637" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f170-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f170-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h172">
+                                                <rect key="frame" x="8" y="604" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Size" id="PTE-h172-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l174">
+                                                <rect key="frame" x="4" y="581" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="From:" id="PTE-l174-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Size at the particle's birth (units); it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f173">
+                                                <rect key="frame" x="96" y="578" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f173-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.sizeFrom" id="PTE-f173-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Size at the particle's birth (units); it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s175">
+                                                <rect key="frame" x="162" y="578" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s175-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.sizeFrom" id="PTE-s175-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l177">
+                                                <rect key="frame" x="4" y="556" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="To:" id="PTE-l177-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Size at the particle's death (units)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f176">
+                                                <rect key="frame" x="96" y="553" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f176-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.sizeTo" id="PTE-f176-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Size at the particle's death (units)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s178">
+                                                <rect key="frame" x="162" y="553" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s178-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.sizeTo" id="PTE-s178-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l180">
+                                                <rect key="frame" x="4" y="531" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Table:" id="PTE-l180-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="A table decl size is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179">
+                                                <rect key="frame" x="96" y="528" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f179-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.sizeTable" id="PTE-f179-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179-pick">
+                                                <rect key="frame" x="232" y="527" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f179-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f179-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h181">
+                                                <rect key="frame" x="8" y="494" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Aspect" id="PTE-h181-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l183">
+                                                <rect key="frame" x="4" y="471" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="From:" id="PTE-l183-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Width over height at the particle's birth; it goes linearly to the &quot;to&quot; value by its death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f182">
+                                                <rect key="frame" x="96" y="468" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f182-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.aspectFrom" id="PTE-f182-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Width over height at the particle's birth; it goes linearly to the &quot;to&quot; value by its death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s184">
+                                                <rect key="frame" x="162" y="468" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s184-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.aspectFrom" id="PTE-s184-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l186">
+                                                <rect key="frame" x="4" y="446" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="To:" id="PTE-l186-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="Width over height at the particle's death." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f185">
+                                                <rect key="frame" x="96" y="443" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f185-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.aspectTo" id="PTE-f185-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="Width over height at the particle's death." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s187">
+                                                <rect key="frame" x="162" y="443" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="128" tickMarkPosition="above" sliderType="linear" id="PTE-s187-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.aspectTo" id="PTE-s187-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l189">
+                                                <rect key="frame" x="4" y="421" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Table:" id="PTE-l189-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="A table decl width over height is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188">
+                                                <rect key="frame" x="96" y="418" width="134" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f188-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.aspectTable" id="PTE-f188-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188-pick">
+                                                <rect key="frame" x="232" y="417" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f188-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f188-pick-a"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h190">
+                                                <rect key="frame" x="8" y="384" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Motion" id="PTE-h190-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l192">
+                                                <rect key="frame" x="4" y="361" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Gravity:" id="PTE-l192-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="gravity: units per second each second pulling the particles down the emitter's axis (negative pushes them up)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f191">
+                                                <rect key="frame" x="96" y="358" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f191-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.gravity" id="PTE-f191-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="gravity: units per second each second pulling the particles down the emitter's axis (negative pushes them up)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s193">
+                                                <rect key="frame" x="162" y="358" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-300" maxValue="300" tickMarkPosition="above" sliderType="linear" id="PTE-s193-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.gravity" id="PTE-s193-b"/>
+                                                </connections>
+                                            </slider>
+                                            <button toolTip="world: gravity pulls down the world's axis, not the emitter's." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c194">
+                                                <rect key="frame" x="94" y="333" width="160" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="World gravity" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c194-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.worldGravity" id="PTE-c194-b"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l196">
+                                                <rect key="frame" x="4" y="312" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Angle:" id="PTE-l196-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="angle: each particle's starting turn in degrees; 0 gives each a random one." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f195">
+                                                <rect key="frame" x="96" y="309" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f195-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.initialAngle" id="PTE-f195-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l198">
+                                                <rect key="frame" x="4" y="287" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Offset:" id="PTE-l198-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="offset: x y z the particles start from, from the emitter." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f197">
+                                                <rect key="frame" x="96" y="284" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f197-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.offset" id="PTE-f197-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l200">
+                                                <rect key="frame" x="4" y="262" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bounds:" id="PTE-l200-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="boundsExpansion: units added to the system's bounds, so it is not culled while still in view." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f199">
+                                                <rect key="frame" x="96" y="259" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f199-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.boundsExpansion" id="PTE-f199-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l202">
+                                                <rect key="frame" x="4" y="237" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Anim. Frames:" id="PTE-l202-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="animationFrames: the material's image is this many frames side by side; each particle plays them." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f201">
+                                                <rect key="frame" x="96" y="234" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f201-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.animationFrames" id="PTE-f201-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l204">
+                                                <rect key="frame" x="4" y="212" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Anim. Rate:" id="PTE-l204-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="animationRate: frames a second the particles play." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f203">
+                                                <rect key="frame" x="96" y="209" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f203-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.animationRate" id="PTE-f203-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h205">
+                                                <rect key="frame" x="8" y="175" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Color" id="PTE-h205-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l207">
+                                                <rect key="frame" x="4" y="152" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Color:" id="PTE-l207-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="color r g b a: the particles' color as they spawn." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f206">
+                                                <rect key="frame" x="96" y="149" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f206-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.color" id="PTE-f206-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l209">
+                                                <rect key="frame" x="4" y="127" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade Color:" id="PTE-l209-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeColor r g b a: the color they fade to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f208">
+                                                <rect key="frame" x="96" y="124" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f208-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeColor" id="PTE-f208-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <button toolTip="entityColor: the particles take the entity's color (its shaderParms) in place of color." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-c210">
+                                                <rect key="frame" x="94" y="99" width="160" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Entity color" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PTE-c210-c">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.entityColor" id="PTE-c210-b"/>
+                                                </connections>
+                                            </button>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l212">
+                                                <rect key="frame" x="4" y="78" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade In:" id="PTE-l212-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeIn: the fraction of its life a particle takes to fade in." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f211">
+                                                <rect key="frame" x="96" y="75" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f211-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeInFraction" id="PTE-f211-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="fadeIn: the fraction of its life a particle takes to fade in." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s213">
+                                                <rect key="frame" x="162" y="75" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s213-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeInFraction" id="PTE-s213-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l215">
+                                                <rect key="frame" x="4" y="53" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade Out:" id="PTE-l215-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeOut: the fraction of its life, at its end, a particle takes to fade out." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f214">
+                                                <rect key="frame" x="96" y="50" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f214-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeOutFraction" id="PTE-f214-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="fadeOut: the fraction of its life, at its end, a particle takes to fade out." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s216">
+                                                <rect key="frame" x="162" y="50" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s216-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeOutFraction" id="PTE-s216-b"/>
+                                                </connections>
+                                            </slider>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l218">
+                                                <rect key="frame" x="4" y="28" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Fade Index:" id="PTE-l218-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="fadeIndex: the particles spawned later in a cycle are more faded, over this fraction of them (smoke thinning out)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f217">
+                                                <rect key="frame" x="96" y="25" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f217-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeIndexFraction" id="PTE-f217-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <slider toolTip="fadeIndex: the particles spawned later in a cycle are more faded, over this fraction of them (smoke thinning out)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-s219">
+                                                <rect key="frame" x="162" y="25" width="94" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0" maxValue="1" tickMarkPosition="above" sliderType="linear" id="PTE-s219-c"/>
+                                                <connections>
+                                                    <binding destination="PTE-sac" name="value" keyPath="selection.fadeIndexFraction" id="PTE-s219-b"/>
+                                                </connections>
+                                            </slider>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h118-sep">
+                                                <rect key="frame" x="8" y="1323" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h136-sep">
+                                                <rect key="frame" x="8" y="1113" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h154-sep">
+                                                <rect key="frame" x="8" y="846" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h163-sep">
+                                                <rect key="frame" x="8" y="736" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h172-sep">
+                                                <rect key="frame" x="8" y="626" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h181-sep">
+                                                <rect key="frame" x="8" y="516" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h190-sep">
+                                                <rect key="frame" x="8" y="406" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h205-sep">
+                                                <rect key="frame" x="8" y="197" width="249" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            </box>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PTE-sscroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PTE-sscroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                    </tabViewItems>
+                </tabView>
+            </subviews>
+        </customView>
+    </objects>
+</document>

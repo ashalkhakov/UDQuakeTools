@@ -5,7 +5,7 @@ script (maps through external tools), with the editors Doom 3 shipped (the MFC t
 `neo/tools` in dhewm3) recreated in Objective-C/AppKit — on macOS, Linux and
 Windows, and publish the result without leaving it.
 
-What exists today (October 2026): Decl Browser (workspace over a game
+What exists today (October 2026): Quarry (workspace over a game
 install, outline/filter/search of every registered decl type, tabs, undo,
 Save/Save All/Save As into `fs_savepath`), a structured PDA editor, raw text
 editing for everything else, Pak Manager (PAK/PAK2/Daikatana/PK3/PK4), the
@@ -31,7 +31,7 @@ These shape everything after them; each has a recommendation.
    apps, add an *edit bridge* to the dhewm3 fork, the same idea
    the script debugger already follows,: `idGameEdit` (plus reload
    and console commands) served over the same `idBitMsg`/UDP transport the
-   script debugger already uses, with a client in UDCore. The editors stay
+   script debugger already uses, with a client in the libraries. The editors stay
    portable, and the game stays the preview.
 3. **2D previews in AppKit, 3D in the engine.** Materials get a 2D
    stage/image preview natively and a 3D one through the bridge. GUIs are
@@ -59,14 +59,14 @@ These shape everything after them; each has a recommendation.
       (import the deleted VFS), `ObjectiveC2/blocks_runtime.h`, `idMath.h`,
       `Sources/GuiEd/GNUmakefile`, the empty GuiEd and QuakeEditor Xcode
       targets. (`.forgejo/` was never tracked.)
-- [x] UDLauncher still offers "GUI Editor"; Decl Browser's menu still says
+- [x] UDLauncher still offers "GUI Editor"; Quarry's menu still says
       "QuakeEditor" (bundle id `org.underivable.QuakeEditor`).
 - [x] README: drop `ARCHITECTURE.md` / `CLASS_STUBS.md` links (missing), the
       GUI Editor entry, and the list of shared schemes that are not shared.
 - [x] Bring Pak Manager and udpaktool into the root build and CI (they build
-      against an installed UDCore today), and ship Pak Manager in the
+      against the installed libraries today), and ship Pak Manager in the
       AppImage and on the Mac.
-- [x] Ship Decl Browser on the Mac next to UDLauncher (libzip no longer
+- [x] Ship Quarry on the Mac next to UDLauncher (libzip no longer
       blocks it): `Makefile.apple` `all`/`install`, the macos.yml `apps`.
 - [x] `addScriptsToTree` drops the `.script` extension that `addGUIsToTree`
       keeps; check which one opening the item expects.
@@ -86,11 +86,13 @@ Core Data layer, tabs, undo, save). Two gaps block the editors after it:
       only), removals (with the comment attached to the decl), moves, new
       decls (appended in creation order). Refuses to overwrite a file changed
       outside the editor. `Tests/idDeclFileWriteTests.m`.
-- [ ] **Register the remaining Doom 3 decl types and folders** — commented
-      out today: `entityDef`, `mapDef`, `model` (`def/*.def`), `sound`
-      (`sound/*.sndshd`), `fx`, `articulatedFigure` (`af/*.af`),
-      `materialType`, `playback`, `lipSync` — so their editors have something
-      to open; a Core Data entity per type as its editor arrives.
+- [x] **Register the remaining Doom 3 decl types and folders** — as
+      dhewm3's `idDeclManagerLocal::Init` and `idGameLocal::Init` do:
+      `sound` (`sound/*.sndshd`), `entityDef`, `mapDef`, `model`, `export`
+      (`def/*.def`), `fx` (`fx/*.fx`), `articulatedFigure` (`af/*.af`), each
+      folder listed alone as `ListFiles` does. Which decls a workspace has is
+      its game's, a workspace setting (Doom 3's the only one so far). They
+      open as text; a Core Data entity per type as its editor arrives.
 
 ## Grown with the editors that need them
 
@@ -103,14 +105,15 @@ Built when the first editor needs each one, not up front:
 - Reference checking and a Problems panel (a PDA's emails exist, a material's
   images exist, an entityDef's `inherit` resolves).
 - New / Delete / Duplicate / Rename decl in the browser (only Save As exists).
-- A decl's source beside its structured editor: the main pane switches
-  between the two representations of the decl (the PDA, table, skin and
-  later editors, and the text editor over the decl's source), each edit in
-  one showing in the other, one undo history and one dirty state for both.
-- Lookup dialogs wherever a decl refers to another: a PDA's emails, audio
-  logs and videos, a skin's materials, a particle stage's material and
-  tables, an entityDef's inherit, and so on. Find the decl by name and pick
-  it; today the name is typed, then checked.
+- A decl's source beside its structured editor — done: Editor | Source
+  beside the tabs switches the PDA, table and skin editors to the decl's
+  text and back, an edited text read into the decl as one undoable edit.
+- A decl's text is its braced body: the decl manager is openQ4's, whose
+  idDeclFile keeps the section after the name. Doom 3's keeps the
+  `type name` header with it (`LoadAndParse`'s startMarker), so its
+  editor showed and renamed through it.
+- Lookup dialogs wherever a decl refers to another: see *Pickers and the
+  expression editor* below.
 - Image loading through idFileSystem (TGA, DDS, JPG, PNG, inside pk4s) — the
   material, GUI and particle editors; the image viewer reads OS paths only.
 - Sound playback through idFileSystem — the sound shader editor, PDA audio.
@@ -123,6 +126,39 @@ Built when the first editor needs each one, not up front:
 - idFileSystem leaks idFile objects (`:5186`); the decl manager's
   `+shutdown` does not work (`:1020`).
 
+## Pickers and the expression editor
+
+Wherever an editor checks a reference (its Issues), it offers a picker for
+it too; wherever a value may be an expression, an expression editor. Both
+are ported and adapted from RDLKit and XFormsKit, which have them.
+
+- [x] **A picker**: a sheet (modal, a sheet in Eau) with a table of the
+      candidates and a quick filter by name (contains the text typed), the
+      current value chosen; a button beside each field that takes a
+      reference opens it.
+- [x] Pickers wherever a reference is checked today:
+      - material: a stage's map, cube map, video map; editor image; light
+        falloff image (images and materials);
+      - particle: a stage's material; its speed, rotation, size and aspect
+        tables;
+      - FX: an action's particle, model, decal and light materials, sound
+        shader, entityDef, and the earlier actions it uses or fires;
+      - AF: the modelDef and skin; a body's joint (the model's joints); a
+        constraint's bodies;
+      - skin: its materials; entityDef: its inherit and the decls its keys
+        name;
+      - GUI: a window's background, border and font; a script's windows and
+        variables (set, transition, setFocus, resetTime), sounds and
+        named events;
+      - PDA: picked inline, as it owns its emails, audio logs and videos.
+- [x] **An expression editor**: a field's expression in a larger editor
+      with highlighting (the GUI's and the material's expression grammar),
+      its tables, parms and variables offered, and checked as the engine
+      parses it. For a material's registers (scroll, translate, scale,
+      centerScale, shear, rotate, color, red, green, blue, alpha, rgb, rgba,
+      alphaTest, if), checked by idMaterial::Parse; for a GUI's if
+      conditions and variables, by idWindow::ParseExpression.
+
 ## 2. Offline editors (no engine needed)
 
 In order of value against cost; LOC is the MFC original's size.
@@ -132,36 +168,123 @@ In order of value against cost; LOC is the MFC original's size.
       PDA references but no decl defines, as errors in the Issues tab before
       saving (a click shows the row); File > New PDA… makes one in a file of
       its own (`newpdas/<name>.pda`).
-- [ ] **Decl editor** (3.2k) — highlighting, "test" re-parse with
-      diagnostics, per-type templates for New.
+- [x] **Decl editor** (3.2k) — DialogDeclEditor and DialogDeclNew: a
+      decl's text highlighted by a grammar of its own (`tree-sitter-iddecl`,
+      LoadAndParse's shape over idLexer's tokens); Edit > Test Declaration,
+      the braces and the lexer, then the decl's own parser over the text,
+      into its Issues; File > New Declaration… with a type, a name and a
+      file, the decl starting from its engine class's DefaultDefinition.
+- [ ] Keywords from `editors/<type>.def`, as CSyntaxRichEditCtrl's
+      LoadKeyWordsFromFile reads them (a colour and a description each).
+      Neither Doom 3 nor Quake 4 ships them, so they are written here, from
+      what each type's ported parser reads, with descriptions of our own —
+      once the rest of the decls' editors (and so their parsers) are in.
 - [x] **Table** and **Skin** — structured editors over the existing
       entities, patterned on the PDA's: a table's Snap and Clamp, its values
       in a list and the curve they make; a skin's mappings and models in
       lists, what it names that is not there in the Issues tab, File > New
       Skin…. Their codecs are the engine's parsers, ported.
-- [ ] **entityDef editor** — inherit chain, key/value table, spawnArg
-      documentation from `editor_*` keys, model/skin/sound pickers.
-- [ ] **Sound shader editor** — the decl side of the MFC sound editor:
-      parameters, sample list, play.
-- [ ] **Particle editor** (1.7k) — decl editing over the existing stage
-      model (`UDParticleStage`): stages list, every stage parameter with
-      sliders, material picker; a 2D animated preview is possible, the 3D
-      one comes with the bridge.
-- [ ] **FX editor** — fx actions (sound, light, particle, decal, model…).
-- [ ] **AF editor** (8.1k) — bodies and constraints as data (the dialog
-      pages map one-to-one to inspector sections); joints from the model's
-      `.md5mesh`. Simulation preview comes with the bridge.
-- [ ] **Material editor** (10.9k) — material tree by file, stage list
-      (add bump/diffuse/specular, reorder, copy/paste), inspector driven by
-      material keywords, source view kept in sync, 2D preview of stage
-      images; 3D preview through the bridge.
-- [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
+- [x] **entityDef editor** — DialogEntityDefEditor's, for mapDefs too:
+      what it inherits, its own spawnArgs in a list edited in place, what
+      it inherits through the chain (resolved as idDeclEntityDef::Parse
+      merges it) read-only and overridable; the entity's and the selected
+      key's help from the `editor_*` keys, as Radiant's EClass_InitFromDict
+      reads them; an unknown inherit and a key set twice in the Issues tab.
+      Its model, skin and sound pickers come with the lookup dialogs.
+- [x] **Sound shader editor** — idSoundShader::ParseShader ported (where
+      it gives up, MakeDefault's values, as the engine has them; five retail
+      shaders it gives up on): description and parameters (unset is the
+      engine's default, shown), flags and speakers, samples and leadins in
+      lists; a sample the engine plays its default sound for, and an alt
+      sound no shader defines, in the Issues tab. Play comes with sound
+      playback through idFileSystem (Doom 3's samples are Ogg Vorbis).
+- [x] **Particle editor** (1.7k) — DialogParticleEditor's: the stages in a
+      list (AddStage's default stage, or a copy with Option), the selected
+      stage's every parameter with the dialog's sliders and their ranges,
+      the depth hack; a material the engine makes a default of and a table
+      no decl defines in the Issues tab. idDeclParticle's Parse and
+      ParseParticleStage are ported again, directly (one retail particle
+      they give up on: bfg_wallmark), and WriteStage writes it.
+- [x] Particle preview: the system playing as the engine makes it
+      (idRenderModelPrt::InstantiateDynamicModel, idParticleStage's
+      CreateParticle and friends, GetStageBounds, idRandom, idMath's 16-bit
+      trigonometry, ported), drawn as its ambient pass draws it
+      (RB_STD_T_RenderShaderPasses' stages, the material's registers, ported;
+      GL's texturing and blending done in software). The material picker
+      comes with the lookup dialogs.
+- [x] FX preview: idEntityFx's Setup, Start, Run, ApplyFade and CleanUp,
+      ported and stepped at the game's frames; its particle systems in the
+      particle preview, its actions on a timeline. Its lights and other
+      models come with the bridge. Its lights light a wall behind it
+      (the material preview's lit pass).
+- [x] **FX editor** — idDeclFX::Parse and ParseSingleFXAction ported (every
+      retail FX parses): the joint it binds to, its actions in a list, the
+      selected action's every keyword; in the Issues tab, what the engine
+      would not find (a material, a model of a type it does not load — 52
+      retail actions name a .particle or .ips model — a particle, entityDef
+      or sound, a light or model to use no earlier action names).
+- [x] **AF editor** — idDeclAF's parser and writer ported (every retail
+      figure parses and writes the same twice): settings, bodies and
+      constraints in three tabs, each list with the selected one's every
+      keyword; + and − are NewBody/DeleteBody/NewConstraint/DeleteConstraint,
+      and a body renamed renames it in its constraints. Joints come from the
+      model's `.md5mesh`, found through its modelDef as idDeclModelDef::Parse
+      finds it; in the Issues tab, what idAF::Load refuses (no body on the
+      origin joint, no or a defaulted modelDef or model, a body on a joint
+      the mesh lacks, a constraint on a body the figure lacks).
+- [ ] **AF simulation preview** — comes with the bridge.
+- [x] **Material editor** — Material.cpp's parse ported literally
+      (idMaterial's state, expressions, EvaluateRegisters with
+      idDeclTable::TableLookup): every retail material goes through it, the
+      14 the engine itself defaults named. A material is its tokens as
+      idLexer reads them, with the whitespace and comments before each
+      (UDSourceTokens): written back, byte for byte; the parse says which
+      tokens are which keyword and stage, and an edit puts tokens in,
+      changes or takes them out. The editor: the material's keywords and
+      flags; its stages (add, bump/diffuse/specular, reorder, copy/paste),
+      each stage's keywords; a 2D preview of its image, as the renderer
+      loads it (R_LoadImage's TGA/BMP/JPG, image programs); Issues from the
+      parse and "Couldn't load image".
+- [x] Material preview: the material on a square, lit by a point light as
+      the ARB2 interaction pass lights it (RB_CreateSingleDrawInteractions,
+      RB_ARB2_DrawInteraction, R_DeriveLightData's point light, the
+      normalization cube map and specular table, ported; the game's own
+      glprogs/interaction.vfp run by an ARB program interpreter that knows
+      just what it uses), then its ambient stages; its time on a slider.
+- [ ] **Material 3D preview** — on models, through the bridge.
+- [x] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser
-      and decl manager already ported in UDCore. The render system is
-      replaced: `idDeviceContext` draws with AppKit, its images loaded
-      through idFileSystem; a renderDef's 3D view comes through the bridge
-      (4). The port interprets as well as draws: GUI scripts, named events,
+      and decl manager already ported in the libraries. The render system is
+      replaced: `idDeviceContext` draws into the GUI model, whose surfaces
+      the software renderer draws as the ambient pass would, its images
+      loaded through idFileSystem; a renderDef's 3D view comes through the
+      bridge (4). The port is in (UDUI; every retail GUI loads and
+      draws, the main menu and PDA as in the game), and so is the viewer:
+      a .gui's tab runs it on the game's clock, drawn with GL (in software
+      where there is none), the mouse and keys sent as the game sends them,
+      its named events, its state and its log in the window's new
+      inspector pane (Xcode's three panes, as RDLKit's designer has them).
+      The editor is under way, on tools/guied ported: a GUI loaded for
+      editing writes back as the engine's editor writes it (every retail
+      GUI reads back the same), and a .gui's Design mode is its canvas —
+      select (shift adds), move and size with the eight handles, snap to
+      the grid, each drag one Undo; Source and Run follow its edits. The
+      GUI's windows are a navigator in the left pane (a window's eye hides
+      it in the design), and its Properties and Scripts are inspector
+      panes, each edit one Undo; and the design's menu (the engine's popup)
+      and keys make, delete, arrange, align, size alike, parent, nudge, copy
+      and paste windows. Under the canvas is a video editor's transport:
+      its time slider takes Run and Design alike to any time (the GUI run
+      there, the named events sent on the way sent again), so the main
+      menu, sent NoIntro, is designed as it shows at 2 s, not behind its
+      black curtain.
+      The rest of tools/guied is in too: its item properties dialog is the
+      Properties pane (General, Image, Text, and the keys as Keys), its
+      transformer the Layout pane (Xcode's Size inspector), its options a
+      sheet kept with the workspace, its status bar (triangles, zoom) under
+      the canvas, and its zoom levels (⌘-wheel, a pinch, the View menu).
+      The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a
@@ -193,7 +316,7 @@ through UDCodeKit.
 - [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
       its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
       language server (clangd), with build and run from the editor.
-- [ ] idScript's bundle brings the adapter below, and Decl Browser debugs
+- [ ] idScript's bundle brings the adapter below, and Quarry debugs
       scripts with UDCodeKit's debugger UI.
 - [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
       `idBitMsg`, `DBMSG_*` — documented only by the source:
@@ -211,7 +334,7 @@ through UDCodeKit.
       spawnArgs, map entities, AF spawn/update, player position), decl and
       GUI reload, console commands and console output over the debugger's
       transport; versioned messages; off unless a cvar enables it.
-- [ ] UDCore client and a connection UI (launch or attach, status, log).
+- [ ] A client in the libraries, and a connection UI (launch or attach, status, log).
 - [ ] Quick win before the full bridge: the debugger protocol already has
       `EXECCOMMAND` — use it for `reloadDecls`, `reloadGuis`, `map …` from
       the editors.
@@ -277,5 +400,5 @@ through UDCodeKit.
 - Open, edit, save, reopen round-trips the decl or file losslessly.
 - Dirty state, undo and redo work, including across saves.
 - Errors and broken references are shown before save.
-- A test in `Tests/DeclBrowser` drives the editor through its own window on
+- A test in `Tests/Quarry` drives the editor through its own window on
   a fixture written for the test (never game data), on macOS and GNUstep.

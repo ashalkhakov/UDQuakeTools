@@ -20,6 +20,7 @@
 #import "UDFXTimelineView.h"
 #import "UDFXModel.h"
 #import "UDDeclManagedObjects.h"
+#import "idDeclManager.h"
 #import "UDWorkspaceWindowController.h"
 
 static NSString *const UDFixtureDefs =
@@ -147,7 +148,7 @@ static NSString *const UDFixtureParticles =
     NSFileManager *files = [NSFileManager defaultManager];
     for (NSString *folder in @[@"base/def", @"base/sound/udtest", @"base/particles", @"base/fx", @"base/materials",
                                @"base/af", @"base/models/udtest",
-                               @"base/textures/udtest"]) {
+                               @"base/textures/udtest", @"base/env", @"base/glprogs"]) {
         [files createDirectoryAtPath:[self.basePath stringByAppendingPathComponent:folder]
          withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -173,6 +174,10 @@ static NSString *const UDFixtureParticles =
     memcpy(tga + 18, green, 3); memcpy(tga + 21, green, 3); memcpy(tga + 24, red, 3); memcpy(tga + 27, red, 3);
     [[NSData dataWithBytes:tga length:sizeof(tga)] writeToFile:[self.basePath stringByAppendingPathComponent:@"base/textures/udtest/glow.tga"]
                                                     atomically:YES];
+    // A cube map's first side, a camera's, a program (only their names matter)
+    for (NSString *file in @[@"base/env/udtest_px.tga", @"base/env/udsky_forward.tga", @"base/glprogs/udtest.vfp"]) {
+        [@"" writeToFile:[self.basePath stringByAppendingPathComponent:file] atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    }
     // One of its samples, as an .ogg: the engine finds it by the .wav's name.
     [@"" writeToFile:[self.basePath stringByAppendingPathComponent:@"base/sound/udtest/hum.ogg"]
           atomically:YES encoding:NSUTF8StringEncoding error:NULL];
@@ -360,6 +365,72 @@ static NSString *const UDFixtureParticles =
     [editor.keyValuesController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.selectedKeyHelp, @"model: The model it shows.", @"editor_var model");
     XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U);
+}
+
+/// The selected pair's value in the entry its type takes: the editor_*
+/// key's type, else the key's, else the value's; each edit its text.
+- (void)testASpawnArgIsEnteredAsItsType {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDEntityDefEditorViewController *editor = [self openLampIn:controller];
+    if (editor == nil) return;
+    NSMutableArray *pairs = [editor.entityDef.keyValues mutableCopy];
+    for (NSArray<NSString *> *pair in @[@[@"solid", @"1"], @[@"size", @"16 16 32"], @[@"_color", @"1 0.5 0"],
+                                        @[@"snd_hum", @""], @[@"health", @"100"], @[@"spawnclass", @"idLight"]]) {
+        [pairs addObject:[UDEntityKeyValue keyValueWithKey:pair[0] value:pair[1]]];
+    }
+    editor.entityDef.keyValues = pairs;
+    [editor.editingContext processPendingChanges];
+    UDEntityKeyValue *(^select)(NSString *) = ^UDEntityKeyValue *(NSString *key) {
+        UDEntityKeyValue *pair = [editor.keyValuesController.arrangedObjects filteredArrayUsingPredicate:
+                                  [NSPredicate predicateWithFormat:@"key == %@", key]].firstObject;
+        [editor.keyValuesController setSelectedObjects:@[pair]];
+        return pair;
+    };
+    NSDictionary<NSString *, NSString *> *pages = @{@"model": @"reference", @"solid": @"bool", @"size": @"vector", @"_color": @"color",
+                                                    @"snd_hum": @"reference", @"health": @"number", @"spawnclass": @"text"};
+    for (NSString *key in pages) {
+        select(key);
+        XCTAssertEqualObjects(editor.valuePages.selectedTabViewItem.identifier, pages[key], @"%@", key);
+        XCTAssertEqualObjects(editor.keyLabel.stringValue, key);
+    }
+    XCTAssertEqualObjects((select(@"solid"), editor.kindLabel.stringValue), @"On (1) or off (0) (editor_bool)", @"the inherited editor_bool's");
+
+    // each entry's edit, as the value's text
+    NSString *(^valueOf)(NSString *) = ^NSString *(NSString *key) {
+        return [[editor.entityDef.keyValues filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"key == %@", key]].firstObject value];
+    };
+    select(@"solid");
+    [editor.boolCheckbox performClick:nil];
+    XCTAssertEqualObjects(valueOf(@"solid"), @"0");
+    select(@"size");
+    editor.vectorZField.stringValue = @"64";
+    [editor valueEdited:editor.vectorZField];
+    XCTAssertEqualObjects(valueOf(@"size"), @"16 16 64");
+    editor.vectorXField.stringValue = @"wide";
+    [editor valueEdited:editor.vectorXField];
+    XCTAssertEqualObjects(valueOf(@"size"), @"16 16 64", @"not a number: as it was");
+    XCTAssertEqualObjects(editor.vectorXField.stringValue, @"16");
+    select(@"health");
+    editor.numberField.stringValue = @"250";
+    [editor valueEdited:editor.numberField];
+    XCTAssertEqualObjects(valueOf(@"health"), @"250");
+    select(@"_color");
+    editor.colorWell.color = [NSColor colorWithCalibratedRed:0.25 green:0.5 blue:1 alpha:1];
+    [editor valueEdited:editor.colorWell];
+    XCTAssertEqualObjects(valueOf(@"_color"), @"0.25 0.5 1");
+
+    // a reference picked
+    select(@"snd_hum");
+    UDReferenceField *field = [editor referenceFieldForTag:2];
+    XCTAssertEqual(field.kind, UDReferenceDecls);
+    XCTAssertEqual(field.declType, (int)DECL_SOUND);
+    select(@"model");
+    XCTAssertEqual([editor referenceFieldForTag:2].kind, UDReferenceEntityModels);
+
+    [editor.editingContext processPendingChanges];
+    [editor.editorDocument.undoManager undo];
+    [editor.editingContext processPendingChanges];
+    XCTAssertNotEqualObjects(valueOf(@"_color"), @"0.25 0.5 1", @"undone");
 }
 
 - (void)testEditingAnEntityDefsPairsSavesThem {
@@ -856,6 +927,33 @@ static NSString *const UDFixtureParticles =
     [editor.editingContext processPendingChanges];
     [editor.stagesController setSelectionIndex:0];
     XCTAssertNotEqualObjects([editor.stagesController valueForKeyPath:@"selection.scroll"], @"time * 0.1, parm4", @"one Undo");
+}
+
+/// The keywords a field takes offered beside it; a cube map and a
+/// program picked by the names the engine looks them up by.
+- (void)testAStagesKeywordsAreOfferedAndItsCubeMapAndProgramPicked {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+    NSComboBox *sort = [self viewBoundTo:@"sort" ofClass:[NSComboBox class] inView:editor.inspectorView];
+    XCTAssertTrue([sort.objectValues containsObject:@"postProcess"], @"%@", sort.objectValues);
+    XCTAssertNotNil([self viewBoundTo:@"deform" ofClass:[NSComboBox class] inView:editor.inspectorView]);
+    [editor.stagesController setSelectionIndex:0];
+    NSComboBox *texGen = [self viewBoundTo:@"texGen" ofClass:[NSComboBox class] inView:editor.inspectorView];
+    XCTAssertNotNil(texGen);
+    XCTAssertTrue([texGen.objectValues containsObject:@"reflect"], @"%@", texGen.objectValues);
+
+    [self pick:6 in:editor under:editor.inspectorView with:^(UDReferencePicker *picker) {
+        XCTAssertEqualObjects(picker.shownNames, (@[@"env/udsky", @"env/udtest"]), @"the cube maps by their names, not their sides'");
+        [self choose:@"env/udtest" in:picker];
+    }];
+    [self pick:7 in:editor under:editor.inspectorView with:^(UDReferencePicker *picker) {
+        XCTAssertEqualObjects(picker.shownNames, @[@"udtest.vfp"], @"the programs as R_FindARBProgram names them");
+        [self choose:@"udtest.vfp" in:picker];
+    }];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects([editor.stagesController valueForKeyPath:@"selection.cubeMap"], @"env/udtest");
+    XCTAssertEqualObjects([editor.stagesController valueForKeyPath:@"selection.program"], @"udtest.vfp");
 }
 
 #pragma mark - Help

@@ -36,19 +36,17 @@
 
 #pragma mark - The candidates
 
-/// The files under the folders things are kept in, of @a extensions.
+/// The files under the folders things are kept in, of @a extensions:
+/// the file system's one pass, not ListFilesTree's folder by folder.
 + (void)_files:(NSArray<NSString *> *)folders extensions:(NSString *)extensions stripped:(BOOL)stripped
           what:(NSString *)what into:(NSMutableArray<NSString *> *)names details:(NSMutableArray<NSString *> *)details
           seen:(NSMutableSet<NSString *> *)seen fileSystem:(idFileSystem *)fileSystem {
-    for (NSString *folder in folders) {
-        idFileList *list = [fileSystem listFilesTree:folder extension:extensions sorted:YES inGameDir:nil error:NULL];
-        for (NSString *path in list.list) {
-            NSString *name = stripped ? path.stringByDeletingPathExtension : path;
-            if ([seen containsObject:name.lowercaseString]) continue;
-            [seen addObject:name.lowercaseString];
-            [names addObject:name];
-            [details addObject:what];
-        }
+    for (NSString *path in [fileSystem filesUnder:folders extensions:[extensions componentsSeparatedByString:@"|"]]) {
+        NSString *name = stripped ? path.stringByDeletingPathExtension : path;
+        if ([seen containsObject:name.lowercaseString]) continue;
+        [seen addObject:name.lowercaseString];
+        [names addObject:name];
+        [details addObject:what];
     }
 }
 
@@ -84,6 +82,15 @@
         case UDReferenceImages:
             [self _files:imageFolders extensions:images stripped:NO what:@"image" into:names details:details seen:seen fileSystem:fileSystem];
             break;
+        case UDReferenceEntityModels:
+            for (idDeclBase *decl in [declManager declsOfType:DECL_MODELDEF forceParse:NO]) {
+                NSString *name = decl.name;
+                if (name.length == 0 || [seen containsObject:name.lowercaseString]) continue;
+                [seen addObject:name.lowercaseString];
+                [names addObject:name];
+                [details addObject:decl.fileName.lastPathComponent ?: @""];
+            }
+            // fall through: the model files
         case UDReferenceModels:
             [self _files:@[@"models"] extensions:@".lwo|.ase|.ma|.flt|.md5mesh|.md3" stripped:NO what:@"model"
                     into:names details:details seen:seen fileSystem:fileSystem];
@@ -93,6 +100,30 @@
             break;
         case UDReferenceSounds:
             [self _files:@[@"sound"] extensions:@".wav|.ogg" stripped:NO what:@"sound" into:names details:details seen:seen fileSystem:fileSystem];
+            break;
+        case UDReferenceCubeMaps:
+            // R_LoadCubeImages' first side: _px for a cube map, _forward for a camera's
+            for (NSString *path in [fileSystem filesUnder:imageFolders extensions:[images componentsSeparatedByString:@"|"]]) {
+                NSString *stem = path.stringByDeletingPathExtension;
+                for (NSArray<NSString *> *side in @[@[@"_px", @"cube map"], @[@"_forward", @"camera cube map"]]) {
+                    if (![stem.lowercaseString hasSuffix:side[0]]) continue;
+                    NSString *name = [stem substringToIndex:stem.length - side[0].length];
+                    if ([seen containsObject:name.lowercaseString]) continue;
+                    [seen addObject:name.lowercaseString];
+                    [names addObject:name];
+                    [details addObject:side[1]];
+                }
+            }
+            break;
+        case UDReferencePrograms:
+            // R_FindARBProgram's names: under glprogs/
+            for (NSString *path in [fileSystem filesUnder:@[@"glprogs"] extensions:@[@".vfp", @".vp", @".fp"]]) {
+                NSString *name = [path substringFromIndex:@"glprogs/".length];
+                if ([seen containsObject:name.lowercaseString]) continue;
+                [seen addObject:name.lowercaseString];
+                [names addObject:name];
+                [details addObject:@"program"];
+            }
             break;
         case UDReferenceGuis:
             [self _files:@[@"guis"] extensions:@".gui" stripped:NO what:@"GUI" into:names details:details seen:seen fileSystem:fileSystem];

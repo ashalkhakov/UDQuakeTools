@@ -158,6 +158,16 @@ are ported and adapted from RDLKit and XFormsKit, which have them.
       centerScale, shear, rotate, color, red, green, blue, alpha, rgb, rgba,
       alphaTest, if), checked by idMaterial::Parse; for a GUI's if
       conditions and variables, by idWindow::ParseExpression.
+- [x] **At once**: the file pickers list from the paks' entries, read once
+      (idFileSystem's `filesUnder:extensions:`), and the decl pickers from
+      the decl manager's index, as the decl tree does: a retail install's
+      13k materials and images in tens of milliseconds.
+- [x] **Typed entry**: a material's texGen, sort and deform offer their
+      keywords (and take arguments); its cube map and programs are picked;
+      an entityDef's or mapDef's spawn arg is edited in the inspector as
+      its type has it (its editor_* key's, else its name's, else its
+      value's): a vector, a number, on or off, a colour, or a reference
+      picked.
 
 ## 2. Offline editors (no engine needed)
 

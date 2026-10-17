@@ -66,8 +66,6 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self.statementsOutline registerForDraggedTypes:@[UDGuiStatementPathType]];
-    self.eventsTable.target = self;
-    self.eventsTable.doubleAction = @selector(openEvent:);
     [self.eventPopUp removeAllItems];
     [self.eventPopUp addItemsWithTitles:[rvGEScript events]];
 }
@@ -100,6 +98,14 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
     if (key != nil && [wrapper.scriptDict getString:key defaultString:nil] == nil) {
         key = nil;      // gone (an undo)
     }
+    // none asked for: the one chosen in the events kept, else the first
+    if (key == nil && window == self.window && self.eventKey != nil
+        && [wrapper.scriptDict getString:self.eventKey defaultString:nil] != nil) {
+        key = self.eventKey;
+    }
+    if (key == nil && [wrapper.scriptDict numKeyVals] > 0) {
+        key = [wrapper.scriptDict keyAtIndex:0];
+    }
     BOOL same = window == self.window && ((key == nil && self.eventKey == nil) || [key isEqualToString:self.eventKey]);
     self.window = window;
     self.eventKey = key;
@@ -108,12 +114,12 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
         [self.pages selectTabViewItemWithIdentifier:@"none"];
         return;
     }
+    [self.pages selectTabViewItemWithIdentifier:@"window"];
+    [self _fillWindow];
     if (key == nil) {
-        [self.pages selectTabViewItemWithIdentifier:@"window"];
-        [self _fillWindow];
+        [self _fillNoEvent];
         return;
     }
-    [self.pages selectTabViewItemWithIdentifier:@"event"];
     [self _fillEvent:same];
 }
 
@@ -137,7 +143,15 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
         [rows addObject:@[kind, name, [wrapper.variableDict valueAtIndex:i]]];
     }
     self.variableRows = rows;
+    self.filling = YES;
     [self.eventsTable reloadData];
+    NSUInteger row = self.eventKey != nil ? [keys indexOfObject:self.eventKey] : NSNotFound;
+    if (row != NSNotFound) {
+        [self.eventsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+    } else {
+        [self.eventsTable deselectAll:nil];
+    }
+    self.filling = NO;
     [self.variablesTable reloadData];
 
     // the events it may have: each it has not, and a time or a named event
@@ -244,9 +258,14 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 }
 
 - (IBAction)openEvent:(id)sender {
-    NSInteger row = self.eventsTable.clickedRow >= 0 ? self.eventsTable.clickedRow : self.eventsTable.selectedRow;
+    NSInteger row = self.eventsTable.selectedRow;
     if (row < 0 || row >= (NSInteger)self.eventKeys.count) return;
     [self _show:self.window event:self.eventKeys[(NSUInteger)row]];
+}
+
+/// An event chosen in the events: its script under them.
+- (void)tableViewSelectionDidChange:(NSNotification *)notification {
+    if (notification.object == self.eventsTable && !self.filling) [self openEvent:nil];
 }
 
 /// The editor told to show @a key's event (its navigator's row).
@@ -287,6 +306,27 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 
 #pragma mark - An event's
 
+/// No event: the script's controls empty, and off.
+- (void)_fillNoEvent {
+    self.statements = nil;
+    self.statementsText = nil;
+    self.filling = YES;
+    self.eventParameterField.stringValue = @"";
+    self.eventParameterField.hidden = YES;
+    self.eventParameterLabel.hidden = YES;
+    self.eventHelp.stringValue = @"The window runs no scripts: + under the events adds one.";
+    [self.statementsOutline reloadData];
+    self.filling = NO;
+    [self _enableEvent:NO];
+    [self _fillStatement];
+}
+
+- (void)_enableEvent:(BOOL)enabled {
+    self.eventPopUp.enabled = enabled;
+    self.addStatementButton.enabled = enabled;
+    self.statementsOutline.enabled = enabled;
+}
+
 /// The event's script read (again, if it is not what was shown), and the
 /// controls filled.
 - (void)_fillEvent:(BOOL)same {
@@ -300,6 +340,7 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
             self.message.stringValue = [NSString stringWithFormat:@"%@ does not read as statements: %@ (edit it in the source)", self.eventKey, why];
         }
     }
+    [self _enableEvent:YES];
     self.filling = YES;
     NSString *event = [rvGEScript eventOfKey:self.eventKey];
     NSString *parameter = [rvGEScript parameterOfKey:self.eventKey];

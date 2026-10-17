@@ -29,6 +29,7 @@
 #import "rvGEWindowWrapper.h"
 #import "idDict.h"
 #import "idWindow.h"
+#import "UDReferencePicker.h"
 
 /**
  * The Quarry against a real Doom 3 install (see UDDoom3InstallPath:
@@ -118,6 +119,40 @@
         materials++;
     }
     XCTAssertGreaterThan(materials, 1000U, @"the retail materials should all be indexed");
+}
+
+/// A picker's names, from the paks' entries gathered once: the images,
+/// the materials (their decls and the images), the sounds, the cube maps,
+/// the programs, at once.
+- (void)testThePickersListTheRetailNamesAtOnce {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    NSDictionary<NSNumber *, NSString *> *expected = @{
+        @(UDReferenceImages): @"textures/base_wall/lfwall27d.tga",
+        @(UDReferenceMaterials): @"textures/base_wall/lfwall27d",
+        @(UDReferenceSounds): @"sound/air_and_vents/decompress.ogg",
+        @(UDReferenceCubeMaps): @"env/bland",
+        @(UDReferencePrograms): @"heatHaze.vfp",
+    };
+    NSDictionary<NSNumber *, NSNumber *> *least = @{@(UDReferenceImages): @1000, @(UDReferenceMaterials): @1000, @(UDReferenceSounds): @1000,
+                                                    @(UDReferenceCubeMaps): @10, @(UDReferencePrograms): @10};
+    for (NSNumber *kind in expected) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"" key:@"" controller:self kind:(UDReferenceKind)kind.integerValue];
+        NSDate *start = [NSDate date];
+        NSMutableArray<NSString *> *details = [NSMutableArray array];
+        NSArray<NSString *> *names = [UDReferencePicker namesFor:field workspace:workspace details:details];
+        NSTimeInterval took = -start.timeIntervalSinceNow;
+        NSLog(@"picker kind %@: %lu names in %.3fs", kind, (unsigned long)names.count, took);
+        XCTAssertEqual(names.count, details.count);
+        XCTAssertGreaterThanOrEqual(names.count, least[kind].unsignedIntegerValue, @"kind %@: %@", kind, names.count < 50 ? names : @"");
+        NSUInteger at = [names indexOfObjectPassingTest:^BOOL(NSString *name, NSUInteger i, BOOL *stop) {
+            return [name caseInsensitiveCompare:expected[kind]] == NSOrderedSame;
+        }];
+        XCTAssertNotEqual(at, NSNotFound, @"kind %@ should list %@", kind, expected[kind]);
+        XCTAssertLessThan(took, 2.0, @"kind %@: the names at once", kind);
+    }
 }
 
 - (void)testTheNameFilterNarrowsTheOutline {

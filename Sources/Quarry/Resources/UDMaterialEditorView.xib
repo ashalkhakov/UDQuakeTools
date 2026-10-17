@@ -368,22 +368,34 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="sort: when the material is drawn among the others: subview, opaque, decal, far, medium, close, almostNearest, nearest, postProcess, or a number." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f78">
-                                                <rect key="frame" x="96" y="701" width="160" height="21"/>
+                                            <comboBox toolTip="sort: when the material is drawn among the others: subview, opaque, decal, far, medium, close, almostNearest, nearest, postProcess, or a number." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-cb78">
+                                                <rect key="frame" x="96" y="699" width="163" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f78-c">
+                                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="10" id="MTE-cb78-c">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
+                                                    <objectValues>
+                                                        <string>subview</string>
+                                                        <string>opaque</string>
+                                                        <string>decal</string>
+                                                        <string>far</string>
+                                                        <string>medium</string>
+                                                        <string>close</string>
+                                                        <string>almostNearest</string>
+                                                        <string>nearest</string>
+                                                        <string>postProcess</string>
+                                                        <string>portalSky</string>
+                                                    </objectValues>
+                                                </comboBoxCell>
                                                 <connections>
-                                                    <binding destination="MTE-oc" name="value" keyPath="selection.sort" id="MTE-f78-b">
+                                                    <binding destination="MTE-oc" name="value" keyPath="selection.sort" id="MTE-cb78-b">
                                                         <dictionary key="options">
                                                             <bool key="NSValidatesImmediately" value="YES"/>
                                                         </dictionary>
                                                     </binding>
                                                 </connections>
-                                            </textField>
+                                            </comboBox>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l81">
                                                 <rect key="frame" x="4" y="679" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -418,22 +430,33 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="deform: how the surface's geometry is changed as it is drawn: sprite, tube, flare N, expand N, move N, turbulent, eyeBall, particle, particle2." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f82">
-                                                <rect key="frame" x="96" y="651" width="160" height="21"/>
+                                            <comboBox toolTip="deform: how the surface's geometry is changed as it is drawn: sprite, tube, flare N, expand N, move N, turbulent, eyeBall, particle, particle2." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-cb82">
+                                                <rect key="frame" x="96" y="649" width="163" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f82-c">
+                                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="9" id="MTE-cb82-c">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
+                                                    <objectValues>
+                                                        <string>sprite</string>
+                                                        <string>tube</string>
+                                                        <string>flare 16</string>
+                                                        <string>expand 1</string>
+                                                        <string>move 1</string>
+                                                        <string>turbulent</string>
+                                                        <string>eyeBall</string>
+                                                        <string>particle</string>
+                                                        <string>particle2</string>
+                                                    </objectValues>
+                                                </comboBoxCell>
                                                 <connections>
-                                                    <binding destination="MTE-oc" name="value" keyPath="selection.deform" id="MTE-f82-b">
+                                                    <binding destination="MTE-oc" name="value" keyPath="selection.deform" id="MTE-cb82-b">
                                                         <dictionary key="options">
                                                             <bool key="NSValidatesImmediately" value="YES"/>
                                                         </dictionary>
                                                     </binding>
                                                 </connections>
-                                            </textField>
+                                            </comboBox>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l85">
                                                 <rect key="frame" x="4" y="629" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1284,22 +1307,28 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <textField toolTip="texGen: the texture coordinates made, not taken from the surface: normal, reflect, skybox, wobblesky." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f226">
-                                                <rect key="frame" x="96" y="911" width="160" height="21"/>
+                                            <comboBox toolTip="texGen: the texture coordinates made, not taken from the surface: normal, reflect, skybox, wobblesky." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-cb226">
+                                                <rect key="frame" x="96" y="909" width="163" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f226-c">
+                                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="4" id="MTE-cb226-c">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
+                                                    <objectValues>
+                                                        <string>normal</string>
+                                                        <string>reflect</string>
+                                                        <string>skybox</string>
+                                                        <string>wobbleSky 1 1 1</string>
+                                                    </objectValues>
+                                                </comboBoxCell>
                                                 <connections>
-                                                    <binding destination="MTE-sac" name="value" keyPath="selection.texGen" id="MTE-f226-b">
+                                                    <binding destination="MTE-sac" name="value" keyPath="selection.texGen" id="MTE-cb226-b">
                                                         <dictionary key="options">
                                                             <bool key="NSValidatesImmediately" value="YES"/>
                                                         </dictionary>
                                                     </binding>
                                                 </connections>
-                                            </textField>
+                                            </comboBox>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l229">
                                                 <rect key="frame" x="4" y="889" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1310,7 +1339,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="cubeMap: a cube map of six images (name_px, _nx, _py, _ny, _pz, _nz)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f228">
-                                                <rect key="frame" x="96" y="886" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="886" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f228-c">
                                                     <font key="font" metaFont="system"/>
@@ -1325,6 +1354,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a cube map" verticalHuggingPriority="750" fixedFrame="YES" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f228-pick">
+                                                <rect key="frame" x="232" y="885" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f228-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f228-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l231">
                                                 <rect key="frame" x="4" y="864" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1947,7 +1987,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="program: the vertex and fragment program of this name." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f265">
-                                                <rect key="frame" x="96" y="309" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="309" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f265-c">
                                                     <font key="font" metaFont="system"/>
@@ -1962,6 +2002,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a program" verticalHuggingPriority="750" fixedFrame="YES" tag="7" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f265-pick">
+                                                <rect key="frame" x="232" y="308" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f265-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f265-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l268">
                                                 <rect key="frame" x="4" y="287" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1972,7 +2023,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="vertexProgram: the stage's ARB vertex program." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f267">
-                                                <rect key="frame" x="96" y="284" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="284" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f267-c">
                                                     <font key="font" metaFont="system"/>
@@ -1987,6 +2038,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a program" verticalHuggingPriority="750" fixedFrame="YES" tag="8" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f267-pick">
+                                                <rect key="frame" x="232" y="283" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f267-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f267-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l270">
                                                 <rect key="frame" x="4" y="262" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1997,7 +2059,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="fragmentProgram: the stage's ARB fragment program." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f269">
-                                                <rect key="frame" x="96" y="259" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="259" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f269-c">
                                                     <font key="font" metaFont="system"/>
@@ -2012,6 +2074,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a program" verticalHuggingPriority="750" fixedFrame="YES" tag="9" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f269-pick">
+                                                <rect key="frame" x="232" y="258" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f269-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f269-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h271">
                                                 <rect key="frame" x="8" y="224" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

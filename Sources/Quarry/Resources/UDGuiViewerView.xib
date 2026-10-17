@@ -1067,7 +1067,7 @@
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-none">
                                         <rect key="frame" x="10" y="243" width="240" height="16"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="Select a window, or one of its events" id="GUV-sc-none-c">
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="Select a window" id="GUV-sc-none-c">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1081,246 +1081,133 @@
                                 <rect key="frame" x="0.0" y="0.0" width="260" height="486"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-events">
-                                        <rect key="frame" x="8" y="462" width="200" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Events" id="GUV-sc-h-events-c">
-                                            <font key="font" metaFont="systemBold"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-l1">
-                                        <rect key="frame" x="8" y="416" width="244" height="44"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" lineBreakMode="wordWrapping" alignment="left" title="The scripts the window runs: double-click one, or choose it under the window in the navigator, to edit it." id="GUV-sc-l1-c">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <scrollView fixedFrame="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-events-s">
-                                        <rect key="frame" x="8" y="240" width="244" height="170"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <clipView key="contentView" id="GUV-sc-events-cv">
-                                            <rect key="frame" x="1" y="1" width="242" height="168"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <subviews>
-                                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="17" headerView="GUV-sc-events-h" id="GUV-sc-events">
-                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="140"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <size key="intercellSpacing" width="3" height="2"/>
-                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
-                                                    <tableColumns>
-                                                    <tableColumn identifier="event" editable="NO" width="90" minWidth="30" maxWidth="1000" id="GUV-sc-events-event">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Event">
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="GUV-sc-events-event-c">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    <tableColumn identifier="does" editable="NO" width="140" minWidth="30" maxWidth="1000" id="GUV-sc-events-does">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Does">
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="GUV-sc-events-does-c">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    </tableColumns>
-                                                    <connections>
-                                                        <outlet property="dataSource" destination="GUV-sc" id="GUV-sc-events-ds"/>
-                                                        <outlet property="delegate" destination="GUV-sc" id="GUV-sc-events-dl"/>
-                                                    </connections>
-                                                </tableView>
-                                            </subviews>
-                                        </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-events-hs">
-                                            <rect key="frame" x="1" y="153" width="242" height="16"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-events-vs">
-                                            <rect key="frame" x="227" y="1" width="16" height="168"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <tableHeaderView key="headerView" wantsLayer="YES" id="GUV-sc-events-h">
-                                            <rect key="frame" x="0.0" y="0.0" width="242" height="28"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableHeaderView>
-                                    </scrollView>
-                                    <popUpButton toolTip="Add a script for one of the window's events" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-addevent">
-                                        <rect key="frame" x="6" y="212" width="48" height="22"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="GUV-sc-addevent-c">
-                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <menu key="menu" id="GUV-sc-addevent-m">
-                                                <items>
-                                                <menuItem title="+" hidden="YES" id="GUV-sc-addevent-i0"/>
-                                                </items>
-                                            </menu>
-                                        </popUpButtonCell>
-                                    </popUpButton>
-                                    <button toolTip="Take the chosen event's script off" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-removeevent">
-                                        <rect key="frame" x="56" y="212" width="30" height="22"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="−" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-removeevent-c">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="removeEvent:" target="GUV-sc" id="GUV-sc-removeevent-a"/>
-                                        </connections>
-                                    </button>
-                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-sep1">
-                                        <rect key="frame" x="8" y="198" width="244" height="5"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    </box>
-                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-variables">
-                                        <rect key="frame" x="8" y="176" width="200" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Variables" id="GUV-sc-h-variables-c">
-                                            <font key="font" metaFont="systemBold"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <scrollView toolTip="definefloat, definevec4 or float: a variable of the window, its value an expression; the window and its scripts read it by name." fixedFrame="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-variables-s">
-                                        <rect key="frame" x="8" y="42" width="244" height="130"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <clipView key="contentView" id="GUV-sc-variables-cv">
-                                            <rect key="frame" x="1" y="1" width="242" height="128"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <subviews>
-                                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="17" headerView="GUV-sc-variables-h" id="GUV-sc-variables">
-                                                    <rect key="frame" x="0.0" y="0.0" width="242" height="100"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <size key="intercellSpacing" width="3" height="2"/>
-                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
-                                                    <tableColumns>
-                                                    <tableColumn identifier="kind" editable="YES" width="72" minWidth="30" maxWidth="1000" id="GUV-sc-variables-kind">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Kind">
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-kind-c">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    <tableColumn identifier="name" editable="YES" width="70" minWidth="30" maxWidth="1000" id="GUV-sc-variables-name">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-name-c">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    <tableColumn identifier="value" editable="YES" width="90" minWidth="30" maxWidth="1000" id="GUV-sc-variables-value">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Value">
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-value-c">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    </tableColumns>
-                                                    <connections>
-                                                        <outlet property="dataSource" destination="GUV-sc" id="GUV-sc-variables-ds"/>
-                                                        <outlet property="delegate" destination="GUV-sc" id="GUV-sc-variables-dl"/>
-                                                    </connections>
-                                                </tableView>
-                                            </subviews>
-                                        </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-variables-hs">
-                                            <rect key="frame" x="1" y="113" width="242" height="16"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-variables-vs">
-                                            <rect key="frame" x="227" y="1" width="16" height="128"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <tableHeaderView key="headerView" wantsLayer="YES" id="GUV-sc-variables-h">
-                                            <rect key="frame" x="0.0" y="0.0" width="242" height="28"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableHeaderView>
-                                    </scrollView>
-                                    <segmentedControl toolTip="Add a variable, or take the chosen one off" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-addvariable">
-                                        <rect key="frame" x="8" y="14" width="69" height="23"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="GUV-sc-addvariable-c">
-                                            <font key="font" metaFont="system"/>
-                                            <segments>
-                                                <segment label="+" width="32"/>
-                                                <segment label="-" width="32" tag="1"/>
-                                            </segments>
-                                        </segmentedCell>
-                                        <connections>
-                                            <action selector="addOrRemoveVariable:" target="GUV-sc" id="GUV-sc-addvariable-a"/>
-                                        </connections>
-                                    </segmentedControl>
-                                    <button toolTip="Edit the chosen variable's value" verticalHuggingPriority="750" fixedFrame="YES" tag="0" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-variableexpr">
-                                        <rect key="frame" x="82" y="14" width="24" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-variableexpr-c">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="editVariable:" target="GUV-sc" id="GUV-sc-variableexpr-a"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </view>
-                        </tabViewItem>
-                        <tabViewItem label="Event" identifier="event" id="GUV-sc-page-event">
-                            <view key="view" id="GUV-sc-page-event-v">
-                                <rect key="frame" x="0.0" y="0.0" width="260" height="486"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-eventscroll">
+                                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-windowscroll">
                                         <rect key="frame" x="0.0" y="0.0" width="260" height="486"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <clipView key="contentView" drawsBackground="NO" id="GUV-sc-eventscroll-cv" customClass="UDTopClipView">
+                                        <clipView key="contentView" drawsBackground="NO" id="GUV-sc-windowscroll-cv" customClass="UDTopClipView">
                                             <rect key="frame" x="0.0" y="0.0" width="260" height="486"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <view id="GUV-sc-eventdoc">
-                                                    <rect key="frame" x="0.0" y="0.0" width="245" height="647"/>
+                                                <view id="GUV-sc-windowdoc">
+                                                    <rect key="frame" x="0.0" y="0.0" width="245" height="1033"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                                     <subviews>
-                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-event">
-                                                            <rect key="frame" x="8" y="617" width="200" height="16"/>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-events">
+                                                            <rect key="frame" x="8" y="1003" width="200" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Event" id="GUV-sc-h-event-c">
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Events" id="GUV-sc-h-events-c">
+                                                                <font key="font" metaFont="systemBold"/>
+                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-l1">
+                                                            <rect key="frame" x="8" y="969" width="229" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="wordWrapping" alignment="left" title="The scripts the window runs: choose one to edit it below." id="GUV-sc-l1-c">
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <scrollView fixedFrame="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-events-s">
+                                                            <rect key="frame" x="8" y="843" width="229" height="120"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <clipView key="contentView" id="GUV-sc-events-cv">
+                                                                <rect key="frame" x="1" y="1" width="227" height="118"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <subviews>
+                                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="17" headerView="GUV-sc-events-h" id="GUV-sc-events">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="227" height="90"/>
+                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                        <size key="intercellSpacing" width="3" height="2"/>
+                                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                                        <tableColumns>
+                                                                        <tableColumn identifier="event" editable="NO" width="90" minWidth="30" maxWidth="1000" id="GUV-sc-events-event">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Event">
+                                                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                            </tableHeaderCell>
+                                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="GUV-sc-events-event-c">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                        </tableColumn>
+                                                                        <tableColumn identifier="does" editable="NO" width="140" minWidth="30" maxWidth="1000" id="GUV-sc-events-does">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Does">
+                                                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                            </tableHeaderCell>
+                                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="NO" title="Text Cell" id="GUV-sc-events-does-c">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                        </tableColumn>
+                                                                        </tableColumns>
+                                                                        <connections>
+                                                                            <outlet property="dataSource" destination="GUV-sc" id="GUV-sc-events-ds"/>
+                                                                            <outlet property="delegate" destination="GUV-sc" id="GUV-sc-events-dl"/>
+                                                                        </connections>
+                                                                    </tableView>
+                                                                </subviews>
+                                                            </clipView>
+                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-events-hs">
+                                                                <rect key="frame" x="1" y="103" width="227" height="16"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </scroller>
+                                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-events-vs">
+                                                                <rect key="frame" x="212" y="1" width="16" height="118"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </scroller>
+                                                            <tableHeaderView key="headerView" wantsLayer="YES" id="GUV-sc-events-h">
+                                                                <rect key="frame" x="0.0" y="0.0" width="227" height="28"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </tableHeaderView>
+                                                        </scrollView>
+                                                        <popUpButton toolTip="Add a script for one of the window's events" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-addevent">
+                                                            <rect key="frame" x="6" y="821" width="48" height="22"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="GUV-sc-addevent-c">
+                                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <menu key="menu" id="GUV-sc-addevent-m">
+                                                                    <items>
+                                                                    <menuItem title="+" hidden="YES" id="GUV-sc-addevent-i0"/>
+                                                                    </items>
+                                                                </menu>
+                                                            </popUpButtonCell>
+                                                        </popUpButton>
+                                                        <button toolTip="Take the chosen event's script off" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-removeevent">
+                                                            <rect key="frame" x="56" y="821" width="30" height="22"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="−" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-removeevent-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="removeEvent:" target="GUV-sc" id="GUV-sc-removeevent-a"/>
+                                                            </connections>
+                                                        </button>
+                                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-sep2">
+                                                            <rect key="frame" x="8" y="797" width="229" height="5"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        </box>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-event">
+                                                            <rect key="frame" x="8" y="777" width="200" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Script" id="GUV-sc-h-event-c">
                                                                 <font key="font" metaFont="systemBold"/>
                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-l2">
-                                                            <rect key="frame" x="8" y="596" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="756" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Event:" id="GUV-sc-l2-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1329,7 +1216,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <popUpButton toolTip="The event the script runs on" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-event">
-                                                            <rect key="frame" x="81" y="593" width="130" height="22"/>
+                                                            <rect key="frame" x="81" y="753" width="130" height="22"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="GUV-sc-event-c">
                                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1345,7 +1232,7 @@
                                                             </connections>
                                                         </popUpButton>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-eventparmlabel">
-                                                            <rect key="frame" x="8" y="568" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="728" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Time:" id="GUV-sc-eventparmlabel-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1354,7 +1241,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-eventparm">
-                                                            <rect key="frame" x="84" y="566" width="153" height="19"/>
+                                                            <rect key="frame" x="84" y="726" width="153" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-eventparm-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1366,7 +1253,7 @@
                                                             </connections>
                                                         </textField>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-eventhelp">
-                                                            <rect key="frame" x="8" y="527" width="229" height="30"/>
+                                                            <rect key="frame" x="8" y="687" width="229" height="30"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="wordWrapping" alignment="left" title="" id="GUV-sc-eventhelp-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1374,12 +1261,8 @@
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
-                                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-sep2">
-                                                            <rect key="frame" x="8" y="511" width="229" height="5"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                        </box>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-statements">
-                                                            <rect key="frame" x="8" y="491" width="200" height="16"/>
+                                                            <rect key="frame" x="8" y="665" width="200" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Statements" id="GUV-sc-h-statements-c">
                                                                 <font key="font" metaFont="systemBold"/>
@@ -1388,7 +1271,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <scrollView toolTip="What the script does, in order: an if's statements under it, its else after them. Drag a statement to move it." fixedFrame="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-statements-s">
-                                                            <rect key="frame" x="8" y="315" width="229" height="170"/>
+                                                            <rect key="frame" x="8" y="489" width="229" height="170"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <clipView key="contentView" id="GUV-sc-statements-cv">
                                                                 <rect key="frame" x="1" y="1" width="227" height="168"/>
@@ -1435,7 +1318,7 @@
                                                             </tableHeaderView>
                                                         </scrollView>
                                                         <popUpButton toolTip="Add a statement after the chosen one (into a chosen if, first)" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-addstatement">
-                                                            <rect key="frame" x="6" y="293" width="48" height="22"/>
+                                                            <rect key="frame" x="6" y="467" width="48" height="22"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="GUV-sc-addstatement-c">
                                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1448,7 +1331,7 @@
                                                             </popUpButtonCell>
                                                         </popUpButton>
                                                         <button toolTip="Take the chosen statement off" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-removestatement">
-                                                            <rect key="frame" x="56" y="293" width="30" height="22"/>
+                                                            <rect key="frame" x="56" y="467" width="30" height="22"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="−" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-removestatement-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1458,12 +1341,8 @@
                                                                 <action selector="removeStatement:" target="GUV-sc" id="GUV-sc-removestatement-a"/>
                                                             </connections>
                                                         </button>
-                                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-sep3">
-                                                            <rect key="frame" x="8" y="269" width="229" height="5"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                        </box>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-statement">
-                                                            <rect key="frame" x="8" y="249" width="200" height="16"/>
+                                                            <rect key="frame" x="8" y="437" width="200" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Statement" id="GUV-sc-h-statement-c">
                                                                 <font key="font" metaFont="systemBold"/>
@@ -1472,7 +1351,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-statementhelp">
-                                                            <rect key="frame" x="8" y="187" width="229" height="58"/>
+                                                            <rect key="frame" x="8" y="375" width="229" height="58"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="wordWrapping" alignment="left" title="" id="GUV-sc-statementhelp-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1481,7 +1360,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-conditionlabel">
-                                                            <rect key="frame" x="8" y="167" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="355" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Condition:" id="GUV-sc-conditionlabel-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1490,7 +1369,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-condition">
-                                                            <rect key="frame" x="84" y="165" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="353" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-condition-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1502,7 +1381,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Edit the condition" verticalHuggingPriority="750" fixedFrame="YES" tag="0" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-conditionexpr">
-                                                            <rect key="frame" x="213" y="164" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="352" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-conditionexpr-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1513,7 +1392,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel1">
-                                                            <rect key="frame" x="8" y="142" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="330" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel1-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1522,7 +1401,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm1">
-                                                            <rect key="frame" x="84" y="140" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="328" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm1-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1534,7 +1413,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick1">
-                                                            <rect key="frame" x="213" y="139" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="327" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick1-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1545,7 +1424,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel2">
-                                                            <rect key="frame" x="8" y="117" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="305" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel2-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1554,7 +1433,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm2">
-                                                            <rect key="frame" x="84" y="115" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="303" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm2-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1566,7 +1445,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick2">
-                                                            <rect key="frame" x="213" y="114" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="302" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick2-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1577,7 +1456,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel3">
-                                                            <rect key="frame" x="8" y="92" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="280" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel3-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1586,7 +1465,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm3">
-                                                            <rect key="frame" x="84" y="90" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="278" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm3-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1598,7 +1477,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick3">
-                                                            <rect key="frame" x="213" y="89" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="277" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick3-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1609,7 +1488,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel4">
-                                                            <rect key="frame" x="8" y="67" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="255" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel4-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1618,7 +1497,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm4">
-                                                            <rect key="frame" x="84" y="65" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="253" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm4-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1630,7 +1509,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick4">
-                                                            <rect key="frame" x="213" y="64" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="252" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick4-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1641,7 +1520,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel5">
-                                                            <rect key="frame" x="8" y="42" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="230" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel5-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1650,7 +1529,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm5">
-                                                            <rect key="frame" x="84" y="40" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="228" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm5-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1662,7 +1541,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick5">
-                                                            <rect key="frame" x="213" y="39" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="227" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick5-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1673,7 +1552,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmlabel6">
-                                                            <rect key="frame" x="8" y="17" width="72" height="16"/>
+                                                            <rect key="frame" x="8" y="205" width="72" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="right" title="Value:" id="GUV-sc-parmlabel6-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1682,7 +1561,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parm6">
-                                                            <rect key="frame" x="84" y="15" width="127" height="19"/>
+                                                            <rect key="frame" x="84" y="203" width="127" height="19"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="GUV-sc-parm6-c">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -1694,7 +1573,7 @@
                                                             </connections>
                                                         </textField>
                                                         <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-parmpick6">
-                                                            <rect key="frame" x="213" y="14" width="24" height="21"/>
+                                                            <rect key="frame" x="213" y="202" width="24" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-parmpick6-c">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1704,15 +1583,124 @@
                                                                 <action selector="pickParameter:" target="GUV-sc" id="GUV-sc-parmpick6-a"/>
                                                             </connections>
                                                         </button>
+                                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-sep1">
+                                                            <rect key="frame" x="8" y="178" width="229" height="5"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        </box>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-h-variables">
+                                                            <rect key="frame" x="8" y="158" width="200" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="Variables" id="GUV-sc-h-variables-c">
+                                                                <font key="font" metaFont="systemBold"/>
+                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <scrollView toolTip="definefloat, definevec4 or float: a variable of the window, its value an expression; the window and its scripts read it by name." fixedFrame="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-variables-s">
+                                                            <rect key="frame" x="8" y="42" width="229" height="110"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <clipView key="contentView" id="GUV-sc-variables-cv">
+                                                                <rect key="frame" x="1" y="1" width="227" height="108"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <subviews>
+                                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="YES" autosaveColumns="NO" rowHeight="17" headerView="GUV-sc-variables-h" id="GUV-sc-variables">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="227" height="80"/>
+                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                        <size key="intercellSpacing" width="3" height="2"/>
+                                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                                        <tableColumns>
+                                                                        <tableColumn identifier="kind" editable="YES" width="72" minWidth="30" maxWidth="1000" id="GUV-sc-variables-kind">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Kind">
+                                                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                            </tableHeaderCell>
+                                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-kind-c">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                        </tableColumn>
+                                                                        <tableColumn identifier="name" editable="YES" width="70" minWidth="30" maxWidth="1000" id="GUV-sc-variables-name">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
+                                                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                            </tableHeaderCell>
+                                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-name-c">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                        </tableColumn>
+                                                                        <tableColumn identifier="value" editable="YES" width="90" minWidth="30" maxWidth="1000" id="GUV-sc-variables-value">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Value">
+                                                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                            </tableHeaderCell>
+                                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="GUV-sc-variables-value-c">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                        </tableColumn>
+                                                                        </tableColumns>
+                                                                        <connections>
+                                                                            <outlet property="dataSource" destination="GUV-sc" id="GUV-sc-variables-ds"/>
+                                                                            <outlet property="delegate" destination="GUV-sc" id="GUV-sc-variables-dl"/>
+                                                                        </connections>
+                                                                    </tableView>
+                                                                </subviews>
+                                                            </clipView>
+                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-variables-hs">
+                                                                <rect key="frame" x="1" y="93" width="227" height="16"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </scroller>
+                                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-variables-vs">
+                                                                <rect key="frame" x="212" y="1" width="16" height="108"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </scroller>
+                                                            <tableHeaderView key="headerView" wantsLayer="YES" id="GUV-sc-variables-h">
+                                                                <rect key="frame" x="0.0" y="0.0" width="227" height="28"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </tableHeaderView>
+                                                        </scrollView>
+                                                        <segmentedControl toolTip="Add a variable, or take the chosen one off" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-addvariable">
+                                                            <rect key="frame" x="8" y="20" width="69" height="23"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="GUV-sc-addvariable-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <segments>
+                                                                    <segment label="+" width="32"/>
+                                                                    <segment label="-" width="32" tag="1"/>
+                                                                </segments>
+                                                            </segmentedCell>
+                                                            <connections>
+                                                                <action selector="addOrRemoveVariable:" target="GUV-sc" id="GUV-sc-addvariable-a"/>
+                                                            </connections>
+                                                        </segmentedControl>
+                                                        <button toolTip="Edit the chosen variable's value" verticalHuggingPriority="750" fixedFrame="YES" tag="0" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-sc-variableexpr">
+                                                            <rect key="frame" x="82" y="20" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="ƒ" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-sc-variableexpr-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="editVariable:" target="GUV-sc" id="GUV-sc-variableexpr-a"/>
+                                                            </connections>
+                                                        </button>
                                                     </subviews>
                                                 </view>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-eventscroll-hs">
+                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GUV-sc-windowscroll-hs">
                                             <rect key="frame" x="-100" y="-100" width="100" height="15"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-eventscroll-vs">
+                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="GUV-sc-windowscroll-vs">
                                             <rect key="frame" x="245" y="0.0" width="15" height="486"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>

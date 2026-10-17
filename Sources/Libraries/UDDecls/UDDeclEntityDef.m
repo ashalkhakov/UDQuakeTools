@@ -237,19 +237,35 @@ static NSMutableDictionary<NSString *, NSString *> *UDDictOfPairs(NSArray<UDEnti
 }
 
 // EClass_InitFromDict's EvarPrefixes: a spawnArg's description, by its type.
-- (NSString *)ud_helpForKey:(NSString *)key {
-    static NSString *const prefixes[] = {
-        @"editor_var ", @"editor_int ", @"editor_float ", @"editor_bool ", @"editor_color ",
-        @"editor_mat ", @"editor_model ", @"editor_gui ", @"editor_snd ",
-    };
+/// The editor_* keys' types, in the order Radiant looks for them.
+static NSArray<NSString *> *UDEditorKeyTypes(void) {
+    return @[@"var", @"int", @"float", @"bool", @"color", @"mat", @"model", @"gui", @"snd"];
+}
+
+/// The first editor_<type> key's type and help, of the decl or what it
+/// inherits, for @a key.
+- (nullable NSString *)ud_editorKey:(NSString *)key type:(NSString * _Nullable * _Nullable)type {
     NSMutableDictionary *dict = [self ud_resolvedDictOrder:[NSMutableArray array] from:[NSMutableDictionary dictionary]
                                                     unknown:[NSMutableArray array]
                                                     visited:[NSMutableSet setWithObject:self.name.lowercaseString ?: @""]];
-    for (size_t i = 0; i < sizeof(prefixes) / sizeof(prefixes[0]); i++) {
-        NSString *help = dict[[prefixes[i] stringByAppendingString:key].lowercaseString];
-        if (help != nil) return help;
+    for (NSString *kind in UDEditorKeyTypes()) {
+        NSString *help = dict[[NSString stringWithFormat:@"editor_%@ %@", kind, key].lowercaseString];
+        if (help != nil) {
+            if (type != NULL) *type = kind;
+            return help;
+        }
     }
     return nil;
+}
+
+- (NSString *)ud_helpForKey:(NSString *)key {
+    return [self ud_editorKey:key type:NULL];
+}
+
+- (NSString *)ud_editorTypeForKey:(NSString *)key {
+    NSString *type = nil;
+    [self ud_editorKey:key type:&type];
+    return type;
 }
 
 // DialogEntityDefEditor::PopulateLists: idDeclEntityDef::Parse's reading of

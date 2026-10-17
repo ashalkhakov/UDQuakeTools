@@ -364,6 +364,43 @@ Applys the given dictionary to the window
 
 @end
 
+@implementation rvGEScriptsModifier {
+    idDict *mVariables, *mScripts;
+    idDict *mUndoVariables, *mUndoScripts;
+}
+
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window variables:(idDict *)variables scripts:(idDict *)scripts {
+    self = [super initWithName:name window:window];
+    if (self) {
+        mVariables = [variables copy];
+        mScripts = [scripts copy];
+        mUndoVariables = [self.wrapper.variableDict copy];
+        mUndoScripts = [self.wrapper.scriptDict copy];
+    }
+    return self;
+}
+
+static void UDCopyDict(idDict *from, idDict *to) {
+    [to clear];
+    for (int i = 0; i < [from numKeyVals]; i++) {
+        [to set:[from keyAtIndex:i] value:[from valueAtIndex:i]];
+    }
+}
+
+- (BOOL)apply {
+    UDCopyDict(mVariables, self.wrapper.variableDict);
+    UDCopyDict(mScripts, self.wrapper.scriptDict);
+    return YES;
+}
+
+- (BOOL)undo {
+    UDCopyDict(mUndoVariables, self.wrapper.variableDict);
+    UDCopyDict(mUndoScripts, self.wrapper.scriptDict);
+    return YES;
+}
+
+@end
+
 @implementation rvGEModifierStack {
     NSMutableArray<rvGEModifier *> *mModifiers;
     int mCurrentModifier;

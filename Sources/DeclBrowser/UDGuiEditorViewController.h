@@ -45,6 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)addProperty:(nullable id)sender;
 /// The inspector's Properties shown (a window double-clicked).
 - (IBAction)showProperties:(nullable id)sender;
+/// The inspector's Scripts (GEItemScriptsDlg): the selected window's
+/// variables and scripts as text, applied as one Scripts Change.
+@property (strong) IBOutlet NSView *scriptsView;
+@property (weak) IBOutlet NSTextView *scriptsText;
+@property (weak) IBOutlet NSTextField *scriptsMessage;
+@property (weak) IBOutlet NSTextField *scriptsPlaceholder;
+- (IBAction)applyScripts:(nullable id)sender;
+- (IBAction)revertScripts:(nullable id)sender;
 /// The inspector's panes: the state, and the log.
 @property (strong) IBOutlet NSView *stateView;
 @property (strong) IBOutlet NSView *logView;

@@ -19,6 +19,10 @@ static NSString *const UDCanvasGui =
      "\t\trect\t100, 100, 200, 100\n"
      "\t\twindowDef Button {\n"
      "\t\t\trect\t10, 10, 50, 20\n"
+     "\t\t\tfloat\tspeed\t2\n"
+     "\t\t\tonAction {\n"
+     "\t\t\t\tset \"gui::clicked\" \"1\" ;\n"
+     "\t\t\t}\n"
      "\t\t}\n"
      "\t}\n"
      "\twindowDef Label {\n"
@@ -215,6 +219,39 @@ static NSString *const UDCanvasGui =
     XCTAssertEqual([self rectOf:@"Label"].x, 400, @"a Property Change is undone");
     [self.workspace.modifiers undo];
     XCTAssertEqualObjects([[self window:@"Label"] getWinVarByName:@"text"].string, @"ready");
+}
+
+#pragma mark - Scripts
+
+- (void)testAWindowsScriptsAreItsVariablesAndScripts {
+    NSString *text = [self.workspace scriptsTextOf:[self window:@"Button"]];
+    XCTAssertTrue([text hasPrefix:@"float\t\"speed\"\t2\n\n"], @"%@", text);
+    XCTAssertTrue([text containsString:@"onAction\n{"], @"%@", text);
+    XCTAssertTrue([text containsString:@"set \"gui::clicked\" \"1\" ;"], @"%@", text);
+}
+
+- (void)testScriptsAreAppliedAsOneEdit {
+    idWindow *button = [self window:@"Button"];
+    NSString *text = @"float\t\"speed\"\t3\n\n"
+                      "onAction\n{\n\tset \"gui::clicked\" \"2\" ;\n}\n\n"
+                      "onNamedEvent flash\n{\n\tset \"gui::flash\" \"1\" ;\n}\n";
+    NSString *message = nil;
+    XCTAssertTrue([self.workspace setScriptsText:text of:button message:&message], @"%@", message);
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:button];
+    XCTAssertEqualObjects([wrapper.variableDict getString:@"float\t\"speed\""], @"3");
+    XCTAssertNotNil([wrapper.scriptDict getString:@"onNamedEvent flash" defaultString:nil]);
+    XCTAssertTrue([self.workspace.text containsString:@"onNamedEvent flash"], @"written with the GUI");
+
+    [self.workspace.modifiers undo];
+    XCTAssertEqualObjects([wrapper.variableDict getString:@"float\t\"speed\""], @"2", @"a Scripts Change is undone");
+    XCTAssertNil([wrapper.scriptDict getString:@"onNamedEvent flash" defaultString:nil]);
+}
+
+- (void)testScriptsThatAreNotScriptsAreRefused {
+    NSString *message = nil;
+    XCTAssertFalse([self.workspace setScriptsText:@"onBogus\n{\n}\n" of:[self window:@"Button"] message:&message]);
+    XCTAssertTrue([message containsString:@"expected script name"], @"%@", message);
+    XCTAssertFalse([self.workspace.modifiers canUndo], @"and nothing is changed");
 }
 
 @end

@@ -144,6 +144,7 @@ static NSString *const UDViewerScript =
     UDWorkspaceWindowController *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    [controller showInspectorPaneTitled:@"State"];
     XCTAssertEqualObjects([self var:@"visible" of:@"Panel" in:editor], @"1");
     // a new key, named and given a value in the table
     NSSegmentedControl *plusMinus = [self segmentedControlWithAction:@selector(addOrRemoveStateKey:) inView:editor.stateView];
@@ -203,11 +204,11 @@ static NSString *const UDViewerScript =
     XCTAssertFalse([controller.inspectorPlaceholder isHidden], @"and the pane says so");
 
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 3u, @"a GUI has its properties, its state and its log");
+    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 4u, @"a GUI has its properties, its scripts, its state and its log");
     XCTAssertTrue([controller.inspectorPlaceholder isHidden]);
     XCTAssertEqual(editor.propertiesView.superview, controller.inspectorHost, @"the properties are shown first");
 
-    controller.inspectorTabBar.selectedIndex = 2;
+    controller.inspectorTabBar.selectedIndex = 3;
     [NSApp sendAction:@selector(inspectorTabChanged:) to:controller from:controller.inspectorTabBar];
     XCTAssertEqual(editor.logView.superview, controller.inspectorHost, @"the log, when it is chosen");
     XCTAssertNil(editor.propertiesView.superview);
@@ -492,6 +493,30 @@ static NSString *const UDViewerScript =
     [table.dataSource tableView:table setObjectValue:@"0.5" forTableColumn:[table tableColumnWithIdentifier:@"value"] row:row];
     XCTAssertGreaterThanOrEqual([self propertyRow:@"textscale" in:editor], 0, @"the new property is the window's");
     XCTAssertTrue([editor.designWorkspace.text containsString:@"textscale\t0.5"], @"%@", editor.designWorkspace.text);
+}
+
+#pragma mark - Scripts
+
+- (void)testTheChosenWindowsScriptsAreEditedAndApplied {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    XCTAssertFalse([editor.scriptsPlaceholder isHidden]);
+    [self chooseWindow:@"Go" in:editor];
+    NSString *text = editor.scriptsText.string;
+    XCTAssertTrue([text containsString:@"onAction"], @"%@", text);
+    XCTAssertTrue([text containsString:@"udtest_go"], @"%@", text);
+
+    editor.scriptsText.string = [text stringByReplacingOccurrencesOfString:@"udtest_go" withString:@"udtest_went"];
+    [editor applyScripts:nil];
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"udtest_went"], @"the scripts are the window's");
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Scripts Change");
+    [editor.editorDocument.undoManager undo];
+    XCTAssertTrue([editor.scriptsText.string containsString:@"udtest_go"], @"Undo shows the scripts as they were");
+
+    editor.scriptsText.string = @"onWhatever\n{\n}\n";
+    [editor applyScripts:nil];
+    XCTAssertTrue([editor.scriptsMessage.stringValue hasPrefix:@"Script error"], @"%@", editor.scriptsMessage.stringValue);
 }
 
 #pragma mark - GL

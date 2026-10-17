@@ -238,9 +238,11 @@ In order of value against cost; LOC is the MFC original's size.
       editing writes back as the engine's editor writes it (every retail
       GUI reads back the same), and a .gui's Design mode is its canvas —
       select (shift adds), move and size with the eight handles, snap to
-      the grid, each drag one Undo; Source and Run follow its edits. Next
-      on it: the navigator, the properties and scripts (inspector panes),
-      then insert, delete, z-order and copy/paste. The port interprets as well as draws: GUI scripts, named events,
+      the grid, each drag one Undo; Source and Run follow its edits. The
+      GUI's windows are a navigator in the left pane (a window's eye hides
+      it in the design, as the main menu's black curtain needs), and its
+      Properties and Scripts are inspector panes, each edit one Undo.
+      Next: insert, delete, z-order, align and copy/paste. The port interprets as well as draws: GUI scripts, named events,
       `onTime` timelines, transitions, mouse and keys run as in the game,
       so a GUI is fully interactive in the editor. Raven's editor only drew
       them, and its users named that as its main shortcoming. On the port: a

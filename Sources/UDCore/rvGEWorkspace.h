@@ -104,6 +104,15 @@ typedef NS_ENUM(int, rvGEModifierType) {
 /// values without their quotes, when one window is selected; else nil.
 - (nullable NSArray<NSArray<NSString *> *> *)properties;
 
+/// GEItemScriptsDlg's Init: @a window's variables ("definefloat\t\"x\"",
+/// a tab, its value), a blank line, its scripts (each its name on a line,
+/// its braced text after, a blank line).
+- (NSString *)scriptsTextOf:(idWindow *)window;
+/// GEItemScriptsDlg's Apply: @a text read into @a window's variables and
+/// scripts, as one undoable "Scripts Change" (the engine's changed them as
+/// they were); NO, and what is wrong in @a message, for text it cannot read.
+- (BOOL)setScriptsText:(NSString *)text of:(idWindow *)window message:(NSString *_Nullable *_Nullable)message;
+
 /// HideWindow, UnhideWindow, HideSelected, UnhideSelected.
 - (void)hideWindow:(idWindow *)window;
 - (void)unhideWindow:(idWindow *)window;

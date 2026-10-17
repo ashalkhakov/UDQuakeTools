@@ -11,6 +11,10 @@
 #import "idDict.h"
 #import "idLexer.h"
 #import "idStr.h"
+#import "UDDeclCodec.h"
+#import "idWinVar.h"
+#import "idToken.h"
+#import "idParser.h"
 #import "rvGEOptions.h"
 #import "rvGEModifier.h"
 #import "UDOverlay.h"
@@ -783,6 +787,170 @@ Add a state modifier for the given key / value pair
     [self.modifiers append:[[rvGEStateModifier alloc] initWithName:@"Property Change" window:mWrapper.window dict:tempstate]];
     self.modified = YES;
 
+    return YES;
+}
+
+#pragma mark - GEItemScriptsDlg
+
+/*
+================
+GEItescriptsDlg_Init
+
+Fills the scripts' text from the window's variables and scripts
+================
+*/
+- (NSString *)scriptsTextOf:(idWindow *)window {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    NSMutableString *script = [NSMutableString string];
+    int i;
+
+    for ( i = 0; i < [wrapper.variableDict numKeyVals]; i ++ ) {
+        [script appendString:[wrapper.variableDict keyAtIndex:i]];
+        [script appendString:@"\t"];
+        [script appendString:[wrapper.variableDict valueAtIndex:i]];
+        [script appendString:@"\n"];
+    }
+
+    if ( i ) {
+        [script appendString:@"\n"];
+    }
+
+    for ( i = 0; i < [wrapper.scriptDict numKeyVals]; i ++ ) {
+        [script appendFormat:@"%@\n", [wrapper.scriptDict keyAtIndex:i]];
+        [script appendString:[wrapper.scriptDict valueAtIndex:i]];
+        [script appendString:@"\n\n"];
+    }
+
+    return script;
+}
+
+/// The first error a parser's diagnostics say, with its line.
+static NSString *UDFirstError(NSArray<NSDictionary *> *diagnostics) {
+    for ( NSDictionary *d in diagnostics ) {
+        if ( [d[@"error"] boolValue] ) {
+            return [NSString stringWithFormat:@"line %@: %@", d[@"line"], d[@"message"]];
+        }
+    }
+    return nil;
+}
+
+/*
+================
+GEItescriptsDlg_Apply
+
+Applies the script text to the window's variables and scripts
+================
+*/
+- (BOOL)setScriptsText:(NSString *)parse of:(idWindow *)window message:(NSString **)message {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    idDict *variables = [[idDict alloc] init];
+    idDict *scripts = [[idDict alloc] init];
+
+    NSData *bytes __attribute__((objc_precise_lifetime)) = [parse ud_latin1Buffer];
+    // the engine's parser throws on an error; this one says so (in its
+    // diagnostics, given before the text is loaded)
+    idParser *src = [[idParser alloc] initWithFlags:LEXFL_ALLOWMULTICHARLITERALS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                         fileSystem:nil];
+    NSMutableArray<NSDictionary *> *diagnostics = [NSMutableArray array];
+    src.diagnostics = diagnostics;
+    [src loadMemory:bytes.bytes length:(int)bytes.length - 1 name:@"" error:NULL];
+    idToken token;
+    idToken_Init( &token );
+
+    #define UDFAIL(text) do { if ( message ) *message = (text); return NO; } while (0)
+
+    while ( [src readToken:&token error:NULL] ) {
+        NSString *scriptName = nil;
+        NSMutableString *out = [NSMutableString string];
+        NSString *tokenString = UDTokenLatin1String( &token );
+
+        if ( UDTokenIcmp( &token, "definevec4" ) ) {
+            idToken token2;
+            idToken_Init( &token2 );
+
+            if ( ![src readToken:&token2 error:NULL] ) {
+                UDFAIL( @"expected define name" );
+            }
+
+            idWinVec4 *var = [[idWinVec4 alloc] init];
+            idWindow *tempwin = [[idWindow alloc] initWithGui:self.interface];
+            int i;
+
+            [src setMarker];
+            for ( i = 0; i < 3; i ++ ) {
+                [tempwin parseExpression:src var:var component:0];
+                [src expectTokenString:@"," error:NULL];
+            }
+            [tempwin parseExpression:src var:var component:0];
+            [src stringFromMarker:out clean:YES error:NULL];
+            if ( UDFirstError( diagnostics ) ) UDFAIL( UDFirstError( diagnostics ) );
+
+            [variables set:[NSString stringWithFormat:@"%@\t\"%@\"", tokenString, UDTokenLatin1String( &token2 )] value:out];
+            continue;
+        }
+        else if ( UDTokenIcmp( &token, "definefloat" ) || UDTokenIcmp( &token, "float" ) ) {
+            idToken token2;
+            idToken_Init( &token2 );
+
+            if ( ![src readToken:&token2 error:NULL] ) {
+                UDFAIL( @"expected define name" );
+            }
+
+            idWinFloat *var = [[idWinFloat alloc] init];
+            idWindow *tempwin = [[idWindow alloc] initWithGui:self.interface];
+
+            [src setMarker];
+            [tempwin parseExpression:src var:var component:0];
+            [src stringFromMarker:out clean:YES error:NULL];
+            if ( UDFirstError( diagnostics ) ) UDFAIL( UDFirstError( diagnostics ) );
+
+            [variables set:[NSString stringWithFormat:@"%@\t\"%@\"", tokenString, UDTokenLatin1String( &token2 )] value:out];
+            continue;
+        }
+        // If the token is a scriptdef then just parse out the
+        // braced section and add it to the list.  Right now only
+        // one scriptdef per window is supported
+        else if ( UDTokenIcmp( &token, "scriptdef" ) ) {
+            scriptName = @"scriptDef";
+        }
+        else if ( UDTokenIcmp( &token, "ontime" ) ) {
+            if ( ![src readToken:&token error:NULL] ) {
+                UDFAIL( @"expected time" );
+            }
+            scriptName = [@"onTime " stringByAppendingString:UDTokenLatin1String( &token )];
+        }
+        // (the engine's "onEvent"; Parse's onNamedEvent, which the wrapper keeps)
+        else if ( UDTokenIcmp( &token, "onevent" ) || UDTokenIcmp( &token, "onnamedevent" ) ) {
+            if ( ![src readToken:&token error:NULL] ) {
+                UDFAIL( @"expected time" );
+            }
+            scriptName = [@"onNamedEvent " stringByAppendingString:UDTokenLatin1String( &token )];
+        }
+        else {
+            int i;
+            for ( i = 0; i < SCRIPT_COUNT; i ++ ) {
+                if ( [idWindow_ScriptNames[i] ud_iequals:tokenString] ) {
+                    scriptName = idWindow_ScriptNames[i];
+                    break;
+                }
+            }
+
+            if ( i >= SCRIPT_COUNT ) {
+                UDFAIL( ([NSString stringWithFormat:@"expected script name, not '%@'", tokenString]) );
+            }
+        }
+
+        if ( ![src parseBracedSectionExact:out tabs:1 error:NULL] || UDFirstError( diagnostics ) ) {
+            UDFAIL( UDFirstError( diagnostics ) ?: ([NSString stringWithFormat:@"%@: expected a braced script", scriptName]) );
+        }
+
+        [scripts set:scriptName value:out];
+    }
+    #undef UDFAIL
+
+    [self.modifiers append:[[rvGEScriptsModifier alloc] initWithName:@"Scripts Change" window:window variables:variables scripts:scripts]];
+    self.modified = YES;
+    (void)wrapper;
     return YES;
 }
 

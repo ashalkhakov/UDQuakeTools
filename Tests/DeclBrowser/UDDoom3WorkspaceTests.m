@@ -602,6 +602,40 @@ static BOOL UDHasStrayStateKeys(idWindow *window) {
     XCTAssertEqualObjects(strays, @[@"guis/mainmenu.gui"], @"the retail GUIs with stray tokens");
 }
 
+/// The mean brightness of what GL draws of the GUI (0-255).
+static double UDMeanBrightness(NSBitmapImageRep *rep) {
+    double sum = 0;
+    for (NSInteger y = 0; y < rep.pixelsHigh; y += 4) {
+        for (NSInteger x = 0; x < rep.pixelsWide; x += 4) {
+            const uint8_t *p = rep.bitmapData + y * rep.bytesPerRow + x * 4;
+            sum += (p[0] + p[1] + p[2]) / 3.0;
+        }
+    }
+    return sum / ((rep.pixelsHigh / 4) * (rep.pixelsWide / 4));
+}
+
+- (void)testTheRetailMainMenuIsDesignedWithItsCurtainHidden {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    [controller.window orderFront:nil];
+    UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
+    editor.modeControl.selectedSegment = 1;
+    [editor changeMode:editor.modeControl];
+    UDGuiGLView *gl = (UDGuiGLView *)editor.guiView.glView;
+    if (gl == nil) return;
+    double curtained = UDMeanBrightness([gl readPicture]);
+
+    // BlackFade, the screen's last and topmost window, hidden in the navigator
+    idWindow *curtain = [[editor.designWorkspace.interface getDesktop] findChildByName:@"BlackFade"].win;
+    XCTAssertNotNil(curtain);
+    NSOutlineView *outline = editor.windowsOutline;
+    [outline.dataSource outlineView:outline setObjectValue:@NO forTableColumn:[outline tableColumnWithIdentifier:@"visible"] byItem:curtain];
+    double shown = UDMeanBrightness([gl readPicture]);
+    XCTAssertLessThan(curtained, 1.0, @"at time 0 the menu is behind its black curtain, as in the engine's editor");
+    XCTAssertGreaterThan(shown, 5.0, @"hidden, the menu is there to design");
+}
+
 #pragma mark - Editing
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {

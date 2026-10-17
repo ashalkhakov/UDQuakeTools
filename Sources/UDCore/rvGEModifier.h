@@ -58,6 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithName:(NSString *)name window:(idWindow *)window dict:(idDict *)dict;
 @end
 
+/// Not in the engine (its scripts dialog changed the dicts as they were,
+/// with no undo): a window's variables and scripts as @a variables and
+/// @a scripts have them, undone as one.
+@interface rvGEScriptsModifier : rvGEModifier
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window variables:(idDict *)variables scripts:(idDict *)scripts;
+@end
+
 /// rvGEModifierStack
 @interface rvGEModifierStack : NSObject
 

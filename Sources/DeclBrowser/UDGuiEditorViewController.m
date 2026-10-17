@@ -48,6 +48,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// no value yet).
 @property (nonatomic, copy, nullable) NSArray<NSArray<NSString *> *> *propertyRows;
 @property (nonatomic, copy, nullable) NSString *pendingProperty;
+/// The window whose scripts the Scripts show, and their text as shown.
+@property (nonatomic, weak, nullable) idWindow *scriptsWindow;
+@property (nonatomic, copy, nullable) NSString *scriptsShownText;
 @end
 
 @implementation UDGuiEditorViewController {
@@ -76,7 +79,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [self _design];
     self.windowsOutline.target = self;
     self.windowsOutline.doubleAction = @selector(showProperties:);
+    self.scriptsText.font = [NSFont userFixedPitchFontOfSize:11];
     [self _updateProperties];
+    [self _updateScripts:YES];
 
     // a canvas edited since its text was shown saves its text
     if ([self.document isKindOfClass:[UDTextFileDocument class]]) {
@@ -148,6 +153,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     if (_panes == nil) {
         _panes = @[
             [UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.propertiesView],
+            [UDEditorPane paneWithTitle:@"Scripts" letters:@"Sc" red:0.70 green:0.50 blue:0.30 view:self.scriptsView],
             [UDEditorPane paneWithTitle:@"State" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.stateView],
             [UDEditorPane paneWithTitle:@"Log" letters:@"L" red:0.55 green:0.45 blue:0.30 view:self.logView],
         ];
@@ -385,6 +391,55 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [self _updateProperties];
 }
 
+#pragma mark - Scripts (GEItemScriptsDlg)
+
+/// The one selected window's scripts in the text, unless the text is
+/// being edited (and @a always is NO); the placeholder for none or many.
+- (void)_updateScripts:(BOOL)always {
+    NSTextView *textView = self.scriptsText;
+    if (textView == nil) return;
+    rvGEWorkspace *design = self.designWorkspace;
+    idWindow *window = [design.selections num] == 1 ? design.selections[0] : nil;
+    BOOL edited = self.scriptsShownText != nil && ![textView.string isEqualToString:self.scriptsShownText];
+    if (!always && edited && window == self.scriptsWindow) return;
+    self.scriptsWindow = window;
+    self.scriptsPlaceholder.hidden = window != nil;
+    textView.enclosingScrollView.hidden = window == nil;
+    NSString *text = window != nil ? [design scriptsTextOf:window] : @"";
+    [self _forgetScriptsTyping];
+    textView.string = text;
+    self.scriptsShownText = text;
+    self.scriptsMessage.stringValue = @"";
+}
+
+/// The text view's own edits off the document's undo stack (the design's
+/// edits are on it).
+- (void)_forgetScriptsTyping {
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager removeAllActionsWithTarget:self.scriptsText.textStorage];
+    [undoManager removeAllActionsWithTarget:self.scriptsText];
+}
+
+- (IBAction)applyScripts:(id)sender {
+    idWindow *window = self.scriptsWindow;
+    if (window == nil) {
+        NSBeep();
+        return;
+    }
+    NSString *message = nil;
+    if (![self.designWorkspace setScriptsText:self.scriptsText.string of:window message:&message]) {
+        // the engine's "Script Error" box, in the pane
+        self.scriptsMessage.stringValue = [NSString stringWithFormat:@"Script error: %@", message ?: @""];
+        NSBeep();
+        return;
+    }
+    [self _updateScripts:YES];
+}
+
+- (IBAction)revertScripts:(id)sender {
+    [self _updateScripts:YES];
+}
+
 #pragma mark - Editor | Source
 
 - (void)setShowsSource:(BOOL)showsSource {
@@ -541,8 +596,14 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.designDirty = YES;
     // the navigator's rows (hidden, shown), but for a drag's every step
     if (self.designWorkspace.dragType == HT_NONE) {
+        // (GNUstep's reloadData drops the selection, and says so: the
+        // design's is not to follow it)
+        self.syncingWindows = YES;
         [self.windowsOutline reloadData];
+        self.syncingWindows = NO;
+        [self _updateNavigatorSelections];
         [self _updateProperties];
+        [self _updateScripts:NO];
     }
     // the source, if it is up and not edited, shows it
     if (self.showsSource && [self.editorTextView.string isEqualToString:self.shownText]) {
@@ -560,6 +621,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.pendingProperty = nil;
     self.propertiesMessage.stringValue = @"";
     [self _updateProperties];
+    [self _updateScripts:NO];
     if (self.designing) {
         [self _renderDesign];
     }

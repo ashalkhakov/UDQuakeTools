@@ -25,6 +25,10 @@
                 <outlet property="propertiesTable" destination="GUV-prop" id="GUV-o-propTable"/>
                 <outlet property="propertiesMessage" destination="GUV-prop-msg" id="GUV-o-propMsg"/>
                 <outlet property="propertiesPlaceholder" destination="GUV-prop-none" id="GUV-o-propNone"/>
+                <outlet property="scriptsView" destination="GUV-scr-v" id="GUV-o-scrView"/>
+                <outlet property="scriptsText" destination="GUV-scr-text" id="GUV-o-scrText"/>
+                <outlet property="scriptsMessage" destination="GUV-scr-msg" id="GUV-o-scrMsg"/>
+                <outlet property="scriptsPlaceholder" destination="GUV-scr-none" id="GUV-o-scrNone"/>
                 <outlet property="logView" destination="GUV-tab-log-v" id="GUV-o-logView"/>
             </connections>
         </customObject>
@@ -413,6 +417,82 @@
                     <rect key="frame" x="10" y="250" width="240" height="16"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Select one window to see its properties" id="GUV-prop-none-c">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+        </customView>
+        <customView id="GUV-scr-v" userLabel="Scripts">
+            <rect key="frame" x="0.0" y="0.0" width="260" height="510"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="YES" hasVerticalScroller="YES" id="GUV-scr-s">
+                    <rect key="frame" x="0.0" y="50" width="260" height="460"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" copiesOnScroll="NO" id="GUV-scr-cv">
+                        <rect key="frame" x="1" y="1" width="243" height="443"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" id="GUV-scr-text">
+                                <rect key="frame" x="0.0" y="0.0" width="243" height="443"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                <size key="minSize" width="243" height="443"/>
+                                <size key="maxSize" width="10000000" height="10000000"/>
+                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                <connections>
+                                    <outlet property="delegate" destination="-2" id="GUV-scr-text-dl"/>
+                                </connections>
+                            </textView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="GUV-scr-hs">
+                        <rect key="frame" x="1" y="444" width="243" height="15"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    </scroller>
+                    <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="GUV-scr-vs">
+                        <rect key="frame" x="244" y="1" width="15" height="443"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
+                    </scroller>
+                </scrollView>
+                <button toolTip="Read the text into the window's variables and scripts" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-scr-apply">
+                    <rect key="frame" x="-6" y="16" width="80" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Apply" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-scr-apply-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="applyScripts:" target="-2" id="GUV-scr-apply-a"/>
+                    </connections>
+                </button>
+                <button toolTip="The window's scripts as they are" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-scr-revert">
+                    <rect key="frame" x="68" y="16" width="84" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Revert" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GUV-scr-revert-c">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="revertScripts:" target="-2" id="GUV-scr-revert-a"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-scr-msg">
+                    <rect key="frame" x="0.0" y="2" width="260" height="16"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" title="" id="GUV-scr-msg-c">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-scr-none">
+                    <rect key="frame" x="10" y="250" width="240" height="16"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Select one window to see its scripts" id="GUV-scr-none-c">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

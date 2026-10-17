@@ -9,6 +9,8 @@
 
 static UDDiagnosticSource const UDMaterialParseSource = @"parse";
 static UDDiagnosticSource const UDMaterialImagesSource = @"references";
+/// A stage dragged in the list: its row.
+static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.material-stage-row";
 
 @interface UDMaterialEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDTransportController *transport;
@@ -16,6 +18,7 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
 @property (nonatomic, strong, nullable) UDMaterialParser *parser;
 @property (nonatomic) BOOL observingSelection;
 @property (nonatomic, strong, readwrite, nullable) UDParticlePreview *materialPreview;
+@property (nonatomic, copy) NSArray<UDEditorPane *> *panes;
 @end
 
 @implementation UDMaterialEditorViewController
@@ -32,6 +35,26 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
     [super viewDidLoad];
     [self.stagesController addObserver:self forKeyPath:@"selectionIndexes" options:0 context:NULL];
     self.observingSelection = YES;
+    [self.stagesTable registerForDraggedTypes:@[UDMaterialStageRowType]];
+    // each column from its top
+    for (NSScrollView *scroll in @[self.materialScroll ?: [NSNull null], self.stageScroll ?: [NSNull null]]) {
+        if (![scroll isKindOfClass:[NSScrollView class]]) continue;
+        NSView *document = scroll.documentView;
+        [document scrollPoint:NSMakePoint(0, NSMaxY(document.bounds))];
+    }
+    [self showInspector];
+}
+
+- (NSArray<UDEditorPane *> *)inspectorPanes {
+    if (self.panes == nil && self.inspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    }
+    return self.panes ?: @[];
+}
+
+/// The inspector: the selected stage's keywords, or the material's.
+- (void)showInspector {
+    [self.inspectorTabs selectTabViewItemWithIdentifier:[self selectedStage] != NSNotFound ? @"stage" : @"material"];
 }
 
 - (void)dealloc {
@@ -40,14 +63,14 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (object == self.stagesController) {
+        [self showInspector];
         [self showPreview];
     }
 }
 
 - (void)declDidLoad {
-    if (self.material.stages.count > 0) {
-        [self.stagesController setSelectionIndex:0];
-    }
+    // the material's keywords first, no stage chosen
+    [self.stagesController setSelectionIndexes:[NSIndexSet indexSet]];
     if (self.materialPreviewView != nil) {
         self.materialPreview = [[UDParticlePreview alloc] initWithImageView:self.materialPreviewView workspace:self.workspace];
         self.materialPreview.materialName = self.material.name;
@@ -183,6 +206,45 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
     return [NSString stringWithFormat:@"stage %ld", (long)row];
 }
 
+#pragma mark - Dragging a stage to another place (MaterialDoc's MoveStage)
+
+- (BOOL)tableView:(NSTableView *)tableView writeRowsWithIndexes:(NSIndexSet *)rows toPasteboard:(NSPasteboard *)pasteboard {
+    if (rows.count != 1) return NO;
+    [pasteboard declareTypes:@[UDMaterialStageRowType] owner:nil];
+    [pasteboard setString:[NSString stringWithFormat:@"%lu", (unsigned long)rows.firstIndex] forType:UDMaterialStageRowType];
+    return YES;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row
+       proposedDropOperation:(NSTableViewDropOperation)operation {
+    if ([info draggingSource] != tableView || [[info draggingPasteboard] stringForType:UDMaterialStageRowType] == nil) {
+        return NSDragOperationNone;
+    }
+    [tableView setDropRow:row dropOperation:NSTableViewDropAbove];
+    return NSDragOperationMove;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row
+    dropOperation:(NSTableViewDropOperation)operation {
+    NSString *from = [[info draggingPasteboard] stringForType:UDMaterialStageRowType];
+    if (from == nil) return NO;
+    return [self moveStageAtIndex:(NSUInteger)from.integerValue toRow:(NSUInteger)row];
+}
+
+/// The stage at @a index to before row @a row (as a drop above it puts it),
+/// a place at a time, as MoveStage moves it; it is the selection after.
+- (BOOL)moveStageAtIndex:(NSUInteger)index toRow:(NSUInteger)row {
+    NSUInteger count = self.material.stages.count;
+    if (index >= count || row > count) return NO;
+    NSUInteger to = row > index ? row - 1 : row;
+    if (to == index) return NO;
+    for (NSUInteger at = index; at != to; at = to > at ? at + 1 : at - 1) {
+        [self.material ud_exchangeStageAtIndex:at withStageAtIndex:to > at ? at + 1 : at - 1];
+    }
+    [self.stagesController setSelectionIndex:to];
+    return YES;
+}
+
 #pragma mark - What the engine says
 
 - (void)reparse {
@@ -220,7 +282,6 @@ static UDDiagnosticSource const UDMaterialImagesSource = @"references";
 - (void)revealDiagnostic:(UDDiagnosticItem *)diagnostic {
     NSNumber *row = [self targetForDiagnostic:diagnostic];
     if (row == nil || row.unsignedIntegerValue >= self.material.stages.count) return;
-    [self.tabView selectTabViewItemWithIdentifier:@"stages"];
     [self.stagesController setSelectionIndex:row.unsignedIntegerValue];
     [self.stagesTable scrollRowToVisible:row.integerValue];
     [self.view.window makeFirstResponder:self.stagesTable];

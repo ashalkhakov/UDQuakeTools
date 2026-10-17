@@ -590,10 +590,23 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
 
     XCTAssertEqual(editor.actionsTable.numberOfRows, 3);
-    XCTAssertEqual(editor.actionsController.selectionIndex, 0U, @"its first action shown");
-    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"kind" inView:editor.view]).titleOfSelectedItem, @"light");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"data" inView:editor.view]).stringValue, @"lights/udtest_missing");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"lightRadius" inView:editor.view]).stringValue, @"64");
+    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"fx", @"the FX's keywords first");
+    XCTAssertNotNil([self viewWithToolTip:@"bindTo" inView:editor.inspectorView]);
+    [editor.actionsController setSelectionIndex:0];
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"action", @"an action chosen: its keywords");
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewWithToolTip:@"kind" inView:editor.inspectorView]).titleOfSelectedItem, @"light");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"data" inView:editor.inspectorView]).stringValue, @"lights/udtest_missing");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"lightRadius" inView:editor.inspectorView]).stringValue, @"64");
+
+    // dragged last
+    XCTAssertTrue([editor moveActionAtIndex:0 toRow:3]);
+    XCTAssertEqualObjects([editor.fx.actions valueForKey:@"kind"], (@[@"uselight", @"particle", @"light"]));
+    XCTAssertEqual(editor.actionsController.selectionIndex, 2U);
+    [editor.editingContext processPendingChanges];
+    [editor.editorDocument.undoManager undo];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects([editor.fx.actions valueForKey:@"kind"], (@[@"light", @"uselight", @"particle"]), @"undone");
 
     NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
     XCTAssertEqualObjects(messages, (@[
@@ -608,6 +621,7 @@ static NSString *const UDFixtureParticles =
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
+    [editor.actionsController setSelectionIndex:0];
 
     id selection = editor.actionsController.selection;
     id value = @"soon";
@@ -739,11 +753,16 @@ static NSString *const UDFixtureParticles =
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
 
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"materialDescription" inView:editor.view]).stringValue, @"Glow");
-    [editor.tabView selectTabViewItemWithIdentifier:@"stages"];
+    // the material's keywords in the inspector, no stage chosen
+    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"material");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"materialDescription" inView:editor.inspectorView]).stringValue, @"Glow");
     XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
-    XCTAssertEqual(editor.stagesController.selectionIndex, 0U, @"its first stage shown");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"map" inView:editor.view]).stringValue, @"textures/udtest/glow.tga");
+    XCTAssertEqual(editor.stagesController.selectionIndex, (NSUInteger)NSNotFound);
+    // a stage chosen in the centre: its keywords there instead
+    [editor.stagesController setSelectionIndex:0];
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"stage");
+    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"map" inView:editor.inspectorView]).stringValue, @"textures/udtest/glow.tga");
     XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:[editor.stagesTable tableColumnWithIdentifier:@"stage"] row:0],
                           @"stage 0");
 
@@ -754,7 +773,32 @@ static NSString *const UDFixtureParticles =
 
     UDMaterialEditorViewController *lost = [self openMaterial:@"textures/udtest/lost" in:controller];
     XCTAssertEqualObjects([lost.diagnosticStore.allDiagnostics valueForKey:@"message"], (@[@"Couldn't load image: textures/udtest/missing"]));
+    [lost.stagesController setSelectionIndex:0];
     XCTAssertEqualObjects(lost.previewLabel.stringValue, @"Couldn't load image: textures/udtest/missing");
+}
+
+- (void)testAStageIsDraggedToAnotherPlace {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
+    if (editor == nil) return;
+    NSPopUpButton *lighting = [self viewWithToolTip:@"add lighting stage" inView:editor.view];
+    for (NSInteger tag = 1; tag <= 2; tag++) {
+        [lighting selectItemWithTag:tag];
+        [NSApp sendAction:@selector(addLightingStage:) to:editor from:lighting];
+    }
+    NSTableColumn *names = [editor.stagesTable tableColumnWithIdentifier:@"stage"];
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:names row:1], @"bumpmap");
+    // the first, dropped above the last row's end: last
+    XCTAssertTrue([editor moveStageAtIndex:0 toRow:3]);
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:names row:0], @"bumpmap");
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:names row:1], @"diffusemap");
+    XCTAssertEqual(editor.stagesController.selectionIndex, 2U, @"the moved stage chosen");
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"stage");
+    XCTAssertFalse([editor moveStageAtIndex:2 toRow:3], @"where it is");
+    [editor.editingContext processPendingChanges];
+    [editor.editorDocument.undoManager undo];
+    [editor.editingContext processPendingChanges];
+    XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:names row:0], @"stage 0", @"undone");
 }
 
 - (void)testEditingAMaterialChangesOnlyWhatIsEdited {
@@ -763,6 +807,7 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
 
     // As a binding sets them: through the controllers' selections.
+    [editor.stagesController setSelectionIndex:0];
     [editor.objectController setValue:@"Bright glow" forKeyPath:@"selection.materialDescription"];
     [editor.objectController setValue:@YES forKeyPath:@"selection.twoSided"];
     [editor.objectController setValue:@"metal" forKeyPath:@"selection.surfaceType"];
@@ -775,7 +820,6 @@ static NSString *const UDFixtureParticles =
                           @"the Issues follow the edits");
 
     // A bump map, the stage copied and pasted after it, moved up.
-    [editor.tabView selectTabViewItemWithIdentifier:@"stages"];
     NSPopUpButton *lighting = [self viewWithToolTip:@"add lighting stage" inView:editor.view];
     [lighting selectItemWithTag:1];
     [NSApp sendAction:@selector(addLightingStage:) to:editor from:lighting];
@@ -871,7 +915,6 @@ static NSString *const UDFixtureParticles =
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
     XCTAssertNotNil(editor.materialPreview);
-    [editor.tabView selectTabViewItemWithIdentifier:@"preview"];
     [editor.materialPreview renderAtTime:0];
     XCTAssertEqualObjects(editor.lightingLabel.stringValue, @"glprogs/interaction.vfp: File not found",
                           @"no game program here: not lit, and why");

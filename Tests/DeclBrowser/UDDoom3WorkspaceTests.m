@@ -173,11 +173,11 @@
     if (![editor isKindOfClass:[UDMaterialEditorViewController class]]) return;
     UDMaterialEditorViewController *material = (UDMaterialEditorViewController *)editor;
     XCTAssertGreaterThan(material.material.stages.count, 0U);
+    [material.stagesController setSelectionIndex:0];
     XCTAssertNotNil(material.previewView.image, @"its first stage's image, from the paks: %@", material.previewLabel.stringValue);
     XCTAssertEqual(material.diagnosticStore.allDiagnostics.count, 0U, @"%@", [material.diagnosticStore.allDiagnostics valueForKey:@"message"]);
 
     // Lit by the game's own interaction.vfp: its bump, diffuse and specular.
-    [material.tabView selectTabViewItemWithIdentifier:@"preview"];
     [material.materialPreview renderAtTime:0];
     XCTAssertEqualObjects(material.lightingLabel.stringValue, @"", @"interaction.vfp from pak000, run");
     NSBitmapImageRep *rep = (NSBitmapImageRep *)material.materialPreviewView.image.representations.firstObject;

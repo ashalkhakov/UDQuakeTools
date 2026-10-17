@@ -8,10 +8,14 @@
 #import "UDTransportController.h"
 
 static UDDiagnosticSource const UDFXReferencesSource = @"references";
+/// An action dragged in the list: its row.
+static NSPasteboardType const UDFXActionRowType = @"org.udquaketools.fx-action-row";
 
 @interface UDFXEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDTransportController *transport;
 @property (nonatomic, strong, readwrite, nullable) UDParticlePreview *preview;
+@property (nonatomic, copy, nullable) NSArray<UDEditorPane *> *panes;
+@property (nonatomic) BOOL observingSelection;
 @end
 
 @implementation UDFXEditorViewController
@@ -24,10 +28,47 @@ static UDDiagnosticSource const UDFXReferencesSource = @"references";
     return (UDDeclFX *)self.declObject;
 }
 
-- (void)declDidLoad {
-    if (self.fx.actions.count > 0) {
-        [self.actionsController setSelectionIndex:0];
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.actionsController addObserver:self forKeyPath:@"selectionIndexes" options:0 context:NULL];
+    self.observingSelection = YES;
+    [self.actionsTable registerForDraggedTypes:@[UDFXActionRowType]];
+    // each column from its top
+    for (NSScrollView *scroll in @[self.effectScroll ?: [NSNull null], self.actionScroll ?: [NSNull null]]) {
+        if (![scroll isKindOfClass:[NSScrollView class]]) continue;
+        NSView *document = scroll.documentView;
+        [document scrollPoint:NSMakePoint(0, NSMaxY(document.bounds))];
     }
+    [self showInspector];
+}
+
+- (void)dealloc {
+    if (_observingSelection) [_actionsController removeObserver:self forKeyPath:@"selectionIndexes"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (object == self.actionsController) {
+        [self showInspector];
+    }
+}
+
+- (NSArray<UDEditorPane *> *)inspectorPanes {
+    if (self.panes == nil && self.inspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    }
+    return self.panes ?: @[];
+}
+
+/// The inspector: the selected action's keywords, or the FX's.
+- (void)showInspector {
+    NSUInteger selected = self.actionsController.selectionIndex;
+    BOOL action = selected != NSNotFound && selected < self.fx.actions.count;
+    [self.inspectorTabs selectTabViewItemWithIdentifier:action ? @"action" : @"fx"];
+}
+
+- (void)declDidLoad {
+    // the FX's keywords first, no action chosen
+    [self.actionsController setSelectionIndexes:[NSIndexSet indexSet]];
     if (self.previewView != nil) {
         self.preview = [[UDParticlePreview alloc] initWithImageView:self.previewView workspace:self.workspace];
         self.preview.target = self;
@@ -82,6 +123,53 @@ static UDDiagnosticSource const UDFXReferencesSource = @"references";
     } else {
         NSBeep();
     }
+}
+
+#pragma mark - Dragging an action to another place
+
+// The rows are the array controller's (the content binding).
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    return (NSInteger)[self.actionsController.arrangedObjects count];
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    return nil;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView writeRowsWithIndexes:(NSIndexSet *)rows toPasteboard:(NSPasteboard *)pasteboard {
+    if (rows.count != 1) return NO;
+    [pasteboard declareTypes:@[UDFXActionRowType] owner:nil];
+    [pasteboard setString:[NSString stringWithFormat:@"%lu", (unsigned long)rows.firstIndex] forType:UDFXActionRowType];
+    return YES;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row
+       proposedDropOperation:(NSTableViewDropOperation)operation {
+    if ([info draggingSource] != tableView || [[info draggingPasteboard] stringForType:UDFXActionRowType] == nil) {
+        return NSDragOperationNone;
+    }
+    [tableView setDropRow:row dropOperation:NSTableViewDropAbove];
+    return NSDragOperationMove;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row
+    dropOperation:(NSTableViewDropOperation)operation {
+    NSString *from = [[info draggingPasteboard] stringForType:UDFXActionRowType];
+    if (from == nil) return NO;
+    return [self moveActionAtIndex:(NSUInteger)from.integerValue toRow:(NSUInteger)row];
+}
+
+- (BOOL)moveActionAtIndex:(NSUInteger)index toRow:(NSUInteger)row {
+    NSMutableArray<UDFXAction *> *actions = [self.fx.actions mutableCopy];
+    if (index >= actions.count || row > actions.count) return NO;
+    NSUInteger to = row > index ? row - 1 : row;
+    if (to == index) return NO;
+    UDFXAction *action = actions[index];
+    [actions removeObjectAtIndex:index];
+    [actions insertObject:action atIndex:to];
+    self.fx.actions = actions;
+    [self.actionsController setSelectionIndex:to];
+    return YES;
 }
 
 #pragma mark - References

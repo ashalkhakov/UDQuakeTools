@@ -6,8 +6,8 @@
 #import "UDArchiveBrowserController.h"
 #import "UDArchive.h"
 #import "UDArchiveEditor.h"
-#import "../UDFormats/UDArchiveCodec.h"
-#import "../UDFormats/UDCodecRegistry.h"
+#import "UDArchiveCodec.h"
+#import "UDCodecRegistry.h"
 #import "UDGameDetectionService.h"
 
 @implementation UDArchiveDocument

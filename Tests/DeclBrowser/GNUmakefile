@@ -16,8 +16,8 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-UDCORE_DIR = ../../Sources/UDCore
-include $(UDCORE_DIR)/UDCore.include.make
+UDLIBS_DIR = ../../Sources/Libraries
+include $(UDLIBS_DIR)/Libraries.make
 DECLBROWSER_DIR = ../../Sources/DeclBrowser
 include $(DECLBROWSER_DIR)/DeclBrowser.include.make
 
@@ -28,6 +28,7 @@ APP_DIR = ../../Sources/DeclBrowser
 # runner's, and the app delegate with the updater it starts, which the cases
 # never use. Keep in sync with $(APP_DIR)/GNUmakefile.
 DeclBrowserTests_OBJC_FILES = \
+    $(APP_DIR)/Compat/UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m \
     UDDeclBrowserTestCase.m \
     UDPDAEditorTests.m \
     UDTableSkinEditorTests.m \
@@ -82,8 +83,7 @@ DeclBrowserTests_OBJC_FILES = \
 DeclBrowserTests_INCLUDE_DIRS = \
     -I. \
     $(DECLBROWSER_INCLUDE_DIRS) \
-    $(UDCORE_INCLUDE_DIRS) \
-    -I../../Sources/UDFormats
+    $(UDLIBS_INCLUDE_DIRS)
 
 # The app loads its nibs with -bundleForClass:, which resolves to this
 # bundle (where its classes now live) rather than to DeclBrowser.app.
@@ -109,14 +109,14 @@ DeclBrowserTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/en.lproj/UDImageViewerView.xib \
     $(APP_DIR)/en.lproj/UDTextEditorView.xib
 
-DeclBrowserTests_XCDATAMODELD_FILES = ../../Sources/UDCore/Decls/DeclModel.xcdatamodeld
+DeclBrowserTests_XCDATAMODELD_FILES = ../../Sources/Libraries/UDDecls/DeclModel.xcdatamodeld
 DeclBrowserTests_NEEDS_GUI = yes
 
 # CoreData is provided by FreeCoreData on GNUstep.
 ADDITIONAL_NATIVE_LIBS += CoreData
-# UDCore from the tree, built first (the root GNUmakefile).
-ADDITIONAL_LIB_DIRS += -L../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch -lBlocksRuntime
+# the libraries from the tree, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
+ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch -lBlocksRuntime
 
 # The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
 # GLX and GL's headers are here (libgl-dev); without them it draws in
@@ -135,7 +135,7 @@ TEST_TIMEOUT ?= 900
 .PHONY: run-tests
 run-tests: all $(BUNDLE_NAME).bundle
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
-	LD_LIBRARY_PATH="$(CURDIR)/../../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit:$(CURDIR)/../../tree-sitter-idscript:$(CURDIR)/../../tree-sitter-iddecl" \
 	UD_SCRIPT_LSP="$(CURDIR)/../../Sources/Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp" \
 	timeout -s ABRT $(TEST_TIMEOUT) $(XCTEST) "$(BUNDLE_NAME).bundle"

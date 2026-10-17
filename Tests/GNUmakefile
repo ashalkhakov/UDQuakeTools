@@ -8,8 +8,8 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-UDCORE_DIR = ../Sources/UDCore
-include $(UDCORE_DIR)/UDCore.include.make
+UDLIBS_DIR = ../Sources/Libraries
+include $(UDLIBS_DIR)/Libraries.make
 
 UDQuakeToolsTests_OBJC_FILES = \
     UDScriptEventsTests.m \
@@ -35,23 +35,22 @@ UDQuakeToolsTests_OBJC_FILES = \
     UDZipFixture.m
 
 UDQuakeToolsTests_INCLUDE_DIRS = \
-    $(UDCORE_INCLUDE_DIRS) \
-    -I../Sources/UDFormats \
+    $(UDLIBS_INCLUDE_DIRS) \
     -I../Sources/LSPServerKit \
     -I../Sources/Tools/udscript-lsp
 
 # The incremental-store tests need the compiled data model in the test
 # bundle's resources (Xcode does the same for the Mac test target).
-UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/UDCore/Decls/DeclModel.xcdatamodeld
+UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/Libraries/UDDecls/DeclModel.xcdatamodeld
 
 # CoreData is provided by FreeCoreData on GNUstep
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-# UDCore and LSPServerKit from the tree, built first (the root GNUmakefile);
+# the libraries and LSPServerKit from the tree, built first (the root GNUmakefile);
 # udscript-lsp's server is tested here, compiled in.
-ADDITIONAL_LIB_DIRS += -L../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME) -L../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += -lUDCore -lLSPServerKit -lXCTest -lBlocksRuntime
+ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) -L../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
+ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lLSPServerKit -lXCTest -lBlocksRuntime
 
 XCTEST ?= xctest
 
@@ -59,7 +58,7 @@ XCTEST ?= xctest
 run-tests: all $(BUNDLE_NAME).bundle
 	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
-	LD_LIBRARY_PATH="$(CURDIR)/../Sources/UDCore/$(GNUSTEP_OBJ_DIR_NAME):$(CURDIR)/../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 	$(XCTEST) "$(BUNDLE_NAME).bundle"
 
 # Compiles $(UDQuakeToolsTests_XCDATAMODELD_FILES) with momc and bundles

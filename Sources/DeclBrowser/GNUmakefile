@@ -6,13 +6,14 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-UDCORE_DIR = ../UDCore
+UDLIBS_DIR = ../Libraries
 DECLBROWSER_DIR = .
 include DeclBrowser.include.make
-include $(UDCORE_DIR)/UDCore.include.make
+include $(UDLIBS_DIR)/Libraries.make
 
 # Source list synced with the Xcode DeclBrowser target (2026-08-20).
 DeclBrowser_OBJC_FILES = \
+    Compat/UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.m \
     ../UDUpdater/UDUpdater.m \
     App/main.m \
     App/AppDelegate.m \
@@ -63,13 +64,12 @@ DeclBrowser_OBJC_FILES = \
 DeclBrowser_INCLUDE_DIRS = \
     $(DECLBROWSER_INCLUDE_DIRS) \
     -I../UDUpdater \
-    $(UDCORE_INCLUDE_DIRS) \
-    -I../UDFormats
+    $(UDLIBS_INCLUDE_DIRS)
 
 # The data model is compiled to DeclModel.momd by FreeCoreData's momc via
 # coredata-model.make (included below), which adds the .momd to the app's
 # resources automatically.
-DeclBrowser_XCDATAMODELD_FILES = ../UDCore/Decls/DeclModel.xcdatamodeld
+DeclBrowser_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
 
 DeclBrowser_RESOURCE_FILES = \
     Resources/Base.lproj/MainMenu.xib \
@@ -99,13 +99,13 @@ DeclBrowser_RESOURCE_FILES = \
 # (https://github.com/ashalkhakov/FreeCoreData — install it before building).
 ADDITIONAL_NATIVE_LIBS += CoreData
 
-# UDCore from the tree beside this one, built first (the root GNUmakefile).
-ADDITIONAL_LIB_DIRS += -L../UDCore/$(GNUSTEP_OBJ_DIR_NAME)
+# the libraries from the tree beside this one, built first (the root GNUmakefile).
+ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
 # -rdynamic: export the executable's own symbols so UDCrashReporter's
 # backtrace (installed in App/main.m on Linux) resolves app frames by name.
 # UDCodeKit (the editor, its tab bar) from the prefix, where its release
 # archive is unpacked (.github/pins.env).
-ADDITIONAL_LDFLAGS += -lUDCore -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic
+ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic
 
 # The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
 # GLX and GL's headers are here (libgl-dev); without them it draws in

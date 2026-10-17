@@ -278,7 +278,7 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
+					"$(SRCROOT)/Sources/Libraries/**",
 					"$(SRCROOT)/Sources/LSPServerKit",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -303,7 +303,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
+					"$(SRCROOT)/Sources/Libraries/**",
 					"$(SRCROOT)/Sources/LSPServerKit",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1388,19 +1388,19 @@
 		AA00000500000000000000AA /* UDCore */ = {
 			isa = PBXGroup;
 			children = (
-				FDD1D08ED8043F53A6AA548E /* Images */,
-				F25B7866D084694D5FDBA2BE /* Decls */,
-				BF3B69EF75FA6290FA98DF39 /* Renderer */,
-				B89CA645BAE20C09BA4BA047 /* UI */,
-				F703CB64DFBB5FE4F90319BC /* GUIEditor */,
-				98CFBAA589AE109C3526238F /* Framework */,
-				62EEB13C1545514253F4E6CD /* idLib */,
-				15F9C94E08B9B78D85CA1A2E /* Scripts */,
-				971335B7D1A5E141C29D08E1 /* Workspace */,
-				BF563828C798065F757E2B26 /* Archives */,
+				FDD1D08ED8043F53A6AA548E /* UDImages */,
+				F25B7866D084694D5FDBA2BE /* UDDecls */,
+				BF3B69EF75FA6290FA98DF39 /* UDRenderer */,
+				B89CA645BAE20C09BA4BA047 /* UDUI */,
+				F703CB64DFBB5FE4F90319BC /* UDGUIEditor */,
+				98CFBAA589AE109C3526238F /* UDCommon */,
+				62EEB13C1545514253F4E6CD /* UDIdLib */,
+				15F9C94E08B9B78D85CA1A2E /* UDScripts */,
+				971335B7D1A5E141C29D08E1 /* UDWorkspace */,
+				BF563828C798065F757E2B26 /* UDArchives */,
 			);
 			name = UDCore;
-			path = Sources/UDCore;
+			path = Sources/Libraries;
 			sourceTree = "<group>";
 		};
 		AA00000600000000000000AA /* UDFormats */ = {
@@ -1427,7 +1427,7 @@
 				AA00010C00000000000000AA /* UDStagedFileSource.m */,
 			);
 			name = UDFormats;
-			path = Sources/UDFormats;
+			path = Sources/Libraries/UDArchives/Formats;
 			sourceTree = "<group>";
 		};
 		AA00000700000000000000AA /* Tools */ = {
@@ -1642,7 +1642,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F25B7866D084694D5FDBA2BE /* Decls */ = {
+		F25B7866D084694D5FDBA2BE /* UDDecls */ = {
 			isa = PBXGroup;
 			children = (
 				8BBAF3F8BD39596DCF48ABB9 /* UDMaterialParser.m */,
@@ -1679,10 +1679,10 @@
 				DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */,
 				76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */,
 			);
-			path = Decls;
+			path = UDDecls;
 			sourceTree = "<group>";
 		};
-		BF3B69EF75FA6290FA98DF39 /* Renderer */ = {
+		BF3B69EF75FA6290FA98DF39 /* UDRenderer */ = {
 			isa = PBXGroup;
 			children = (
 				A62B64A819FAD04F6E3B9A90 /* idGuiModel.h */,
@@ -1698,10 +1698,10 @@
 				61A8741FE981917D13FC3C7D /* UDSoftwareRenderer.h */,
 				A59AD636258C97282F55E149 /* UDSoftwareRenderer.m */,
 			);
-			path = Renderer;
+			path = UDRenderer;
 			sourceTree = "<group>";
 		};
-		B89CA645BAE20C09BA4BA047 /* UI */ = {
+		B89CA645BAE20C09BA4BA047 /* UDUI */ = {
 			isa = PBXGroup;
 			children = (
 				A6ED4754C8CADB5AC0AD517C /* idBindWindow.h */,
@@ -1735,10 +1735,10 @@
 				9B34F3D384DF609685676F89 /* idWinVar.h */,
 				D20D58546873E10F1A43336C /* idWinVar.m */,
 			);
-			path = UI;
+			path = UDUI;
 			sourceTree = "<group>";
 		};
-		F703CB64DFBB5FE4F90319BC /* GUIEditor */ = {
+		F703CB64DFBB5FE4F90319BC /* UDGUIEditor */ = {
 			isa = PBXGroup;
 			children = (
 				E236E8273E29B39057FD009D /* rvGEModifier.h */,
@@ -1754,10 +1754,10 @@
 				FFBBC2EB095057556025E74B /* UDOverlay.h */,
 				84EC089D5DF5BC259AD5D93F /* UDOverlay.m */,
 			);
-			path = GUIEditor;
+			path = UDGUIEditor;
 			sourceTree = "<group>";
 		};
-		98CFBAA589AE109C3526238F /* Framework */ = {
+		98CFBAA589AE109C3526238F /* UDCommon */ = {
 			isa = PBXGroup;
 			children = (
 				CE1151642FEE7777005C6DA3 /* UDGame.m */,
@@ -1778,10 +1778,10 @@
 				CE3FA37A3007ED6F0048F206 /* unzip.c */,
 				CE3FA3783007ED5C0048F206 /* unzip.h */,
 			);
-			path = Framework;
+			path = UDCommon;
 			sourceTree = "<group>";
 		};
-		62EEB13C1545514253F4E6CD /* idLib */ = {
+		62EEB13C1545514253F4E6CD /* UDIdLib */ = {
 			isa = PBXGroup;
 			children = (
 				4BB65E9EB8572D8D3AC0071A /* UDSourceTokens.m */,
@@ -1811,10 +1811,10 @@
 				CED0148B302DDCA2009517DE /* UDBitMsg.m */,
 				CECEB2F53018C04300F88078 /* UDEndian.h */,
 			);
-			path = idLib;
+			path = UDIdLib;
 			sourceTree = "<group>";
 		};
-		15F9C94E08B9B78D85CA1A2E /* Scripts */ = {
+		15F9C94E08B9B78D85CA1A2E /* UDScripts */ = {
 			isa = PBXGroup;
 			children = (
 				5C0E00000000000000000004 /* UDScriptEvents.h */,
@@ -1822,10 +1822,10 @@
 				5C0F00000000000000000004 /* UDScriptIndex.h */,
 				5C0F00000000000000000005 /* UDScriptIndex.m */,
 			);
-			path = Scripts;
+			path = UDScripts;
 			sourceTree = "<group>";
 		};
-		971335B7D1A5E141C29D08E1 /* Workspace */ = {
+		971335B7D1A5E141C29D08E1 /* UDWorkspace */ = {
 			isa = PBXGroup;
 			children = (
 				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
@@ -1835,10 +1835,10 @@
 				CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */,
 				CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */,
 			);
-			path = Workspace;
+			path = UDWorkspace;
 			sourceTree = "<group>";
 		};
-		BF563828C798065F757E2B26 /* Archives */ = {
+		BF563828C798065F757E2B26 /* UDArchives */ = {
 			isa = PBXGroup;
 			children = (
 				AA00020300000000000000AA /* UDArchive.h */,
@@ -1855,7 +1855,7 @@
 				F8984018ED27D4F684C9AAC6 /* UDZipWriter.h */,
 				14BDF382F6383E15016B4EAA /* UDZipWriter.m */,
 			);
-			path = Archives;
+			path = UDArchives;
 			sourceTree = "<group>";
 		};
 		6027841741368F329BB8E0DF /* App */ = {
@@ -1969,13 +1969,13 @@
 			path = Decls;
 			sourceTree = "<group>";
 		};
-		FDD1D08ED8043F53A6AA548E /* Images */ = {
+		FDD1D08ED8043F53A6AA548E /* UDImages */ = {
 			isa = PBXGroup;
 			children = (
 				02105444DDAAF239E4E7C614 /* UDImageProgram.m */,
 				4BFE6E2F7D091CBDBBDB4EC7 /* UDImageProgram.h */,
 			);
-			path = Images;
+			path = UDImages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2842,9 +2842,8 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -2891,9 +2890,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -2923,9 +2921,8 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2948,9 +2945,8 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2982,9 +2978,8 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-					"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3020,9 +3015,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-					"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3064,9 +3058,8 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3105,9 +3098,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3147,9 +3139,8 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -3185,9 +3176,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Sources/UDUpdater",
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-				);
+					"$(SRCROOT)/Sources/Libraries/**",
+									);
 				INFOPLIST_FILE = "Sources/DeclBrowser/DeclBrowser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Decl Browser";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -3304,9 +3294,8 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/DeclBrowser",
 					"$(SRCROOT)/Sources/DeclBrowser/Documents",
 					"$(SRCROOT)/Sources/DeclBrowser/Window",
 					"$(SRCROOT)/Tests/DeclBrowser",
@@ -3341,9 +3330,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/UDCore/**",
-					"$(SRCROOT)/Sources/UDFormats",
-					"$(SRCROOT)/Sources/DeclBrowser",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/DeclBrowser",
 					"$(SRCROOT)/Sources/DeclBrowser/Documents",
 					"$(SRCROOT)/Sources/DeclBrowser/Window",
 					"$(SRCROOT)/Tests/DeclBrowser",

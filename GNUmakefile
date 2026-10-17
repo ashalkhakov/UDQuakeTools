@@ -1,13 +1,13 @@
 #
-# UDQuakeTools on GNUstep: UDCore, the launcher, Decl Browser (with the
+# UDQuakeTools on GNUstep: the libraries, the launcher, Decl Browser (with the
 # scripts' language server, udscript-lsp), Pak Manager and udpaktool, and
 # their tests.
 #
-#   make            UDCore, the apps, udpaktool and the test bundles
-#   make check      the tests (under Xvfb when there is no display): UDCore's,
+#   make            the libraries, the apps, udpaktool and the test bundles
+#   make check      the tests (under Xvfb when there is no display): the libraries',
 #                   then Decl Browser's, which drive the app's own windows (and
 #                   a retail Doom 3 when $UD_DOOM3_PATH names one)
-#   make install    UDCore, the apps and udpaktool; not the test bundles
+#   make install    the libraries, the apps and udpaktool; not the test bundles
 #
 # On FreeCoreData installed (.github/pins.env's release).
 #
@@ -18,7 +18,7 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = UDQuakeTools
-SUBPROJECTS = Sources/UDCore Sources/LSPServerKit tree-sitter-idscript tree-sitter-iddecl Sources/Tools/udscript-lsp Sources/UDLauncher Sources/DeclBrowser \
+SUBPROJECTS = Sources/Libraries Sources/LSPServerKit tree-sitter-idscript tree-sitter-iddecl Sources/Tools/udscript-lsp Sources/UDLauncher Sources/DeclBrowser \
               Sources/PakManager Sources/Tools/udpaktool Tests Tests/DeclBrowser
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make

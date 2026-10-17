@@ -636,6 +636,39 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     XCTAssertGreaterThan(shown, 5.0, @"hidden, the menu is there to design");
 }
 
+- (void)testTheRetailMainMenuIsDesignedAtTheSlidersTime {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    [controller.window orderFront:nil];
+    UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
+    editor.modeControl.selectedSegment = 1;
+    [editor changeMode:editor.modeControl];
+    editor.player.drawsPicture = YES;
+    [editor restart:nil];
+    double curtained = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);
+
+    // as idSessionLocal::StartMenu starts it when there is no intro: the
+    // curtain fades from 0.5 s, and is gone at 1.1 s
+    NSMenuItem *noIntro = [editor.namedEventPopUp itemWithTitle:@"NoIntro"];
+    XCTAssertNotNil(noIntro);
+    [NSApp sendAction:noIntro.action to:noIntro.target from:noIntro];
+    editor.timeSlider.doubleValue = 2000;
+    [NSApp sendAction:editor.timeSlider.action to:editor.timeSlider.target from:editor.timeSlider];
+    double shown = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);
+    XCTAssertLessThan(curtained, 1.0, @"at time 0 the menu is behind its black curtain");
+    XCTAssertGreaterThan(shown, 5.0, @"at 2 s it is there to design");
+
+    // an edit there keeps the time
+    [editor.designWorkspace.selections set:[[editor.designWorkspace.interface getDesktop] findChildByName:@"MarsRender"].win];
+    editor.player.drawsPicture = editor.guiView.glView == nil;
+    [editor.designWorkspace nudgeX:1 y:0 size:NO];
+    XCTAssertEqual(editor.player.time, 2000);
+    editor.player.drawsPicture = YES;
+    [editor.player renderFrame];
+    XCTAssertGreaterThan(UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject), 5.0);
+}
+
 #pragma mark - Editing
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {

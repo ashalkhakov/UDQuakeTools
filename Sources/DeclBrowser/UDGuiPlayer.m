@@ -2,10 +2,20 @@
 #import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
 #import "UDWorkspace.h"
 #import "idUserInterface.h"
+#import "idStr.h"
 #import "idDeviceContext.h"
 #import "idGuiModel.h"
 #import "UDSoftwareRenderer.h"
 #import "UDImageProgram.h"
+
+/// A named event sent, and when.
+@interface UDGuiPlayerEvent : NSObject
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic) int time;
+@end
+
+@implementation UDGuiPlayerEvent
+@end
 
 /// The timer's target: the player, not held (the player holds the timer).
 @interface UDGuiPlayerTicker : NSObject
@@ -28,6 +38,13 @@
 /// What the last load read, for -restart.
 @property (nonatomic, copy, nullable) NSString *path;
 @property (nonatomic, copy, nullable) NSString *text;
+/// The named events sent since the last restart, in time order; how many
+/// of them were sent since the last load.
+@property (nonatomic, strong) NSMutableArray<UDGuiPlayerEvent *> *eventTrack;
+@property (nonatomic) NSUInteger replayed;
+/// The visible vars -windowVisibility names, each followed by what it is
+/// to be; nil until found, after each load.
+@property (nonatomic, strong, nullable) NSArray *visibilityVars;
 - (void)_tick;
 @end
 
@@ -54,6 +71,7 @@
         [_manager managerInit];
         _diagnostics = @[];
         _logLines = [NSMutableArray array];
+        _eventTrack = [NSMutableArray array];
         _playing = YES;
         _drawsPicture = YES;
         [self _takeMessages];
@@ -71,20 +89,26 @@
 #pragma mark - Loading
 
 - (BOOL)loadFile:(NSString *)qpath {
-    self.path = qpath;
-    self.text = nil;
-    return [self _load];
+    return [self loadText:nil path:qpath time:0];
 }
 
 - (BOOL)loadText:(NSString *)text path:(NSString *)qpath {
+    return [self loadText:text path:qpath time:0];
+}
+
+- (BOOL)loadText:(nullable NSString *)text path:(NSString *)qpath time:(int)time {
     self.path = qpath;
     self.text = text;
-    return [self _load];
+    BOOL loaded = [self _load];
+    [self seekTo:time];
+    return loaded;
 }
 
 - (void)restart {
     if (self.path != nil) {
+        [self.eventTrack removeAllObjects];
         [self _load];
+        [self renderFrame];
     }
 }
 
@@ -99,8 +123,9 @@
     [self.gui setKeyBindingNames];
     self.time = 0;
     self.lastTick = [NSDate date];
+    self.replayed = 0;
+    self.visibilityVars = nil;
     [self _handleCommand:[self.gui activate:YES time:self.time]];
-    [self renderFrame];
     return loaded;
 }
 
@@ -132,16 +157,82 @@
     [self renderFrame];
 }
 
+- (void)seekTo:(int)time {
+    if (self.gui == nil) return;
+    time = MAX(time, 0);
+    if (time < self.time) {
+        [self _load];
+    }
+    // the frames between, run and not drawn
+    idUserInterfaceManager *manager = self.manager;
+    while (self.time + USERCMD_MSEC < time) {
+        self.time += USERCMD_MSEC;
+        [self _runFrame];
+    }
+    self.time = time;
+    self.lastTick = [NSDate date];
+    [self renderFrame];
+    [manager.guiModel clear];
+}
+
+/// A frame at the time it is at, into the GUI model: the named events sent
+/// before it (again, after a load) sent, the hidden windows hidden, the GUI
+/// redrawn.
+- (void)_runFrame {
+    idUserInterfaceManager *manager = self.manager;
+    manager.ticNumber = self.time / USERCMD_MSEC;
+    NSArray<UDGuiPlayerEvent *> *track = self.eventTrack;
+    while (self.replayed < track.count && track[self.replayed].time < self.time) {
+        [self.gui handleNamedEvent:track[self.replayed].name];
+        self.replayed++;
+    }
+    [self _applyVisibility];
+    [manager.guiModel clear];
+    [self.gui redraw:self.time];
+    [self _takeMessages];
+}
+
+/// The windows the editor shows or hides, so, whatever a script made them
+/// (and, as a script's "set" does, no longer what an expression makes them).
+- (void)_applyVisibility {
+    if (self.visibilityVars == nil) {
+        // found once a load
+        NSMutableArray<idWinVar *> *vars = [NSMutableArray array];
+        idWindow *desktop = [self.gui getDesktop];
+        NSDictionary<NSString *, NSNumber *> *visibility = self.windowVisibility;
+        for (NSString *name in visibility) {
+            if (desktop == nil) break;
+            idDrawWin *window = [name ud_iequals:[desktop getName]] ? nil : [desktop findChildByName:name];
+            idWinVar *visible = window == nil ? [desktop getWinVarByName:@"visible"]
+                              : window.win != nil ? [window.win getWinVarByName:@"visible"] : [window.simp getWinVarByName:@"visible"];
+            if ([visible isKindOfClass:[idWinBool class]]) {
+                [vars addObject:visible];
+                [vars addObject:(idWinVar *)visibility[name]];
+            }
+        }
+        self.visibilityVars = vars;
+    }
+    NSArray *vars = self.visibilityVars;
+    for (NSUInteger i = 0; i + 1 < vars.count; i += 2) {
+        idWinBool *visible = vars[i];
+        [visible setData:[vars[i + 1] boolValue]];
+        [visible setEval:NO];
+    }
+}
+
+- (void)setWindowVisibility:(NSDictionary<NSString *, NSNumber *> *)windowVisibility {
+    _windowVisibility = [windowVisibility copy];
+    self.visibilityVars = nil;
+}
+
 - (void)renderFrame {
     if (self.gui == nil) return;
     idUserInterfaceManager *manager = self.manager;
-    manager.ticNumber = self.time / USERCMD_MSEC;
 
     // idSessionLocal::Draw: the GUI redrawn at the frame's time, into the
     // GUI model; the model's surfaces as the ambient pass draws them, over
     // black
-    [manager.guiModel clear];
-    [self.gui redraw:self.time];
+    [self _runFrame];
     NSArray *surfaces = [manager.guiModel emitFullScreen];
     UDSoftwareRenderer *renderer = manager.renderer;
     self.triangles = [renderer trianglesOfSurfaces:surfaces time:self.time * 0.001f];
@@ -205,6 +296,18 @@
 
 - (void)sendNamedEvent:(NSString *)name {
     if (self.gui == nil) return;
+    // after those sent before it, and in the track at its time: a seek back
+    // sends it again
+    NSMutableArray<UDGuiPlayerEvent *> *track = self.eventTrack;
+    while (self.replayed < track.count && track[self.replayed].time <= self.time) {
+        [self.gui handleNamedEvent:track[self.replayed].name];
+        self.replayed++;
+    }
+    UDGuiPlayerEvent *event = [[UDGuiPlayerEvent alloc] init];
+    event.name = name;
+    event.time = self.time;
+    [track insertObject:event atIndex:self.replayed];
+    self.replayed++;
     [self.gui handleNamedEvent:name];
     [self _takeMessages];
 }

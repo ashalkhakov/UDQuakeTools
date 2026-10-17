@@ -21,9 +21,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 
 @interface UDGuiEditorViewController () <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate>
 @property (nonatomic, strong, readwrite) UDGuiPlayer *player;
-/// The text the GUI running was read from: the file's until the source is
-/// edited, then the source's when the editor comes back.
-@property (nonatomic, copy, nullable) NSString *runningText;
+@property (nonatomic, copy, readwrite, nullable) NSString *runningText;
 /// The state as the table shows it, sorted by key.
 @property (nonatomic, copy) NSArray<NSArray<NSString *> *> *stateRows;
 @property (nonatomic) NSUInteger logRowsShown;
@@ -41,6 +39,10 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// What the workspace was loaded from.
 @property (nonatomic, copy, nullable) NSString *designText;
 @property (nonatomic) BOOL playedBeforeDesigning;
+/// How long the slider is: the GUI's last time event, and a second.
+@property (nonatomic) int timelineLength;
+/// The names of the windows the design hid when it loaded.
+@property (nonatomic, strong) NSMutableSet<NSString *> *loadedHidden;
 /// The navigator's selection being set from the design's (not the other
 /// way round).
 @property (nonatomic) BOOL syncingWindows;
@@ -120,16 +122,16 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     return self.designDirty ? [self _currentText] : nil;
 }
 
-/// The GUI read and run from its time 0: the file, or the text as it is.
+/// The GUI read and run on to the time it was at: the file, or the text
+/// as it is; designing, the windows the design hides or shows so.
 - (void)_run {
     NSString *path = self.item.path;
     NSString *text = [self _currentText];
-    if (![text isEqualToString:self.fileText]) {
-        [self.player loadText:text path:path];
-    } else {
-        [self.player loadFile:path];
-    }
+    self.player.windowVisibility = self.designing ? [self _designVisibility] : nil;
     self.runningText = text;
+    [self.player loadText:[text isEqualToString:self.fileText] ? nil : text path:path time:self.player.time];
+    self.timelineLength = [self _timelineLengthOf:[self.player.gui getDesktop]];
+    [self _showClock];
     [self _showDiagnostics];
     [self _fillNamedEvents];
     [self _showState:YES];
@@ -645,9 +647,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.guiView.designTarget = self;
     self.guiView.designAction = @selector(_designViewChanged:);
     self.guiView.designDelegate = self;
-    for (NSControl *control in @[self.playButton, self.stepButton, self.restartButton, self.namedEventPopUp]) {
-        control.enabled = NO;
-    }
+    self.playButton.enabled = NO;
     [self _renderDesign];
 }
 
@@ -655,16 +655,14 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.designing = NO;
     self.modeControl.selectedSegment = 0;
     self.guiView.workspace = nil;
-    for (NSControl *control in @[self.playButton, self.stepButton, self.restartButton]) {
-        control.enabled = YES;
-    }
-    self.namedEventPopUp.enabled = self.namedEventPopUp.numberOfItems > 1;
-    // the design's edits run
-    if (![[self _currentText] isEqualToString:self.runningText]) {
+    self.playButton.enabled = YES;
+    // the design's edits run, its hidden windows as the file has them
+    if (![[self _currentText] isEqualToString:self.runningText] || self.player.windowVisibility.count > 0) {
         [self _run];
     }
     self.player.playing = self.playedBeforeDesigning;
     [self.guiView showFrame];
+    [self _showClock];
 }
 
 /// The workspace loaded from the text as it is (from the file, when that
@@ -677,33 +675,93 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         [self.designWorkspace loadText:text path:self.item.path];
     }
     self.designText = text;
+    // what it hides as loaded (the file's "visible", read): the run's too
+    self.loadedHidden = [NSMutableSet set];
+    idWindow *desktop = [self.designWorkspace.interface getDesktop];
+    if (desktop != nil) {
+        [self _addVisibilityOf:desktop to:nil];
+    }
     [self _updateNavigator];
 }
 
-/// rvGEWorkspace::Render: the GUI still, at time 0, and over it the grid
+/// rvGEWorkspace::Render, at the time the player is at: the design run
+/// there (its edits, its hidden windows not drawn), and over it the grid
 /// and the selections.
 - (void)_renderDesign {
+    if (self.designWorkspace.dragType != HT_NONE) {
+        // a drag's step: its windows moved in the run as it is (run again,
+        // from the text, when the drag ends)
+        [self _moveRunsWindows];
+        return;
+    }
+    NSString *text = [self _currentText];
+    NSDictionary *visibility = [self _designVisibility];
+    if (![text isEqualToString:self.runningText] || ![visibility isEqualToDictionary:self.player.windowVisibility ?: @{}]) {
+        [self _run];        // its frame shown
+        return;
+    }
+    [self _showDesign];
+}
+
+/// The selected windows' rects, the run's as the design's (as a script's
+/// "set" sets them), and its frame drawn again.
+- (void)_moveRunsWindows {
+    rvGESelectionMgr *selections = self.designWorkspace.selections;
+    idWindow *desktop = [self.player.gui getDesktop];
+    for (int i = 0; i < [selections num]; i++) {
+        idWindow *window = selections[(NSUInteger)i];
+        idDrawWin *ran = [desktop findChildByName:[window getName]];
+        idWinVar *rect = ran.win != nil ? [ran.win getWinVarByName:@"rect"] : [ran.simp getWinVarByName:@"rect"];
+        if ([rect isKindOfClass:[idWinRectangle class]]) {
+            [(idWinRectangle *)rect setData:[rvGEWindowWrapper wrapperOf:window].clientRect];
+            [rect setEval:NO];
+        }
+    }
+    [self.player renderFrame];
+}
+
+/// The windows the design shows or hides, as it did not when it loaded, by
+/// name, YES for shown.
+- (NSDictionary<NSString *, NSNumber *> *)_designVisibility {
+    NSMutableDictionary<NSString *, NSNumber *> *visibility = [NSMutableDictionary dictionary];
+    idWindow *desktop = [self.designWorkspace.interface getDesktop];
+    if (desktop != nil) {
+        [self _addVisibilityOf:desktop to:visibility];
+    }
+    return visibility;
+}
+
+/// @a window's, and its children's: shown or hidden as they were not when
+/// the design loaded (into @a visibility); or (no @a visibility) the names
+/// of those hidden then.
+- (void)_addVisibilityOf:(idWindow *)window to:(nullable NSMutableDictionary<NSString *, NSNumber *> *)visibility {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if (wrapper == nil || wrapper.deleted) return;
+    NSString *name = [window getName];
+    if (visibility == nil) {
+        if (wrapper.hidden) [self.loadedHidden addObject:name];
+    } else if (wrapper.hidden != [self.loadedHidden containsObject:name]) {
+        visibility[name] = @(!wrapper.hidden);
+    }
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        idWindow *child = [wrapper childAtIndex:i];
+        if (child != nil) {
+            [self _addVisibilityOf:child to:visibility];
+        }
+    }
+}
+
+/// The player's frame, and the design's grid and selections over it.
+- (void)_showDesign {
     rvGEWorkspace *design = self.designWorkspace;
-    idUserInterfaceManager *manager = design.manager;
     UDGuiView *view = self.guiView;
     NSRect rect = view.guiRect;
     design.rect = idRectangle_Make((float)NSMinX(rect), (float)NSMinY(rect), (float)NSWidth(rect), (float)NSHeight(rect));
-
-    [manager.guiModel clear];
-    [design.interface redraw:0];
-    NSArray *surfaces = [manager.guiModel emitFullScreen];
-    UDSoftwareRenderer *renderer = manager.renderer;
-    UDTriangleList *triangles = [renderer trianglesOfSurfaces:surfaces time:0];
-    NSImage *picture = nil;
-    if (!view.drawsWithGL) {
-        static const float black[4] = { 0, 0, 0, 1 };
-        [renderer clearToColor:black];
-        [renderer drawTriangles:triangles];
-        picture = [UDGuiPlayer imageOf:[renderer image]];
-    }
+    UDSoftwareRenderer *renderer = self.player.manager.renderer;
     UDOverlay *overlay = [[UDOverlay alloc] init];
     [design renderOverlayInto:overlay];
-    [view showTriangles:triangles picture:picture pictureSize:NSMakeSize(renderer.width, renderer.height) overlay:overlay];
+    [view showTriangles:self.player.triangles picture:self.player.frame
+            pictureSize:NSMakeSize(renderer.width, renderer.height) overlay:overlay];
 }
 
 /// An edit of the design, its undo or its redo (the modifier stack's).
@@ -774,7 +832,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 - (void)playerDidDrawFrame:(UDGuiPlayer *)player {
-    if (!self.designing) {
+    if (self.designing) {
+        [self _showDesign];
+    } else {
         [self.guiView showFrame];
     }
     [self _showClock];
@@ -782,9 +842,37 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [self _showState:NO];
 }
 
+- (IBAction)seek:(id)sender {
+    int time = (int)lround([sender doubleValue]);
+    [self.player seekTo:time];
+    [self _showState:YES];
+}
+
 - (void)_showClock {
-    self.timeLabel.stringValue = [NSString stringWithFormat:@"%.2f s", self.player.time / 1000.0];
-    self.playButton.title = self.player.playing ? @"Pause" : @"Play";
+    int time = self.player.time;
+    self.timeLabel.stringValue = [NSString stringWithFormat:@"%.2f s", time / 1000.0];
+    self.playButton.title = self.player.playing && !self.designing ? @"Pause" : @"Play";
+    // the slider as long as the GUI's last time event, and a second; or as
+    // long as it has run
+    NSSlider *slider = self.timeSlider;
+    double length = MAX(MAX(self.timelineLength, 5000), time);
+    if (slider.maxValue != length) {
+        slider.maxValue = length;
+    }
+    slider.doubleValue = time;
+}
+
+/// The latest "onTime" of the GUI's windows, and a second.
+- (int)_timelineLengthOf:(nullable idWindow *)window {
+    if (window == nil) return 0;
+    int length = 0;
+    for (idTimeLineEvent *event in window->timeLineEvents) {
+        length = MAX(length, event->time + 1000);
+    }
+    for (int i = 0; i < [window getChildCount]; i++) {
+        length = MAX(length, [self _timelineLengthOf:[window getChild:i]]);
+    }
+    return length;
 }
 
 #pragma mark - Named events

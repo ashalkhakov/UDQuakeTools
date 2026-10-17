@@ -19,7 +19,8 @@
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 // An original GUI: a panel the state hides, a label a named event renames,
-// a button whose action sets the state and returns a command.
+// a button whose action sets the state and returns a command, a lamp whose
+// timeline (lit at 0.5 s) a named event starts.
 static NSString *const UDViewerGUI =
     @"windowDef Desktop {\n"
      "\trect\t0, 0, 640, 480\n"
@@ -41,6 +42,17 @@ static NSString *const UDViewerGUI =
      "\t\t\tset \"gui::clicked\" \"1\" ;\n"
      "\t\t\tset \"cmd\" \"udtest_go\" ;\n"
      "\t\t}\n"
+     "\t}\n"
+     "\twindowDef Lamp {\n"
+     "\t\trect\t600, 420, 30, 30\n"
+     "\t\tbackcolor\t0, 0, 0, 1\n"
+     "\t\tnotime\t1\n"
+     "\t\tonTime 500 {\n"
+     "\t\t\tset \"backcolor\" \"0 1 0 1\" ;\n"
+     "\t\t}\n"
+     "\t}\n"
+     "\tonNamedEvent udtestLight {\n"
+     "\t\tresetTime \"Lamp\" \"0\" ;\n"
      "\t}\n"
      "\tonNamedEvent udtestRename {\n"
      "\t\tset \"Label::text\" \"renamed\" ;\n"
@@ -364,6 +376,94 @@ static NSString *const UDViewerScript =
     }
 }
 
+#pragma mark - The time
+
+/// Whether the lamp's backcolor is green.
+- (BOOL)lampIsLitIn:(UDGuiEditorViewController *)editor {
+    NSString *color = [self var:@"backcolor" of:@"Lamp" in:editor];
+    NSArray<NSString *> *parts = [[color stringByReplacingOccurrencesOfString:@"," withString:@" "] componentsSeparatedByString:@" "];
+    parts = [parts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+    return parts.count == 4 && parts[1].floatValue > 0.5f;
+}
+
+- (void)namedEvent:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    NSMenuItem *item = [editor.namedEventPopUp itemWithTitle:name];
+    XCTAssertNotNil(item, @"%@ is offered", name);
+    XCTAssertTrue([editor.namedEventPopUp isEnabled]);
+    [NSApp sendAction:item.action to:item.target from:item];
+}
+
+- (void)slide:(UDGuiEditorViewController *)editor to:(double)time {
+    XCTAssertTrue([editor.timeSlider isEnabled]);
+    editor.timeSlider.doubleValue = time;
+    [NSApp sendAction:editor.timeSlider.action to:editor.timeSlider.target from:editor.timeSlider];
+}
+
+- (void)testTheSliderSeeksTheRunTheNamedEventsSentAgain {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    [editor togglePlaying:nil];
+    XCTAssertFalse(editor.player.playing);
+    XCTAssertGreaterThanOrEqual(editor.timeSlider.maxValue, 1500, @"as long as its time events");
+    [self namedEvent:@"udtestLight" in:editor];
+    [self slide:editor to:1000];
+    XCTAssertEqual(editor.player.time, 1000);
+    XCTAssertEqualObjects(editor.timeLabel.stringValue, @"1.00 s");
+    XCTAssertTrue([self lampIsLitIn:editor], @"lit at 0.5 s: %@", [self var:@"backcolor" of:@"Lamp" in:editor]);
+    [self slide:editor to:200];
+    XCTAssertEqual(editor.player.time, 200);
+    XCTAssertFalse([self lampIsLitIn:editor], @"back before it was lit");
+    [self slide:editor to:1000];
+    XCTAssertTrue([self lampIsLitIn:editor], @"the named event sent again on the way");
+    [editor restart:nil];
+    [self slide:editor to:1000];
+    XCTAssertFalse([self lampIsLitIn:editor], @"Restart forgets it");
+}
+
+- (void)testTheDesignIsAtTheSlidersTime {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    XCTAssertFalse([editor.playButton isEnabled], @"a design does not play");
+    XCTAssertTrue([editor.stepButton isEnabled]);
+    [self namedEvent:@"udtestLight" in:editor];
+    [self slide:editor to:1000];
+    XCTAssertTrue([self lampIsLitIn:editor], @"the design drawn at 1 s");
+
+    // an edit keeps the time
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:editor.guiView];
+    [editor.designWorkspace nudgeX:10 y:0 size:NO];
+    XCTAssertEqual(editor.player.time, 1000);
+    XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"410"], @"the edit is drawn: %@", [self var:@"rect" of:@"Go" in:editor]);
+    XCTAssertTrue([self lampIsLitIn:editor]);
+
+    // a drag moves the window in the run as it goes; run from its text once
+    // it ends
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(490, 330) time:2.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseDragged at:NSMakePoint(510, 330) time:2.1 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseDragged at:NSMakePoint(530, 330) time:2.2 in:editor.guiView];
+    NSString *ranText = editor.runningText;
+    XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"450"], @"moved as it is dragged: %@", [self var:@"rect" of:@"Go" in:editor]);
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(530, 330) time:2.3 in:editor.guiView];
+    XCTAssertNotEqualObjects(editor.runningText, ranText, @"run again from the text");
+    XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"450"]);
+    XCTAssertEqual(editor.player.time, 1000);
+
+    // a window hidden in the design is not drawn, whatever its scripts do;
+    // run, it is
+    [self chooseWindow:@"Panel" in:editor];
+    NSOutlineView *outline = editor.windowsOutline;
+    NSTableColumn *eye = [outline tableColumnWithIdentifier:@"visible"];
+    [outline.dataSource outlineView:outline setObjectValue:@NO forTableColumn:eye byItem:[outline itemAtRow:outline.selectedRow]];
+    XCTAssertEqualObjects([self var:@"visible" of:@"Panel" in:editor], @"0");
+    [editor changeMode:nil];
+    XCTAssertFalse(editor.designing);
+    XCTAssertEqual(editor.player.time, 1000, @"the run goes on from there");
+    XCTAssertEqualObjects([self var:@"visible" of:@"Panel" in:editor], @"1");
+}
+
 #pragma mark - The navigator
 
 - (void)testTheWindowsAreANavigatorOfTheGuisTab {
@@ -381,7 +481,7 @@ static NSString *const UDViewerScript =
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
         [rows addObject:[(idWindow *)[outline itemAtRow:row] getName]];
     }
-    XCTAssertEqualObjects(rows, (@[@"Desktop", @"Panel", @"Label", @"Go"]), @"the desktop open, its windows in it");
+    XCTAssertEqualObjects(rows, (@[@"Desktop", @"Panel", @"Label", @"Go", @"Lamp"]), @"the desktop open, its windows in it");
 
     [self openOutlinePath:@"script/udtest.script" inController:controller];
     XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own, @"a script's tab has no windows");

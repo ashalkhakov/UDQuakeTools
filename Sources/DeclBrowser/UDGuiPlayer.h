@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// drawn; NO when it does not load (the GUI is then what the engine makes).
 - (BOOL)loadFile:(NSString *)qpath;
 - (BOOL)loadText:(NSString *)text path:(NSString *)qpath;
+/// Loaded (from the file for no @a text), and run on to @a time, the named
+/// events sent so far sent again (-seekTo:).
+- (BOOL)loadText:(nullable NSString *)text path:(NSString *)qpath time:(int)time;
 
 /// The last load's parse errors and warnings (idParser's: "file", "line",
 /// "message", "error").
@@ -39,8 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int time;
 /// One frame on: USERCMD_MSEC later, drawn. (Paused, the clock is still.)
 - (void)step;
-/// Loaded again, from its time 0.
+/// Loaded again, from its time 0, the named events sent forgotten.
 - (void)restart;
+/// At @a time, drawn: run on to it a frame at a time; before the time it
+/// is at, from its time 0 again, the named events sent on the way sent
+/// again at their times (the mouse and the keys not).
+- (void)seekTo:(int)time;
+/// The windows (by name) shown (YES) or hidden (NO) whatever their
+/// "visible" and the scripts': the GUI editor's own. Set before a load or a
+/// seek.
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, NSNumber *> *windowVisibility;
 /// A frame at the time it is at, drawn now.
 - (void)renderFrame;
 

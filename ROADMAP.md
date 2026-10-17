@@ -240,10 +240,14 @@ In order of value against cost; LOC is the MFC original's size.
       select (shift adds), move and size with the eight handles, snap to
       the grid, each drag one Undo; Source and Run follow its edits. The
       GUI's windows are a navigator in the left pane (a window's eye hides
-      it in the design, as the main menu's black curtain needs), and its
-      Properties and Scripts are inspector panes, each edit one Undo; and
-      the design's menu (the engine's popup) and keys make, delete,
-      arrange, align, size alike, parent, nudge, copy and paste windows.
+      it in the design), and its Properties and Scripts are inspector
+      panes, each edit one Undo; and the design's menu (the engine's popup)
+      and keys make, delete, arrange, align, size alike, parent, nudge, copy
+      and paste windows. Under the canvas is a video editor's transport:
+      its time slider takes Run and Design alike to any time (the GUI run
+      there, the named events sent on the way sent again), so the main
+      menu, sent NoIntro, is designed as it shows at 2 s, not behind its
+      black curtain.
       What is left of tools/guied: its item properties dialog (a form over
       the state keys the Properties list already edits), and its options
       (grid, colors) as settings. The port interprets as well as draws: GUI scripts, named events,

@@ -737,6 +737,31 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     XCTAssertGreaterThan(UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject), 5.0);
 }
 
+- (void)testTheLayersOverARetailGuiAreClickedThrough {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    [controller.window orderFront:nil];
+    UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/comm1/commterminal.gui" inController:controller];
+    editor.modeControl.selectedSegment = 1;
+    [editor changeMode:editor.modeControl];
+
+    // over it all: a glow, scan lines, a shadow, static and a reflection
+    NSPoint title = [editor.guiView viewPointFromGui:NSMakePoint(320, 48)];
+    [editor.designWorkspace mouseDownAtX:(float)title.x y:(float)title.y shift:NO time:0];
+    [editor.designWorkspace mouseUp];
+    XCTAssertEqualObjects([editor.designWorkspace.selections[0] getName], @"TextTitle1", @"the title under the layers");
+
+    // Option chooses what is under the chosen one, the layers too
+    NSMutableSet<NSString *> *chosen = [NSMutableSet set];
+    for (int i = 0; i < 12; i++) {
+        [editor.designWorkspace mouseDownAtX:(float)title.x y:(float)title.y shift:NO below:YES time:1000 * (i + 1)];
+        [editor.designWorkspace mouseUp];
+        [chosen addObject:[editor.designWorkspace.selections[0] getName]];
+    }
+    XCTAssertTrue([chosen containsObject:@"Outershadow1"], @"%@", chosen);
+}
+
 #pragma mark - Editing
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {

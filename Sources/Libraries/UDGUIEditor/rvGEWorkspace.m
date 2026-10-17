@@ -332,7 +332,11 @@ Handles the left mouse down message in the workspace
 
     rvGEWindowWrapper *wrapper;
     wrapper = [rvGEWindowWrapper wrapperOf:[self.interface getDesktop]];
-    idWindow *window = [wrapper windowFromPointX:point.x y:point.y visibleOnly:YES passing:self.passedWindows];
+    NSSet<idWindow *> *passing = self.passedWindows;
+    if ( self.clickedThroughWindows.count > 0 ) {
+        passing = [(passing ?: [NSSet set]) setByAddingObjectsFromSet:self.clickedThroughWindows];
+    }
+    idWindow *window = [wrapper windowFromPointX:point.x y:point.y visibleOnly:YES passing:passing];
 
     // (not the engine's: the one below the selected one there, chosen)
     if ( below ) {

@@ -74,6 +74,7 @@ static NSString *const UDViewerScript =
 @property (nonatomic, copy) NSString *savePath;
 @end
 
+
 @implementation UDGuiViewerTests
 
 - (void)setUp {
@@ -673,63 +674,19 @@ static NSString *const UDViewerScript =
     }
 }
 
-- (NSInteger)propertyRow:(NSString *)name in:(UDGuiEditorViewController *)editor {
-    NSTableView *table = editor.propertiesTable;
-    NSTableColumn *key = [table tableColumnWithIdentifier:@"key"];
-    for (NSInteger i = 0; i < [table.dataSource numberOfRowsInTableView:table]; i++) {
-        if ([[table.dataSource tableView:table objectValueForTableColumn:key row:i] isEqual:name]) return i;
-    }
-    return -1;
-}
-
-- (void)testThePropertiesAreTheChosenWindowsAndEditIt {
-    UDWorkspaceWindowController *controller = [self openFixture];
-    if (controller == nil) return;
-    UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertFalse([editor.propertiesPlaceholder isHidden], @"no window chosen yet");
-    [self chooseWindow:@"Go" in:editor];
-    XCTAssertTrue([editor.propertiesPlaceholder isHidden]);
-    NSTableView *table = editor.propertiesTable;
-    NSTableColumn *value = [table tableColumnWithIdentifier:@"value"];
-    NSInteger rectRow = [self propertyRow:@"rect" in:editor];
-    XCTAssertGreaterThanOrEqual(rectRow, 0);
-    XCTAssertEqualObjects([table.dataSource tableView:table objectValueForTableColumn:value row:rectRow], @"400, 300, 160, 60");
-
-    [table.dataSource tableView:table setObjectValue:@"40, 30, 160, 60" forTableColumn:value row:rectRow];
-    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 40, 0.5, @"the rect as typed");
-    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Property Change");
-
-    [table.dataSource tableView:table setObjectValue:@"1, 2, 3, 4 five" forTableColumn:value row:[self propertyRow:@"rect" in:editor]];
-    XCTAssertTrue([editor.propertiesMessage.stringValue hasPrefix:@"Invalid property value"], @"%@", editor.propertiesMessage.stringValue);
-    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 40, 0.5, @"and nothing changed");
-}
-
-- (void)testAPropertyIsAdded {
-    UDWorkspaceWindowController *controller = [self openFixture];
-    if (controller == nil) return;
-    UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    [self chooseWindow:@"Label" in:editor];
-    [editor addProperty:nil];
-    NSTableView *table = editor.propertiesTable;
-    [table abortEditing];
-    NSInteger row = [table.dataSource numberOfRowsInTableView:table] - 1;
-    [table.dataSource tableView:table setObjectValue:@"textscale" forTableColumn:[table tableColumnWithIdentifier:@"key"] row:row];
-    [table.dataSource tableView:table setObjectValue:@"0.5" forTableColumn:[table tableColumnWithIdentifier:@"value"] row:row];
-    XCTAssertGreaterThanOrEqual([self propertyRow:@"textscale" in:editor], 0, @"the new property is the window's");
-    XCTAssertTrue([editor.designWorkspace.text containsString:@"textscale\t0.5"], @"%@", editor.designWorkspace.text);
-}
-
 #pragma mark - Item properties (GEItemPropsDlg) and Layout (GETransformer)
 
 - (void)testTheItemPropertiesPagesShowAndEditTheChosenWindow {
     UDWorkspaceWindowController *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertTrue([editor.propertiesTabs isHidden], @"no window chosen yet");
+    XCTAssertTrue([editor.propertiesScroll isHidden], @"no window chosen yet");
+    XCTAssertFalse([editor.propertiesPlaceholder isHidden]);
     UDGuiItemPropertiesController *props = editor.itemProperties;
 
     [self chooseWindow:@"Panel" in:editor];
-    XCTAssertFalse([editor.propertiesTabs isHidden]);
+    XCTAssertFalse([editor.propertiesScroll isHidden], @"its groups, one under the other");
+    XCTAssertTrue([editor.propertiesPlaceholder isHidden]);
     XCTAssertEqualObjects(props.nameField.stringValue, @"Panel");
     XCTAssertEqualObjects(props.typeField.stringValue, @"windowDef");
     XCTAssertFalse(props.visibleButton.isEnabled, @"its visible is an expression");
@@ -743,9 +700,6 @@ static NSString *const UDViewerScript =
 
     // the Text page: the text, quoted, one Item Properties edit
     [self chooseWindow:@"Label" in:editor];
-    editor.propertiesPages.selectedSegment = 2;
-    [editor selectPropertiesPage:editor.propertiesPages];
-    XCTAssertEqualObjects(editor.propertiesTabs.selectedTabViewItem.label, @"Text");
     XCTAssertEqual(props.useTextButton.state, NSControlStateValueOn);
     XCTAssertEqualObjects(props.textField.stringValue, @"ready");
     props.textField.stringValue = @"steady";

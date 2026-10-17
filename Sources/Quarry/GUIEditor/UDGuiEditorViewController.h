@@ -45,17 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) IBOutlet NSView *windowsView;
 @property (weak) IBOutlet NSOutlineView *windowsOutline;
 /// The inspector's Properties: GEItemPropsDlg's pages (General, Image,
-/// Text) and, as Keys, rvGEProperties' list: the selected window's state
-/// keys, edited as the window reads them, each a Property Change.
+/// Text) as groups in one scrolled column, each edit an Item Properties.
 @property (strong) IBOutlet NSView *propertiesView;
 @property (strong) IBOutlet UDGuiItemPropertiesController *itemProperties;
-@property (weak) IBOutlet NSSegmentedControl *propertiesPages;
-@property (weak) IBOutlet NSTabView *propertiesTabs;
-- (IBAction)selectPropertiesPage:(nullable id)sender;
-@property (weak) IBOutlet NSTableView *propertiesTable;
-@property (weak) IBOutlet NSTextField *propertiesMessage;
+@property (weak) IBOutlet NSScrollView *propertiesScroll;
 @property (weak) IBOutlet NSTextField *propertiesPlaceholder;
-- (IBAction)addProperty:(nullable id)sender;
 
 /// The inspector's Layout (GETransformer): the selection's position and
 /// size, from the parent of the bottom-most selected window; an edit a

@@ -72,6 +72,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// below pass through, and their children (the editor's locked ones, and
 /// those not drawn at the time it shows).
 @property (nonatomic, copy, nullable) NSSet<idWindow *> *passedWindows;
+/// (not the engine's) The windows a click passes through but Option-click
+/// reaches: the layers over the whole GUI.
+@property (nonatomic, copy, nullable) NSSet<idWindow *> *clickedThroughWindows;
 /// The windows under ( @a x, @a y ) in the window, shown, not deleted or
 /// passed through, the topmost first (as a click looks for them).
 - (NSArray<idWindow *> *)windowsAtX:(float)x y:(float)y;

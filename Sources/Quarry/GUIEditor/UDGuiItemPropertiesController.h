@@ -2,8 +2,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * UDGuiItemPropertiesController.h — the GUI editor's item properties
  * (tools/guied/GEItemPropsDlg.cpp), ported as the inspector's Properties:
- * its General, Image and Text pages (the Keys page is the editor's key
- * table), laid out in UDGuiViewerView.xib. The engine's sheet applied its
+ * its General, Image and Text pages, as groups in one scrolled column (the
+ * Attributes inspector's way), laid out in UDGuiViewerView.xib; its Keys
+ * page, a list of the raw keys, is left to the source. The engine's sheet applied its
  * pages on OK; here a page is applied as one of its controls changes, an
  * "Item Properties" edit of the selected window's state each time.
  */

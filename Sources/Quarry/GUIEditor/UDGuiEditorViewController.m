@@ -68,10 +68,6 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 /// The navigator's selection being set from the design's (not the other
 /// way round).
 @property (nonatomic) BOOL syncingWindows;
-/// The Properties' rows, and the one being added (its name, while it has
-/// no value yet).
-@property (nonatomic, copy, nullable) NSArray<NSArray<NSString *> *> *propertyRows;
-@property (nonatomic, copy, nullable) NSString *pendingProperty;
 /// The window whose scripts the Scripts show, and their text as shown.
 @property (nonatomic, weak, nullable) idWindow *scriptsWindow;
 @property (nonatomic, copy, nullable) NSString *scriptsShownText;
@@ -416,32 +412,13 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 
 #pragma mark - Properties (rvGEProperties)
 
-/// The item properties' pages, rvGEProperties::Update's keys (the row
-/// being added after them), or the placeholder; and the Layout.
+/// The item properties' groups, or the placeholder; and the Layout.
 - (void)_updateProperties {
     [self _updateLayout];
-    NSTableView *table = self.propertiesTable;
-    if (table == nil || table.editedRow >= 0) return;
+    if (self.propertiesScroll == nil) return;
     BOOL shown = [self.itemProperties update];
-    NSArray<NSArray<NSString *> *> *rows = [self.designWorkspace properties];
-    if (rows != nil && self.pendingProperty != nil) {
-        rows = [rows arrayByAddingObject:@[self.pendingProperty, @""]];
-    }
-    if (rows == nil) self.pendingProperty = nil;
-    self.propertyRows = rows;
-    shown = shown && rows != nil;
     self.propertiesPlaceholder.hidden = shown;
-    self.propertiesTabs.hidden = !shown;
-    self.propertiesPages.hidden = !shown;
-    [table reloadData];
-}
-
-/// The page shown: General, Image, Text, Keys.
-- (IBAction)selectPropertiesPage:(id)sender {
-    NSInteger page = self.propertiesPages.selectedSegment;
-    if (page >= 0 && page < self.propertiesTabs.numberOfTabViewItems) {
-        [self.propertiesTabs selectTabViewItemAtIndex:page];
-    }
+    self.propertiesScroll.hidden = !shown;
 }
 
 #pragma mark - Layout (GETransformer)
@@ -474,36 +451,11 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     [self _updateLayout];
 }
 
-- (IBAction)addProperty:(id)sender {
-    if (self.propertyRows == nil) {
-        NSBeep();
-        return;
-    }
-    self.pendingProperty = @"";
-    [self _updateProperties];
-    NSInteger row = (NSInteger)self.propertyRows.count - 1;
-    [self.propertiesTable selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
-    [self.propertiesTable editColumn:0 row:row withEvent:nil select:YES];
-}
-
 - (IBAction)showProperties:(id)sender {
     id controller = self.view.window.windowController;
     if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
         [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Properties"];
     }
-}
-
-/// rvGEProperties::AddModifier: the value set, or why not.
-- (void)_setProperty:(NSString *)name value:(NSString *)value {
-    if (![self.designWorkspace setProperty:name value:value]) {
-        // the engine's "Invalid property value" box, in the pane
-        self.propertiesMessage.stringValue = [NSString stringWithFormat:@"Invalid property value '%@' for property '%@'", value, name];
-        NSBeep();
-        return;
-    }
-    self.propertiesMessage.stringValue = @"";
-    self.pendingProperty = nil;
-    [self _updateProperties];
 }
 
 #pragma mark - Scripts (GEItemScriptsDlg)
@@ -1137,10 +1089,29 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     return passed;
 }
 
+/// The layers over the whole GUI with nothing in them (a shadow, scan
+/// lines, a reflection): clicked through, as the desktop is
+/// (ignoreDesktopSelect); chosen in the navigator, or with Option.
+- (NSSet<idWindow *> *)_layerWindows {
+    NSMutableSet<idWindow *> *passed = [NSMutableSet set];
+    idWindow *desktop = [self.designWorkspace.interface getDesktop];
+    idRectangle whole = [rvGEWindowWrapper wrapperOf:desktop].screenRect;
+    for (idWindow *window in self.runWindows) {
+        rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+        if (window == desktop || wrapper == nil || [wrapper childCount] > 0) continue;
+        idRectangle r = wrapper.screenRect;
+        if (r.x <= whole.x && r.y <= whole.y && r.x + r.w >= whole.x + whole.w && r.y + r.h >= whole.y + whole.h) {
+            [passed addObject:window];
+        }
+    }
+    return passed;
+}
+
 /// The player's frame, and the design's grid and selections over it.
 - (void)_showDesign {
     rvGEWorkspace *design = self.designWorkspace;
     design.passedWindows = [self _passedWindows];
+    design.clickedThroughWindows = [self _layerWindows];
     UDGuiView *view = self.guiView;
     NSRect rect = view.guiRect;
     design.rect = idRectangle_Make((float)NSMinX(rect), (float)NSMinY(rect), (float)NSWidth(rect), (float)NSHeight(rect));
@@ -1187,8 +1158,6 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     if (!self.syncingWindows) {
         [self _updateNavigatorSelections];
     }
-    self.pendingProperty = nil;
-    self.propertiesMessage.stringValue = @"";
     [self _updateProperties];
     [self _updateScripts:NO];
     if (self.designing) {
@@ -1329,28 +1298,15 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     [self.logTable reloadData];
 }
 
-#pragma mark - NSTableViewDelegate
-
-/// A property's name is not edited, but the one being added.
-- (BOOL)tableView:(NSTableView *)tableView shouldEditTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    if (tableView != self.propertiesTable || ![column.identifier isEqualToString:@"key"]) return YES;
-    return self.pendingProperty != nil && row == (NSInteger)self.propertyRows.count - 1;
-}
-
 #pragma mark - NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    if (tableView == self.propertiesTable) return (NSInteger)self.propertyRows.count;
     if (tableView == self.stateTable) return (NSInteger)self.stateRows.count;
     if (tableView == self.logTable) return (NSInteger)self.player.log.count;
     return 0;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    if (tableView == self.propertiesTable) {
-        if (row < 0 || row >= (NSInteger)self.propertyRows.count) return nil;
-        return self.propertyRows[(NSUInteger)row][[column.identifier isEqualToString:@"key"] ? 0 : 1];
-    }
     if (tableView == self.stateTable) {
         if (row < 0 || row >= (NSInteger)self.stateRows.count) return nil;
         return self.stateRows[(NSUInteger)row][[column.identifier isEqualToString:@"key"] ? 0 : 1];
@@ -1360,26 +1316,6 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 }
 
 - (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column row:(NSInteger)row {
-    if (tableView == self.propertiesTable) {
-        if (row < 0 || row >= (NSInteger)self.propertyRows.count) return;
-        NSString *text = [object description] ?: @"";
-        NSString *name = self.propertyRows[(NSUInteger)row][0];
-        BOOL pending = self.pendingProperty != nil && row == (NSInteger)self.propertyRows.count - 1;
-        if ([column.identifier isEqualToString:@"key"]) {
-            // only the row being added is named
-            if (pending) {
-                self.pendingProperty = text;
-                self.propertyRows = [[self.propertyRows subarrayWithRange:NSMakeRange(0, (NSUInteger)row)] arrayByAddingObject:@[text, @""]];
-            }
-            return;
-        }
-        if (name.length == 0) {
-            NSBeep();
-            return;
-        }
-        [self _setProperty:name value:text];
-        return;
-    }
     if (tableView != self.stateTable || row < 0 || row >= (NSInteger)self.stateRows.count) return;
     idUserInterfaceLocal *gui = self.player.gui;
     NSArray<NSString *> *was = self.stateRows[(NSUInteger)row];

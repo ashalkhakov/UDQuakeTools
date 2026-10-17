@@ -637,4 +637,153 @@ Renders the grid on top of the user interface
     [self.selections renderInto:overlay];
 }
 
+#pragma mark - AddModifiers
+
+/*
+================
+rvGEWorkspace::CreateModifier
+
+Creates a new modifier of the given type
+================
+*/
+- (nullable rvGEModifier *)createModifier:(rvGEModifierType)type window:(idWindow *)window {
+    switch ( type ) {
+        case MOD_HIDE:
+            return [[rvGEHideModifier alloc] initWithName:@"Hide" window:window hide:YES];
+
+        case MOD_UNHIDE:
+            return [[rvGEHideModifier alloc] initWithName:@"Hide" window:window hide:NO];
+
+        default:
+            return nil;
+    }
+}
+
+/*
+================
+rvGEWorkspace::AddModifiers
+
+Add the specific modifier for the given window
+================
+*/
+- (void)addModifier:(rvGEModifierType)type window:(idWindow *)window {
+    rvGEModifier *mod = [self createModifier:type window:window];
+    if ( mod ) {
+        [self.modifiers append:mod];
+    }
+    self.modified = YES;
+}
+
+- (void)addModifierToSelection:(rvGEModifierType)type {
+    rvGESelectionMgr *mSelections = self.selections;
+
+    // Nothing to move if there is no selection
+    if ( ![mSelections num] ) {
+        return;
+    }
+    // More than one selection requires a modifier group
+    else if ( [mSelections num] > 1 ) {
+        rvGEModifierGroup *group = [[rvGEModifierGroup alloc] init];
+        for ( int i = 0; i < [mSelections num]; i ++ ) {
+            rvGEModifier *mod = [self createModifier:type window:mSelections[i]];
+            if ( mod ) {
+                [group append:mod];
+            }
+        }
+        [self.modifiers append:group];
+    }
+    // Single modifier
+    else {
+        rvGEModifier *mod = [self createModifier:type window:mSelections[0]];
+        if ( mod ) {
+            [self.modifiers append:mod];
+        }
+    }
+
+    self.modified = YES;
+}
+
+- (void)hideSelected {
+    [self addModifierToSelection:MOD_HIDE];
+    [self.selections clear];
+}
+
+- (void)unhideSelected {
+    [self addModifierToSelection:MOD_UNHIDE];
+}
+
+- (void)hideWindow:(idWindow *)window {
+    [self addModifier:MOD_HIDE window:window];
+}
+
+- (void)unhideWindow:(idWindow *)window {
+    [self addModifier:MOD_UNHIDE window:window];
+}
+
+#pragma mark - rvGEProperties
+
+/// idStr::StripQuotes
+static NSString *UDStripQuotes(NSString *s) {
+    if ( ![s hasPrefix:@"\""] ) {
+        return s;
+    }
+    NSUInteger end = s.length;
+    // Remove the trailing quote first
+    if ( end > 1 && [s characterAtIndex:end - 1] == '"' ) {
+        end--;
+    }
+    // Strip the leading quote now
+    return [s substringWithRange:NSMakeRange(1, end - 1)];
+}
+
+/*
+================
+rvGEProperties::Update
+
+Update the properties in the window
+================
+*/
+- (NSArray<NSArray<NSString *> *> *)properties {
+    if ( [self.selections num] != 1 ) {
+        return nil;
+    }
+    rvGEWindowWrapper *mWrapper = [rvGEWindowWrapper wrapperOf:self.selections[0]];
+    NSMutableArray<NSArray<NSString *> *> *rows = [NSMutableArray array];
+    idDict *state = mWrapper.stateDict;
+    for ( int i = 0; i < [state numKeyVals]; i ++ ) {
+        [rows addObject:@[ [state keyAtIndex:i], UDStripQuotes( [state valueAtIndex:i] ) ]];
+    }
+    return rows;
+}
+
+/*
+================
+rvGEProperties::AddModifier
+
+Add a state modifier for the given key / value pair
+================
+*/
+- (BOOL)setProperty:(NSString *)name value:(NSString *)value {
+    if ( [self.selections num] != 1 ) {
+        return NO;
+    }
+    rvGEWindowWrapper *mWrapper = [rvGEWindowWrapper wrapperOf:self.selections[0]];
+    NSString *tempvalue = value;
+
+    if ( ![mWrapper verifyStateKey:name value:tempvalue result:NULL] ) {
+        tempvalue = [NSString stringWithFormat:@"\"%@\"", value];
+        if ( ![mWrapper verifyStateKey:name value:tempvalue result:NULL] ) {
+            return NO;
+        }
+    }
+
+    idDict *tempstate = [mWrapper.stateDict copy];
+    [tempstate set:name value:tempvalue];
+
+    [self.modifiers append:[[rvGEStateModifier alloc] initWithName:@"Property Change" window:mWrapper.window dict:tempstate]];
+    self.modified = YES;
+
+    return YES;
+}
+
 @end

@@ -13,7 +13,7 @@
 #import <Foundation/Foundation.h>
 #import "idMath.h"
 
-@class idWindow, rvGEWindowWrapper;
+@class idWindow, rvGEWindowWrapper, idDict;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,6 +44,18 @@ NS_ASSUME_NONNULL_BEGIN
 /// rvGESizeModifier: a window's sides moved by @a l, @a t, @a r, @a b.
 @interface rvGESizeModifier : rvGEModifier
 - (instancetype)initWithName:(NSString *)name window:(idWindow *)window l:(float)l t:(float)t r:(float)r b:(float)b;
+@end
+
+/// rvGEHideModifier: a window hidden in the editor, or shown (and, shown,
+/// the nearest hidden window it is in too). The editor's alone: the file's
+/// "visible" is as it was.
+@interface rvGEHideModifier : rvGEModifier
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window hide:(BOOL)hide;
+@end
+
+/// rvGEStateModifier: a window's state keys as @a dict has them.
+@interface rvGEStateModifier : rvGEModifier
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window dict:(idDict *)dict;
 @end
 
 /// rvGEModifierStack

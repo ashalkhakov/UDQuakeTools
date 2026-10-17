@@ -88,6 +88,11 @@ typedef NS_ENUM(int, rvGEWindowType) {
 /// After the window is parsed: its visibility and rect read.
 - (void)finish;
 
+/// VerfiyStateKey: whether @a value, read as @a name's, is all a value of
+/// it (the window parses it whole, without an error); what it read in
+/// @a result. The window's state as it was after.
+- (BOOL)verifyStateKey:(NSString *)name value:(NSString *)value result:(NSString *_Nullable *_Nullable)result;
+
 + (rvGEWindowType)windowTypeFromString:(NSString *)string;
 + (NSString *)stringFromWindowType:(rvGEWindowType)type;
 

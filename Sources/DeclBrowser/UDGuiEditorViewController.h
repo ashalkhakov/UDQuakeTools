@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
  * whose document saves it). Back from the source, an edited text is run
  * instead, its parse errors in the tab's Issues.
  */
-@interface UDGuiEditorViewController : UDTextEditorViewController <UDSourceRepresenting, UDInspecting>
+@interface UDGuiEditorViewController : UDTextEditorViewController <UDSourceRepresenting, UDInspecting, UDNavigating>
 
 @property (nonatomic, strong, readonly) UDGuiPlayer *player;
 
@@ -32,6 +32,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSButton *playButton;
 @property (weak) IBOutlet NSTextField *timeLabel;
 @property (weak) IBOutlet NSPopUpButton *namedEventPopUp;
+/// The navigator's pane: the GUI's windows (rvGENavigator's), a check box
+/// hiding each in the design.
+@property (strong) IBOutlet NSView *windowsView;
+@property (weak) IBOutlet NSOutlineView *windowsOutline;
+/// The inspector's Properties (rvGEProperties): the selected window's state
+/// keys, edited as the window reads them, each a Property Change.
+@property (strong) IBOutlet NSView *propertiesView;
+@property (weak) IBOutlet NSTableView *propertiesTable;
+@property (weak) IBOutlet NSTextField *propertiesMessage;
+@property (weak) IBOutlet NSTextField *propertiesPlaceholder;
+- (IBAction)addProperty:(nullable id)sender;
+/// The inspector's Properties shown (a window double-clicked).
+- (IBAction)showProperties:(nullable id)sender;
 /// The inspector's panes: the state, and the log.
 @property (strong) IBOutlet NSView *stateView;
 @property (strong) IBOutlet NSView *logView;

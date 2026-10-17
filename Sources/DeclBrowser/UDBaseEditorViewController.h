@@ -44,11 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * A tab of the workspace window's right pane, the inspector: what an
- * editor shows there beside itself (a GUI's state, its log), its badge in
- * the pane's tab bar.
+ * A tab of a side pane of the workspace window that an editor brings with
+ * it: a navigator on the left (a GUI's windows), an inspector on the right
+ * (a GUI's state, its log); its badge in the pane's tab bar.
  */
-@interface UDInspectorPane : NSObject
+@interface UDEditorPane : NSObject
 + (instancetype)paneWithTitle:(NSString *)title letters:(NSString *)letters
                           red:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue view:(NSView *)view;
 @property (nonatomic, copy, readonly) NSString *title;
@@ -59,7 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// An editor with tabs in the right pane while it is the selected one.
 @protocol UDInspecting <NSObject>
-@property (nonatomic, readonly) NSArray<UDInspectorPane *> *inspectorPanes;
+@property (nonatomic, readonly) NSArray<UDEditorPane *> *inspectorPanes;
+@end
+
+/// An editor with tabs in the left pane, after the navigators that are
+/// always there, while it is the selected one (Xcode's document outline).
+@protocol UDNavigating <NSObject>
+@property (nonatomic, readonly) NSArray<UDEditorPane *> *navigatorPanes;
 @end
 
 /**

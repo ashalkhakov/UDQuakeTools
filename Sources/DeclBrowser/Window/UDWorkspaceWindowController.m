@@ -40,8 +40,13 @@ static const CGFloat UDEditorsMinimum = 400;
 @property (nonatomic, readonly, getter=isRestarting) BOOL restarting;
 /// The selected editor's inspector panes, as the right pane shows them, and
 /// the title of the one last chosen (chosen again where an editor has it).
-@property (nonatomic, copy) NSArray<UDInspectorPane *> *inspectorPanes;
+@property (nonatomic, copy) NSArray<UDEditorPane *> *inspectorPanes;
 @property (nonatomic, copy, nullable) NSString *inspectorTitle;
+/// The navigator's own tabs (the bar's items, their tab view items), and the
+/// selected editor's after them.
+@property (nonatomic, copy) NSArray<DMTabBarItem *> *navigatorItems;
+@property (nonatomic) NSInteger navigatorFixedCount;
+@property (nonatomic, copy) NSArray<UDEditorPane *> *navigatorPanes;
 @end
 
 @implementation UDWorkspaceWindowController
@@ -106,6 +111,9 @@ static const CGFloat UDEditorsMinimum = 400;
         item.toolTip = tab[1];
         [items addObject:item];
     }
+    self.navigatorItems = items;
+    self.navigatorFixedCount = (NSInteger)items.count;
+    self.navigatorPanes = @[];
     self.navigatorTabBar.tabBarItems = items;
     [self.navigatorTabBar setTarget:self action:@selector(navigatorTabChanged:)];
     self.navigatorTabBar.selectedIndex = 0;
@@ -131,17 +139,77 @@ static const CGFloat UDEditorsMinimum = 400;
     }
 }
 
+/// The left pane: its own tabs, and the editor's after them; the tab shown
+/// kept if the editor has it (or it is one of the pane's own), else the
+/// first.
+- (void)_showNavigatorOf:(UDBaseEditorViewController *)editor {
+    NSArray<UDEditorPane *> *panes = [editor conformsToProtocol:@protocol(UDNavigating)]
+        ? ((id<UDNavigating>)editor).navigatorPanes : @[];
+    if ([panes isEqualToArray:self.navigatorPanes]) return;
+    NSTabView *tabView = self.navigatorTabView;
+    NSInteger fixed = self.navigatorFixedCount;
+    NSInteger selected = [tabView indexOfTabViewItem:tabView.selectedTabViewItem];
+    NSString *selectedTitle = selected >= fixed && selected - fixed < (NSInteger)self.navigatorPanes.count
+        ? self.navigatorPanes[(NSUInteger)(selected - fixed)].title : nil;
+
+    // the last editor's tabs out (the view each brought taken back off)
+    while (tabView.numberOfTabViewItems > fixed) {
+        NSTabViewItem *item = [tabView tabViewItemAtIndex:fixed];
+        [tabView removeTabViewItem:item];
+    }
+    self.navigatorPanes = panes;
+    NSMutableArray<DMTabBarItem *> *items = [self.navigatorItems mutableCopy];
+    NSInteger chosen = selectedTitle == nil ? MIN(selected, fixed - 1) : 0;
+    for (NSUInteger i = 0; i < panes.count; i++) {
+        UDEditorPane *pane = panes[i];
+        NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:pane.title];
+        item.label = pane.title;
+        item.view = pane.view;
+        [tabView addTabViewItem:item];
+        DMTabBarItem *barItem = [DMTabBarItem tabBarItemWithIcon:UDTabBadge(pane.letters, pane.red, pane.green, pane.blue)
+                                                             tag:(NSUInteger)fixed + i];
+        barItem.toolTip = pane.title;
+        [items addObject:barItem];
+        if ([pane.title isEqualToString:selectedTitle]) chosen = fixed + (NSInteger)i;
+    }
+    self.navigatorTabBar.tabBarItems = items;
+    self.navigatorTabBar.selectedIndex = (NSUInteger)MAX(chosen, 0);
+    [tabView selectTabViewItemAtIndex:MAX(chosen, 0)];
+}
+
+/// The editor's navigator tab @a title shown (a GUI's windows, when its
+/// design is wanted).
+- (void)showNavigatorPaneTitled:(NSString *)title {
+    for (NSUInteger i = 0; i < self.navigatorPanes.count; i++) {
+        if ([self.navigatorPanes[i].title isEqualToString:title]) {
+            NSInteger index = self.navigatorFixedCount + (NSInteger)i;
+            self.navigatorTabBar.selectedIndex = (NSUInteger)index;
+            [self.navigatorTabView selectTabViewItemAtIndex:index];
+        }
+    }
+}
+
+- (void)showInspectorPaneTitled:(NSString *)title {
+    for (NSUInteger i = 0; i < self.inspectorPanes.count; i++) {
+        if ([self.inspectorPanes[i].title isEqualToString:title]) {
+            self.inspectorTitle = title;
+            self.inspectorTabBar.selectedIndex = i;
+            [self _showInspectorPane:self.inspectorPanes[i]];
+        }
+    }
+}
+
 /// The right pane: the editor's panes in its bar, the one chosen before if
 /// it has one of that title, else its first; "No Inspector" for none.
 - (void)_showInspectorOf:(UDBaseEditorViewController *)editor {
-    NSArray<UDInspectorPane *> *panes = [editor conformsToProtocol:@protocol(UDInspecting)]
+    NSArray<UDEditorPane *> *panes = [editor conformsToProtocol:@protocol(UDInspecting)]
         ? ((id<UDInspecting>)editor).inspectorPanes : @[];
     if ([panes isEqualToArray:self.inspectorPanes]) return;
     self.inspectorPanes = panes;
     NSMutableArray<DMTabBarItem *> *items = [NSMutableArray array];
     NSUInteger chosen = 0;
     for (NSUInteger i = 0; i < panes.count; i++) {
-        UDInspectorPane *pane = panes[i];
+        UDEditorPane *pane = panes[i];
         DMTabBarItem *item = [DMTabBarItem tabBarItemWithIcon:UDTabBadge(pane.letters, pane.red, pane.green, pane.blue) tag:i];
         item.toolTip = pane.title;
         [items addObject:item];
@@ -158,7 +226,7 @@ static const CGFloat UDEditorsMinimum = 400;
 }
 
 /// @a pane's view, alone in the host, filling it.
-- (void)_showInspectorPane:(UDInspectorPane *)pane {
+- (void)_showInspectorPane:(UDEditorPane *)pane {
     NSView *host = self.inspectorHost;
     for (NSView *view in [host.subviews copy]) {
         if (view != self.inspectorPlaceholder) [view removeFromSuperview];
@@ -258,6 +326,7 @@ static const CGFloat UDEditorsMinimum = 400;
     self.representationControl.enabled = hasSource;
     self.representationControl.selectedSegment = hasSource && ((id<UDSourceRepresenting>)editor).showsSource ? 1 : 0;
     [self _showInspectorOf:editor];
+    [self _showNavigatorOf:editor];
 }
 
 - (IBAction)showRepresentation:(id)sender {

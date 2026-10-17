@@ -76,6 +76,40 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addModifierMove:(NSString *)modName x:(float)x y:(float)y snap:(BOOL)snap;
 - (void)addModifierSize:(NSString *)modName l:(float)l t:(float)t r:(float)r b:(float)b snap:(BOOL)snap;
 
+/// rvGEWorkspace::EModifierType: the edits AddModifiers makes of a window.
+typedef NS_ENUM(int, rvGEModifierType) {
+    MOD_UNKNOWN,
+    MOD_DELETE,
+    MOD_HIDE,
+    MOD_UNHIDE,
+    MOD_SHOWHIDDEN,
+    MOD_SEND_BACKWARD,
+    MOD_BRING_FORWARD,
+    MOD_SEND_BACK,
+    MOD_BRING_FRONT,
+};
+
+/// AddModifiers: @a type's edit of @a window; of the selection (a group of
+/// them for more than one window).
+- (void)addModifier:(rvGEModifierType)type window:(idWindow *)window;
+- (void)addModifierToSelection:(rvGEModifierType)type;
+
+/// rvGEProperties::AddModifier: the selected window's (the one selected)
+/// state key @a name made @a value, checked as the window reads it (as it
+/// is, else quoted): a "Property Change". NO, and nothing changed, for a
+/// value the window does not read, or no one window selected.
+- (BOOL)setProperty:(NSString *)name value:(NSString *)value;
+
+/// rvGEProperties::Update's: the selected window's state keys and their
+/// values without their quotes, when one window is selected; else nil.
+- (nullable NSArray<NSArray<NSString *> *> *)properties;
+
+/// HideWindow, UnhideWindow, HideSelected, UnhideSelected.
+- (void)hideWindow:(idWindow *)window;
+- (void)unhideWindow:(idWindow *)window;
+- (void)hideSelected;
+- (void)unhideSelected;
+
 /// RenderGrid and the selections' Render: what is drawn over the GUI.
 - (void)renderOverlayInto:(UDOverlay *)overlay;
 

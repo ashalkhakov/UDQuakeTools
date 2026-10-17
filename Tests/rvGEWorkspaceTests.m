@@ -8,6 +8,7 @@
 #import "idUserInterface.h"
 #import "idWindow.h"
 #import "idDict.h"
+#import "idWinVar.h"
 
 // An original GUI: a panel with a button in it, a label, and a window whose
 // rect is an expression.
@@ -22,6 +23,7 @@ static NSString *const UDCanvasGui =
      "\t}\n"
      "\twindowDef Label {\n"
      "\t\trect\t400, 50, 100, 30\n"
+     "\t\ttext\t\"ready\"\n"
      "\t}\n"
      "\twindowDef Moving {\n"
      "\t\trect\t\"gui::x\", 300, 50, 50\n"
@@ -173,6 +175,46 @@ static NSString *const UDCanvasGui =
     XCTAssertEqual(overlay.lineVertexCount, (4 + 4 + 8 * 4) * 2u);
     // the first's corner mark (1) and its centre (2)
     XCTAssertEqual(overlay.triangleVertexCount, 3 * 3u);
+}
+
+#pragma mark - Properties
+
+- (void)selectLabel {
+    [self.workspace mouseDownAtX:420 y:60 shift:NO time:0];
+    [self.workspace mouseUp];
+}
+
+- (NSString *)property:(NSString *)name {
+    for (NSArray<NSString *> *row in self.workspace.properties) {
+        if ([row[0] isEqualToString:name]) return row[1];
+    }
+    return nil;
+}
+
+- (void)testTheSelectedWindowsPropertiesAreItsState {
+    XCTAssertNil(self.workspace.properties, @"none, with no window selected");
+    [self selectLabel];
+    XCTAssertEqualObjects([self property:@"rect"], @"400, 50, 100, 30");
+    XCTAssertEqualObjects([self property:@"text"], @"ready", @"without its quotes");
+    XCTAssertEqualObjects([self property:@"name"], @"Label");
+}
+
+- (void)testAPropertyIsSetAsTheWindowReadsIt {
+    [self selectLabel];
+    XCTAssertTrue([self.workspace setProperty:@"text" value:@"hello there"], @"quoted, as a string must be");
+    XCTAssertEqualObjects([[self window:@"Label"] getWinVarByName:@"text"].string, @"hello there");
+    XCTAssertTrue([self.workspace.text containsString:@"text\t\"hello there\""], @"%@", self.workspace.text);
+    XCTAssertTrue([self.workspace setProperty:@"rect" value:@"10, 20, 30, 40"]);
+    XCTAssertEqual([self rectOf:@"Label"].x, 10, @"the rect read again");
+    XCTAssertEqual([self rectOf:@"Label"].w, 30);
+
+    XCTAssertFalse([self.workspace setProperty:@"rect" value:@"1, 2, 3, 4 five"], @"what the window does not read all of is no value");
+    XCTAssertEqualObjects([self property:@"rect"], @"10, 20, 30, 40", @"and changes nothing");
+
+    [self.workspace.modifiers undo];
+    XCTAssertEqual([self rectOf:@"Label"].x, 400, @"a Property Change is undone");
+    [self.workspace.modifiers undo];
+    XCTAssertEqualObjects([[self window:@"Label"] getWinVarByName:@"text"].string, @"ready");
 }
 
 @end

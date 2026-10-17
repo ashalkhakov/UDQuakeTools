@@ -8,6 +8,7 @@
 #import "rvGEWindowWrapper.h"
 #import "idWindow.h"
 #import "idStr.h"
+#import "idDict.h"
 
 @implementation rvGEModifier
 
@@ -241,6 +242,122 @@
     if ( ![self.window getParent] ) {
         return NO;
     }
+
+    return YES;
+}
+
+@end
+
+@implementation rvGEHideModifier {
+    idWindow *mParent;
+    BOOL mHide;
+    BOOL mUndoHide;
+}
+
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window hide:(BOOL)hide {
+    self = [super initWithName:name window:window];
+    if (self) {
+        mParent = nil;
+        mHide = hide;
+        mUndoHide = self.wrapper.hidden;
+
+        // If unhiding then find any parent window along the way that may be hidden and prevent
+        // this window from being visible
+        if ( !hide ) {
+            mParent = self.window;
+            while ( nil != (mParent = [mParent getParent]) ) {
+                if ( [rvGEWindowWrapper wrapperOf:mParent].hidden ) {
+                    break;
+                }
+            }
+        }
+    }
+    return self;
+}
+
+/*
+================
+rvGEHideModifier::Apply
+
+Apply the hide modifier by setting the visible state of the wrapper window
+================
+*/
+- (BOOL)apply {
+    self.wrapper.hidden = mHide;
+
+    if ( mParent ) {
+        [rvGEWindowWrapper wrapperOf:mParent].hidden = mHide;
+    }
+
+    return YES;
+}
+
+/*
+================
+rvGEHideModifier::Undo
+
+Undo the hide modifier by setting the undo visible state of the wrapper window
+================
+*/
+- (BOOL)undo {
+    self.wrapper.hidden = mUndoHide;
+
+    if ( mParent ) {
+        [rvGEWindowWrapper wrapperOf:mParent].hidden = mUndoHide;
+    }
+
+    return YES;
+}
+
+@end
+
+@implementation rvGEStateModifier {
+    idDict *mDict;
+    idDict *mUndoDict;
+}
+
+- (instancetype)initWithName:(NSString *)name window:(idWindow *)window dict:(idDict *)dict {
+    self = [super initWithName:name window:window];
+    if (self) {
+        mDict = [dict copy];
+
+        // Make a copy of the current dictionary
+        mUndoDict = [self.wrapper.stateDict copy];
+    }
+    return self;
+}
+
+/*
+================
+rvGEStateModifier::Apply
+
+Applys the new state dictionary to the window
+================
+*/
+- (BOOL)apply {
+    return [self setState:mDict];
+}
+
+/*
+================
+rvGEStateModifier::Undo
+
+Applies the undo dictionary to the window
+================
+*/
+- (BOOL)undo {
+    return [self setState:mUndoDict];
+}
+
+/*
+================
+rvGEStateModifier::Apply
+
+Applys the given dictionary to the window
+================
+*/
+- (BOOL)setState:(idDict *)dict {
+    [self.wrapper setState:dict];
 
     return YES;
 }

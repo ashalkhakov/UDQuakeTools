@@ -203,14 +203,14 @@ static NSString *const UDViewerScript =
     XCTAssertFalse([controller.inspectorPlaceholder isHidden], @"and the pane says so");
 
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 2u, @"a GUI has its state and its log");
+    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 3u, @"a GUI has its properties, its state and its log");
     XCTAssertTrue([controller.inspectorPlaceholder isHidden]);
-    XCTAssertEqual(editor.stateView.superview, controller.inspectorHost, @"the state is shown first");
+    XCTAssertEqual(editor.propertiesView.superview, controller.inspectorHost, @"the properties are shown first");
 
-    controller.inspectorTabBar.selectedIndex = 1;
+    controller.inspectorTabBar.selectedIndex = 2;
     [NSApp sendAction:@selector(inspectorTabChanged:) to:controller from:controller.inspectorTabBar];
     XCTAssertEqual(editor.logView.superview, controller.inspectorHost, @"the log, when it is chosen");
-    XCTAssertNil(editor.stateView.superview);
+    XCTAssertNil(editor.propertiesView.superview);
 }
 
 - (void)testTheSidePanesKeepTheirWidths {
@@ -361,6 +361,137 @@ static NSString *const UDViewerScript =
     if (gl != nil) {
         XCTAssertEqual(gl.overlay.lineVertexCount, overlay.lineVertexCount, @"drawn over the GUI");
     }
+}
+
+#pragma mark - The navigator
+
+- (void)testTheWindowsAreANavigatorOfTheGuisTab {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    NSUInteger own = controller.navigatorTabBar.tabBarItems.count;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own + 1, @"a GUI's tab adds its windows to the navigators");
+    XCTAssertEqual((NSUInteger)controller.navigatorTabView.numberOfTabViewItems, own + 1);
+    [controller showNavigatorPaneTitled:@"Windows"];
+    XCTAssertEqual(editor.windowsView.superview != nil, YES, @"shown in the left pane");
+
+    NSOutlineView *outline = editor.windowsOutline;
+    NSMutableArray<NSString *> *rows = [NSMutableArray array];
+    for (NSInteger row = 0; row < outline.numberOfRows; row++) {
+        [rows addObject:[(idWindow *)[outline itemAtRow:row] getName]];
+    }
+    XCTAssertEqualObjects(rows, (@[@"Desktop", @"Panel", @"Label", @"Go"]), @"the desktop open, its windows in it");
+
+    [self openOutlinePath:@"script/udtest.script" inController:controller];
+    XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own, @"a script's tab has no windows");
+}
+
+- (void)testChoosingAWindowInTheNavigatorDesignsIt {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    NSOutlineView *outline = editor.windowsOutline;
+    NSInteger row = -1;
+    for (NSInteger i = 0; i < outline.numberOfRows; i++) {
+        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:@"Go"]) row = i;
+    }
+    XCTAssertGreaterThanOrEqual(row, 0);
+    [outline selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    XCTAssertTrue(editor.designing, @"choosing a window designs the GUI");
+    XCTAssertEqual([editor.designWorkspace.selections num], 1);
+    XCTAssertEqualObjects([editor.designWorkspace.selections[0] getName], @"Go");
+}
+
+- (void)testTheDesignsSelectionIsTheNavigators {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:editor.guiView];
+    NSOutlineView *outline = editor.windowsOutline;
+    XCTAssertEqual(outline.selectedRowIndexes.count, 1u);
+    XCTAssertEqualObjects([(idWindow *)[outline itemAtRow:outline.selectedRow] getName], @"Go", @"clicked on the canvas, chosen in the navigator");
+}
+
+- (void)testTheEyeHidesAWindowInTheDesignOnly {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    NSOutlineView *outline = editor.windowsOutline;
+    NSTableColumn *eye = [outline tableColumnWithIdentifier:@"visible"];
+    idWindow *panel = nil;
+    for (NSInteger i = 0; i < outline.numberOfRows; i++) {
+        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:@"Panel"]) panel = [outline itemAtRow:i];
+    }
+    XCTAssertNotNil(panel);
+    XCTAssertEqualObjects([outline.dataSource outlineView:outline objectValueForTableColumn:eye byItem:panel], @YES);
+    [outline.dataSource outlineView:outline setObjectValue:@NO forTableColumn:eye byItem:panel];
+    XCTAssertTrue([rvGEWindowWrapper wrapperOf:panel].hidden, @"hidden in the design");
+    XCTAssertFalse([editor.designWorkspace.text containsString:@"visible\t0"], @"the file's visible is as it was");
+    // a click where it is finds what is under it
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(150, 150) time:1.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(150, 150) time:1.05 in:editor.guiView];
+    XCTAssertEqual([editor.designWorkspace.selections num], 0, @"a hidden window is not chosen on the canvas");
+
+    [editor.editorDocument.undoManager undo];
+    XCTAssertFalse([rvGEWindowWrapper wrapperOf:panel].hidden, @"Undo shows it again");
+}
+
+#pragma mark - Properties
+
+- (void)chooseWindow:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    NSOutlineView *outline = editor.windowsOutline;
+    for (NSInteger i = 0; i < outline.numberOfRows; i++) {
+        if ([[(idWindow *)[outline itemAtRow:i] getName] isEqualToString:name]) {
+            [outline selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)i] byExtendingSelection:NO];
+        }
+    }
+}
+
+- (NSInteger)propertyRow:(NSString *)name in:(UDGuiEditorViewController *)editor {
+    NSTableView *table = editor.propertiesTable;
+    NSTableColumn *key = [table tableColumnWithIdentifier:@"key"];
+    for (NSInteger i = 0; i < [table.dataSource numberOfRowsInTableView:table]; i++) {
+        if ([[table.dataSource tableView:table objectValueForTableColumn:key row:i] isEqual:name]) return i;
+    }
+    return -1;
+}
+
+- (void)testThePropertiesAreTheChosenWindowsAndEditIt {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    XCTAssertFalse([editor.propertiesPlaceholder isHidden], @"no window chosen yet");
+    [self chooseWindow:@"Go" in:editor];
+    XCTAssertTrue([editor.propertiesPlaceholder isHidden]);
+    NSTableView *table = editor.propertiesTable;
+    NSTableColumn *value = [table tableColumnWithIdentifier:@"value"];
+    NSInteger rectRow = [self propertyRow:@"rect" in:editor];
+    XCTAssertGreaterThanOrEqual(rectRow, 0);
+    XCTAssertEqualObjects([table.dataSource tableView:table objectValueForTableColumn:value row:rectRow], @"400, 300, 160, 60");
+
+    [table.dataSource tableView:table setObjectValue:@"40, 30, 160, 60" forTableColumn:value row:rectRow];
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 40, 0.5, @"the rect as typed");
+    XCTAssertEqualObjects(editor.editorDocument.undoManager.undoActionName, @"Property Change");
+
+    [table.dataSource tableView:table setObjectValue:@"1, 2, 3, 4 five" forTableColumn:value row:[self propertyRow:@"rect" in:editor]];
+    XCTAssertTrue([editor.propertiesMessage.stringValue hasPrefix:@"Invalid property value"], @"%@", editor.propertiesMessage.stringValue);
+    XCTAssertEqualWithAccuracy([self designRectOf:@"Go" in:editor].x, 40, 0.5, @"and nothing changed");
+}
+
+- (void)testAPropertyIsAdded {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openGuiIn:controller];
+    [self chooseWindow:@"Label" in:editor];
+    [editor addProperty:nil];
+    NSTableView *table = editor.propertiesTable;
+    [table abortEditing];
+    NSInteger row = [table.dataSource numberOfRowsInTableView:table] - 1;
+    [table.dataSource tableView:table setObjectValue:@"textscale" forTableColumn:[table tableColumnWithIdentifier:@"key"] row:row];
+    [table.dataSource tableView:table setObjectValue:@"0.5" forTableColumn:[table tableColumnWithIdentifier:@"value"] row:row];
+    XCTAssertGreaterThanOrEqual([self propertyRow:@"textscale" in:editor], 0, @"the new property is the window's");
+    XCTAssertTrue([editor.designWorkspace.text containsString:@"textscale\t0.5"], @"%@", editor.designWorkspace.text);
 }
 
 #pragma mark - GL

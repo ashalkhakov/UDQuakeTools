@@ -42,6 +42,9 @@
 // the bar).
 - (IBAction)navigatorTabChanged:(id)sender;
 - (IBAction)inspectorTabChanged:(id)sender;
+/// The selected editor's navigator tab @a title shown; its inspector's.
+- (void)showNavigatorPaneTitled:(NSString *)title;
+- (void)showInspectorPaneTitled:(NSString *)title;
 - (IBAction)textContainsFilterChanged:(NSSearchField *)sender;
 
 // File menu save plumbing (VSCode-style; the window controller intercepts

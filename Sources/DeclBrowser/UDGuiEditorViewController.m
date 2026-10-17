@@ -2,6 +2,7 @@
 #import "idFileSystem.h"   // AppKit before UDDeclCodec's CoreData (GNUstep)
 #import "UDGuiPlayer.h"
 #import "UDGuiView.h"
+#import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceItem.h"
 #import "idUserInterface.h"
 #import "idDict.h"
@@ -13,11 +14,12 @@
 #import "rvGEWorkspace.h"
 #import "rvGEModifier.h"
 #import "rvGESelectionMgr.h"
+#import "rvGEWindowWrapper.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 
 static UDDiagnosticSource const UDGuiParseSource = @"gui";
 
-@interface UDGuiEditorViewController () <NSTableViewDataSource, NSTableViewDelegate>
+@interface UDGuiEditorViewController () <NSTableViewDataSource, NSTableViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate>
 @property (nonatomic, strong, readwrite) UDGuiPlayer *player;
 /// The text the GUI running was read from: the file's until the source is
 /// edited, then the source's when the editor comes back.
@@ -39,10 +41,18 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// What the workspace was loaded from.
 @property (nonatomic, copy, nullable) NSString *designText;
 @property (nonatomic) BOOL playedBeforeDesigning;
+/// The navigator's selection being set from the design's (not the other
+/// way round).
+@property (nonatomic) BOOL syncingWindows;
+/// The Properties' rows, and the one being added (its name, while it has
+/// no value yet).
+@property (nonatomic, copy, nullable) NSArray<NSArray<NSString *> *> *propertyRows;
+@property (nonatomic, copy, nullable) NSString *pendingProperty;
 @end
 
 @implementation UDGuiEditorViewController {
-    NSArray<UDInspectorPane *> *_panes;
+    NSArray<UDEditorPane *> *_panes;
+    NSArray<UDEditorPane *> *_navigatorPanes;
 }
 
 @synthesize showsSource = _showsSource;
@@ -62,6 +72,11 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.fileText = self.editorTextView.string;
     self.shownText = self.fileText;
     [self _run];
+    // loaded for editing too, its windows in the navigator
+    [self _design];
+    self.windowsOutline.target = self;
+    self.windowsOutline.doubleAction = @selector(showProperties:);
+    [self _updateProperties];
 
     // a canvas edited since its text was shown saves its text
     if ([self.document isKindOfClass:[UDTextFileDocument class]]) {
@@ -128,15 +143,246 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 
 #pragma mark - The inspector
 
-- (NSArray<UDInspectorPane *> *)inspectorPanes {
+- (NSArray<UDEditorPane *> *)inspectorPanes {
     if (self.stateView == nil) return @[];
     if (_panes == nil) {
         _panes = @[
-            [UDInspectorPane paneWithTitle:@"State" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.stateView],
-            [UDInspectorPane paneWithTitle:@"Log" letters:@"L" red:0.55 green:0.45 blue:0.30 view:self.logView],
+            [UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.propertiesView],
+            [UDEditorPane paneWithTitle:@"State" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.stateView],
+            [UDEditorPane paneWithTitle:@"Log" letters:@"L" red:0.55 green:0.45 blue:0.30 view:self.logView],
         ];
     }
     return _panes;
+}
+
+- (NSArray<UDEditorPane *> *)navigatorPanes {
+    if (self.windowsView == nil) return @[];
+    if (_navigatorPanes == nil) {
+        _navigatorPanes = @[
+            [UDEditorPane paneWithTitle:@"Windows" letters:@"W" red:0.35 green:0.60 blue:0.55 view:self.windowsView],
+        ];
+    }
+    return _navigatorPanes;
+}
+
+#pragma mark - The navigator (rvGENavigator)
+
+/// The design workspace, made and loaded if it is not yet (the navigator
+/// shows its windows in Run too).
+- (rvGEWorkspace *)_design {
+    if (self.designWorkspace == nil) {
+        idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:self.workspace.fileSystem
+                                                                                declManager:self.workspace.declManager];
+        [manager managerInit];
+        rvGEWorkspace *design = [[rvGEWorkspace alloc] initWithManager:manager];
+        design.modifiers.undoManager = self.document.undoManager;
+        design.modifiers.target = self;
+        design.modifiers.action = @selector(_designEdited:);
+        self.designWorkspace = design;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
+                                                     name:rvGESelectionDidChangeNotification object:design.selections];
+        [self _loadDesign];
+    }
+    return self.designWorkspace;
+}
+
+/// rvGENavigator::Update: the windows again, expanded as their wrappers are.
+- (void)_updateNavigator {
+    NSOutlineView *outline = self.windowsOutline;
+    if (outline == nil) return;
+    self.syncingWindows = YES;
+    [outline reloadData];
+    idWindow *desktop = [self.designWorkspace.interface getDesktop];
+    if (desktop != nil) {
+        [self _expandAsWrapped:desktop];
+    }
+    self.syncingWindows = NO;
+    [self _updateNavigatorSelections];
+}
+
+- (void)_expandAsWrapped:(idWindow *)window {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    if (!wrapper.expanded) return;
+    [self.windowsOutline expandItem:window];
+    for (idWindow *child in [self _childrenOf:window]) {
+        [self _expandAsWrapped:child];
+    }
+}
+
+/// rvGENavigator::UpdateSelections: the rows of the selected windows
+/// selected, and shown.
+- (void)_updateNavigatorSelections {
+    NSOutlineView *outline = self.windowsOutline;
+    rvGEWorkspace *design = self.designWorkspace;
+    if (outline == nil || design == nil) return;
+    self.syncingWindows = YES;
+    NSMutableIndexSet *rows = [NSMutableIndexSet indexSet];
+    for (idWindow *window in design.selections.windows) {
+        // its parents opened, as Add's Expand does
+        NSMutableArray<idWindow *> *parents = [NSMutableArray array];
+        for (idWindow *parent = [window getParent]; parent != nil; parent = [parent getParent]) {
+            [parents insertObject:parent atIndex:0];
+        }
+        for (idWindow *parent in parents) {
+            [outline expandItem:parent];
+        }
+        NSInteger row = [outline rowForItem:window];
+        if (row >= 0) [rows addIndex:(NSUInteger)row];
+    }
+    [outline selectRowIndexes:rows byExtendingSelection:NO];
+    if (rows.count > 0) [outline scrollRowToVisible:(NSInteger)rows.firstIndex];
+    self.syncingWindows = NO;
+}
+
+/// A window's children in the navigator: its wrapped ones not deleted.
+- (NSArray<idWindow *> *)_childrenOf:(idWindow *)window {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:window];
+    NSMutableArray<idWindow *> *children = [NSMutableArray array];
+    for (int i = 0; i < [wrapper childCount]; i++) {
+        idWindow *child = [wrapper childAtIndex:i];
+        rvGEWindowWrapper *childWrapper = [rvGEWindowWrapper wrapperOf:child];
+        if (childWrapper != nil && !childWrapper.deleted) [children addObject:child];
+    }
+    return children;
+}
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
+    if (item == nil) {
+        return [self.designWorkspace.interface getDesktop] != nil ? 1 : 0;
+    }
+    return (NSInteger)[self _childrenOf:item].count;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
+    if (item == nil) {
+        return [self.designWorkspace.interface getDesktop];
+    }
+    return [self _childrenOf:item][(NSUInteger)index];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
+    return [self _childrenOf:item].count > 0;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)column byItem:(id)item {
+    rvGEWindowWrapper *wrapper = [rvGEWindowWrapper wrapperOf:item];
+    if ([column.identifier isEqualToString:@"visible"]) {
+        return @(!wrapper.hidden);
+    }
+    if ([column.identifier isEqualToString:@"scripts"]) {
+        // the engine's scripts icon: a window with scripts or variables
+        return [wrapper.variableDict numKeyVals] || [wrapper.scriptDict numKeyVals] ? @"\u0192" : @"";
+    }
+    return [(idWindow *)item getName];
+}
+
+/// The eye: HideWindow, UnhideWindow (an edit of the design, undone as one).
+- (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column byItem:(id)item {
+    if (![column.identifier isEqualToString:@"visible"]) return;
+    rvGEWorkspace *design = [self _design];
+    if (![object boolValue]) {
+        [design hideWindow:item];
+    } else {
+        [design unhideWindow:item];
+    }
+}
+
+/// A window under a hidden one is drawn disabled, as the engine's are.
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)column item:(id)item {
+    BOOL disabled = NO;
+    for (idWindow *parent = [(idWindow *)item getParent]; parent != nil; parent = [parent getParent]) {
+        if ([rvGEWindowWrapper wrapperOf:parent].hidden) disabled = YES;
+    }
+    if ([cell respondsToSelector:@selector(setEnabled:)]) {
+        [cell setEnabled:!disabled];
+    }
+}
+
+- (void)outlineViewItemDidExpand:(NSNotification *)notification {
+    if (self.syncingWindows) return;
+    [[rvGEWindowWrapper wrapperOf:notification.userInfo[@"NSObject"]] expand];
+}
+
+- (void)outlineViewItemDidCollapse:(NSNotification *)notification {
+    if (self.syncingWindows) return;
+    [[rvGEWindowWrapper wrapperOf:notification.userInfo[@"NSObject"]] collapse];
+}
+
+/// The rows chosen: the design's selection, as the list view's changes
+/// make it (Add, without expanding; Remove); the design shown.
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification {
+    if (self.syncingWindows) return;
+    rvGEWorkspace *design = [self _design];
+    NSOutlineView *outline = self.windowsOutline;
+    NSMutableArray<idWindow *> *chosen = [NSMutableArray array];
+    NSIndexSet *rows = outline.selectedRowIndexes;
+    for (NSUInteger row = rows.firstIndex; row != NSNotFound; row = [rows indexGreaterThanIndex:row]) {
+        id item = [outline itemAtRow:(NSInteger)row];
+        if (item != nil) [chosen addObject:item];
+    }
+    self.syncingWindows = YES;
+    for (idWindow *window in design.selections.windows) {
+        if ([chosen indexOfObjectIdenticalTo:window] == NSNotFound) [design.selections remove:window];
+    }
+    for (idWindow *window in chosen) {
+        [design.selections add:window expand:NO];
+    }
+    self.syncingWindows = NO;
+    if (!self.designing && chosen.count > 0) {
+        [self _enterDesign];
+    } else if (self.designing) {
+        [self _renderDesign];
+    }
+}
+
+#pragma mark - Properties (rvGEProperties)
+
+/// rvGEProperties::Update: the one selected window's state keys, or the
+/// placeholder; the row being added after them.
+- (void)_updateProperties {
+    NSTableView *table = self.propertiesTable;
+    if (table == nil || table.editedRow >= 0) return;
+    NSArray<NSArray<NSString *> *> *rows = [self.designWorkspace properties];
+    if (rows != nil && self.pendingProperty != nil) {
+        rows = [rows arrayByAddingObject:@[self.pendingProperty, @""]];
+    }
+    if (rows == nil) self.pendingProperty = nil;
+    self.propertyRows = rows;
+    self.propertiesPlaceholder.hidden = rows != nil;
+    table.enclosingScrollView.hidden = rows == nil;
+    [table reloadData];
+}
+
+- (IBAction)addProperty:(id)sender {
+    if (self.propertyRows == nil) {
+        NSBeep();
+        return;
+    }
+    self.pendingProperty = @"";
+    [self _updateProperties];
+    NSInteger row = (NSInteger)self.propertyRows.count - 1;
+    [self.propertiesTable selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [self.propertiesTable editColumn:0 row:row withEvent:nil select:YES];
+}
+
+- (IBAction)showProperties:(id)sender {
+    id controller = self.view.window.windowController;
+    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
+        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Properties"];
+    }
+}
+
+/// rvGEProperties::AddModifier: the value set, or why not.
+- (void)_setProperty:(NSString *)name value:(NSString *)value {
+    if (![self.designWorkspace setProperty:name value:value]) {
+        // the engine's "Invalid property value" box, in the pane
+        self.propertiesMessage.stringValue = [NSString stringWithFormat:@"Invalid property value '%@' for property '%@'", value, name];
+        NSBeep();
+        return;
+    }
+    self.propertiesMessage.stringValue = @"";
+    self.pendingProperty = nil;
+    [self _updateProperties];
 }
 
 #pragma mark - Editor | Source
@@ -222,18 +468,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.modeControl.selectedSegment = 1;
     self.playedBeforeDesigning = self.player.playing;
     self.player.playing = NO;
-    if (self.designWorkspace == nil) {
-        idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:self.workspace.fileSystem
-                                                                                declManager:self.workspace.declManager];
-        [manager managerInit];
-        rvGEWorkspace *design = [[rvGEWorkspace alloc] initWithManager:manager];
-        design.modifiers.undoManager = self.document.undoManager;
-        design.modifiers.target = self;
-        design.modifiers.action = @selector(_designEdited:);
-        self.designWorkspace = design;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectionChanged:)
-                                                     name:rvGESelectionDidChangeNotification object:design.selections];
-    }
+    [self _design];
     if (!self.designDirty && ![[self _currentText] isEqualToString:self.designText]) {
         [self _loadDesign];
     }
@@ -272,6 +507,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         [self.designWorkspace loadText:text path:self.item.path];
     }
     self.designText = text;
+    [self _updateNavigator];
 }
 
 /// rvGEWorkspace::Render: the GUI still, at time 0, and over it the grid
@@ -303,6 +539,11 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// An edit of the design, its undo or its redo (the modifier stack's).
 - (void)_designEdited:(id)sender {
     self.designDirty = YES;
+    // the navigator's rows (hidden, shown), but for a drag's every step
+    if (self.designWorkspace.dragType == HT_NONE) {
+        [self.windowsOutline reloadData];
+        [self _updateProperties];
+    }
     // the source, if it is up and not edited, shows it
     if (self.showsSource && [self.editorTextView.string isEqualToString:self.shownText]) {
         [self _showCanvasText];
@@ -313,6 +554,12 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 - (void)_selectionChanged:(NSNotification *)notification {
+    if (!self.syncingWindows) {
+        [self _updateNavigatorSelections];
+    }
+    self.pendingProperty = nil;
+    self.propertiesMessage.stringValue = @"";
+    [self _updateProperties];
     if (self.designing) {
         [self _renderDesign];
     }
@@ -321,6 +568,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// The view's mouse moved, sized or selected.
 - (void)_designViewChanged:(id)sender {
     [self _renderDesign];
+    if (self.designWorkspace.dragType == HT_NONE) {
+        [self _updateProperties];
+    }
 }
 
 /// An Issue's line, in the source.
@@ -459,15 +709,28 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [self.logTable reloadData];
 }
 
+#pragma mark - NSTableViewDelegate
+
+/// A property's name is not edited, but the one being added.
+- (BOOL)tableView:(NSTableView *)tableView shouldEditTableColumn:(NSTableColumn *)column row:(NSInteger)row {
+    if (tableView != self.propertiesTable || ![column.identifier isEqualToString:@"key"]) return YES;
+    return self.pendingProperty != nil && row == (NSInteger)self.propertyRows.count - 1;
+}
+
 #pragma mark - NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    if (tableView == self.propertiesTable) return (NSInteger)self.propertyRows.count;
     if (tableView == self.stateTable) return (NSInteger)self.stateRows.count;
     if (tableView == self.logTable) return (NSInteger)self.player.log.count;
     return 0;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)column row:(NSInteger)row {
+    if (tableView == self.propertiesTable) {
+        if (row < 0 || row >= (NSInteger)self.propertyRows.count) return nil;
+        return self.propertyRows[(NSUInteger)row][[column.identifier isEqualToString:@"key"] ? 0 : 1];
+    }
     if (tableView == self.stateTable) {
         if (row < 0 || row >= (NSInteger)self.stateRows.count) return nil;
         return self.stateRows[(NSUInteger)row][[column.identifier isEqualToString:@"key"] ? 0 : 1];
@@ -477,6 +740,26 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 - (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column row:(NSInteger)row {
+    if (tableView == self.propertiesTable) {
+        if (row < 0 || row >= (NSInteger)self.propertyRows.count) return;
+        NSString *text = [object description] ?: @"";
+        NSString *name = self.propertyRows[(NSUInteger)row][0];
+        BOOL pending = self.pendingProperty != nil && row == (NSInteger)self.propertyRows.count - 1;
+        if ([column.identifier isEqualToString:@"key"]) {
+            // only the row being added is named
+            if (pending) {
+                self.pendingProperty = text;
+                self.propertyRows = [[self.propertyRows subarrayWithRange:NSMakeRange(0, (NSUInteger)row)] arrayByAddingObject:@[text, @""]];
+            }
+            return;
+        }
+        if (name.length == 0) {
+            NSBeep();
+            return;
+        }
+        [self _setProperty:name value:text];
+        return;
+    }
     if (tableView != self.stateTable || row < 0 || row >= (NSInteger)self.stateRows.count) return;
     idUserInterfaceLocal *gui = self.player.gui;
     NSArray<NSString *> *was = self.stateRows[(NSUInteger)row];

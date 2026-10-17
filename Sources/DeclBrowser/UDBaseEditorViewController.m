@@ -124,11 +124,11 @@
 
 @end
 
-@implementation UDInspectorPane
+@implementation UDEditorPane
 
 + (instancetype)paneWithTitle:(NSString *)title letters:(NSString *)letters
                           red:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue view:(NSView *)view {
-    UDInspectorPane *pane = [[self alloc] init];
+    UDEditorPane *pane = [[self alloc] init];
     pane->_title = [title copy];
     pane->_letters = [letters copy];
     pane->_red = red;

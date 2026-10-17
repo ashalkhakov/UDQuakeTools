@@ -18,6 +18,15 @@
 #import "idChoiceWindow.h"
 #import "idSliderWindow.h"
 
+/// idStr::StripTrailingWhitespace
+static NSString *UDStripTrailing(NSString *s, NSCharacterSet *white) {
+    NSUInteger end = s.length;
+    while ( end > 0 && [white characterIsMember:[s characterAtIndex:end - 1]] ) {
+        end--;
+    }
+    return [s substringToIndex:end];
+}
+
 @implementation rvGEWindowWrapper {
     idRectangle mClientRect;
     idRectangle mScreenRect;
@@ -511,6 +520,72 @@ the finish method is called to finish up any last details
     mOldVisible = ((idWinBool *)[self.window getWinVarByName:@"visible"]).data;
     _hidden = mOldVisible ? NO : YES;
     [self updateRect];
+}
+
+/*
+================
+rvGEWindowWrapper::VerfiyStateKey
+
+Verifies that the given state key value is valid for the given key
+================
+*/
+- (BOOL)verifyStateKey:(NSString *)name value:(NSString *)value result:(NSString **)result {
+    idWindow *window = self.window;
+    NSString *old;
+    BOOL failed;
+
+    NSData *bytes __attribute__((objc_precise_lifetime)) = [value ud_latin1Buffer];
+    // the engine's parser throws on an error; this one says so (its
+    // diagnostics, given before the text is loaded, its lexer's)
+    idParser *src = [[idParser alloc] initWithFlags:LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                         fileSystem:nil];
+    NSMutableArray<NSDictionary *> *diagnostics = [NSMutableArray array];
+    src.diagnostics = diagnostics;
+    [src loadMemory:bytes.bytes length:(int)bytes.length - 1 name:@"" error:NULL];
+
+    // Save the current value
+    old = [_stateDict getString:name];
+    failed = NO;
+
+    // Try to parse in the value
+    if ( ![window parseInternalVar:name parser:src] ) {
+        // Kill the old register since the parse reg entry will add a new one
+        if ( ![window parseRegEntry:name parser:src] ) {
+            failed = YES;
+        }
+    }
+    for ( NSDictionary *d in diagnostics ) {
+        if ( [d[@"error"] boolValue] ) {
+            failed = YES;
+        }
+    }
+
+    // Restore the old value
+    NSData *oldBytes __attribute__((objc_precise_lifetime)) = [old ud_latin1Buffer];
+    idParser *src2 = [[idParser alloc] initWithBuffer:oldBytes.bytes length:(int)oldBytes.length - 1 name:@""
+                                                flags:LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT
+                                                error:NULL];
+    if ( ![window parseInternalVar:name parser:src2] ) {
+        if ( ![window parseRegEntry:name parser:src2] ) {
+        }
+    }
+
+    // Check to see if the old value matches the new value
+    NSCharacterSet *white = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSString *before = UDStripTrailing( value, white );
+    NSMutableString *after = [NSMutableString string];
+    [src stringFromMarker:after clean:NO error:NULL];
+    NSString *afterStripped = UDStripTrailing( after, white );
+
+    if ( result ) {
+        *result = afterStripped;
+    }
+
+    if ( failed || ![before isEqualToString:afterStripped] ) {
+        return NO;
+    }
+
+    return YES;
 }
 
 @end

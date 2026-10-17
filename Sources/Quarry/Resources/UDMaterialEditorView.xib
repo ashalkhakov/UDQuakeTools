@@ -265,7 +265,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="qer_editorimage: the image the level editor shows for the material in its texture browser." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f72">
-                                                <rect key="frame" x="96" y="780" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="780" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f72-c">
                                                     <font key="font" metaFont="system"/>
@@ -280,6 +280,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose an image" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f72-pick">
+                                                <rect key="frame" x="232" y="779" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f72-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f72-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l75">
                                                 <rect key="frame" x="4" y="758" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -458,7 +469,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="guiSurf: a GUI drawn on the surface: a .gui file, or entity, entity2, entity3 for the entity's own." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f86">
-                                                <rect key="frame" x="96" y="601" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="601" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f86-c">
                                                     <font key="font" metaFont="system"/>
@@ -473,6 +484,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a GUI" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f86-pick">
+                                                <rect key="frame" x="232" y="600" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f86-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f86-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l89">
                                                 <rect key="frame" x="4" y="579" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -483,7 +505,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="lightFalloffImage: for a light material, the image its light falls off with along its height." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f88">
-                                                <rect key="frame" x="96" y="576" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="576" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f88-c">
                                                     <font key="font" metaFont="system"/>
@@ -498,6 +520,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose an image" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f88-pick">
+                                                <rect key="frame" x="232" y="575" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f88-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f88-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l91">
                                                 <rect key="frame" x="4" y="554" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1169,7 +1202,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="map: the stage's image: a file, or an image program (heightmap, addnormals, smoothnormals, add, scale, invertAlpha, invertColor, makeIntensity, makeAlpha)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f221">
-                                                <rect key="frame" x="96" y="963" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="963" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f221-c">
                                                     <font key="font" metaFont="system"/>
@@ -1184,6 +1217,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose an image" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f221-pick">
+                                                <rect key="frame" x="232" y="962" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f221-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f221-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l224">
                                                 <rect key="frame" x="4" y="941" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1291,7 +1335,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="videomap: a cinematic (.roq) played as the stage's image; loop first to loop it." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f230">
-                                                <rect key="frame" x="96" y="861" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="861" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f230-c">
                                                     <font key="font" metaFont="system"/>
@@ -1306,6 +1350,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a cinematic" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f230-pick">
+                                                <rect key="frame" x="232" y="860" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MTE-f230-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="MTE-f230-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h232">
                                                 <rect key="frame" x="8" y="826" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

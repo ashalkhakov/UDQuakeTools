@@ -10,6 +10,7 @@
 #import "UDEntityDefEditorViewController.h"
 #import "UDSoundEditorViewController.h"
 #import "UDParticleEditorViewController.h"
+#import "UDReferencePicker.h"
 #import "UDFXEditorViewController.h"
 #import "UDAFEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
@@ -772,6 +773,98 @@ static NSString *const UDFixtureParticles =
     XCTAssertTrue([saved containsString:@"hinge \"hinge\" {\n\tbody1 \"door\"\n\tbody2 \"crate\"\n"], @"%@", saved);
     XCTAssertTrue([saved containsString:@"universalJoint \"constraint1\" {\n\tbody1 \"crate\"\n\tbody2 \"world\"\n"], @"%@", saved);
     XCTAssertFalse([saved containsString:@"latch"], @"%@", saved);
+}
+
+#pragma mark - Pickers
+
+/// The "…" of @a tag under @a view clicked, and @a choose run on its
+/// picker (a sheet; a modal window on GNUstep).
+- (void)pick:(NSInteger)tag in:(UDDeclEditorViewController *)editor under:(NSView *)view
+        with:(void (^)(UDReferencePicker *picker))choose {
+    __block NSButton *button = nil;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == @selector(pickReference:)
+            && [(NSButton *)candidate tag] == tag) {
+            button = (NSButton *)candidate;
+            return NO;
+        }
+        return YES;
+    }];
+    XCTAssertNotNil(button, @"a picker's button, tag %ld", (long)tag);
+    __block BOOL shown = NO;
+#ifdef GNUSTEP
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        shown = YES;
+        choose((UDReferencePicker *)window.windowController);
+    }];
+    [NSApp sendAction:button.action to:button.target from:button];
+#else
+    [NSApp sendAction:button.action to:button.target from:button];
+    NSWindow *sheet = editor.view.window.attachedSheet;
+    XCTAssertNotNil(sheet, @"a sheet");
+    if (sheet != nil) {
+        shown = YES;
+        choose(editor.referencePicker);
+    }
+    [self spinUntil:^BOOL{ return editor.view.window.attachedSheet == nil; } timeout:5];
+#endif
+    XCTAssertTrue(shown);
+}
+
+/// The picker's @a name chosen, and OK.
+- (void)choose:(NSString *)name in:(UDReferencePicker *)picker {
+    NSUInteger row = [picker.shownNames indexOfObject:name];
+    XCTAssertNotEqual(row, (NSUInteger)NSNotFound, @"%@ among %@", name, picker.shownNames);
+    if (row == NSNotFound) {
+        [picker cancel:nil];
+        return;
+    }
+    [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+    [picker ok:nil];
+}
+
+- (void)testAPickerChoosesWhatAFieldNames {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDParticleEditorViewController *particle = [self openSparkIn:controller];
+    if (particle == nil) return;
+    [self pick:1 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
+        XCTAssertTrue([picker.shownNames containsObject:@"textures/udtest/glow"], @"the material decls: %@", picker.shownNames);
+        picker.filterField.stringValue = @"GLOW";
+        [picker filterChanged:picker.filterField];
+        XCTAssertGreaterThan(picker.shownNames.count, 0U);
+        for (NSString *name in picker.shownNames) {
+            XCTAssertTrue([name.lowercaseString containsString:@"glow"], @"only the names containing it, in any case: %@", name);
+        }
+        [self choose:@"textures/udtest/glow" in:picker];
+    }];
+    XCTAssertEqualObjects(particle.particle.stages.firstObject.material, @"textures/udtest/glow", @"the stage's material, as chosen");
+    [particle.editingContext processPendingChanges];
+    [particle.editorDocument.undoManager undo];
+    [particle.editingContext processPendingChanges];
+    XCTAssertEqualObjects(particle.particle.stages.firstObject.material, @"textures/udtest/spark", @"one Undo");
+
+    // Cancel changes nothing
+    [particle.stagesController setSelectionIndex:0];
+    [self pick:2 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
+        [picker cancel:nil];
+    }];
+    XCTAssertEqual(particle.particle.stages.firstObject.speedTable.length, 0U);
+
+    // the AF's joints are its model's
+    UDAFEditorViewController *af = [self openCrateIn:controller];
+    [af.bodiesController setSelectionIndex:1];
+    [self pick:3 in:af under:af.inspectorView with:^(UDReferencePicker *picker) {
+        [self choose:@"Lid" in:picker];
+    }];
+    XCTAssertEqualObjects([af.figure.bodies[1] jointName], @"Lid");
+
+    // an FX light's: materials
+    UDFXEditorViewController *fx = [self openFXIn:controller];
+    [fx.actionsController setSelectionIndex:0];
+    [self pick:1 in:fx under:fx.inspectorView with:^(UDReferencePicker *picker) {
+        XCTAssertTrue([picker.shownNames containsObject:@"textures/udtest/glow"], @"%@", picker.shownNames);
+        [picker cancel:nil];
+    }];
 }
 
 #pragma mark - Help

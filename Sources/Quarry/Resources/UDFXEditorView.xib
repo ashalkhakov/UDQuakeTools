@@ -329,7 +329,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="What it uses: the light's material, the model, the particle, the decal's material, the sound shader, the entityDef or projectile; or, for the use kinds, an earlier action's name." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f63">
-                                                <rect key="frame" x="96" y="629" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="629" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f63-c">
                                                     <font key="font" metaFont="system"/>
@@ -344,6 +344,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose what the action uses" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f63-pick">
+                                                <rect key="frame" x="232" y="628" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-f63-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="FXE-f63-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l66">
                                                 <rect key="frame" x="4" y="607" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -354,7 +365,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="fire: the action starts when the named one does." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f65">
-                                                <rect key="frame" x="96" y="604" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="604" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f65-c">
                                                     <font key="font" metaFont="system"/>
@@ -369,6 +380,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose the action that starts it" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f65-pick">
+                                                <rect key="frame" x="232" y="603" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FXE-f65-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="FXE-f65-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l68">
                                                 <rect key="frame" x="4" y="573" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

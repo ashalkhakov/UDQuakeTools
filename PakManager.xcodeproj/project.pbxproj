@@ -419,6 +419,7 @@
 		B3C8BDA78B8E01F9F44042F1 /* UDGuiViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */; };
 		F54990CC72345DCCBB9DE455 /* UDTransportBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = F09B4AEBAC3226D25C9D1DE9 /* UDTransportBar.xib */; };
 		BA28F2BEF9B2A8AD5AFABA02 /* UDGuiEditorOptions.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD4D2428CB4B6765C79D99B8 /* UDGuiEditorOptions.xib */; };
+		3791B98818507AC606F67CCA /* UDReferencePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2172AFF4BF1882C6B499396 /* UDReferencePicker.xib */; };
 		007B49A66F00E77391EEA747 /* UDSoundEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */; };
 		96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
@@ -446,6 +447,7 @@
 		CEFC65343027974B00157501 /* UDFileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC652F3027974B00157501 /* UDFileItem.m */; };
 		CEFC653C3027987300157501 /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
 		8749E574E3E5027592B724C1 /* UDTopClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9575D719E7F33EBC158B77EA /* UDTopClipView.m */; };
+		964FBB05512F55BCA2C9862F /* UDReferencePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B35846F162BA9CAFF21905 /* UDReferencePicker.m */; };
 		CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
 		EC1F00000000000000000001 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
 		EC1F00000000000000000002 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
@@ -662,6 +664,7 @@
 		6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1CDC8E301E7E690037DBA5 /* UDPathTree.m */; };
 		7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC653B3027987300157501 /* UDImageViewerViewController.m */; };
 		90B254F70BF62852E880D407 /* UDTopClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9575D719E7F33EBC158B77EA /* UDTopClipView.m */; };
+		37D0BCCAA32027826054CEEA /* UDReferencePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B35846F162BA9CAFF21905 /* UDReferencePicker.m */; };
 		070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
 		398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
 		F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC654B3029E5FC00157501 /* UDDeclDocument.m */; };
@@ -679,6 +682,7 @@
 		69E672F575AE3A6B4F7C4214 /* UDGuiViewerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */; };
 		F2BF0029FBAAB6F7C6D69F36 /* UDTransportBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = F09B4AEBAC3226D25C9D1DE9 /* UDTransportBar.xib */; };
 		327011A892C98A9F6803B3EE /* UDGuiEditorOptions.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD4D2428CB4B6765C79D99B8 /* UDGuiEditorOptions.xib */; };
+		23BB43540285713EA76D3879 /* UDReferencePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2172AFF4BF1882C6B499396 /* UDReferencePicker.xib */; };
 		75167D22DB2EC225633E4467 /* UDSoundEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */; };
 		690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */; };
 		34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */; };
@@ -2658,6 +2662,7 @@
 		47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDGuiViewerView.xib; sourceTree = "<group>"; };
 		F09B4AEBAC3226D25C9D1DE9 /* UDTransportBar.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTransportBar.xib; sourceTree = "<group>"; };
 		DD4D2428CB4B6765C79D99B8 /* UDGuiEditorOptions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDGuiEditorOptions.xib; sourceTree = "<group>"; };
+		C2172AFF4BF1882C6B499396 /* UDReferencePicker.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDReferencePicker.xib; sourceTree = "<group>"; };
 		45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDSoundEditorView.xib; sourceTree = "<group>"; };
 		FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDEntityDefEditorView.xib; sourceTree = "<group>"; };
 		2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDTableEditorView.xib; sourceTree = "<group>"; };
@@ -2699,8 +2704,10 @@
 		EC1F00000000000000000004 /* UDScriptServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptServer.h; sourceTree = "<group>"; };
 		CEFC653A3027987300157501 /* UDImageViewerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDImageViewerViewController.h; sourceTree = "<group>"; };
 		BF6EF605130C9BD647F22E53 /* UDTopClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTopClipView.h; sourceTree = "<group>"; };
+		A7A1C7065A8E7599821A7EB8 /* UDReferencePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDReferencePicker.h; sourceTree = "<group>"; };
 		CEFC653B3027987300157501 /* UDImageViewerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDImageViewerViewController.m; sourceTree = "<group>"; };
 		9575D719E7F33EBC158B77EA /* UDTopClipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTopClipView.m; sourceTree = "<group>"; };
+		33B35846F162BA9CAFF21905 /* UDReferencePicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDReferencePicker.m; sourceTree = "<group>"; };
 		CEFC65403027994F00157501 /* UDWorkspaceDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceDocument.h; sourceTree = "<group>"; };
 		CEFC65413027994F00157501 /* UDWorkspaceDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceDocument.m; sourceTree = "<group>"; };
 		CEFC65423027994F00157501 /* UDTextFileDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextFileDocument.h; sourceTree = "<group>"; };
@@ -3503,6 +3510,7 @@
 				47C664D6C3695D1F92DB378C /* UDGuiViewerView.xib */,
 				F09B4AEBAC3226D25C9D1DE9 /* UDTransportBar.xib */,
 				DD4D2428CB4B6765C79D99B8 /* UDGuiEditorOptions.xib */,
+				C2172AFF4BF1882C6B499396 /* UDReferencePicker.xib */,
 				45488C9E06E520E6C0EDF3D7 /* UDSoundEditorView.xib */,
 				FAD3492C23745347F5E09A95 /* UDEntityDefEditorView.xib */,
 				2DF878A1B735291A17CBFA4E /* UDTableEditorView.xib */,
@@ -3859,8 +3867,10 @@
 				EC61816624AE64370B6B9FAA /* UDDeclEditorViewController.m */,
 				CEFC653A3027987300157501 /* UDImageViewerViewController.h */,
 				BF6EF605130C9BD647F22E53 /* UDTopClipView.h */,
+				A7A1C7065A8E7599821A7EB8 /* UDReferencePicker.h */,
 				CEFC653B3027987300157501 /* UDImageViewerViewController.m */,
 				9575D719E7F33EBC158B77EA /* UDTopClipView.m */,
+				33B35846F162BA9CAFF21905 /* UDReferencePicker.m */,
 				CEFC65383027987300157501 /* UDTextEditorViewController.h */,
 				CEFC65393027987300157501 /* UDTextEditorViewController.m */,
 			);
@@ -4873,6 +4883,7 @@
 				B3C8BDA78B8E01F9F44042F1 /* UDGuiViewerView.xib in Resources */,
 				F54990CC72345DCCBB9DE455 /* UDTransportBar.xib in Resources */,
 				BA28F2BEF9B2A8AD5AFABA02 /* UDGuiEditorOptions.xib in Resources */,
+				3791B98818507AC606F67CCA /* UDReferencePicker.xib in Resources */,
 				007B49A66F00E77391EEA747 /* UDSoundEditorView.xib in Resources */,
 				96ECC5A3C2AA13E4B7036CA7 /* UDEntityDefEditorView.xib in Resources */,
 				3E87CB0B1FE2782FFDC9C844 /* UDTableEditorView.xib in Resources */,
@@ -4911,6 +4922,7 @@
 				69E672F575AE3A6B4F7C4214 /* UDGuiViewerView.xib in Resources */,
 				F2BF0029FBAAB6F7C6D69F36 /* UDTransportBar.xib in Resources */,
 				327011A892C98A9F6803B3EE /* UDGuiEditorOptions.xib in Resources */,
+				23BB43540285713EA76D3879 /* UDReferencePicker.xib in Resources */,
 				75167D22DB2EC225633E4467 /* UDSoundEditorView.xib in Resources */,
 				690CC4ACF143C455A4886824 /* UDEntityDefEditorView.xib in Resources */,
 				34520C2D0E99B8C06F7635D7 /* UDTableEditorView.xib in Resources */,
@@ -5014,6 +5026,7 @@
 				CE1CDC80301E41450037DBA5 /* AppDelegate.m in Sources */,
 				CEFC653C3027987300157501 /* UDImageViewerViewController.m in Sources */,
 				8749E574E3E5027592B724C1 /* UDTopClipView.m in Sources */,
+				964FBB05512F55BCA2C9862F /* UDReferencePicker.m in Sources */,
 				CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000001 /* UDScriptServer.m in Sources */,
 				CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */,
@@ -5083,6 +5096,7 @@
 				6F913B92E1506F18B32165C2 /* UDPathTree.m in Sources */,
 				7F13F89E25B55B5DFDE3591A /* UDImageViewerViewController.m in Sources */,
 				90B254F70BF62852E880D407 /* UDTopClipView.m in Sources */,
+				37D0BCCAA32027826054CEEA /* UDReferencePicker.m in Sources */,
 				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000002 /* UDScriptServer.m in Sources */,
 				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,

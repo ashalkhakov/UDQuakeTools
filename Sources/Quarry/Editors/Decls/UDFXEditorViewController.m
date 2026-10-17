@@ -172,6 +172,61 @@ static NSPasteboardType const UDFXActionRowType = @"org.udquaketools.fx-action-r
     return YES;
 }
 
+#pragma mark - Pickers
+
+/// The names of the actions before @a action (of @a kinds, if given).
+- (NSArray<NSString *> *)_actionNamesBefore:(UDFXAction *)action kinds:(NSArray<NSString *> *)kinds details:(NSMutableArray<NSString *> *)details {
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (UDFXAction *other in self.fx.actions) {
+        if (other == action && kinds != nil) break;
+        if (other == action || other.name.length == 0) continue;
+        if (kinds != nil && ![kinds containsObject:other.kind ?: @""]) continue;
+        [names addObject:other.name];
+        [details addObject:other.kind ?: @""];
+    }
+    return names;
+}
+
+/// What an action uses, by its kind (ParseSingleFXAction's): a light's or
+/// a decal's material, a model, a particle, a sound shader, an entityDef,
+/// or an earlier action's name.
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    NSArray<UDFXAction *> *selected = self.actionsController.selectedObjects;
+    UDFXAction *action = selected.firstObject;
+    if (action == nil) return nil;
+    NSArrayController *actions = self.actionsController;
+    if (tag == 2) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"The action that starts it" key:@"fire" controller:actions kind:UDReferenceNames];
+        NSMutableArray<NSString *> *details = [NSMutableArray array];
+        field.names = [self _actionNamesBefore:action kinds:nil details:details];
+        field.details = details;
+        return field;
+    }
+    if (tag != 1) return nil;
+    NSString *kind = action.kind ?: @"";
+    if ([@[@"light", @"decal", @"attachlight"] containsObject:kind]) {
+        return [UDReferenceField fieldTitled:@"A material" key:@"data" controller:actions kind:UDReferenceMaterials];
+    }
+    if ([kind isEqualToString:@"model"]) {
+        return [UDReferenceField fieldTitled:@"A model" key:@"data" controller:actions kind:UDReferenceModels];
+    }
+    if ([@[@"uselight", @"usemodel"] containsObject:kind]) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"An earlier action" key:@"data" controller:actions kind:UDReferenceNames];
+        NSMutableArray<NSString *> *details = [NSMutableArray array];
+        field.names = [self _actionNamesBefore:action kinds:[kind isEqualToString:@"uselight"] ? @[@"light"] : @[@"model"] details:details];
+        field.details = details;
+        return field;
+    }
+    declType_t type = [kind isEqualToString:@"particle"] ? DECL_PARTICLE
+                    : [kind isEqualToString:@"sound"] ? DECL_SOUND
+                    : [@[@"attachentity", @"launch", @"shockwave"] containsObject:kind] ? DECL_ENTITYDEF : DECL_MAX_TYPES;
+    if (type == DECL_MAX_TYPES) return nil;
+    UDReferenceField *field = [UDReferenceField fieldTitled:[NSString stringWithFormat:@"What the %@ uses", kind] key:@"data"
+                                                 controller:actions kind:UDReferenceDecls];
+    field.declType = type;
+    return field;
+}
+
 #pragma mark - References
 
 - (BOOL)_declExists:(declType_t)type named:(NSString *)name {

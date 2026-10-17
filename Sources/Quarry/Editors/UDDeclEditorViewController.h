@@ -2,7 +2,34 @@
 #import <CoreData/CoreData.h>
 #import <UDCodeKit/UDDiagnosticStore.h>
 
-@class UDDeclDocument, UDDeclBase;
+@class UDDeclDocument, UDDeclBase, UDReferencePicker;
+
+/// What a field's picker chooses from.
+typedef NS_ENUM(NSInteger, UDReferenceKind) {
+    UDReferenceDecls,       // the decls of a type
+    UDReferenceMaterials,   // material decls, and images (what a material may be)
+    UDReferenceImages,      // image files, with their extensions
+    UDReferenceModels,      // model files
+    UDReferenceVideos,      // cinematics (.roq)
+    UDReferenceGuis,        // GUI files
+    UDReferenceNames,       // names the editor gives (joints, bodies, actions)
+};
+
+/// A field that names something, and its picker (the "…" beside it).
+@interface UDReferenceField : NSObject
++ (instancetype)fieldTitled:(NSString *)title key:(NSString *)key controller:(id)controller kind:(UDReferenceKind)kind;
+@property (nonatomic, copy) NSString *title;
+/// The value set: selection.<key> of the controller (an object or array
+/// controller), as the field's binding sets it.
+@property (nonatomic, copy) NSString *key;
+@property (nonatomic, weak) id controller;
+@property (nonatomic) UDReferenceKind kind;
+/// For UDReferenceDecls: the decls' type (a declType_t).
+@property (nonatomic) int declType;
+/// For UDReferenceNames: the names, and what each is.
+@property (nonatomic, copy, nullable) NSArray<NSString *> *names;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *details;
+@end
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -52,6 +79,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// image of that name, which it makes a material of. (A skin's, a particle
 /// stage's.)
 - (BOOL)materialExists:(NSString *)name;
+
+/// The picker of the field whose "…" has tag @a tag (subclasses say);
+/// nil for none.
+- (nullable UDReferenceField *)referenceFieldForTag:(NSInteger)tag;
+/// A "…" clicked: its field's picker, as a sheet; the name chosen set as
+/// the field's value (one edit).
+- (IBAction)pickReference:(nullable id)sender;
+/// What a picker offers: names, and what each is in @a details.
+- (NSArray<NSString *> *)namesFor:(UDReferenceField *)field details:(NSMutableArray<NSString *> *)details;
+/// The picker up, if one is.
+@property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
 
 /// The line of the decl's text (1-based) where @a text first is, case
 /// ignored; 1 when it is not there. Where a diagnostic about it points.

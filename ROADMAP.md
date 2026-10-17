@@ -112,10 +112,8 @@ Built when the first editor needs each one, not up front:
   idDeclFile keeps the section after the name. Doom 3's keeps the
   `type name` header with it (`LoadAndParse`'s startMarker), so its
   editor showed and renamed through it.
-- Lookup dialogs wherever a decl refers to another: a PDA's emails, audio
-  logs and videos, a skin's materials, a particle stage's material and
-  tables, an entityDef's inherit, and so on. Find the decl by name and pick
-  it; today the name is typed, then checked.
+- Lookup dialogs wherever a decl refers to another: see *Pickers and the
+  expression editor* below.
 - Image loading through idFileSystem (TGA, DDS, JPG, PNG, inside pk4s) — the
   material, GUI and particle editors; the image viewer reads OS paths only.
 - Sound playback through idFileSystem — the sound shader editor, PDA audio.
@@ -127,6 +125,38 @@ Built when the first editor needs each one, not up front:
   manifest (decision 6); a view of what the mod overrides.
 - idFileSystem leaks idFile objects (`:5186`); the decl manager's
   `+shutdown` does not work (`:1020`).
+
+## Pickers and the expression editor
+
+Wherever an editor checks a reference (its Issues), it offers a picker for
+it too; wherever a value may be an expression, an expression editor. Both
+are ported and adapted from RDLKit and XFormsKit, which have them.
+
+- [ ] **A picker**: a sheet (modal, a sheet in Eau) with a table of the
+      candidates and a quick filter by name (contains the text typed), the
+      current value chosen; a button beside each field that takes a
+      reference opens it.
+- [ ] Pickers wherever a reference is checked today:
+      - material: a stage's map, cube map, video map; editor image; light
+        falloff image (images and materials);
+      - particle: a stage's material; its speed, rotation, size and aspect
+        tables;
+      - FX: an action's particle, model, decal and light materials, sound
+        shader, entityDef, and the earlier actions it uses or fires;
+      - AF: the modelDef and skin; a body's joint (the model's joints); a
+        constraint's bodies;
+      - skin: its materials; entityDef: its inherit and the decls its keys
+        name;
+      - GUI: a window's background, border and font; a script's windows and
+        variables (set, transition, setFocus, resetTime), sounds and
+        named events;
+      - PDA: picked inline, as it owns its emails, audio logs and videos.
+- [ ] **An expression editor**: a field's expression in a larger editor
+      with highlighting (the GUI's and the material's expression grammar),
+      its tables, parms and variables offered, and checked as the engine
+      parses it. For a material's registers (scroll, scale, rotate, color,
+      alphaTest, if), a particle's and the GUI's (visible, rect, colors,
+      if conditions, transition values).
 
 ## 2. Offline editors (no engine needed)
 

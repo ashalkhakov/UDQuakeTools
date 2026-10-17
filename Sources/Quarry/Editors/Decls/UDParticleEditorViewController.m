@@ -161,6 +161,22 @@ static NSPasteboardType const UDParticleStageRowType = @"org.udquaketools.partic
     return YES;
 }
 
+#pragma mark - Pickers
+
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    if (tag == 1) {
+        return [UDReferenceField fieldTitled:@"The stage's material" key:@"material" controller:self.stagesController kind:UDReferenceMaterials];
+    }
+    NSArray<NSString *> *tables = @[@"speedTable", @"rotationTable", @"sizeTable", @"aspectTable"];
+    if (tag >= 2 && tag <= 5) {
+        UDReferenceField *field = [UDReferenceField fieldTitled:@"A table" key:tables[(NSUInteger)tag - 2]
+                                                     controller:self.stagesController kind:UDReferenceDecls];
+        field.declType = DECL_TABLE;
+        return field;
+    }
+    return nil;
+}
+
 #pragma mark - References
 
 - (void)checkReferences {

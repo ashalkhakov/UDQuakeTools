@@ -8,6 +8,7 @@
 #import "idFileSystem.h"
 #import <UDCodeKit/UDCodeKit.h>
 #import <objc/runtime.h>
+#import "UDReferencePicker.h"
 
 @interface UDDeclEditorViewController ()
 @property (nonatomic, strong, readwrite, nullable) UDDiagnosticStore *diagnosticStore;
@@ -25,6 +26,24 @@
 static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
     return [NSString stringWithFormat:@"%ld:%@", (long)diagnostic.line, diagnostic.message];
 }
+
+@implementation UDReferenceField
+
++ (instancetype)fieldTitled:(NSString *)title key:(NSString *)key controller:(id)controller kind:(UDReferenceKind)kind {
+    UDReferenceField *field = [[UDReferenceField alloc] init];
+    field.title = title;
+    field.key = key;
+    field.controller = controller;
+    field.kind = kind;
+    return field;
+}
+
+@end
+
+@interface UDDeclEditorViewController ()
+@property (nonatomic, strong, readwrite, nullable) UDReferencePicker *referencePicker;
+@property (nonatomic, strong, nullable) UDReferenceField *pickedField;
+@end
 
 @implementation UDDeclEditorViewController
 
@@ -306,6 +325,114 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
         if ([fileSystem readFile:[base stringByAppendingPathExtension:extension] buffer:NULL timestamp:NULL error:NULL] >= 0) return YES;
     }
     return NO;
+}
+
+#pragma mark - Pickers
+
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    return nil;
+}
+
+/// The files under the folders things are kept in, of @a extensions.
+- (void)_files:(NSArray<NSString *> *)folders extensions:(NSString *)extensions stripped:(BOOL)stripped
+          what:(NSString *)what into:(NSMutableArray<NSString *> *)names details:(NSMutableArray<NSString *> *)details
+          seen:(NSMutableSet<NSString *> *)seen {
+    idFileSystem *fileSystem = self.workspace.fileSystem;
+    for (NSString *folder in folders) {
+        idFileList *list = [fileSystem listFilesTree:folder extension:extensions sorted:YES inGameDir:nil error:NULL];
+        for (NSString *path in list.list) {
+            NSString *name = stripped ? path.stringByDeletingPathExtension : path;
+            if ([seen containsObject:name.lowercaseString]) continue;
+            [seen addObject:name.lowercaseString];
+            [names addObject:name];
+            [details addObject:what];
+        }
+    }
+}
+
+- (NSArray<NSString *> *)namesFor:(UDReferenceField *)field details:(NSMutableArray<NSString *> *)details {
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    idDeclManager *declManager = self.workspace.declManager;
+    NSArray<NSString *> *imageFolders = @[@"textures", @"models", @"gfx", @"guis", @"lights", @"particles", @"env", @"fonts"];
+    NSString *images = @".tga|.dds|.jpg|.png";
+    switch (field.kind) {
+        case UDReferenceNames:
+            [names addObjectsFromArray:field.names ?: @[]];
+            for (NSUInteger i = 0; i < names.count; i++) [details addObject:i < field.details.count ? field.details[i] : @""];
+            return names;
+        case UDReferenceMaterials:
+        case UDReferenceDecls: {
+            declType_t type = field.kind == UDReferenceMaterials ? DECL_MATERIAL : (declType_t)field.declType;
+            for (idDeclBase *decl in [declManager declsOfType:type forceParse:NO]) {
+                NSString *name = decl.name;
+                if (name.length == 0 || [seen containsObject:name.lowercaseString]) continue;
+                [seen addObject:name.lowercaseString];
+                [names addObject:name];
+                [details addObject:decl.fileName.lastPathComponent ?: @""];
+            }
+            if (field.kind == UDReferenceMaterials) {
+                // an image is made a material of (idMaterial's default)
+                [self _files:imageFolders extensions:images stripped:YES what:@"image" into:names details:details seen:seen];
+            }
+            break;
+        }
+        case UDReferenceImages:
+            [self _files:imageFolders extensions:images stripped:NO what:@"image" into:names details:details seen:seen];
+            break;
+        case UDReferenceModels:
+            [self _files:@[@"models"] extensions:@".lwo|.ase|.ma|.flt|.md5mesh|.md3" stripped:NO what:@"model"
+                    into:names details:details seen:seen];
+            break;
+        case UDReferenceVideos:
+            [self _files:@[@"video"] extensions:@".roq" stripped:NO what:@"video" into:names details:details seen:seen];
+            break;
+        case UDReferenceGuis:
+            [self _files:@[@"guis"] extensions:@".gui" stripped:NO what:@"GUI" into:names details:details seen:seen];
+            break;
+    }
+    // sorted by name, their details with them
+    NSArray<NSNumber *> *order = [[self _indexesOf:names] sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+        return [names[a.unsignedIntegerValue] caseInsensitiveCompare:names[b.unsignedIntegerValue]];
+    }];
+    NSMutableArray<NSString *> *sortedNames = [NSMutableArray array];
+    NSMutableArray<NSString *> *sortedDetails = [NSMutableArray array];
+    for (NSNumber *i in order) {
+        [sortedNames addObject:names[i.unsignedIntegerValue]];
+        [sortedDetails addObject:details[i.unsignedIntegerValue]];
+    }
+    [details setArray:sortedDetails];
+    return sortedNames;
+}
+
+- (NSArray<NSNumber *> *)_indexesOf:(NSArray *)array {
+    NSMutableArray<NSNumber *> *indexes = [NSMutableArray arrayWithCapacity:array.count];
+    for (NSUInteger i = 0; i < array.count; i++) [indexes addObject:@(i)];
+    return indexes;
+}
+
+- (IBAction)pickReference:(id)sender {
+    UDReferenceField *field = [self referenceFieldForTag:[sender tag]];
+    NSWindow *window = self.view.window;
+    if (field == nil || field.controller == nil || window == nil || window.attachedSheet != nil) {
+        NSBeep();
+        return;
+    }
+    NSMutableArray<NSString *> *details = [NSMutableArray array];
+    NSArray<NSString *> *names = [self namesFor:field details:details];
+    id current = [field.controller valueForKeyPath:[@"selection." stringByAppendingString:field.key]];
+    self.pickedField = field;
+    self.referencePicker = [[UDReferencePicker alloc] initWithTitle:field.title names:names details:details
+                                                            current:[current isKindOfClass:[NSString class]] ? current : nil];
+    [self.referencePicker beginSheetForWindow:window target:self action:@selector(_referencePicked:)];
+}
+
+/// The picker's choice, as the field's value (as its binding sets it).
+- (void)_referencePicked:(UDReferencePicker *)picker {
+    UDReferenceField *field = self.pickedField;
+    NSString *name = picker.chosenName;
+    if (field == nil || name == nil) return;
+    [field.controller setValue:name forKeyPath:[@"selection." stringByAppendingString:field.key]];
 }
 
 - (void)declDidLoad {

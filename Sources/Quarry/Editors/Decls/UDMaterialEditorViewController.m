@@ -245,6 +245,19 @@ static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.materi
     return YES;
 }
 
+#pragma mark - Pickers
+
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    switch (tag) {
+        case 1: return [UDReferenceField fieldTitled:@"The stage's image" key:@"map" controller:self.stagesController kind:UDReferenceImages];
+        case 2: return [UDReferenceField fieldTitled:@"A cinematic" key:@"videomap" controller:self.stagesController kind:UDReferenceVideos];
+        case 3: return [UDReferenceField fieldTitled:@"The editor's image" key:@"qerEditorImage" controller:self.objectController kind:UDReferenceImages];
+        case 4: return [UDReferenceField fieldTitled:@"The light's falloff image" key:@"lightFalloffImage" controller:self.objectController kind:UDReferenceImages];
+        case 5: return [UDReferenceField fieldTitled:@"A GUI" key:@"guisurf" controller:self.objectController kind:UDReferenceGuis];
+    }
+    return nil;
+}
+
 #pragma mark - What the engine says
 
 - (void)reparse {

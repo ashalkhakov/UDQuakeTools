@@ -271,7 +271,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="material: what each particle is drawn with." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119">
-                                                <rect key="frame" x="96" y="1275" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="1275" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f119-c">
                                                     <font key="font" metaFont="system"/>
@@ -286,6 +286,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a material or an image" verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f119-pick">
+                                                <rect key="frame" x="232" y="1274" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f119-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f119-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l122">
                                                 <rect key="frame" x="4" y="1253" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -776,7 +787,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="A table decl speed is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161">
-                                                <rect key="frame" x="96" y="748" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="748" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f161-c">
                                                     <font key="font" metaFont="system"/>
@@ -791,6 +802,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f161-pick">
+                                                <rect key="frame" x="232" y="747" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f161-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f161-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h163">
                                                 <rect key="frame" x="8" y="714" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -876,7 +898,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="A table decl how fast it turns is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170">
-                                                <rect key="frame" x="96" y="638" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="638" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f170-c">
                                                     <font key="font" metaFont="system"/>
@@ -891,6 +913,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f170-pick">
+                                                <rect key="frame" x="232" y="637" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f170-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f170-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h172">
                                                 <rect key="frame" x="8" y="604" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -976,7 +1009,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="A table decl size is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179">
-                                                <rect key="frame" x="96" y="528" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="528" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f179-c">
                                                     <font key="font" metaFont="system"/>
@@ -991,6 +1024,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f179-pick">
+                                                <rect key="frame" x="232" y="527" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f179-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f179-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h181">
                                                 <rect key="frame" x="8" y="494" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1076,7 +1120,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="A table decl width over height is looked up in over the particle's life (0 at birth, 1 at death), in place of from and to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188">
-                                                <rect key="frame" x="96" y="418" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="418" width="134" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f188-c">
                                                     <font key="font" metaFont="system"/>
@@ -1091,6 +1135,17 @@
                                                     </binding>
                                                 </connections>
                                             </textField>
+                                            <button toolTip="Choose a table" verticalHuggingPriority="750" fixedFrame="YES" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f188-pick">
+                                                <rect key="frame" x="232" y="417" width="24" height="23"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PTE-f188-pick-c">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="pickReference:" target="-2" id="PTE-f188-pick-a"/>
+                                                </connections>
+                                            </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h190">
                                                 <rect key="frame" x="8" y="384" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

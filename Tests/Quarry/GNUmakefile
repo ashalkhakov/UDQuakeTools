@@ -44,6 +44,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/Model/UDFolder.m \
     $(APP_DIR)/Editors/UDImageViewerViewController.m \
     $(APP_DIR)/Editors/UDTopClipView.m \
+    $(APP_DIR)/Editors/UDReferencePicker.m \
     $(APP_DIR)/Editors/Decls/UDPDAEditorViewController.m \
     $(APP_DIR)/Editors/UDDeclEditorViewController.m \
     $(APP_DIR)/Editors/Decls/UDTableEditorViewController.m \
@@ -102,6 +103,7 @@ QuarryTests_RESOURCE_FILES = \
     $(APP_DIR)/Resources/UDGuiViewerView.xib \
     $(APP_DIR)/Resources/UDTransportBar.xib \
     $(APP_DIR)/Resources/UDGuiEditorOptions.xib \
+    $(APP_DIR)/Resources/UDReferencePicker.xib \
     $(APP_DIR)/Resources/UDFXEditorView.xib \
     $(APP_DIR)/Resources/UDAFEditorView.xib \
     $(APP_DIR)/Resources/UDMaterialEditorView.xib \

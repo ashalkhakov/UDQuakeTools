@@ -134,6 +134,47 @@ static NSInteger UDSegment(id sender) {
     }
 }
 
+#pragma mark - Pickers
+
+- (UDReferenceField *)referenceFieldForTag:(NSInteger)tag {
+    UDDeclAF *figure = self.figure;
+    switch (tag) {
+        case 1:
+        case 2: {
+            UDReferenceField *field = [UDReferenceField fieldTitled:tag == 1 ? @"The figure's modelDef" : @"A skin"
+                                                                key:tag == 1 ? @"model" : @"skin"
+                                                         controller:self.objectController kind:UDReferenceDecls];
+            field.declType = tag == 1 ? DECL_MODELDEF : DECL_SKIN;
+            return field;
+        }
+        case 3: {
+            // the model's joints (idAnimator's)
+            UDWorkspace *workspace = self.workspace;
+            UDReferenceField *field = [UDReferenceField fieldTitled:@"A joint of the model" key:@"jointName"
+                                                         controller:self.bodiesController kind:UDReferenceNames];
+            field.names = [UDMD5Mesh jointNamesOfModelDef:figure.model ?: @"" declManager:workspace.declManager
+                                               fileSystem:workspace.fileSystem] ?: @[];
+            return field;
+        }
+        case 4:
+        case 5: {
+            UDReferenceField *field = [UDReferenceField fieldTitled:@"A body" key:tag == 4 ? @"body1" : @"body2"
+                                                         controller:self.constraintsController kind:UDReferenceNames];
+            NSMutableArray<NSString *> *names = [[figure.bodies valueForKey:@"name"] mutableCopy] ?: [NSMutableArray array];
+            NSMutableArray<NSString *> *details = [NSMutableArray array];
+            for (UDAFBody *body in figure.bodies) [details addObject:body.jointName ?: @""];
+            if (tag == 5) {
+                [names addObject:@"world"];
+                [details addObject:@"the world"];
+            }
+            field.names = names;
+            field.details = details;
+            return field;
+        }
+    }
+    return nil;
+}
+
 #pragma mark - References
 
 /// The bodies' names, as idPhysics_AF::GetBody finds one: by Icmp.

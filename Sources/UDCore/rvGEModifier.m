@@ -625,7 +625,8 @@ Undo the delete modifier by unsetting the deleted flag in the wrapper
     [self.undoManager removeAllActionsWithTarget:self];
 }
 
-- (void)_changed {
+- (void)_changed:(nullable rvGEModifier *)modifier {
+    _changedModifier = modifier;
     id target = self.target;
     if (target != nil && self.action != NULL && [target respondsToSelector:self.action]) {
         ((void (*)(id, SEL, id))[target methodForSelector:self.action])(target, self.action, self);
@@ -652,7 +653,7 @@ Undo the delete modifier by unsetting the deleted flag in the wrapper
             // Merge the two modifiers
             if ( [top merge:modifier] ) {
                 [top apply];
-                [self _changed];
+                [self _changed:top];
                 return YES;
             }
         }
@@ -670,7 +671,7 @@ Undo the delete modifier by unsetting the deleted flag in the wrapper
         [undoManager setActionName:modifier.name];
     }
 
-    [self _changed];
+    [self _changed:modifier];
     return YES;
 }
 
@@ -679,20 +680,23 @@ Undo the delete modifier by unsetting the deleted flag in the wrapper
         return NO;
     }
 
-    [mModifiers[(NSUInteger)mCurrentModifier] undo];
+    rvGEModifier *modifier = mModifiers[(NSUInteger)mCurrentModifier];
+    [modifier undo];
     mCurrentModifier--;
 
-    [self _changed];
+    [self _changed:modifier];
     return YES;
 }
 
 - (BOOL)redo {
+    rvGEModifier *modifier = nil;
     if ( mCurrentModifier + 1 < (int)mModifiers.count ) {
         mCurrentModifier++;
-        [mModifiers[(NSUInteger)mCurrentModifier] apply];
+        modifier = mModifiers[(NSUInteger)mCurrentModifier];
+        [modifier apply];
     }
 
-    [self _changed];
+    [self _changed:modifier];
     return YES;
 }
 

@@ -116,6 +116,7 @@
     if (self.gui != nil) {
         [self.manager deAlloc:self.gui];
     }
+    self.manager.editing = self.editing;
     self.gui = [self.manager allocGui];
     BOOL loaded = self.text != nil ? [self.gui initFromText:self.text path:self.path] : [self.gui initFromFile:self.path];
     self.diagnostics = [self.gui.diagnostics copy];

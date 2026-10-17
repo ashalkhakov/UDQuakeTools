@@ -108,6 +108,8 @@ typedef NS_ENUM(int, rvGEZOrderChange) {
 - (nullable rvGEModifier *)undoModifier;
 - (nullable rvGEModifier *)redoModifier;
 
+/// The edit last applied, undone or redone, while the target is told.
+@property (nonatomic, strong, readonly, nullable) rvGEModifier *changedModifier;
 /// Told after an edit, an undo or a redo (target-action; sender the stack).
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;

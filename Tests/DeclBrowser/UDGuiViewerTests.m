@@ -439,15 +439,15 @@ static NSString *const UDViewerScript =
     XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"410"], @"the edit is drawn: %@", [self var:@"rect" of:@"Go" in:editor]);
     XCTAssertTrue([self lampIsLitIn:editor]);
 
-    // a drag moves the window in the run as it goes; run from its text once
-    // it ends
+    // a drag moves the window in the run as it goes, the run never read
+    // again
     [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(490, 330) time:2.0 in:editor.guiView];
     [self mouse:NSEventTypeLeftMouseDragged at:NSMakePoint(510, 330) time:2.1 in:editor.guiView];
     [self mouse:NSEventTypeLeftMouseDragged at:NSMakePoint(530, 330) time:2.2 in:editor.guiView];
     NSString *ranText = editor.runningText;
     XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"450"], @"moved as it is dragged: %@", [self var:@"rect" of:@"Go" in:editor]);
     [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(530, 330) time:2.3 in:editor.guiView];
-    XCTAssertNotEqualObjects(editor.runningText, ranText, @"run again from the text");
+    XCTAssertEqualObjects(editor.runningText, ranText, @"the edits made in the run, not read again");
     XCTAssertTrue([[self var:@"rect" of:@"Go" in:editor] hasPrefix:@"450"]);
     XCTAssertEqual(editor.player.time, 1000);
 

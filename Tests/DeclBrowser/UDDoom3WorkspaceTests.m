@@ -662,7 +662,10 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     // an edit there keeps the time
     [editor.designWorkspace.selections set:[[editor.designWorkspace.interface getDesktop] findChildByName:@"MarsRender"].win];
     editor.player.drawsPicture = editor.guiView.glView == nil;
+    NSDate *start = [NSDate date];
     [editor.designWorkspace nudgeX:1 y:0 size:NO];
+    NSTimeInterval took = -[start timeIntervalSinceNow];
+    XCTAssertLessThan(took, 0.1, @"an edit is made in the run as it is, not by reading the GUI again");
     XCTAssertEqual(editor.player.time, 2000);
     editor.player.drawsPicture = YES;
     [editor.player renderFrame];

@@ -42,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int time;
 /// One frame on: USERCMD_MSEC later, drawn. (Paused, the clock is still.)
 - (void)step;
+/// Whether its GUIs load as the GUI editor loads them (com_editors): every
+/// window kept, a full window, so it can take an edit's state. Set before
+/// a load.
+@property (nonatomic) BOOL editing;
 /// Loaded again, from its time 0, the named events sent forgotten.
 - (void)restart;
 /// At @a time, drawn: run on to it a frame at a time; before the time it

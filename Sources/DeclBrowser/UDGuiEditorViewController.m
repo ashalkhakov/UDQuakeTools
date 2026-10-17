@@ -41,6 +41,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 @property (nonatomic) BOOL playedBeforeDesigning;
 /// How long the slider is: the GUI's last time event, and a second.
 @property (nonatomic) int timelineLength;
+/// Whether the run is to be read again to hold the design as it is.
+@property (nonatomic) BOOL runStale;
 /// The names of the windows the design hid when it loaded.
 @property (nonatomic, strong) NSMutableSet<NSString *> *loadedHidden;
 /// The navigator's selection being set from the design's (not the other
@@ -123,12 +125,16 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 }
 
 /// The GUI read and run on to the time it was at: the file, or the text
-/// as it is; designing, the windows the design hides or shows so.
+/// as it is; designing, loaded as the editor loads it (to take the
+/// design's edits as they are made), the windows the design hides or shows
+/// so.
 - (void)_run {
     NSString *path = self.item.path;
     NSString *text = [self _currentText];
+    self.player.editing = self.designing;
     self.player.windowVisibility = self.designing ? [self _designVisibility] : nil;
     self.runningText = text;
+    self.runStale = NO;
     [self.player loadText:[text isEqualToString:self.fileText] ? nil : text path:path time:self.player.time];
     self.timelineLength = [self _timelineLengthOf:[self.player.gui getDesktop]];
     [self _showClock];
@@ -656,8 +662,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.modeControl.selectedSegment = 0;
     self.guiView.workspace = nil;
     self.playButton.enabled = YES;
-    // the design's edits run, its hidden windows as the file has them
-    if (![[self _currentText] isEqualToString:self.runningText] || self.player.windowVisibility.count > 0) {
+    // loaded as the game loads it, the design's edits in it, its hidden
+    // windows as the file has them
+    if (self.player.editing || self.runStale || ![[self _currentText] isEqualToString:self.runningText]) {
         [self _run];
     }
     self.player.playing = self.playedBeforeDesigning;
@@ -675,6 +682,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         [self.designWorkspace loadText:text path:self.item.path];
     }
     self.designText = text;
+    self.runStale = YES;
     // what it hides as loaded (the file's "visible", read): the run's too
     self.loadedHidden = [NSMutableSet set];
     idWindow *desktop = [self.designWorkspace.interface getDesktop];
@@ -688,36 +696,36 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// there (its edits, its hidden windows not drawn), and over it the grid
 /// and the selections.
 - (void)_renderDesign {
-    if (self.designWorkspace.dragType != HT_NONE) {
-        // a drag's step: its windows moved in the run as it is (run again,
-        // from the text, when the drag ends)
-        [self _moveRunsWindows];
-        return;
-    }
-    NSString *text = [self _currentText];
-    NSDictionary *visibility = [self _designVisibility];
-    if (![text isEqualToString:self.runningText] || ![visibility isEqualToDictionary:self.player.windowVisibility ?: @{}]) {
+    if (self.runStale || !self.player.editing) {
         [self _run];        // its frame shown
         return;
     }
     [self _showDesign];
 }
 
-/// The selected windows' rects, the run's as the design's (as a script's
-/// "set" sets them), and its frame drawn again.
-- (void)_moveRunsWindows {
-    rvGESelectionMgr *selections = self.designWorkspace.selections;
-    idWindow *desktop = [self.player.gui getDesktop];
-    for (int i = 0; i < [selections num]; i++) {
-        idWindow *window = selections[(NSUInteger)i];
-        idDrawWin *ran = [desktop findChildByName:[window getName]];
-        idWinVar *rect = ran.win != nil ? [ran.win getWinVarByName:@"rect"] : [ran.simp getWinVarByName:@"rect"];
-        if ([rect isKindOfClass:[idWinRectangle class]]) {
-            [(idWinRectangle *)rect setData:[rvGEWindowWrapper wrapperOf:window].clientRect];
-            [rect setEval:NO];
+/// @a modifier's edit (applied, undone or redone) made in the run as it
+/// is, as the engine's editor makes it in its GUI (the window's state
+/// taken again, rvGEWindowWrapper's UpdateWindowState): the run's window of
+/// the same name given the design's. NO for an edit of the windows
+/// themselves (made, deleted, ordered, parented) or of a window's scripts:
+/// those the run is read again for.
+- (BOOL)_applyToRun:(nullable rvGEModifier *)modifier {
+    if (modifier == nil) return YES;
+    if ([modifier isKindOfClass:[rvGEModifierGroup class]]) {
+        for (rvGEModifier *each in [(rvGEModifierGroup *)modifier modifiers]) {
+            if (![self _applyToRun:each]) return NO;
         }
+        return YES;
     }
-    [self.player renderFrame];
+    if (!([modifier isKindOfClass:[rvGEMoveModifier class]] || [modifier isKindOfClass:[rvGESizeModifier class]]
+          || [modifier isKindOfClass:[rvGEStateModifier class]] || [modifier isKindOfClass:[rvGEHideModifier class]])) {
+        return NO;
+    }
+    idWindow *window = modifier.window;
+    idDrawWin *ran = [[self.player.gui getDesktop] findChildByName:[window getName]];
+    if (ran.win == nil) return NO;
+    [ran.win updateFromDictionary:[rvGEWindowWrapper wrapperOf:window].stateDict];
+    return YES;
 }
 
 /// The windows the design shows or hides, as it did not when it loaded, by
@@ -782,8 +790,15 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     if (self.showsSource && [self.editorTextView.string isEqualToString:self.shownText]) {
         [self _showCanvasText];
     }
-    if (self.designing) {
-        [self _renderDesign];
+    // the run takes the edit as it is, or is read again
+    if (!self.runStale && self.player.editing && [self _applyToRun:[sender changedModifier]]) {
+        self.player.windowVisibility = [self _designVisibility];
+        [self.player renderFrame];     // its frame shown
+    } else {
+        self.runStale = YES;
+        if (self.designing) {
+            [self _renderDesign];
+        }
     }
 }
 

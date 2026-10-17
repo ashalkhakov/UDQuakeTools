@@ -289,7 +289,9 @@ static int UDEventMilliseconds(NSEvent *event) {
     [self _syncWorkspaceRect];
     NSPoint point = [self _pointOf:event];
     BOOL shift = (event.modifierFlags & NSEventModifierFlagShift) != 0;
-    [self.workspace mouseDownAtX:(float)point.x y:(float)point.y shift:shift time:UDEventMilliseconds(event)];
+    // ⌥: the window below the selected one there
+    BOOL below = (event.modifierFlags & NSEventModifierFlagOption) != 0;
+    [self.workspace mouseDownAtX:(float)point.x y:(float)point.y shift:shift below:below time:UDEventMilliseconds(event)];
     [self _updateCursorAt:point];
     [self _designChanged];
     return YES;

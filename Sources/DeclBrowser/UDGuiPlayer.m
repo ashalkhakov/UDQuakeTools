@@ -107,8 +107,20 @@
 - (void)restart {
     if (self.path != nil) {
         [self.eventTrack removeAllObjects];
+        [self _askForText];
         [self _load];
         [self renderFrame];
+    }
+}
+
+/// The text to load again, from its text source, if it has another.
+- (void)_askForText {
+    id source = self.textSource;
+    SEL action = self.textSourceAction;
+    if (source == nil || action == NULL || ![source respondsToSelector:action]) return;
+    NSString *text = ((NSString *(*)(id, SEL, id))[source methodForSelector:action])(source, action, self);
+    if (text != nil) {
+        self.text = text;
     }
 }
 
@@ -127,6 +139,7 @@
     self.replayed = 0;
     self.visibilityVars = nil;
     _span = MAX(5000, [UDGuiPlayer _timelineLengthOf:[self.gui getDesktop]]);
+    _runsEveryFrame = [UDGuiPlayer _runsEveryFrame:[self.gui getDesktop]];
     [self _handleCommand:[self.gui activate:YES time:self.time]];
     return loaded;
 }
@@ -176,13 +189,34 @@
     if (self.gui == nil) return;
     time = MAX(time, 0);
     if (time < self.time) {
+        [self _askForText];
         [self _load];
     }
-    // the frames between, run and not drawn
+    // the frames between, run and not drawn; but for a GUI that runs no
+    // scripts every frame (onEvent), only those where something is due:
+    // the others would only take its transitions and registers on, which
+    // the next frame run takes from the time and the state as they are
     idUserInterfaceManager *manager = self.manager;
+    BOOL everyFrame = self.stepsEveryFrame || self.runsEveryFrame;
     while (self.time + USERCMD_MSEC < time) {
-        self.time += USERCMD_MSEC;
+        int next = self.time + USERCMD_MSEC;
+        if (!everyFrame) {
+            int due = [self _nextDueFrame];
+            next = MAX(next, due);
+            if (next >= time) break;
+        }
+        self.time = next;
         [self _runFrameDrawing:NO];
+    }
+    if (!everyFrame) {
+        // the last frame before it run too: the frame drawn at the time,
+        // under USERCMD_MSEC after it, runs no time events of its own
+        // (RunTimeEvents's), so shows them as that one left them
+        int last = self.time + (time - self.time - 1) / USERCMD_MSEC * USERCMD_MSEC;
+        if (last > self.time) {
+            self.time = last;
+            [self _runFrameDrawing:NO];
+        }
     }
     self.time = time;
     self.lastTick = [NSDate date];
@@ -209,6 +243,51 @@
         [self.gui runTimeEvents:self.time];
     }
     [self _takeMessages];
+}
+
+/// The first frame (on this one's grid, USERCMD_MSEC apart) where a time
+/// event is due (idWindow::Time's: its window's timeLine and its time
+/// passed), a named event sent is to be sent again, or a window's
+/// timeline starts (its first Time sets it).
+- (int)_nextDueFrame {
+    long due = INT_MAX;
+    NSArray<UDGuiPlayerEvent *> *track = self.eventTrack;
+    if (self.replayed < track.count) {
+        due = track[self.replayed].time + 1;      // sent before the first frame after it
+    }
+    due = MIN(due, [self _nextDueOf:[self.gui getDesktop]]);
+    if (due == INT_MAX) return INT_MAX;
+    long frames = (due - self.time + USERCMD_MSEC - 1) / USERCMD_MSEC;
+    return (int)MIN((long)INT_MAX, self.time + MAX(frames, 1L) * USERCMD_MSEC);
+}
+
+- (long)_nextDueOf:(nullable idWindow *)window {
+    if (window == nil) return INT_MAX;
+    long due = INT_MAX;
+    if (!window->noTime.data) {
+        if (window->timeLine == -1) {
+            if (window->timeLineEvents.count > 0) due = self.time + 1;
+        } else {
+            for (idTimeLineEvent *event in window->timeLineEvents) {
+                if (event->pending) due = MIN(due, (long)window->timeLine + event->time);
+            }
+        }
+    }
+    for (int i = 0; i < [window getChildCount]; i++) {
+        due = MIN(due, [self _nextDueOf:[window getChild:i]]);
+    }
+    return due;
+}
+
+/// Whether a window of @a window's tree has an onEvent script (ON_FRAME,
+/// run each frame).
++ (BOOL)_runsEveryFrame:(nullable idWindow *)window {
+    if (window == nil) return NO;
+    if (window->scripts[ON_FRAME] != nil) return YES;
+    for (int i = 0; i < [window getChildCount]; i++) {
+        if ([self _runsEveryFrame:[window getChild:i]]) return YES;
+    }
+    return NO;
 }
 
 /// The windows the editor shows or hides, so, whatever a script made them

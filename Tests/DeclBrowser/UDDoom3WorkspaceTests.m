@@ -478,6 +478,63 @@
     XCTAssertEqual(problems.count, 0U, @"idWindow::Parse reads them all: %@", problems);
 }
 
+/// Whether @a a and @a b draw the same: their triangles, vertex for
+/// vertex, texture for texture size, state for state.
+static BOOL UDSameTriangles(UDTriangleList *a, UDTriangleList *b, NSString **why) {
+    if (a.count != b.count) {
+        *why = [NSString stringWithFormat:@"%lu triangles, not %lu", (unsigned long)a.count, (unsigned long)b.count];
+        return NO;
+    }
+    for (NSUInteger i = 0; i < a.count; i++) {
+        const UDTriangleCommand *x = &a.triangles[i], *y = &b.triangles[i];
+        if (memcmp(x->v, y->v, sizeof(x->v)) != 0 || x->texWidth != y->texWidth || x->texHeight != y->texHeight
+            || x->repeat != y->repeat || memcmp(x->constant, y->constant, sizeof(x->constant)) != 0 || x->drawStateBits != y->drawStateBits) {
+            *why = [NSString stringWithFormat:@"triangle %lu differs", (unsigned long)i];
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (void)testEveryRetailGuiSeeksAsItRunsFrameByFrame {
+    if (self.installPath == nil) return;
+    UDWorkspaceWindowController *controller = [self openDoom3];
+    if (controller == nil) return;
+    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGuiPlayer *skipping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
+    UDGuiPlayer *stepping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
+    for (UDGuiPlayer *player in @[skipping, stepping]) {
+        player.playing = NO;
+        player.drawsPicture = NO;
+    }
+    stepping.stepsEveryFrame = YES;
+    idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
+    NSMutableArray<NSString *> *problems = [NSMutableArray array];
+    NSUInteger skipped = 0;
+    for (NSString *name in list.list) {
+        @autoreleasepool {
+            [skipping loadFile:name];
+            [stepping loadFile:name];
+            if (skipping.runsEveryFrame) continue;
+            skipped++;
+            // on, and back (read again), with a named event on the way
+            NSString *event = skipping.namedEvents.firstObject;
+            for (UDGuiPlayer *player in @[skipping, stepping]) {
+                [player seekTo:1000];
+                if (event != nil) [player sendNamedEvent:event];
+                [player seekTo:12345];
+                [player seekTo:7000];
+            }
+            NSString *why = nil;
+            if (!UDSameTriangles(skipping.triangles, stepping.triangles, &why)) {
+                [problems addObject:[NSString stringWithFormat:@"%@: %@", name, why]];
+            }
+        }
+    }
+    XCTAssertGreaterThan(skipped, 100u, @"most retail GUIs run no script every frame");
+    XCTAssertEqual(problems.count, 0u, @"a seek that skips frames draws what one that runs them all does:\n%@", [problems componentsJoinedByString:@"\n"]);
+}
+
 - (void)testTheRetailMainMenuRunsInTheViewer {
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
@@ -659,6 +716,13 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
     double shown = UDMeanBrightness((NSBitmapImageRep *)editor.player.frame.representations.firstObject);
     XCTAssertLessThan(curtained, 1.0, @"at time 0 the menu is behind its black curtain");
     XCTAssertGreaterThan(shown, 5.0, @"at 2 s it is there to design");
+
+    // what is drawn is what is chosen: the curtain, collapsed, clicked
+    // through (at 0 s it is chosen, as it covers all)
+    NSPoint centre = [editor.guiView viewPointFromGui:NSMakePoint(320, 120)];
+    [editor.designWorkspace mouseDownAtX:(float)centre.x y:(float)centre.y shift:NO time:0];
+    [editor.designWorkspace mouseUp];
+    XCTAssertNotEqualObjects([editor.designWorkspace.selections[0] getName], @"BlackFade", @"not the curtain at 2 s");
 
     // an edit there keeps the time
     [editor.designWorkspace.selections set:[[editor.designWorkspace.interface getDesktop] findChildByName:@"MarsRender"].win];

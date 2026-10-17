@@ -46,6 +46,12 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 @property (nonatomic, strong, readwrite) UDTransportController *transport;
 /// The run's window for each of the design's (the design's window the key).
 @property (nonatomic, strong) NSMapTable<idWindow *, idWindow *> *runWindows;
+/// The windows locked in the navigator: not chosen on the canvas.
+@property (nonatomic, strong) NSHashTable<idWindow *> *lockedWindows;
+/// The run the map is of (the player's GUI when it was mapped).
+@property (nonatomic, weak) idUserInterfaceLocal *mappedRun;
+/// Whether edits were made in the run since it was read.
+@property (nonatomic) BOOL runEdited;
 /// Whether the run is to be read again to hold the design as it is.
 @property (nonatomic) BOOL runStale;
 /// The names of the windows the design hid when it loaded.
@@ -76,6 +82,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     [[NSBundle bundleForClass:[UDGuiEditorViewController class]] loadNibNamed:@"UDGuiViewerView" owner:self topLevelObjects:nil];
     self.stateRows = @[];
 
+    self.lockedWindows = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality];
     self.runWindows = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality
                                             valueOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality];
     self.player = [[UDGuiPlayer alloc] initWithWorkspace:self.workspace];
@@ -83,6 +90,8 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.player.action = @selector(playerDidDrawFrame:);
     self.guiView.player = self.player;
     self.player.view = self.guiView;
+    self.player.textSource = self;
+    self.player.textSourceAction = @selector(runTextFor:);
     self.transport = [[UDTransportController alloc] init];
     self.transport.playable = self.player;
     self.transport.target = self;
@@ -147,13 +156,10 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     self.player.windowVisibility = self.designing ? [self _designVisibility] : nil;
     self.runningText = text;
     self.runStale = NO;
+    self.runEdited = NO;
     [self.runWindows removeAllObjects];
     [self.player loadText:[text isEqualToString:self.fileText] ? nil : text path:path time:self.player.time];
-    if (self.designing) {
-        // each design window's in the run: the same tree, but for the
-        // deleted (not written)
-        [self _mapRunWindow:[self.player.gui getDesktop] to:[self.designWorkspace.interface getDesktop]];
-    }
+    [self _mapRunWindows];
     [self.transport update];
     [self _showDiagnostics];
     [self _fillNamedEvents];
@@ -300,6 +306,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     if ([column.identifier isEqualToString:@"visible"]) {
         return @(!wrapper.hidden);
     }
+    if ([column.identifier isEqualToString:@"locked"]) {
+        return @([self.lockedWindows containsObject:item]);
+    }
     if ([column.identifier isEqualToString:@"scripts"]) {
         // the engine's scripts icon: a window with scripts or variables
         return [wrapper.variableDict numKeyVals] || [wrapper.scriptDict numKeyVals] ? @"\u0192" : @"";
@@ -309,6 +318,17 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
 
 /// The eye: HideWindow, UnhideWindow (an edit of the design, undone as one).
 - (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)column byItem:(id)item {
+    if ([column.identifier isEqualToString:@"locked"]) {
+        // the lock: the window (and its children) not chosen on the canvas;
+        // the editor's alone, as the eye's is
+        if ([object boolValue]) {
+            [self.lockedWindows addObject:item];
+        } else {
+            [self.lockedWindows removeObject:item];
+        }
+        if (self.designing) [self _showDesign];
+        return;
+    }
     if (![column.identifier isEqualToString:@"visible"]) return;
     rvGEWorkspace *design = [self _design];
     if (![object boolValue]) {
@@ -700,6 +720,7 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     }
     self.designText = text;
     self.runStale = YES;
+    [self.lockedWindows removeAllObjects];
     // what it hides as loaded (the file's "visible", read): the run's too
     self.loadedHidden = [NSMutableSet set];
     idWindow *desktop = [self.designWorkspace.interface getDesktop];
@@ -748,6 +769,27 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     }
     [ran updateFromDictionary:[rvGEWindowWrapper wrapperOf:window].stateDict];
     return YES;
+}
+
+/// The player's text when it loads again by itself (a seek back,
+/// Restart): the design as it is, if edits were made in the run since it
+/// was read.
+- (nullable NSString *)runTextFor:(UDGuiPlayer *)player {
+    if (!self.designing || !self.runEdited) return nil;
+    NSString *text = [self _currentText];
+    self.runningText = text;
+    self.runEdited = NO;
+    return text;
+}
+
+/// Each design window's in the run (the same tree, but for the deleted, not
+/// written), when the run is not the one mapped (loaded again).
+- (void)_mapRunWindows {
+    if (!self.designing) return;
+    if (self.mappedRun == self.player.gui && self.runWindows.count > 0) return;
+    [self.runWindows removeAllObjects];
+    self.mappedRun = self.player.gui;
+    [self _mapRunWindow:[self.player.gui getDesktop] to:[self.designWorkspace.interface getDesktop]];
 }
 
 /// @a design's run window @a run, and their children's, mapped.
@@ -880,9 +922,34 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
     }
 }
 
+/// The windows the canvas passes through: the locked, and those the run
+/// does not draw at its time (not visible, or no size).
+- (NSSet<idWindow *> *)_passedWindows {
+    [self _mapRunWindows];
+    NSMutableSet<idWindow *> *passed = [NSMutableSet set];
+    for (idWindow *window in self.lockedWindows) {
+        [passed addObject:window];
+    }
+    for (idWindow *window in self.runWindows) {
+        idWindow *ran = [self.runWindows objectForKey:window];
+        idWinVar *visible = [ran getWinVarByName:@"visible"];
+        idWinVar *rect = [ran getWinVarByName:@"rect"];
+        BOOL shown = ![visible isKindOfClass:[idWinBool class]] || [(idWinBool *)visible data];
+        if ([rect isKindOfClass:[idWinRectangle class]]) {
+            idRectangle r = [(idWinRectangle *)rect data];
+            shown = shown && r.w != 0 && r.h != 0;
+        }
+        if (!shown && window != [self.designWorkspace.interface getDesktop]) {
+            [passed addObject:window];
+        }
+    }
+    return passed;
+}
+
 /// The player's frame, and the design's grid and selections over it.
 - (void)_showDesign {
     rvGEWorkspace *design = self.designWorkspace;
+    design.passedWindows = [self _passedWindows];
     UDGuiView *view = self.guiView;
     NSRect rect = view.guiRect;
     design.rect = idRectangle_Make((float)NSMinX(rect), (float)NSMinY(rect), (float)NSWidth(rect), (float)NSHeight(rect));
@@ -912,7 +979,9 @@ static UDDiagnosticSource const UDGuiParseSource = @"gui";
         [self _showCanvasText];
     }
     // the run takes the edit as it is, or is read again
+    [self _mapRunWindows];
     if (!self.runStale && self.player.editing && [self _applyToRun:[sender changedModifier]]) {
+        self.runEdited = YES;
         self.player.windowVisibility = [self _designVisibility];
         [self.player renderFrame];     // its frame shown
     } else {

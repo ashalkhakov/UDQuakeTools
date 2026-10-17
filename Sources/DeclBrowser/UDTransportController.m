@@ -50,9 +50,20 @@ static const int UDTransportStep = 16;
 }
 
 - (IBAction)seek:(id)sender {
-    id<UDTransportPlayable> playable = self.playable;
-    playable.playing = NO;
-    [playable seekTo:(int)lround(self.timeSlider.doubleValue)];
+    self.playable.playing = NO;
+    // while the slider is dragged, only where it is when the drag lets the
+    // run loop go: the seeks it passes on the way not made
+    if (sender == self.timeSlider && ([NSEvent pressedMouseButtons] & 1) != 0) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_seekToSlider) object:nil];
+        [self performSelector:@selector(_seekToSlider) withObject:nil afterDelay:0 inModes:@[NSRunLoopCommonModes]];
+        return;
+    }
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_seekToSlider) object:nil];
+    [self _seekToSlider];
+}
+
+- (void)_seekToSlider {
+    [self.playable seekTo:(int)lround(self.timeSlider.doubleValue)];
     [self _moved];
 }
 

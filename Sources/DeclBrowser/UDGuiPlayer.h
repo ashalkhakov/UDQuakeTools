@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int span;
 /// One frame on: USERCMD_MSEC later, drawn. (Paused, the clock is still.)
 - (void)step;
+/// Asked, each time it loads again by itself (a seek back, Restart), for
+/// the text to read: the action returns it (target-action; the sender the
+/// player), or nil for the text it read last.
+@property (nonatomic, weak, nullable) id textSource;
+@property (nonatomic, nullable) SEL textSourceAction;
 /// Whether its GUIs load as the GUI editor loads them (com_editors): every
 /// window kept, a full window, so it can take an edit's state. Set before
 /// a load.
@@ -56,6 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// is at, from its time 0 again, the named events sent on the way sent
 /// again at their times (the mouse and the keys not).
 - (void)seekTo:(int)time;
+/// Whether the GUI it loaded runs scripts every frame (onEvent): its seeks
+/// then run every frame between; others' only those where something is
+/// due.
+@property (nonatomic, readonly) BOOL runsEveryFrame;
+/// Every frame between run whatever the GUI (a test's check of the
+/// skipping; NO at first).
+@property (nonatomic) BOOL stepsEveryFrame;
 /// The windows (by name) shown (YES) or hidden (NO) whatever their
 /// "visible" and the scripts': the GUI editor's own. Set before a load or a
 /// seek.

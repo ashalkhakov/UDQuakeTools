@@ -93,6 +93,28 @@ static NSString *const UDCanvasGui =
     XCTAssertEqual([self.workspace.selections num], 0, @"the desktop is not selected (ignoreDesktopSelect)");
 }
 
+- (void)testAClickPassesThroughThePassedWindowsAndOptionReachesBelow {
+    // ⌥: the next window down at the point, round again after the last
+    [self.workspace mouseDownAtX:115 y:115 shift:NO time:0];
+    [self.workspace mouseUp];
+    XCTAssertEqual(self.workspace.selections[0], [self window:@"Button"]);
+    [self.workspace mouseDownAtX:115 y:115 shift:NO below:YES time:1000];
+    [self.workspace mouseUp];
+    XCTAssertEqual(self.workspace.selections[0], [self window:@"Panel"], @"the one below");
+    [self.workspace mouseDownAtX:115 y:115 shift:NO below:YES time:2000];
+    [self.workspace mouseUp];
+    XCTAssertEqual(self.workspace.selections[0], [self window:@"Button"], @"the topmost again");
+    XCTAssertEqualObjects([self.workspace windowsAtX:115 y:115], (@[[self window:@"Button"], [self window:@"Panel"]]));
+
+    // a passed window, and its children, are not chosen
+    self.workspace.passedWindows = [NSSet setWithObject:[self window:@"Panel"]];
+    [self.workspace mouseDownAtX:115 y:115 shift:NO time:3000];
+    [self.workspace mouseUp];
+    XCTAssertEqual([self.workspace.selections num], 0, @"passed through to the desktop");
+    XCTAssertEqual([self.workspace windowsUnderX:115 y:115].count, 1u, @"the Select menu has the desktop alone");
+    XCTAssertEqual([self.workspace windowsAtX:115 y:115].count, 0u);
+}
+
 - (void)testADragMovesTheSelectionAsOneEdit {
     [self dragFromX:420 y:60 toX:460 y:80 shift:NO];
     idRectangle rect = [self rectOf:@"Label"];

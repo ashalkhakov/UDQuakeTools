@@ -235,12 +235,23 @@
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                    <tableColumn identifier="visible" editable="YES" width="18" minWidth="18" maxWidth="18" id="GUV-win-visible">
+                                    <tableColumn identifier="visible" editable="YES" width="18" minWidth="18" maxWidth="18" headerToolTip="Shown in the design" id="GUV-win-visible">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="">
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                         </tableHeaderCell>
                                         <buttonCell key="dataCell" type="check" title="" bezelStyle="regularSquare" imagePosition="only" alignment="center" inset="2" id="GUV-win-visible-c">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+                                    </tableColumn>
+                                    <tableColumn identifier="locked" editable="YES" width="18" minWidth="18" maxWidth="18" headerToolTip="Locked: not chosen on the canvas" id="GUV-win-locked">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="">
+                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                        </tableHeaderCell>
+                                        <buttonCell key="dataCell" type="check" title="" bezelStyle="regularSquare" imagePosition="only" alignment="center" inset="2" id="GUV-win-locked-c">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>

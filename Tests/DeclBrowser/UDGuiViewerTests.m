@@ -538,6 +538,16 @@ static NSString *const UDViewerScript =
     XCTAssertEqualObjects(editor.runningText, ranText, @"scripts: not read again");
     NSString *script = [[rvGEWindowWrapper wrapperOf:[self runWindow:@"Lamp" in:editor]].scriptDict getString:@"onTime 500"];
     XCTAssertTrue([script containsString:@"0 1 1 1"], @"the run's lamp read again: %@", script);
+
+    // read again by itself (a seek back): the edits kept, and still made
+    [self slide:editor to:200];
+    [self slide:editor to:1000];
+    XCTAssertEqualObjects([self treeNamesOf:[editor.player.gui getDesktop]], [self treeNamesOf:[design.interface getDesktop]], @"the edits kept");
+    XCTAssertEqualObjects([[[self runWindow:@"Go" in:editor] getParent] getName], @"Panel");
+    [design.selections set:[self designWindow:@"Go" in:editor]];
+    NSString *before = [self var:@"rect" of:@"Go" in:editor];
+    [design nudgeX:5 y:0 size:NO];
+    XCTAssertNotEqualObjects([self var:@"rect" of:@"Go" in:editor], before, @"an edit after it made in the run read again");
 }
 
 /// The run as it was (its text, its time, the lamp lit) and its windows
@@ -622,6 +632,29 @@ static NSString *const UDViewerScript =
 
     [editor.editorDocument.undoManager undo];
     XCTAssertFalse([rvGEWindowWrapper wrapperOf:panel].hidden, @"Undo shows it again");
+}
+
+- (void)testALockedWindowIsNotChosenOnTheCanvas {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    NSOutlineView *outline = editor.windowsOutline;
+    NSTableColumn *lock = [outline tableColumnWithIdentifier:@"locked"];
+    XCTAssertNotNil(lock, @"the navigator has a lock");
+    idWindow *go = [self designWindow:@"Go" in:editor];
+    XCTAssertEqualObjects([outline.dataSource outlineView:outline objectValueForTableColumn:lock byItem:go], @NO);
+    [outline.dataSource outlineView:outline setObjectValue:@YES forTableColumn:lock byItem:go];
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:1.05 in:editor.guiView];
+    XCTAssertEqual([editor.designWorkspace.selections num], 0, @"clicked through");
+    [self chooseWindow:@"Go" in:editor];
+    XCTAssertEqual(editor.designWorkspace.selections[0], go, @"the navigator still chooses it");
+    XCTAssertFalse([editor.designWorkspace.text containsString:@"lock"], @"the editor's alone");
+    [outline.dataSource outlineView:outline setObjectValue:@NO forTableColumn:lock byItem:go];
+    [editor.designWorkspace.selections clear];
+    [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:2.0 in:editor.guiView];
+    [self mouse:NSEventTypeLeftMouseUp at:NSMakePoint(480, 330) time:2.05 in:editor.guiView];
+    XCTAssertEqual(editor.designWorkspace.selections[0], go, @"unlocked, chosen again");
 }
 
 #pragma mark - Properties

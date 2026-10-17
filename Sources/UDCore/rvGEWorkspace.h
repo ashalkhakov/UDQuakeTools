@@ -64,6 +64,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// ( @a x, @a y ) in the window, the shift key held or not, the time in
 /// milliseconds (Sys_Milliseconds).
 - (void)mouseDownAtX:(float)x y:(float)y shift:(BOOL)shift time:(int)time;
+/// Not the engine's: so; or, @a below, the window under the point next
+/// below the one selected there (the topmost again after the last) chosen,
+/// to be dragged: what is under a window over it reached.
+- (void)mouseDownAtX:(float)x y:(float)y shift:(BOOL)shift below:(BOOL)below time:(int)time;
+/// Not the engine's: the windows a click, the Select menu and a choice
+/// below pass through, and their children (the editor's locked ones, and
+/// those not drawn at the time it shows).
+@property (nonatomic, copy, nullable) NSSet<idWindow *> *passedWindows;
+/// The windows under ( @a x, @a y ) in the window, shown, not deleted or
+/// passed through, the topmost first (as a click looks for them).
+- (NSArray<idWindow *> *)windowsAtX:(float)x y:(float)y;
 - (void)mouseMoveToX:(float)x y:(float)y time:(int)time;
 - (void)mouseUp;
 /// What a drag is doing (HT_NONE when there is none), and what the cursor

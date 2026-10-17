@@ -84,6 +84,9 @@ typedef NS_ENUM(int, rvGEWindowType) {
 /// The topmost window under ( @a x, @a y ) on the screen, this one or
 /// one of its children; the hidden and deleted not, if @a visibleOnly.
 - (nullable idWindow *)windowFromPointX:(float)x y:(float)y visibleOnly:(BOOL)visibleOnly;
+/// Not the engine's: so, but @a passed (and their children) passed
+/// through, as the hidden are.
+- (nullable idWindow *)windowFromPointX:(float)x y:(float)y visibleOnly:(BOOL)visibleOnly passing:(nullable NSSet<idWindow *> *)passed;
 
 /// After the window is parsed: its visibility and rect read.
 - (void)finish;

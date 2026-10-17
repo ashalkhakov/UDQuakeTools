@@ -317,12 +317,20 @@ Returns the topmost window under the given point
 ================
 */
 - (idWindow *)windowFromPointX:(float)x y:(float)y visibleOnly:(BOOL)visibleOnly {
+    return [self windowFromPointX:x y:y visibleOnly:visibleOnly passing:nil];
+}
+
+- (idWindow *)windowFromPointX:(float)x y:(float)y visibleOnly:(BOOL)visibleOnly passing:(NSSet<idWindow *> *)passed {
     int count;
     int i;
     rvGEWindowWrapper *pwrapper;
 
     // If the window isnt visible then skip it
     if ( visibleOnly && (_hidden || _deleted) ) {
+        return nil;
+    }
+    // (not the engine's: the windows the editor passes through)
+    if ( visibleOnly && [passed containsObject:self.window] ) {
         return nil;
     }
 
@@ -343,7 +351,7 @@ Returns the topmost window under the given point
         }
 
         // (the engine's call leaves visibleOnly to its default, true)
-        if ( (child = [wrapper windowFromPointX:x y:y visibleOnly:YES]) ) {
+        if ( (child = [wrapper windowFromPointX:x y:y visibleOnly:YES passing:passed]) ) {
             return child;
         }
     }

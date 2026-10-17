@@ -304,6 +304,10 @@ Handles the left mouse down message in the workspace
 ================
 */
 - (void)mouseDownAtX:(float)x y:(float)y shift:(BOOL)shift time:(int)time {
+    [self mouseDownAtX:x y:y shift:shift below:NO time:time];
+}
+
+- (void)mouseDownAtX:(float)x y:(float)y shift:(BOOL)shift below:(BOOL)below time:(int)time {
     if ( self.interface == nil ) {
         return;
     }
@@ -327,7 +331,25 @@ Handles the left mouse down message in the workspace
 
     rvGEWindowWrapper *wrapper;
     wrapper = [rvGEWindowWrapper wrapperOf:[self.interface getDesktop]];
-    idWindow *window = [wrapper windowFromPointX:point.x y:point.y visibleOnly:YES];
+    idWindow *window = [wrapper windowFromPointX:point.x y:point.y visibleOnly:YES passing:self.passedWindows];
+
+    // (not the engine's: the one below the selected one there, chosen)
+    if ( below ) {
+        NSArray<idWindow *> *under = [self windowsAtX:x y:y];
+        NSUInteger at = NSNotFound;
+        for ( NSUInteger i = 0; i < under.count && at == NSNotFound; i++ ) {
+            if ( [mSelections isSelected:under[i]] ) {
+                at = i;
+            }
+        }
+        window = under.count == 0 ? nil : under[at == NSNotFound ? 0 : (at + 1) % under.count];
+        if ( window ) {
+            [mSelections set:window];
+            self.dragType = HT_MOVE;
+            mDragPoint = [self windowToWorkspacePoint:mDragPoint];
+            return;
+        }
+    }
 
     // dissallow selection of the desktop.
     if ( self.options.ignoreDesktopSelect && window == [self.interface getDesktop] ) {
@@ -1369,6 +1391,10 @@ Builds the list of windows under the point for the select menu
 
     for ( int i = 0; i < [wrapper childCount]; i ++ ) {
         rvGEWindowWrapper *child = [rvGEWindowWrapper wrapperOf:[wrapper childAtIndex:i]];
+        // (not the engine's: a window passed through, its children too)
+        if ( child && [self.passedWindows containsObject:child.window] ) {
+            continue;
+        }
         [self _addWindowsUnder:point of:child into:menu];
 
         if ( !child || child.deleted || child.hidden ) {
@@ -1379,6 +1405,35 @@ Builds the list of windows under the point for the select menu
         if ( idRectangle_Contains( &rect, point.x, point.y ) ) {
             [menu addObject:child.window];
         }
+    }
+}
+
+- (NSArray<idWindow *> *)windowsAtX:(float)x y:(float)y {
+    NSMutableArray<idWindow *> *under = [NSMutableArray array];
+    idVec2 point = [self windowToWorkspacePoint:idVec2_Make( x, y )];
+    rvGEWindowWrapper *desktop = [rvGEWindowWrapper wrapperOf:[self.interface getDesktop]];
+    for ( int i = [desktop childCount] - 1; i >= 0; i-- ) {
+        [self _addWindowsAt:point of:[rvGEWindowWrapper wrapperOf:[desktop childAtIndex:i]] into:under];
+    }
+    if ( !self.options.ignoreDesktopSelect && [self.interface getDesktop] ) {
+        [under addObject:[self.interface getDesktop]];
+    }
+    return under;
+}
+
+/// @a wrapper's window and its children under @a point, as
+/// WindowFromPoint looks: the children front to back, each before its
+/// parent.
+- (void)_addWindowsAt:(idVec2)point of:(nullable rvGEWindowWrapper *)wrapper into:(NSMutableArray<idWindow *> *)under {
+    if ( !wrapper || wrapper.hidden || wrapper.deleted || [self.passedWindows containsObject:wrapper.window] ) {
+        return;
+    }
+    for ( int i = [wrapper childCount] - 1; i >= 0; i-- ) {
+        [self _addWindowsAt:point of:[rvGEWindowWrapper wrapperOf:[wrapper childAtIndex:i]] into:under];
+    }
+    idRectangle rect = wrapper.screenRect;
+    if ( idRectangle_Contains( &rect, point.x, point.y ) ) {
+        [under addObject:wrapper.window];
     }
 }
 

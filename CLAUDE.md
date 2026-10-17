@@ -14,15 +14,23 @@ its protocol side is `Sources/LSPServerKit`, a framework of its own.
 
 ## Layout
 
-Sources are in folders by part, the engine's own where it has one (`UDCore`:
-`idLib`, `Framework`, `Renderer`, `UI`, `GUIEditor`, `Decls`, `Archives`,
-`Scripts`, `Workspace`; Decl Browser: `App`, `Model`, `Documents`, `Window`,
-`Editors`, `Editors/Decls`, `Preview`, `GUIEditor`, `Scripts`). A new file
-goes in its part's folder, and in the Xcode group of the same name. Imports
-name the header alone: Xcode searches `Sources/UDCore/**`, and the
-GNUmakefiles take their include directories from
-`Sources/UDCore/UDCore.include.make` and
-`Sources/DeclBrowser/DeclBrowser.include.make` — a new folder is added there.
+The libraries are `Sources/Libraries/<library>`, each its own (a GNUstep
+library, an Xcode framework), bottom up: `UDIdLib`, `UDCommon` (the engine's
+framework), `UDArchives` (with the codecs, `Formats/`), `UDImages`,
+`UDDecls`, `UDRenderer`, `UDUI`, `UDGUIEditor`, `UDScripts`, `UDWorkspace`.
+`Sources/Libraries/Libraries.make` says what each depends on, and a library
+sees only its own headers and its dependencies' (Xcode: its target's header
+search paths): nothing refers upward. Where a lower layer needs something of
+a higher one, it declares a protocol the higher one adopts (`idFileAccess.h`,
+`UDEngineSettings.h`, `idWindowEditorWrapper.h`), as the engine does. A new
+library goes in `Libraries.make`, `Sources/Libraries/GNUmakefile` and the
+Xcode project (a framework target, embedded in the apps).
+
+Decl Browser is in folders by part: `App`, `Model`, `Documents`, `Window`,
+`Editors`, `Editors/Decls`, `Preview`, `GUIEditor`, `Scripts`, `Compat`. A
+new file goes in its part's folder, and in the Xcode group of the same name.
+Imports name the header alone; its GNUmakefiles take its folders from
+`Sources/DeclBrowser/DeclBrowser.include.make`.
 
 ## GNUstep patches live elsewhere
 
@@ -34,10 +42,12 @@ sent upstream from.
 
 ## Testing
 
-Two XCTest suites, run on both systems:
+XCTest bundles, run on both systems:
 
-- `Tests` — UDCore (codecs, the ported file system and decl manager, the
-  decl incremental store).
+- `Tests/<library>` — each library's unit tests (`UDCommonTests`,
+  `UDArchivesTests`, ...; `Tests/LSPServerKit` too), sharing
+  `Tests/Support` and `Tests/UnitTests.make`. A library's tests go in its
+  bundle; a library without tests has none yet.
 - `Tests/DeclBrowser` — the app driven through its own windows. The PDA and
   pak cases build their own fixtures and run everywhere; the Doom 3 cases
   need a retail install at `$UD_DOOM3_PATH` (default
@@ -47,7 +57,7 @@ Two XCTest suites, run on both systems:
 GNUstep: `make && make check` from the root, in docker, under `xvfb-run -a`
 (the root `GNUmakefile` adds it when there is no display). Mount the Doom 3
 install read-only and set `UD_DOOM3_PATH` to include those cases. macOS:
-`make -f Makefile.apple check`, or the `UDCore` and `DeclBrowserTests`
+`make -f Makefile.apple check`, or the `Libraries` and `DeclBrowserTests`
 schemes.
 
 Run a change on both systems before calling it done: they differ (bindings

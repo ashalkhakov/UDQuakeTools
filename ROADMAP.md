@@ -31,7 +31,7 @@ These shape everything after them; each has a recommendation.
    apps, add an *edit bridge* to the dhewm3 fork, the same idea
    the script debugger already follows,: `idGameEdit` (plus reload
    and console commands) served over the same `idBitMsg`/UDP transport the
-   script debugger already uses, with a client in UDCore. The editors stay
+   script debugger already uses, with a client in the libraries. The editors stay
    portable, and the game stays the preview.
 3. **2D previews in AppKit, 3D in the engine.** Materials get a 2D
    stage/image preview natively and a 3D one through the bridge. GUIs are
@@ -64,7 +64,7 @@ These shape everything after them; each has a recommendation.
 - [x] README: drop `ARCHITECTURE.md` / `CLASS_STUBS.md` links (missing), the
       GUI Editor entry, and the list of shared schemes that are not shared.
 - [x] Bring Pak Manager and udpaktool into the root build and CI (they build
-      against an installed UDCore today), and ship Pak Manager in the
+      against the installed libraries today), and ship Pak Manager in the
       AppImage and on the Mac.
 - [x] Ship Decl Browser on the Mac next to UDLauncher (libzip no longer
       blocks it): `Makefile.apple` `all`/`install`, the macos.yml `apps`.
@@ -224,11 +224,11 @@ In order of value against cost; LOC is the MFC original's size.
 - [ ] **GUI editor** (12.8k) — on a port of dhewm3's GUI code (`neo/ui`,
       20k: `idUserInterface`, `idWindow` and its item types, `idWinVar`, the
       GUI scripts) to Objective-C, in the style of the file system, parser
-      and decl manager already ported in UDCore. The render system is
+      and decl manager already ported in the libraries. The render system is
       replaced: `idDeviceContext` draws into the GUI model, whose surfaces
       the software renderer draws as the ambient pass would, its images
       loaded through idFileSystem; a renderDef's 3D view comes through the
-      bridge (4). The port is in (UDCore; every retail GUI loads and
+      bridge (4). The port is in (UDUI; every retail GUI loads and
       draws, the main menu and PDA as in the game), and so is the viewer:
       a .gui's tab runs it on the game's clock, drawn with GL (in software
       where there is none), the mouse and keys sent as the game sends them,
@@ -300,7 +300,7 @@ through UDCodeKit.
       spawnArgs, map entities, AF spawn/update, player position), decl and
       GUI reload, console commands and console output over the debugger's
       transport; versioned messages; off unless a cvar enables it.
-- [ ] UDCore client and a connection UI (launch or attach, status, log).
+- [ ] A client in the libraries, and a connection UI (launch or attach, status, log).
 - [ ] Quick win before the full bridge: the debugger protocol already has
       `EXECCOMMAND` — use it for `reloadDecls`, `reloadGuis`, `map …` from
       the editors.

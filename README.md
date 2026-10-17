@@ -18,13 +18,22 @@ the Doom 3 file system reads them, UDZipWriter writes them).
 
 ## Project Layout
 
-- `Sources/UDCore`: the Doom 3 file system and decl manager (ported), a Core Data layer over the decls, the workspace, and the archive model (built as `libUDCore`; `UDCore.framework` in Xcode)
-- `Sources/UDFormats`: archive codecs — PAK, PAK2, Daikatana PAK, PK3, PK4 (compiled into UDCore)
+- `Sources/Libraries`: the libraries, each its own (`lib<name>`; `<name>.framework` in Xcode), bottom up:
+  - `UDIdLib`: idLib (ported): lexer, parser, strings, dictionaries, math
+  - `UDCommon`: the engine's framework (ported): file system, cvars, decl manager
+  - `UDArchives`: the archive model and its codecs — PAK, PAK2, Daikatana PAK, PK3, PK4, and the zip writer
+  - `UDImages`: images and image programs, as the renderer loads them
+  - `UDDecls`: a Core Data layer over the decls, and their parsers
+  - `UDRenderer`: the software renderer, the GUI model, MD5 meshes, particles and FX
+  - `UDUI`: the GUI code (ported): `idUserInterface`, its windows and scripts
+  - `UDGUIEditor`: the GUI editor's model (ported)
+  - `UDScripts`: script events and the script index
+  - `UDWorkspace`: the workspace, games and their detection
 - `Sources/UDLauncher`: Launcher application linking bundled tools
 - `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
 - `Sources/DeclBrowser`: Decl Browser GUI app
 - `Sources/Tools/udpaktool`: CLI utility target
-- `Tests`: UDCore unit tests; `Tests/DeclBrowser`: tests driving the Decl Browser app
+- `Tests/<library>`: each library's unit tests; `Tests/DeclBrowser`: tests driving the Decl Browser app
 - `Scripts`: the AppImage desktop entry and smoke test (the build and packaging
   themselves are gnustep-release-actions')
 
@@ -44,8 +53,8 @@ the Doom 3 file system reads them, UDZipWriter writes them).
 - GNUstep dependencies required by your distro
 - [FreeCoreData](https://github.com/ashalkhakov/FreeCoreData) — the CoreData
   implementation for GNUstep. The decl editing layer (UDDeclIncrementalStore
-  and the decl entity classes in UDCore) is built on CoreData, so FreeCoreData
-  **must be installed before building UDCore**:
+  and the decl entity classes in UDDecls) is built on CoreData, so FreeCoreData
+  **must be installed before building the libraries**:
 
   ```bash
   git clone https://github.com/ashalkhakov/FreeCoreData
@@ -80,7 +89,7 @@ linux` unpacks both). Then:
 
 ```bash
 . /opt/gnustep/System/Library/Makefiles/GNUstep.sh
-make && make check && make install   # UDCore, the launcher, Decl Browser; the tests
+make && make check && make install   # the libraries, the launcher, Decl Browser; the tests
 ```
 
 ## AppImage Packaging
@@ -88,7 +97,7 @@ make && make check && make install   # UDCore, the launcher, Decl Browser; the t
 `UDQuakeTools-<version>-x86_64.AppImage` is made by
 [gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
 `appimage`, the same as every app's image: the launcher (UDLauncher) as the
-entry point, Decl Browser, UDCore, FreeCoreData and the GNUstep runtime. What
+entry point, Decl Browser, the libraries, FreeCoreData and the GNUstep runtime. What
 is UDQuakeTools' own is `.github/release/appimage.conf` (what `make install`
 put in the prefix goes in it) and its smoke test, `Scripts/appimage-smoke.sh`;
 the desktop entry is in `Scripts/appimage`. CI makes and
@@ -97,11 +106,11 @@ releases it, with update information.
 
 ## Tests
 
-Two suites, on both systems:
+The suites, on both systems:
 
-- `Tests` — UDCore: the archive codecs (and `UDZipWriter` against the Doom 3
-  reader), the ported file system and decl manager, the decl incremental
-  store.
+- `Tests/<library>` — each library's: the archive codecs (and `UDZipWriter`
+  against the Doom 3 reader), the ported file system and decl manager, the
+  decl incremental store, the GUI code and its editor, the script index.
 - `Tests/DeclBrowser` — Decl Browser, driven through its own windows: a
   workspace opens, the outline is expanded and a row selected, fields are
   typed into, the PDA editor's email sheet is filled in and OKed, File ▸
@@ -118,7 +127,7 @@ Two suites, on both systems:
 
 Running them:
 
-- macOS: `make -f Makefile.apple check`, or the `UDCore` (unit) and
+- macOS: `make -f Makefile.apple check`, or the `Libraries` (unit) and
   `DeclBrowserTests` schemes in Xcode.
 - GNUstep: `make check` (under `xvfb-run` when there is no display), after
   `make`. To include the Doom 3 cases in docker, mount the install read-only
@@ -132,7 +141,7 @@ Running them:
 ## Notes
 
 - Roadmap and todo list: `ROADMAP.md`
-- License: GPL-3.0-or-later (`LICENSE`). UDCore's idFileSystem, idDeclManager,
+- License: GPL-3.0-or-later (`LICENSE`). The ported idFileSystem, idDeclManager,
   lexer and parser are ported from the Doom 3 GPL source (via openQ4), which
   is GPLv3 with id Software's additional terms; see the headers of those files.
 

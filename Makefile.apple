@@ -3,14 +3,14 @@
 #
 #   make -f Makefile.apple            the apps, universal (Release): UDLauncher,
 #                                     Decl Browser, Pak Manager
-#   make -f Makefile.apple check      their Debug builds, and the tests: UDCore's
+#   make -f Makefile.apple check      their Debug builds, and the tests: the libraries'
 #                                     and Decl Browser's (which drive the app's
 #                                     own windows)
 #   make -f Makefile.apple install DESTDIR=<dir>       the three .apps
 #   make -f Makefile.apple installcheck DESTDIR=<dir>  their signatures hold, and
 #                                     each starts and stays up, in a fresh home
 #
-# UDCore and the apps need nothing beyond the system's zlib (archives are
+# The libraries and the apps need nothing beyond the system's zlib (archives are
 # read by the minizip that came with the Doom 3 file system and written by
 # UDZipWriter). Each app embeds Sparkle and has its own appcast
 # (appcast-<App>.xml): its XCFramework is in .deps/, by the version
@@ -35,7 +35,7 @@ check:
 	$(XCODEBUILD) -scheme UDLauncher -configuration Debug -destination 'platform=macOS' build
 	$(XCODEBUILD) -scheme "Decl Browser" -configuration Debug -destination 'platform=macOS' build
 	$(XCODEBUILD) -scheme "Pak Manager" -configuration Debug -destination 'platform=macOS' build
-	$(XCODEBUILD) -scheme UDCore -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
+	$(XCODEBUILD) -scheme Libraries -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 	$(XCODEBUILD) -scheme DeclBrowserTests -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 
 install: all

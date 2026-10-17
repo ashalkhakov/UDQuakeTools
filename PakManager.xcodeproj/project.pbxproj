@@ -163,20 +163,6 @@
 		ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */; };
 		ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000019 /* UDScriptLanguageServerTests.m */; };
 		ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000013 /* UDScriptLanguageServer.m */; };
-		ED200000000000000000001D /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
-		ED200000000000000000001E /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		ED200000000000000000001F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = ED200000000000000000000E;
-			remoteInfo = LSPServerKit;
-		};
-		ED2000000000000000000020 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = ED200000000000000000000E /* LSPServerKit */;
-			targetProxy = ED200000000000000000001F /* PBXContainerItemProxy */;
-		};
 		ED2000000000000000000021 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC1E00000000000000000013 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -359,8 +345,6 @@
 		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
 		AA02001000000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
-		BB01003100000000000000AA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
-		BB01003200000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
 		CC01000F00000000000000AA /* UDGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151642FEE7777005C6DA3 /* UDGame.m */; };
 		CC01001000000000000000AA /* UDGameDetectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */; };
 		CC01001100000000000000AA /* UDArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010400000000000000AA /* UDArchive.m */; };
@@ -831,26 +815,6 @@
 		E366AF1608E68400585E5AAA /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
 		02411B2E66AEC8FE20051936 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
 		BC32C60847DDF5D17346903E /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
-		F1578F420EBF8F12752C8C80 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
-		BE51F269189E1EAED1B9D97B /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
-		35A44A3EE34E818C082E3C38 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
-		ABE9C9197336970632D6836E /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
-		2FA40F355BDFF3496FA623F5 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
-		C927CE32C62156124DF8F87C /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
-		21E13EC4ED6937C3EF83794D /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
-		C8C169F77E1BF1AD25E6CF95 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
-		95A1946D77CAD4F3DD316AD1 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
-		BB453AB0E678D4DC31B6E3BF /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
-		9B68D763882A50A75D9767D5 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E583E6C828029CD990E8D720 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		80F8DAC12BA504AA1E97F64C /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5BE3853544A4A73C19877F2E /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		0D0CE554D006E8CE7E96F973 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		27EAEF19A79126B442F4D0C4 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2E303DB3A44E7C3455782FAB /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		44927D6142417DEAE921DA71 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		0FC9E940FE746E6C265B8ECA /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		847FE9BD1E3CC209CB763154 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		68527CEF0FAD475EBD05B108 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
 		63ED11D84B282204E3EE2131 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
 		C03B6EACA00E51C275F874F9 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
@@ -871,6 +835,199 @@
 		1CF4A9DFFB8753EF97166911 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		920ABD62F922BFB31C130C06 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D983723F89E50339368A2D58 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6DADFBABEDC99FD1759E3B87 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		D91A8F4027D93505F73E9939 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		B0C954840B49A525708B37DB /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		739387AB827BD70697333F11 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		9B7A2987F31618BB6D656CD1 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		A0202D5DA3BBB962189C4C34 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		4A4AC755841A1C7DEBBF4C25 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		8756469597ECECC9278FD71A /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		F00428B64647C97067955A83 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		87D6EBB57979902A07B9DF0A /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		3F6D827F602FCE3505D195F0 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		6D4AB1B98DB4D49C01C29209 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		63C4BE9076DEDD1463500979 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		A9B8E61281723815DCFF333E /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3A009B5F9AA771385A85E6FC /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		15C53E4FC7A43027A18C0B30 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		47DB74F2BFB71CF7FD77CDCB /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		601023191A3EE2E5B72A08A0 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		972070985424E0E2C7B0315A /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FAA4B7D44B9CAF578D8F0FC8 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		42C62F2806C5A85BAAA85D3D /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C8BBEDE482CB5ECEF45B3DCB /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7776579D124EDAD8E42E56EA /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		464493A8434F06BDC1B51F06 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		81D988596F6AE9D541D3FE99 /* UDZipFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */; };
+		081CF753B13F42237D090C20 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		06581FFF0140957E2ACA149A /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		67FEC44C7A903298AFA89EC1 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		6682E8E70CFFC7BCDB5A5882 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		17896F1310481643BEF2F97A /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		C32B928EB8DA008F256E4740 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		F8C6375340500FB209DB806C /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		D210FD2FE06E9EAE12C0F048 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		0D8A722546DDE53581ADA5B9 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		AE50C3B723DB7F66DD607DB2 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		AF0278831E9573BEAF359D38 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		5EDCD6085C22E5CC3A20ED37 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		42E702072603A9BD6D19FA65 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		500E7F4B6938FB495323E6CE /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		64DCC553AED6EAB1191AAD55 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		896F71BD8CF7BCB413C6F51D /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B8C19F5DAEC8AA38AED7C888 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D9846D45B34482DE32197FAC /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8D89F0EA764D6D92C906E74B /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FFA7A57D6D14CD63329B2094 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D83B2E2571A2EE1D6FC218FF /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8EACFA3EE74876C2EDBD9651 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD79185D7FDBB70CBB363A71 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9D5E0C582A1F1BEF49A89A86 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		063B21FA5450405483A352E4 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		38A396E12BAB922054E91FF7 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		8E0AB516D11A86631E42D749 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		F3C21018EB58854D2A0444E4 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		4C97A4DB8B652A3D8744ABF7 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		8A63BE58BAB96CA78CE0FB74 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		5B1E4236A6D0D0DDA1F0BADD /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		FD90C3045BB0A9C5B0684F86 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		74F0C6131E1366CFBBFEC441 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		638CA51FA22BAF98D7FCA7D5 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		9FF5BBFB369685A659BD1217 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		7C60281DEAD85A56934D2D69 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		8E4F935AD8AA5B4114842B59 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		F73C833947EDC29CA2665FB3 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		44930ED7A5C7012066ABB70B /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		88C4780BB3ABCDAC44F0C317 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		174F7A0389D43FFBB5995C98 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		50FCE8AD3AFDC1536298AAB3 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		38521AFAB870957EB176B33F /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		78418BC7E6E15B99FECD59DC /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2D7D8DB0EFE9FB739B3828D8 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		55CAA5DCFE988DE697537501 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DDDB269D7604DC0CEFDF53A5 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A297320FA6E38CC585DAF0B8 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8CECEA397F2BEB2A205EDFCC /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		679857F3B08405CFCFD43B4A /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		948CD3B62B54471F90AD5DCC /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		418BB5FC2579DF1B34111A45 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		EADAF2EEE4CE85E62EA73C7A /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		442DFDA582C9EC578B1BF917 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		296DBFF57FC7AAB69E21EBFA /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		52A113EFC133D76ECC9E9F16 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		CB5296CA5CBB333960E5C79F /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		0E37144DBD146A8D1E44CFD4 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		14C80DE0B549EFB36E3FC79F /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		A1169946B2648EF28D68B0E9 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		5AB194D3194DE7CA9434B14B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		245D7AF239D191ECB9C65C24 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		475A310DA2C74CD365004C46 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0362D916C120CC1E41D8E8AA /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8A5715B90AD079A0625928DA /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E518ED0B97D7CC250831980E /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		87652715B5C8094FD8B12BA1 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F425DCAF3420E78A41BD8C39 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		62EE4425EC83A8556DD9426F /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6880405B045A08CCC73CFDBF /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3BDAB773569BF14D396F85C7 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F13A79F38FAF7D6030595B00 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		18714A8D5B6557680A85B793 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		1EDFC6E079ECFC1049E67E5C /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		EB06D0F4C54357C046EAC5AF /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		2F6951640D866F456B430992 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		22436CA45E42A56A7D9847D3 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		BD60E7B26EFD719E585E2B49 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		284BB1F0C948C41E002FB40F /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		2EC7459B313974C64A4972A9 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		6EE758FCDD93825E51A8E4B8 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		63D8BCC1B070C0847A355E23 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		0B26A62B21F9A8CAC85F7AF1 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		80847261A16F0F05A5D57FAC /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		22C099594FE5335FDEAD741C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		F0EB1E2DA54BBD12B3A46619 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3CAFE8F8B9C68708A4F5D49E /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6198BD7FF90A72E1139A7929 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF4E252E40CE3642A40C9129 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C18EE1B50E34FC8F47AA32BE /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1BB1A955F435481C80D7B070 /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2B280854D723766E93D7CEC7 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6A4EFE661580A41E2C127784 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		641B9A94EF2A93CF397510D4 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FA9A66D9B55A0A3B8DE923BE /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		853228200409267C90C3CA9C /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		72396227E4ADFBC3E8E22902 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		186DD2C2745E37133F5220EF /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		810455498CCBAD65C382B837 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		713FFF8A470C26CF69DDB9D6 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		E0B6D7AEC465FF0F2095A0CF /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		07A789CB48A120C0FB19417D /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		F8DCB63E7AF9CAB344075222 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		184C707C4748F28F47208904 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		1EDDF5726A73E53EAC56DD89 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		B8F2CEB25C7E4F8AA5E03ED5 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		76A58F4A592E613097E4F26D /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		F03ECC3BA02773E6C3B7A956 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		44FCECA0734B9D97F4211E28 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		BEF88A0C10920075187E6E3E /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		82BD714103572DF6475DEDF4 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DD551ECB774B236A13A864F6 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B63E4BE046E24382545046B4 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B0A93835335A597384F70BAA /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DE97D4EDB9B6C2DE529B007D /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		39F5AFC679DBC50428BF5871 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2E892B186C15F2D86D8BF9C8 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		612073B44C4BAC2C3AB386E3 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8333196959DC36A169ED9ACC /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C6E115E131FAE1896BFBC8A0 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6E1DAA5D0D60293145F88060 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		FEB95AA82A6F5575AF20FC34 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		FE486D764EC059179BAF1920 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		991BE85B169008845B005D34 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		6FA8BFA70C3EF7F4D5017BB1 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		8904B5D3D76DB1A4B455FBDD /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		13CB57AAD04205183D531115 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		6DBD339D4A33A49BB4134590 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		E8D84F082FCB5B2E8EF72AC2 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		E6D4886DA0A0376490B9F73C /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		AB0F85DA3F4BB20F4BB00B98 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		16B93B322182171C6FB9B101 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		23ABF92E1EF787BD5F29345C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		476296BC63C393895E6B4249 /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		43D9477B45A9A06C0B85F6B9 /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4C2750920D968B7B8CDAE820 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C8AB0C9F6F64428308F2F015 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		228335E97C63D55CAF9C3D24 /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C4943352B4C69EB8030B4FB /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD22A8C9F11297B24E67DA7F /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FC31B66D521D15662312EAF4 /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		881C6A63D984D93C04381E18 /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F2AF0311C5197E174F7DF605 /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6DC7072EE5184733728377F3 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C8B7083B04F5E5A817AAEFBE /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		28D283C2370FCA8FCB01D322 /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		88F8AD4D7BF9E76EA6E38238 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		84B32496DE2CC07D141B1DBB /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		B6A16E8B958E68C43EFFD375 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		9FF56F0AF56EB352A62F56BC /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		5FEC17079123FBE470D48324 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		089FE0557C2603F9EA953B99 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		A7D526AEA2CC9A60E9D7BE58 /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		B865F7ACE9230588262FEC37 /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		970E4A197404A8A26F84EA97 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		519D3D43D7E74843B18F9856 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB00060200000000000000AA /* XCTest.framework */; };
+		37772398C1BAB776EF58AAB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		A0E10299F89292B51AFF860E /* UDIdLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AB153D1E8CD5E39CA95E54E /* UDCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		68E9858F24FD353EE49EFC59 /* UDArchives.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AD36CC8CE59A8F34EE81C303 /* UDImages.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD4DF6FA18F399325D6B427A /* UDDecls.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		10DBF7CC53EADE0AE192788A /* UDRenderer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A05D890C112B5FBEA72146D7 /* UDUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BB63165D941812B75D2449AB /* UDGUIEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AE42F800E2E7CA517022748E /* UDScripts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0EDFC6F43B92F4F89E4065BF /* UDWorkspace.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8FAEB0F7E6C47AAD99A67092 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1399,76 +1556,6 @@
 			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
 			remoteInfo = UDWorkspace;
 		};
-		40ED5168B8A57034084508A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E71977493C653CE069D4FD70;
-			remoteInfo = UDIdLib;
-		};
-		C076033D63B9E8303098BC72 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 02765894139EB401B2243F2E;
-			remoteInfo = UDCommon;
-		};
-		3C3C7A54C07A3E1EE65B289F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
-			remoteInfo = UDArchives;
-		};
-		AA8590BE7E6FF551C6DE5578 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9921947C6187716263FA03BD;
-			remoteInfo = UDImages;
-		};
-		00C4BF0F33DB17C71A3E8E2E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
-			remoteInfo = UDDecls;
-		};
-		111FB51188A35B2749A90F93 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C5E83F5220F979289293F7E4;
-			remoteInfo = UDRenderer;
-		};
-		61816323B55634F0F034CB42 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
-			remoteInfo = UDUI;
-		};
-		1A8FF8A8E362FA4F5CA809AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
-			remoteInfo = UDGUIEditor;
-		};
-		C7FB4BB210A321EC234A6C45 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
-			remoteInfo = UDScripts;
-		};
-		E1579D74D5A95F7A1C39CC27 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA00000100000000000000AA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
-			remoteInfo = UDWorkspace;
-		};
 		D5E140B31F03FA832968E0EA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
@@ -1539,6 +1626,622 @@
 			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
 			remoteInfo = UDWorkspace;
 		};
+		9E5BE711D48FF66D91ED8751 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		08A0578C93CD962C369549CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		6B1709D3AB4231BE918A8B2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		8778B012E4B4900FDEB38F92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		3F38FE5FCE1BEF64D2ECE5CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		423850F68D1B5E51D2E4BEA3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		26AAB7A68EB7813297394086 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		E8C34B1FED5ED4A0A56A3103 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		CA50ED2F9ECBA65BF18716CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		C8D2E7FAE42A6F1E39BFF52C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		42B3A60821C4DF194C5465C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		75846598197E65DA7683F6C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		168D812762364F9BA5708380 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		2A70C603BB8D83B7C0DCA344 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		D47F6B36B854A813917E654B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		924082696742611EEF70A015 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		B443D143A95C9B18B1013BEC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		EE593273B74EF9EC946B43E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		C50024426256FF9B7B56681B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		AC535D8E70D96E12A9E213DA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		D6CF26932F0EF3590F7B8DE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		01338AF57E975CC36FC653D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		6C0D2872A2F41083B2E3FF42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		F98F384E69AB868595CA782E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		21C5B0D5DC3C02B93D76E203 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		B4CC5D620F01359B2628AB34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		2A4B1B1C4CAD6536EA4987EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		3347765B85B3732FCE5CF968 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		0DAE8710BA1E986766A9E019 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		CA9AD55CB808C86B8458E8B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		53B9CEAC65B2B611BEE19AFF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		0B3F2726FA84A18AC1DF4857 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		8AD368111445A989E6869D80 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		ABD71E92E0E73E8627AF6B60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		786C6861B046A9D6D526D528 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		C37AFFB1CFFF147239DE2D2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		5F4A109DF6A71384D55CBFE6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		3FFD3C601F9383AAA205602C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		83C5D31D0B42415F1390E2D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		F8AA0D0EC6D64802A5719C3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		7DDAD8F8C12111AF4811E254 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		0D3871E1F3475E7517C11DAE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		33AA6E4B3160EAB176932C02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		A5C39D144C5EA4ED8170316B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		9F94AA8E9C170F9E2F00488F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		6448A082547F433CB556D699 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		7F411CD5D02226CD91C6E867 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		B61B1DC1F50C75F1982F5772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		223D069AE93782598DF43B53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		5A6DDDEA187AA0F74E49397F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		3924A4150E3E841606AC6973 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		A3F11485DDB7F5D26AFE30C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		2C44777BB694252F1019BBC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		64305CCB896455DBF61019FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		06AB8F46EA48404D41580008 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		AB4815BEBB7C8A6AD33633E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		08CF6DD0752FF4B6EB200A21 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		6DDB1F7033258E9AB21EA747 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		F6A59E8230182970AAFAD90E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		95CCBC7A1C82F71761EFEA3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		C357A28289E4438D223F9D1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		AF12C745775DA663D5801D86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		41A1E81A8532A5DD20DFD258 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		0A0285FCEBF66C754FC7ECDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		E5D2F4D92690CBFD362C4876 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		B18C7ADDD6554AF413F97139 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		89C4626765A2332E2F8CA14A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		22246E628898185E84E240B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		AD23BED14A990DF3D7FE3964 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		419A600904F69C43AC28B8F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		9AB243D2DB817BC0CFEBE031 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		852557F9468BAFD1E1D9A6F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		77D79B668875B0127E08F97C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		CB06E2C2EC434AC632626FE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		A035D80987AED55D0893DC20 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		566F736936ECD3440277C69A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		7E4B58F47D7BE60C5644185F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		4179603926F1FD7997B5B366 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		5EE874FB2FCCB0D6AD986718 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		D668A931FC81C84F5AE39292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		D1E62110F1AD924AEE627895 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		DE2F72A490CAFA391AE5754F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		356D6114E99ECC4A3700B98F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		45070B28D526719448E86CED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		AAC12050057B547E178D4F49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		149F346A65C84D233DE235A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		F94E03E6F8C5D0A2C76D66D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		8438C41237BCFACCB990DDDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1559,27 +2262,6 @@
 				093EC2C86E955A7867B816CA /* UDScripts.framework in Embed Frameworks */,
 				8304D39BED8BE8E1DD8AD4B3 /* UDWorkspace.framework in Embed Frameworks */,
 				BA3019D6F78F5069FDF4BAC1 /* Sparkle.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BB09000000000000000000AA /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				9B68D763882A50A75D9767D5 /* UDIdLib.framework in Embed Frameworks */,
-				E583E6C828029CD990E8D720 /* UDCommon.framework in Embed Frameworks */,
-				80F8DAC12BA504AA1E97F64C /* UDArchives.framework in Embed Frameworks */,
-				5BE3853544A4A73C19877F2E /* UDImages.framework in Embed Frameworks */,
-				0D0CE554D006E8CE7E96F973 /* UDDecls.framework in Embed Frameworks */,
-				27EAEF19A79126B442F4D0C4 /* UDRenderer.framework in Embed Frameworks */,
-				2E303DB3A44E7C3455782FAB /* UDUI.framework in Embed Frameworks */,
-				44927D6142417DEAE921DA71 /* UDGUIEditor.framework in Embed Frameworks */,
-				0FC9E940FE746E6C265B8ECA /* UDScripts.framework in Embed Frameworks */,
-				847FE9BD1E3CC209CB763154 /* UDWorkspace.framework in Embed Frameworks */,
-				ED200000000000000000001E /* LSPServerKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1655,6 +2337,166 @@
 			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EF872041FEE68A99E332A1AD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A9B8E61281723815DCFF333E /* UDIdLib.framework in Embed Frameworks */,
+				3A009B5F9AA771385A85E6FC /* UDCommon.framework in Embed Frameworks */,
+				15C53E4FC7A43027A18C0B30 /* UDArchives.framework in Embed Frameworks */,
+				47DB74F2BFB71CF7FD77CDCB /* UDImages.framework in Embed Frameworks */,
+				601023191A3EE2E5B72A08A0 /* UDDecls.framework in Embed Frameworks */,
+				972070985424E0E2C7B0315A /* UDRenderer.framework in Embed Frameworks */,
+				FAA4B7D44B9CAF578D8F0FC8 /* UDUI.framework in Embed Frameworks */,
+				42C62F2806C5A85BAAA85D3D /* UDGUIEditor.framework in Embed Frameworks */,
+				C8BBEDE482CB5ECEF45B3DCB /* UDScripts.framework in Embed Frameworks */,
+				7776579D124EDAD8E42E56EA /* UDWorkspace.framework in Embed Frameworks */,
+				464493A8434F06BDC1B51F06 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		43D980E7A43173A90ED8A6EF /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				500E7F4B6938FB495323E6CE /* UDIdLib.framework in Embed Frameworks */,
+				64DCC553AED6EAB1191AAD55 /* UDCommon.framework in Embed Frameworks */,
+				896F71BD8CF7BCB413C6F51D /* UDArchives.framework in Embed Frameworks */,
+				B8C19F5DAEC8AA38AED7C888 /* UDImages.framework in Embed Frameworks */,
+				D9846D45B34482DE32197FAC /* UDDecls.framework in Embed Frameworks */,
+				8D89F0EA764D6D92C906E74B /* UDRenderer.framework in Embed Frameworks */,
+				FFA7A57D6D14CD63329B2094 /* UDUI.framework in Embed Frameworks */,
+				D83B2E2571A2EE1D6FC218FF /* UDGUIEditor.framework in Embed Frameworks */,
+				8EACFA3EE74876C2EDBD9651 /* UDScripts.framework in Embed Frameworks */,
+				FD79185D7FDBB70CBB363A71 /* UDWorkspace.framework in Embed Frameworks */,
+				9D5E0C582A1F1BEF49A89A86 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0F60BEE20CA1792A2A2ED215 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F73C833947EDC29CA2665FB3 /* UDIdLib.framework in Embed Frameworks */,
+				44930ED7A5C7012066ABB70B /* UDCommon.framework in Embed Frameworks */,
+				88C4780BB3ABCDAC44F0C317 /* UDArchives.framework in Embed Frameworks */,
+				174F7A0389D43FFBB5995C98 /* UDImages.framework in Embed Frameworks */,
+				50FCE8AD3AFDC1536298AAB3 /* UDDecls.framework in Embed Frameworks */,
+				38521AFAB870957EB176B33F /* UDRenderer.framework in Embed Frameworks */,
+				78418BC7E6E15B99FECD59DC /* UDUI.framework in Embed Frameworks */,
+				2D7D8DB0EFE9FB739B3828D8 /* UDGUIEditor.framework in Embed Frameworks */,
+				55CAA5DCFE988DE697537501 /* UDScripts.framework in Embed Frameworks */,
+				DDDB269D7604DC0CEFDF53A5 /* UDWorkspace.framework in Embed Frameworks */,
+				A297320FA6E38CC585DAF0B8 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C017919A35E72AFF37870F85 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				245D7AF239D191ECB9C65C24 /* UDIdLib.framework in Embed Frameworks */,
+				475A310DA2C74CD365004C46 /* UDCommon.framework in Embed Frameworks */,
+				0362D916C120CC1E41D8E8AA /* UDArchives.framework in Embed Frameworks */,
+				8A5715B90AD079A0625928DA /* UDImages.framework in Embed Frameworks */,
+				E518ED0B97D7CC250831980E /* UDDecls.framework in Embed Frameworks */,
+				87652715B5C8094FD8B12BA1 /* UDRenderer.framework in Embed Frameworks */,
+				F425DCAF3420E78A41BD8C39 /* UDUI.framework in Embed Frameworks */,
+				62EE4425EC83A8556DD9426F /* UDGUIEditor.framework in Embed Frameworks */,
+				6880405B045A08CCC73CFDBF /* UDScripts.framework in Embed Frameworks */,
+				3BDAB773569BF14D396F85C7 /* UDWorkspace.framework in Embed Frameworks */,
+				F13A79F38FAF7D6030595B00 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		98CE40DC2F63CDFF07E1A0E8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F0EB1E2DA54BBD12B3A46619 /* UDIdLib.framework in Embed Frameworks */,
+				3CAFE8F8B9C68708A4F5D49E /* UDCommon.framework in Embed Frameworks */,
+				6198BD7FF90A72E1139A7929 /* UDArchives.framework in Embed Frameworks */,
+				BF4E252E40CE3642A40C9129 /* UDImages.framework in Embed Frameworks */,
+				C18EE1B50E34FC8F47AA32BE /* UDDecls.framework in Embed Frameworks */,
+				1BB1A955F435481C80D7B070 /* UDRenderer.framework in Embed Frameworks */,
+				2B280854D723766E93D7CEC7 /* UDUI.framework in Embed Frameworks */,
+				6A4EFE661580A41E2C127784 /* UDGUIEditor.framework in Embed Frameworks */,
+				641B9A94EF2A93CF397510D4 /* UDScripts.framework in Embed Frameworks */,
+				FA9A66D9B55A0A3B8DE923BE /* UDWorkspace.framework in Embed Frameworks */,
+				853228200409267C90C3CA9C /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		672148DF0283862C5AB789A6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BEF88A0C10920075187E6E3E /* UDIdLib.framework in Embed Frameworks */,
+				82BD714103572DF6475DEDF4 /* UDCommon.framework in Embed Frameworks */,
+				DD551ECB774B236A13A864F6 /* UDArchives.framework in Embed Frameworks */,
+				B63E4BE046E24382545046B4 /* UDImages.framework in Embed Frameworks */,
+				B0A93835335A597384F70BAA /* UDDecls.framework in Embed Frameworks */,
+				DE97D4EDB9B6C2DE529B007D /* UDRenderer.framework in Embed Frameworks */,
+				39F5AFC679DBC50428BF5871 /* UDUI.framework in Embed Frameworks */,
+				2E892B186C15F2D86D8BF9C8 /* UDGUIEditor.framework in Embed Frameworks */,
+				612073B44C4BAC2C3AB386E3 /* UDScripts.framework in Embed Frameworks */,
+				8333196959DC36A169ED9ACC /* UDWorkspace.framework in Embed Frameworks */,
+				C6E115E131FAE1896BFBC8A0 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C54F5902548D0FDA2013925 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				476296BC63C393895E6B4249 /* UDIdLib.framework in Embed Frameworks */,
+				43D9477B45A9A06C0B85F6B9 /* UDCommon.framework in Embed Frameworks */,
+				4C2750920D968B7B8CDAE820 /* UDArchives.framework in Embed Frameworks */,
+				C8AB0C9F6F64428308F2F015 /* UDImages.framework in Embed Frameworks */,
+				228335E97C63D55CAF9C3D24 /* UDDecls.framework in Embed Frameworks */,
+				8C4943352B4C69EB8030B4FB /* UDRenderer.framework in Embed Frameworks */,
+				FD22A8C9F11297B24E67DA7F /* UDUI.framework in Embed Frameworks */,
+				FC31B66D521D15662312EAF4 /* UDGUIEditor.framework in Embed Frameworks */,
+				881C6A63D984D93C04381E18 /* UDScripts.framework in Embed Frameworks */,
+				F2AF0311C5197E174F7DF605 /* UDWorkspace.framework in Embed Frameworks */,
+				6DC7072EE5184733728377F3 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93462A3AA53697B0AA787E50 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A0E10299F89292B51AFF860E /* UDIdLib.framework in Embed Frameworks */,
+				3AB153D1E8CD5E39CA95E54E /* UDCommon.framework in Embed Frameworks */,
+				68E9858F24FD353EE49EFC59 /* UDArchives.framework in Embed Frameworks */,
+				AD36CC8CE59A8F34EE81C303 /* UDImages.framework in Embed Frameworks */,
+				FD4DF6FA18F399325D6B427A /* UDDecls.framework in Embed Frameworks */,
+				10DBF7CC53EADE0AE192788A /* UDRenderer.framework in Embed Frameworks */,
+				A05D890C112B5FBEA72146D7 /* UDUI.framework in Embed Frameworks */,
+				BB63165D941812B75D2449AB /* UDGUIEditor.framework in Embed Frameworks */,
+				AE42F800E2E7CA517022748E /* UDScripts.framework in Embed Frameworks */,
+				0EDFC6F43B92F4F89E4065BF /* UDWorkspace.framework in Embed Frameworks */,
+				8FAEB0F7E6C47AAD99A67092 /* LSPServerKit.framework in Embed Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1706,7 +2548,6 @@
 		AA00060000000000000000AA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		212EA36225CB84430A3DB034 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		AA00060100000000000000AA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		BB00000000000000000000AA /* UDQuakeToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDQuakeToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB00060200000000000000AA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveEditorTests.m; sourceTree = "<group>"; };
 		CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDArchiveWorkflowTests.m; sourceTree = "<group>"; };
@@ -2021,6 +2862,14 @@
 		F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDGUIEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C21974321174D5857F81AFC5 /* UDScripts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDScripts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UDWorkspace.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		43CEA5698ECE47FCE90F7AAB /* UDCommonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDCommonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF71B825679E5CD7CB979F00 /* UDArchivesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDArchivesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2FC9FD17220D4F1F45258BD /* UDDeclsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDDeclsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		55E4AFE88193F0119D41B3C0 /* UDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C97BFFBD5FC326F6E4C2A158 /* UDGUIEditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDGUIEditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB69A47E8F938A9D820756B9 /* UDScriptsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDScriptsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C1815EC877271FC78EAFF1 /* UDWorkspaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UDWorkspaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D75091082489FA8C9D10BE64 /* LSPServerKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LSPServerKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2058,26 +2907,6 @@
 				02411B2E66AEC8FE20051936 /* UDScripts.framework in Frameworks */,
 				BC32C60847DDF5D17346903E /* UDWorkspace.framework in Frameworks */,
 				AA02001000000000000000AA /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BB03000500000000000000AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F1578F420EBF8F12752C8C80 /* UDIdLib.framework in Frameworks */,
-				BE51F269189E1EAED1B9D97B /* UDCommon.framework in Frameworks */,
-				35A44A3EE34E818C082E3C38 /* UDArchives.framework in Frameworks */,
-				ABE9C9197336970632D6836E /* UDImages.framework in Frameworks */,
-				2FA40F355BDFF3496FA623F5 /* UDDecls.framework in Frameworks */,
-				C927CE32C62156124DF8F87C /* UDRenderer.framework in Frameworks */,
-				21E13EC4ED6937C3EF83794D /* UDUI.framework in Frameworks */,
-				C8C169F77E1BF1AD25E6CF95 /* UDGUIEditor.framework in Frameworks */,
-				95A1946D77CAD4F3DD316AD1 /* UDScripts.framework in Frameworks */,
-				BB453AB0E678D4DC31B6E3BF /* UDWorkspace.framework in Frameworks */,
-				ED200000000000000000001D /* LSPServerKit.framework in Frameworks */,
-				BB01003100000000000000AA /* XCTest.framework in Frameworks */,
-				BB01003200000000000000AA /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2255,6 +3084,166 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		358A39982F622C02AE339EE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DADFBABEDC99FD1759E3B87 /* UDIdLib.framework in Frameworks */,
+				D91A8F4027D93505F73E9939 /* UDCommon.framework in Frameworks */,
+				B0C954840B49A525708B37DB /* UDArchives.framework in Frameworks */,
+				739387AB827BD70697333F11 /* UDImages.framework in Frameworks */,
+				9B7A2987F31618BB6D656CD1 /* UDDecls.framework in Frameworks */,
+				A0202D5DA3BBB962189C4C34 /* UDRenderer.framework in Frameworks */,
+				4A4AC755841A1C7DEBBF4C25 /* UDUI.framework in Frameworks */,
+				8756469597ECECC9278FD71A /* UDGUIEditor.framework in Frameworks */,
+				F00428B64647C97067955A83 /* UDScripts.framework in Frameworks */,
+				87D6EBB57979902A07B9DF0A /* UDWorkspace.framework in Frameworks */,
+				3F6D827F602FCE3505D195F0 /* LSPServerKit.framework in Frameworks */,
+				6D4AB1B98DB4D49C01C29209 /* XCTest.framework in Frameworks */,
+				63C4BE9076DEDD1463500979 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B07DBABDB3537B46B46AE6B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				081CF753B13F42237D090C20 /* UDIdLib.framework in Frameworks */,
+				06581FFF0140957E2ACA149A /* UDCommon.framework in Frameworks */,
+				67FEC44C7A903298AFA89EC1 /* UDArchives.framework in Frameworks */,
+				6682E8E70CFFC7BCDB5A5882 /* UDImages.framework in Frameworks */,
+				17896F1310481643BEF2F97A /* UDDecls.framework in Frameworks */,
+				C32B928EB8DA008F256E4740 /* UDRenderer.framework in Frameworks */,
+				F8C6375340500FB209DB806C /* UDUI.framework in Frameworks */,
+				D210FD2FE06E9EAE12C0F048 /* UDGUIEditor.framework in Frameworks */,
+				0D8A722546DDE53581ADA5B9 /* UDScripts.framework in Frameworks */,
+				AE50C3B723DB7F66DD607DB2 /* UDWorkspace.framework in Frameworks */,
+				AF0278831E9573BEAF359D38 /* LSPServerKit.framework in Frameworks */,
+				5EDCD6085C22E5CC3A20ED37 /* XCTest.framework in Frameworks */,
+				42E702072603A9BD6D19FA65 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AFD4B7731FDCEC0C70583CC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				063B21FA5450405483A352E4 /* UDIdLib.framework in Frameworks */,
+				38A396E12BAB922054E91FF7 /* UDCommon.framework in Frameworks */,
+				8E0AB516D11A86631E42D749 /* UDArchives.framework in Frameworks */,
+				F3C21018EB58854D2A0444E4 /* UDImages.framework in Frameworks */,
+				4C97A4DB8B652A3D8744ABF7 /* UDDecls.framework in Frameworks */,
+				8A63BE58BAB96CA78CE0FB74 /* UDRenderer.framework in Frameworks */,
+				5B1E4236A6D0D0DDA1F0BADD /* UDUI.framework in Frameworks */,
+				FD90C3045BB0A9C5B0684F86 /* UDGUIEditor.framework in Frameworks */,
+				74F0C6131E1366CFBBFEC441 /* UDScripts.framework in Frameworks */,
+				638CA51FA22BAF98D7FCA7D5 /* UDWorkspace.framework in Frameworks */,
+				9FF5BBFB369685A659BD1217 /* LSPServerKit.framework in Frameworks */,
+				7C60281DEAD85A56934D2D69 /* XCTest.framework in Frameworks */,
+				8E4F935AD8AA5B4114842B59 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B7C9ACC4EAF3DD2F379838C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CECEA397F2BEB2A205EDFCC /* UDIdLib.framework in Frameworks */,
+				679857F3B08405CFCFD43B4A /* UDCommon.framework in Frameworks */,
+				948CD3B62B54471F90AD5DCC /* UDArchives.framework in Frameworks */,
+				418BB5FC2579DF1B34111A45 /* UDImages.framework in Frameworks */,
+				EADAF2EEE4CE85E62EA73C7A /* UDDecls.framework in Frameworks */,
+				442DFDA582C9EC578B1BF917 /* UDRenderer.framework in Frameworks */,
+				296DBFF57FC7AAB69E21EBFA /* UDUI.framework in Frameworks */,
+				52A113EFC133D76ECC9E9F16 /* UDGUIEditor.framework in Frameworks */,
+				CB5296CA5CBB333960E5C79F /* UDScripts.framework in Frameworks */,
+				0E37144DBD146A8D1E44CFD4 /* UDWorkspace.framework in Frameworks */,
+				14C80DE0B549EFB36E3FC79F /* LSPServerKit.framework in Frameworks */,
+				A1169946B2648EF28D68B0E9 /* XCTest.framework in Frameworks */,
+				5AB194D3194DE7CA9434B14B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4FC92793D76F6021E91D65B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18714A8D5B6557680A85B793 /* UDIdLib.framework in Frameworks */,
+				1EDFC6E079ECFC1049E67E5C /* UDCommon.framework in Frameworks */,
+				EB06D0F4C54357C046EAC5AF /* UDArchives.framework in Frameworks */,
+				2F6951640D866F456B430992 /* UDImages.framework in Frameworks */,
+				22436CA45E42A56A7D9847D3 /* UDDecls.framework in Frameworks */,
+				BD60E7B26EFD719E585E2B49 /* UDRenderer.framework in Frameworks */,
+				284BB1F0C948C41E002FB40F /* UDUI.framework in Frameworks */,
+				2EC7459B313974C64A4972A9 /* UDGUIEditor.framework in Frameworks */,
+				6EE758FCDD93825E51A8E4B8 /* UDScripts.framework in Frameworks */,
+				63D8BCC1B070C0847A355E23 /* UDWorkspace.framework in Frameworks */,
+				0B26A62B21F9A8CAC85F7AF1 /* LSPServerKit.framework in Frameworks */,
+				80847261A16F0F05A5D57FAC /* XCTest.framework in Frameworks */,
+				22C099594FE5335FDEAD741C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A53F948DA99F269DA6C798F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				72396227E4ADFBC3E8E22902 /* UDIdLib.framework in Frameworks */,
+				186DD2C2745E37133F5220EF /* UDCommon.framework in Frameworks */,
+				810455498CCBAD65C382B837 /* UDArchives.framework in Frameworks */,
+				713FFF8A470C26CF69DDB9D6 /* UDImages.framework in Frameworks */,
+				E0B6D7AEC465FF0F2095A0CF /* UDDecls.framework in Frameworks */,
+				07A789CB48A120C0FB19417D /* UDRenderer.framework in Frameworks */,
+				F8DCB63E7AF9CAB344075222 /* UDUI.framework in Frameworks */,
+				184C707C4748F28F47208904 /* UDGUIEditor.framework in Frameworks */,
+				1EDDF5726A73E53EAC56DD89 /* UDScripts.framework in Frameworks */,
+				B8F2CEB25C7E4F8AA5E03ED5 /* UDWorkspace.framework in Frameworks */,
+				76A58F4A592E613097E4F26D /* LSPServerKit.framework in Frameworks */,
+				F03ECC3BA02773E6C3B7A956 /* XCTest.framework in Frameworks */,
+				44FCECA0734B9D97F4211E28 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F5918F9798B155AE6086F10 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6E1DAA5D0D60293145F88060 /* UDIdLib.framework in Frameworks */,
+				FEB95AA82A6F5575AF20FC34 /* UDCommon.framework in Frameworks */,
+				FE486D764EC059179BAF1920 /* UDArchives.framework in Frameworks */,
+				991BE85B169008845B005D34 /* UDImages.framework in Frameworks */,
+				6FA8BFA70C3EF7F4D5017BB1 /* UDDecls.framework in Frameworks */,
+				8904B5D3D76DB1A4B455FBDD /* UDRenderer.framework in Frameworks */,
+				13CB57AAD04205183D531115 /* UDUI.framework in Frameworks */,
+				6DBD339D4A33A49BB4134590 /* UDGUIEditor.framework in Frameworks */,
+				E8D84F082FCB5B2E8EF72AC2 /* UDScripts.framework in Frameworks */,
+				E6D4886DA0A0376490B9F73C /* UDWorkspace.framework in Frameworks */,
+				AB0F85DA3F4BB20F4BB00B98 /* LSPServerKit.framework in Frameworks */,
+				16B93B322182171C6FB9B101 /* XCTest.framework in Frameworks */,
+				23ABF92E1EF787BD5F29345C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6E71A8441E51E319CD437AB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8B7083B04F5E5A817AAEFBE /* UDIdLib.framework in Frameworks */,
+				28D283C2370FCA8FCB01D322 /* UDCommon.framework in Frameworks */,
+				88F8AD4D7BF9E76EA6E38238 /* UDArchives.framework in Frameworks */,
+				84B32496DE2CC07D141B1DBB /* UDImages.framework in Frameworks */,
+				B6A16E8B958E68C43EFFD375 /* UDDecls.framework in Frameworks */,
+				9FF56F0AF56EB352A62F56BC /* UDRenderer.framework in Frameworks */,
+				5FEC17079123FBE470D48324 /* UDUI.framework in Frameworks */,
+				089FE0557C2603F9EA953B99 /* UDGUIEditor.framework in Frameworks */,
+				A7D526AEA2CC9A60E9D7BE58 /* UDScripts.framework in Frameworks */,
+				B865F7ACE9230588262FEC37 /* UDWorkspace.framework in Frameworks */,
+				970E4A197404A8A26F84EA97 /* LSPServerKit.framework in Frameworks */,
+				519D3D43D7E74843B18F9856 /* XCTest.framework in Frameworks */,
+				37772398C1BAB776EF58AAB9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -2280,6 +3269,14 @@
 		AA00000300000000000000AA /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				D75091082489FA8C9D10BE64 /* LSPServerKitTests.xctest */,
+				05C1815EC877271FC78EAFF1 /* UDWorkspaceTests.xctest */,
+				FB69A47E8F938A9D820756B9 /* UDScriptsTests.xctest */,
+				C97BFFBD5FC326F6E4C2A158 /* UDGUIEditorTests.xctest */,
+				55E4AFE88193F0119D41B3C0 /* UDUITests.xctest */,
+				A2FC9FD17220D4F1F45258BD /* UDDeclsTests.xctest */,
+				CF71B825679E5CD7CB979F00 /* UDArchivesTests.xctest */,
+				43CEA5698ECE47FCE90F7AAB /* UDCommonTests.xctest */,
 				826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */,
 				C21974321174D5857F81AFC5 /* UDScripts.framework */,
 				F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */,
@@ -2290,7 +3287,6 @@
 				6062E05CA860510F66A068FD /* UDArchives.framework */,
 				64D61149FE7350ED17F3647B /* UDCommon.framework */,
 				D64ED218A483996F9CF44BE3 /* UDIdLib.framework */,
-				BB00000000000000000000AA /* UDQuakeToolsTests.xctest */,
 				AA00050000000000000000AA /* PakManager.app */,
 				DD00050000000000000000AA /* DeclBrowser.app */,
 				AA00050100000000000000AA /* udpaktool */,
@@ -2391,28 +3387,16 @@
 		BB00000500000000000000AA /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
-				D940108D00B900E3722F5781 /* idUserInterfaceTests.m */,
-				4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */,
-				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
-				71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */,
-				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
-				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
-				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
-				CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */,
-				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
-				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
-				CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */,
-				C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */,
-				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
-				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
+				869E309887C64E2B1F2BFBAE /* Support */,
+				1AFF05C92064CBFBAB095E18 /* LSPServerKit */,
+				33D530F84C307E8AA41488AF /* UDWorkspace */,
+				F521E91F40B087DB60D09C0F /* UDScripts */,
+				1104F92F072B800E331A1939 /* UDGUIEditor */,
+				25F8AE685F800284A5A49E01 /* UDUI */,
+				E7EB1444CFF2715E4789990F /* UDDecls */,
+				B0E490729963B34B395B34E2 /* UDArchives */,
+				E0467C857DF8586664E6C3B2 /* UDCommon */,
 				37E65B3E596BA91969F42366 /* DeclBrowser */,
-				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
-				013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */,
-				5C0E00000000000000000006 /* UDScriptEventsTests.m */,
-				5C0F00000000000000000006 /* UDScriptIndexTests.m */,
-				ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */,
-				ED2000000000000000000019 /* UDScriptLanguageServerTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -2918,6 +3902,90 @@
 			path = UDImages;
 			sourceTree = "<group>";
 		};
+		E0467C857DF8586664E6C3B2 /* UDCommon */ = {
+			isa = PBXGroup;
+			children = (
+				CECEB2F73018C6AF00F88078 /* idFileSystemTests.m */,
+				CECEB2F930190F8400F88078 /* idDeclManagerTests.m */,
+				8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */,
+			);
+			path = UDCommon;
+			sourceTree = "<group>";
+		};
+		B0E490729963B34B395B34E2 /* UDArchives */ = {
+			isa = PBXGroup;
+			children = (
+				CE113D462FEE7FBC000188A5 /* UDArchiveEntryTests.m */,
+				CE07D6C52FF3D28B00B149C9 /* UDArchiveEditorTests.m */,
+				CE07D6C62FF3D28B00B149C9 /* UDArchiveWorkflowTests.m */,
+				CE113D482FEE7FBC000188A5 /* UDPAKCodecTests.m */,
+				CE113D492FEE7FBC000188A5 /* UDPK3CodecTests.m */,
+				C0D01F5503A43587BE3F634B /* UDZipWriterTests.m */,
+			);
+			path = UDArchives;
+			sourceTree = "<group>";
+		};
+		E7EB1444CFF2715E4789990F /* UDDecls */ = {
+			isa = PBXGroup;
+			children = (
+				71D5E73DF2DB6C79C4F150C7 /* UDDeclCodecTests.m */,
+				013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */,
+				EE05000000000000000001AA /* UDDeclIncrementalStoreTests.m */,
+			);
+			path = UDDecls;
+			sourceTree = "<group>";
+		};
+		25F8AE685F800284A5A49E01 /* UDUI */ = {
+			isa = PBXGroup;
+			children = (
+				D940108D00B900E3722F5781 /* idUserInterfaceTests.m */,
+			);
+			path = UDUI;
+			sourceTree = "<group>";
+		};
+		1104F92F072B800E331A1939 /* UDGUIEditor */ = {
+			isa = PBXGroup;
+			children = (
+				4E5A0987D343A28347F60718 /* rvGEWorkspaceTests.m */,
+			);
+			path = UDGUIEditor;
+			sourceTree = "<group>";
+		};
+		F521E91F40B087DB60D09C0F /* UDScripts */ = {
+			isa = PBXGroup;
+			children = (
+				5C0E00000000000000000006 /* UDScriptEventsTests.m */,
+				5C0F00000000000000000006 /* UDScriptIndexTests.m */,
+			);
+			path = UDScripts;
+			sourceTree = "<group>";
+		};
+		33D530F84C307E8AA41488AF /* UDWorkspace */ = {
+			isa = PBXGroup;
+			children = (
+				CE113D472FEE7FBC000188A5 /* UDGameDetectionTests.m */,
+			);
+			path = UDWorkspace;
+			sourceTree = "<group>";
+		};
+		1AFF05C92064CBFBAB095E18 /* LSPServerKit */ = {
+			isa = PBXGroup;
+			children = (
+				ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */,
+				ED2000000000000000000019 /* UDScriptLanguageServerTests.m */,
+			);
+			path = LSPServerKit;
+			sourceTree = "<group>";
+		};
+		869E309887C64E2B1F2BFBAE /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
+				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3136,34 +4204,6 @@
 			productName = udpaktool;
 			productReference = AA00050100000000000000AA /* udpaktool */;
 			productType = "com.apple.product-type.tool";
-		};
-		BB04000200000000000000AA /* UDQuakeToolsTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */;
-			buildPhases = (
-				BB03000000000000000000AA /* Sources */,
-				BB03000500000000000000AA /* Frameworks */,
-				BB09000000000000000000AA /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9D0A85B24F287CE8488A9FE5 /* PBXTargetDependency */,
-				024551B71C3F4FDE3F5F5BDD /* PBXTargetDependency */,
-				908FF1D741AEC7AC54D9A20F /* PBXTargetDependency */,
-				D88FAE2495FB7610C4E274CF /* PBXTargetDependency */,
-				2F3F16720609DFAB5E60DD89 /* PBXTargetDependency */,
-				8DF36D8B8E239769846E9AF9 /* PBXTargetDependency */,
-				65F6663505A2D63F413C4D42 /* PBXTargetDependency */,
-				E3F0D98E73E82845C6B88A81 /* PBXTargetDependency */,
-				E7E6BCE48D47463A9FD4107C /* PBXTargetDependency */,
-				394F9F4589921CD34CCAB9EB /* PBXTargetDependency */,
-				ED2000000000000000000020 /* PBXTargetDependency */,
-			);
-			name = UDQuakeToolsTests;
-			productName = UDQuakeToolsTests;
-			productReference = BB00000000000000000000AA /* UDQuakeToolsTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DD04000000000000000000AA /* Decl Browser */ = {
 			isa = PBXNativeTarget;
@@ -3447,6 +4487,230 @@
 			productReference = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		C5BFA6DDC5E27F20C069A021 /* UDCommonTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C9A780C8D34A217BC57B96F /* Build configuration list for PBXNativeTarget "UDCommonTests" */;
+			buildPhases = (
+				BB46A05343195B09901C6E0A /* Sources */,
+				358A39982F622C02AE339EE0 /* Frameworks */,
+				EF872041FEE68A99E332A1AD /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				39826086B93404BC825D5526 /* PBXTargetDependency */,
+				5D2A718CEAB2CC10C3A9AAA8 /* PBXTargetDependency */,
+				C635F6EC3B12ECD3094EDA58 /* PBXTargetDependency */,
+				B19068C39027203F49F32400 /* PBXTargetDependency */,
+				EBF569ADAC6BF2983F97973E /* PBXTargetDependency */,
+				54256CB817968E6B85EB59DD /* PBXTargetDependency */,
+				331EE965DFEB6F50CC25A7C5 /* PBXTargetDependency */,
+				ADC3051ABF8B547AC0BEB244 /* PBXTargetDependency */,
+				65B58FF7151DA3274935937E /* PBXTargetDependency */,
+				5666ACA9EAA2A1BE3C0E5B23 /* PBXTargetDependency */,
+				4E20827BA4C7CB5C363A61D4 /* PBXTargetDependency */,
+			);
+			name = UDCommonTests;
+			productName = UDCommonTests;
+			productReference = 43CEA5698ECE47FCE90F7AAB /* UDCommonTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6E387BE7323C86AEAF7426AD /* UDArchivesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E310043A4F8E7980EAB7B32 /* Build configuration list for PBXNativeTarget "UDArchivesTests" */;
+			buildPhases = (
+				E5C0136FEB1F481AFF46AA6A /* Sources */,
+				5B07DBABDB3537B46B46AE6B /* Frameworks */,
+				43D980E7A43173A90ED8A6EF /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7931C852723436F47D0E6C80 /* PBXTargetDependency */,
+				08F5072126A32321C3FEF141 /* PBXTargetDependency */,
+				94518A808E5DF0B9834801C2 /* PBXTargetDependency */,
+				F5AEA25C79BA7BDF514D6C80 /* PBXTargetDependency */,
+				E666F8CE91B1BA1AE6A8F388 /* PBXTargetDependency */,
+				2EC83347DA5084AD774ADB70 /* PBXTargetDependency */,
+				663A19D8CF1D40A94BD71810 /* PBXTargetDependency */,
+				EDAE67B32C6F79C8F81CF5D0 /* PBXTargetDependency */,
+				8FC966BFDA147AD8B96131C2 /* PBXTargetDependency */,
+				B97BD5AA6B6A6F68AB01A9BC /* PBXTargetDependency */,
+				B251484FC035760B3A7818BE /* PBXTargetDependency */,
+			);
+			name = UDArchivesTests;
+			productName = UDArchivesTests;
+			productReference = CF71B825679E5CD7CB979F00 /* UDArchivesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		03EE9996C429A50A0DE66D26 /* UDDeclsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9961171CAD7C1F067756186A /* Build configuration list for PBXNativeTarget "UDDeclsTests" */;
+			buildPhases = (
+				DB3101A3A7F6CDD79DAD8D77 /* Sources */,
+				AFD4B7731FDCEC0C70583CC2 /* Frameworks */,
+				0F60BEE20CA1792A2A2ED215 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A3689631A75F2F00CE75BA34 /* PBXTargetDependency */,
+				7EA1C148FD756FEE3B58B6D4 /* PBXTargetDependency */,
+				5B4E724296CE8935492C24AA /* PBXTargetDependency */,
+				63B1428629DF7C49991A75AE /* PBXTargetDependency */,
+				CF86857EC904720910C2A545 /* PBXTargetDependency */,
+				021815843708C4EE2AAFF056 /* PBXTargetDependency */,
+				D12C84D425E8C0399A7D7B22 /* PBXTargetDependency */,
+				943603D3DB395346CBADE01D /* PBXTargetDependency */,
+				B8144DBFDEC43D8262FBE85A /* PBXTargetDependency */,
+				D039B66586A042D57052740D /* PBXTargetDependency */,
+				308C7E1206F23220AAB5605E /* PBXTargetDependency */,
+			);
+			name = UDDeclsTests;
+			productName = UDDeclsTests;
+			productReference = A2FC9FD17220D4F1F45258BD /* UDDeclsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7DAB76BF545AE159A95EA6F4 /* UDUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 466E3137BB8DE5C85126A399 /* Build configuration list for PBXNativeTarget "UDUITests" */;
+			buildPhases = (
+				501D208E19161BB4FF3D49FF /* Sources */,
+				B7C9ACC4EAF3DD2F379838C0 /* Frameworks */,
+				C017919A35E72AFF37870F85 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				012C2DFDC060E982EFC73BD5 /* PBXTargetDependency */,
+				B795D6ADE78C968608D34FF8 /* PBXTargetDependency */,
+				566A9AFD8D21F643A2764822 /* PBXTargetDependency */,
+				EFE5EDFB156789AB328009BD /* PBXTargetDependency */,
+				B2B12FADEF7540DD2757B2DA /* PBXTargetDependency */,
+				B50273E25EE871CFE8AB647E /* PBXTargetDependency */,
+				25DA4E2512CDFFD6021321AE /* PBXTargetDependency */,
+				A596C167382C16252CA0EE06 /* PBXTargetDependency */,
+				0002D6552EFE814FD146D0A4 /* PBXTargetDependency */,
+				9C9EFD3305B6772DD454D1BC /* PBXTargetDependency */,
+				E697CA278502FCBE3DF71B4B /* PBXTargetDependency */,
+			);
+			name = UDUITests;
+			productName = UDUITests;
+			productReference = 55E4AFE88193F0119D41B3C0 /* UDUITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4FA2AAFB77A3E638810068E9 /* UDGUIEditorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ABB17CF1D79001003C7DF9BB /* Build configuration list for PBXNativeTarget "UDGUIEditorTests" */;
+			buildPhases = (
+				EC29E1B06086F1394367FCE2 /* Sources */,
+				4FC92793D76F6021E91D65B3 /* Frameworks */,
+				98CE40DC2F63CDFF07E1A0E8 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				21A516EFFC53BEE4C56618FD /* PBXTargetDependency */,
+				43C5B343A949BC12820F9F31 /* PBXTargetDependency */,
+				AEF0A2AA7A24681FA387480E /* PBXTargetDependency */,
+				AC1A8BED96C4D58FC7D1DDB3 /* PBXTargetDependency */,
+				ACFEB9517BFDBA54EC545DA0 /* PBXTargetDependency */,
+				6682E4E989E15F8AE643CB47 /* PBXTargetDependency */,
+				23FCFD6C2A6F33EDCC38FE5D /* PBXTargetDependency */,
+				5743732302998B4C8AC868F7 /* PBXTargetDependency */,
+				D9901D086E4D9339B5C86382 /* PBXTargetDependency */,
+				D517C372D6CBD4F14A9D9F44 /* PBXTargetDependency */,
+				A90DABCC7A2CDEADEE6C0A6A /* PBXTargetDependency */,
+			);
+			name = UDGUIEditorTests;
+			productName = UDGUIEditorTests;
+			productReference = C97BFFBD5FC326F6E4C2A158 /* UDGUIEditorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B7C6387711819C8CADEC9CA3 /* UDScriptsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 987FE803F5A039FE81CEC41E /* Build configuration list for PBXNativeTarget "UDScriptsTests" */;
+			buildPhases = (
+				3B2328E2FA1DD0F9BF94EAC6 /* Sources */,
+				1A53F948DA99F269DA6C798F /* Frameworks */,
+				672148DF0283862C5AB789A6 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6F03DA49A94A96B99A4EF8F0 /* PBXTargetDependency */,
+				C836EE7C5C7A60EE86D30346 /* PBXTargetDependency */,
+				DF82B831B53DE7292D5E9964 /* PBXTargetDependency */,
+				2873C22900A5471EEE308F44 /* PBXTargetDependency */,
+				6A3670F7ED2FB3DC912673A3 /* PBXTargetDependency */,
+				7BED28B93FC622E70285193F /* PBXTargetDependency */,
+				AE18B4A941410AF1E9EB2C39 /* PBXTargetDependency */,
+				567C59D216A00661C1735B71 /* PBXTargetDependency */,
+				9E21A41300824D7FE26AC0EF /* PBXTargetDependency */,
+				9C5EC76DEA1CE7723A6C0536 /* PBXTargetDependency */,
+				047D7735CC06D34CEFFC848D /* PBXTargetDependency */,
+			);
+			name = UDScriptsTests;
+			productName = UDScriptsTests;
+			productReference = FB69A47E8F938A9D820756B9 /* UDScriptsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C4B5DE018E6EFEAD40397C58 /* UDWorkspaceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 542429FF498D960D3505C7ED /* Build configuration list for PBXNativeTarget "UDWorkspaceTests" */;
+			buildPhases = (
+				12322CD3D31D17D944250BE6 /* Sources */,
+				4F5918F9798B155AE6086F10 /* Frameworks */,
+				4C54F5902548D0FDA2013925 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7C8EFD3C1C6FD5506D6CDFD7 /* PBXTargetDependency */,
+				8514EB6D36D868E99B841C35 /* PBXTargetDependency */,
+				8CE9D583316727707A5556D9 /* PBXTargetDependency */,
+				428C45E8B3100E5F39C72910 /* PBXTargetDependency */,
+				CF5428BD6533169E0D93CE1E /* PBXTargetDependency */,
+				2B8896159E9A6FA000CB103A /* PBXTargetDependency */,
+				5D0E50A2B2EFD2D705B5F628 /* PBXTargetDependency */,
+				9B6BB5093F5EB64F87A33C28 /* PBXTargetDependency */,
+				81597701CC10B16EBDB9F4CF /* PBXTargetDependency */,
+				D132179DDD076E20EA04F821 /* PBXTargetDependency */,
+				F92E0CAA1BB27E90ABE94ED9 /* PBXTargetDependency */,
+			);
+			name = UDWorkspaceTests;
+			productName = UDWorkspaceTests;
+			productReference = 05C1815EC877271FC78EAFF1 /* UDWorkspaceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		09D8D0CFA000347E56A13C79 /* LSPServerKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 23D5813C8218E6B91130E4E2 /* Build configuration list for PBXNativeTarget "LSPServerKitTests" */;
+			buildPhases = (
+				929EFEAE99C51368789050CF /* Sources */,
+				6E71A8441E51E319CD437AB9 /* Frameworks */,
+				93462A3AA53697B0AA787E50 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FB965C8D68EB75CA2EE8403C /* PBXTargetDependency */,
+				E1B797A0AB093997526DF4A0 /* PBXTargetDependency */,
+				DE55DCBBA4B7371D3254281A /* PBXTargetDependency */,
+				92CA46EC72DA52C168C120A7 /* PBXTargetDependency */,
+				BAD78D2660ACFE7C57F4EBD3 /* PBXTargetDependency */,
+				1FF1352B04E69B575C815E2A /* PBXTargetDependency */,
+				DFB5674E6EEE4C9A6173DF65 /* PBXTargetDependency */,
+				BBDA466839AD37251CC37BD2 /* PBXTargetDependency */,
+				F4D61788A51EFFB4178B82F8 /* PBXTargetDependency */,
+				0FEA3382DDFEBC95C2717DE4 /* PBXTargetDependency */,
+				138E9A5BB66E1AC2AE63D87C /* PBXTargetDependency */,
+			);
+			name = LSPServerKitTests;
+			productName = LSPServerKitTests;
+			productReference = D75091082489FA8C9D10BE64 /* LSPServerKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3493,6 +4757,14 @@
 			);
 			projectRoot = "";
 			targets = (
+				09D8D0CFA000347E56A13C79 /* LSPServerKitTests */,
+				C4B5DE018E6EFEAD40397C58 /* UDWorkspaceTests */,
+				B7C6387711819C8CADEC9CA3 /* UDScriptsTests */,
+				4FA2AAFB77A3E638810068E9 /* UDGUIEditorTests */,
+				7DAB76BF545AE159A95EA6F4 /* UDUITests */,
+				03EE9996C429A50A0DE66D26 /* UDDeclsTests */,
+				6E387BE7323C86AEAF7426AD /* UDArchivesTests */,
+				C5BFA6DDC5E27F20C069A021 /* UDCommonTests */,
 				45DDFC20A8F45BC4A2794B6D /* UDWorkspace */,
 				2F846BFEF6B2DFFE06A6B88F /* UDScripts */,
 				9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */,
@@ -3504,7 +4776,6 @@
 				02765894139EB401B2243F2E /* UDCommon */,
 				E71977493C653CE069D4FD70 /* UDIdLib */,
 				ED200000000000000000000E /* LSPServerKit */,
-				BB04000200000000000000AA /* UDQuakeToolsTests */,
 				AA04000000000000000000AA /* Pak Manager */,
 				DD04000000000000000000AA /* Decl Browser */,
 				AA04000100000000000000AA /* udpaktool */,
@@ -3647,34 +4918,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA02000000000000000000AA /* main.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BB03000000000000000000AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */,
-				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
-				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
-				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
-				CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */,
-				C6BFBB0DB7C1401FD501217E /* rvGEWorkspaceTests.m in Sources */,
-				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
-				A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */,
-				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
-				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
-				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
-				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
-				663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */,
-				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
-				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
-				88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */,
-				5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */,
-				5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */,
-				ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */,
-				ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */,
-				ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3950,6 +5193,84 @@
 				CC01001000000000000000AA /* UDGameDetectionService.m in Sources */,
 				CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */,
 				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB46A05343195B09901C6E0A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CECEB2F83018C6B300F88078 /* idFileSystemTests.m in Sources */,
+				CECEB2FA3019233800F88078 /* idDeclManagerTests.m in Sources */,
+				751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */,
+				53D711DEB022B4ECCD7A0ADE /* UDZipFixture.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E5C0136FEB1F481AFF46AA6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE113D4C2FEE7FBC000188A5 /* UDArchiveEntryTests.m in Sources */,
+				CE07D6C82FF3D28B00B149C9 /* UDArchiveEditorTests.m in Sources */,
+				CE07D6C72FF3D28B00B149C9 /* UDArchiveWorkflowTests.m in Sources */,
+				CE113D4B2FEE7FBC000188A5 /* UDPAKCodecTests.m in Sources */,
+				CE113D4A2FEE7FBC000188A5 /* UDPK3CodecTests.m in Sources */,
+				663E66B198934DC71CE88EF2 /* UDZipWriterTests.m in Sources */,
+				81D988596F6AE9D541D3FE99 /* UDZipFixture.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DB3101A3A7F6CDD79DAD8D77 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A72C989740EECA8B51A3A58C /* UDDeclCodecTests.m in Sources */,
+				88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */,
+				EE05000000000000000002AA /* UDDeclIncrementalStoreTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		501D208E19161BB4FF3D49FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF2791C965E31B9489EFFB11 /* idUserInterfaceTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC29E1B06086F1394367FCE2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6BFBB0DB7C1401FD501217E /* rvGEWorkspaceTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B2328E2FA1DD0F9BF94EAC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */,
+				5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		12322CD3D31D17D944250BE6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE113D4D2FEE7FBC000188A5 /* UDGameDetectionTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		929EFEAE99C51368789050CF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */,
+				ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */,
+				ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4321,56 +5642,6 @@
 			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
 			targetProxy = 1274197D8D50A851098AD00D /* PBXContainerItemProxy */;
 		};
-		9D0A85B24F287CE8488A9FE5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E71977493C653CE069D4FD70 /* UDIdLib */;
-			targetProxy = 40ED5168B8A57034084508A8 /* PBXContainerItemProxy */;
-		};
-		024551B71C3F4FDE3F5F5BDD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 02765894139EB401B2243F2E /* UDCommon */;
-			targetProxy = C076033D63B9E8303098BC72 /* PBXContainerItemProxy */;
-		};
-		908FF1D741AEC7AC54D9A20F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
-			targetProxy = 3C3C7A54C07A3E1EE65B289F /* PBXContainerItemProxy */;
-		};
-		D88FAE2495FB7610C4E274CF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9921947C6187716263FA03BD /* UDImages */;
-			targetProxy = AA8590BE7E6FF551C6DE5578 /* PBXContainerItemProxy */;
-		};
-		2F3F16720609DFAB5E60DD89 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
-			targetProxy = 00C4BF0F33DB17C71A3E8E2E /* PBXContainerItemProxy */;
-		};
-		8DF36D8B8E239769846E9AF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
-			targetProxy = 111FB51188A35B2749A90F93 /* PBXContainerItemProxy */;
-		};
-		65F6663505A2D63F413C4D42 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
-			targetProxy = 61816323B55634F0F034CB42 /* PBXContainerItemProxy */;
-		};
-		E3F0D98E73E82845C6B88A81 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
-			targetProxy = 1A8FF8A8E362FA4F5CA809AA /* PBXContainerItemProxy */;
-		};
-		E7E6BCE48D47463A9FD4107C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
-			targetProxy = C7FB4BB210A321EC234A6C45 /* PBXContainerItemProxy */;
-		};
-		394F9F4589921CD34CCAB9EB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
-			targetProxy = E1579D74D5A95F7A1C39CC27 /* PBXContainerItemProxy */;
-		};
 		71B29B0C69A22289A1C816EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E71977493C653CE069D4FD70 /* UDIdLib */;
@@ -4420,6 +5691,446 @@
 			isa = PBXTargetDependency;
 			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
 			targetProxy = 84F9DD95B1BCC119F91E9C22 /* PBXContainerItemProxy */;
+		};
+		39826086B93404BC825D5526 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 9E5BE711D48FF66D91ED8751 /* PBXContainerItemProxy */;
+		};
+		5D2A718CEAB2CC10C3A9AAA8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 08A0578C93CD962C369549CF /* PBXContainerItemProxy */;
+		};
+		C635F6EC3B12ECD3094EDA58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 6B1709D3AB4231BE918A8B2F /* PBXContainerItemProxy */;
+		};
+		B19068C39027203F49F32400 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 8778B012E4B4900FDEB38F92 /* PBXContainerItemProxy */;
+		};
+		EBF569ADAC6BF2983F97973E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 3F38FE5FCE1BEF64D2ECE5CD /* PBXContainerItemProxy */;
+		};
+		54256CB817968E6B85EB59DD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 423850F68D1B5E51D2E4BEA3 /* PBXContainerItemProxy */;
+		};
+		331EE965DFEB6F50CC25A7C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 26AAB7A68EB7813297394086 /* PBXContainerItemProxy */;
+		};
+		ADC3051ABF8B547AC0BEB244 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = E8C34B1FED5ED4A0A56A3103 /* PBXContainerItemProxy */;
+		};
+		65B58FF7151DA3274935937E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = CA50ED2F9ECBA65BF18716CD /* PBXContainerItemProxy */;
+		};
+		5666ACA9EAA2A1BE3C0E5B23 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = C8D2E7FAE42A6F1E39BFF52C /* PBXContainerItemProxy */;
+		};
+		4E20827BA4C7CB5C363A61D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 42B3A60821C4DF194C5465C7 /* PBXContainerItemProxy */;
+		};
+		7931C852723436F47D0E6C80 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 75846598197E65DA7683F6C7 /* PBXContainerItemProxy */;
+		};
+		08F5072126A32321C3FEF141 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 168D812762364F9BA5708380 /* PBXContainerItemProxy */;
+		};
+		94518A808E5DF0B9834801C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 2A70C603BB8D83B7C0DCA344 /* PBXContainerItemProxy */;
+		};
+		F5AEA25C79BA7BDF514D6C80 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = D47F6B36B854A813917E654B /* PBXContainerItemProxy */;
+		};
+		E666F8CE91B1BA1AE6A8F388 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 924082696742611EEF70A015 /* PBXContainerItemProxy */;
+		};
+		2EC83347DA5084AD774ADB70 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = B443D143A95C9B18B1013BEC /* PBXContainerItemProxy */;
+		};
+		663A19D8CF1D40A94BD71810 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = EE593273B74EF9EC946B43E0 /* PBXContainerItemProxy */;
+		};
+		EDAE67B32C6F79C8F81CF5D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = C50024426256FF9B7B56681B /* PBXContainerItemProxy */;
+		};
+		8FC966BFDA147AD8B96131C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = AC535D8E70D96E12A9E213DA /* PBXContainerItemProxy */;
+		};
+		B97BD5AA6B6A6F68AB01A9BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = D6CF26932F0EF3590F7B8DE8 /* PBXContainerItemProxy */;
+		};
+		B251484FC035760B3A7818BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 01338AF57E975CC36FC653D3 /* PBXContainerItemProxy */;
+		};
+		A3689631A75F2F00CE75BA34 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 6C0D2872A2F41083B2E3FF42 /* PBXContainerItemProxy */;
+		};
+		7EA1C148FD756FEE3B58B6D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = F98F384E69AB868595CA782E /* PBXContainerItemProxy */;
+		};
+		5B4E724296CE8935492C24AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 21C5B0D5DC3C02B93D76E203 /* PBXContainerItemProxy */;
+		};
+		63B1428629DF7C49991A75AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = B4CC5D620F01359B2628AB34 /* PBXContainerItemProxy */;
+		};
+		CF86857EC904720910C2A545 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 2A4B1B1C4CAD6536EA4987EB /* PBXContainerItemProxy */;
+		};
+		021815843708C4EE2AAFF056 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 3347765B85B3732FCE5CF968 /* PBXContainerItemProxy */;
+		};
+		D12C84D425E8C0399A7D7B22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 0DAE8710BA1E986766A9E019 /* PBXContainerItemProxy */;
+		};
+		943603D3DB395346CBADE01D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = CA9AD55CB808C86B8458E8B5 /* PBXContainerItemProxy */;
+		};
+		B8144DBFDEC43D8262FBE85A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 53B9CEAC65B2B611BEE19AFF /* PBXContainerItemProxy */;
+		};
+		D039B66586A042D57052740D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 0B3F2726FA84A18AC1DF4857 /* PBXContainerItemProxy */;
+		};
+		308C7E1206F23220AAB5605E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 8AD368111445A989E6869D80 /* PBXContainerItemProxy */;
+		};
+		012C2DFDC060E982EFC73BD5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = ABD71E92E0E73E8627AF6B60 /* PBXContainerItemProxy */;
+		};
+		B795D6ADE78C968608D34FF8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 786C6861B046A9D6D526D528 /* PBXContainerItemProxy */;
+		};
+		566A9AFD8D21F643A2764822 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = C37AFFB1CFFF147239DE2D2F /* PBXContainerItemProxy */;
+		};
+		EFE5EDFB156789AB328009BD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 5F4A109DF6A71384D55CBFE6 /* PBXContainerItemProxy */;
+		};
+		B2B12FADEF7540DD2757B2DA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 3FFD3C601F9383AAA205602C /* PBXContainerItemProxy */;
+		};
+		B50273E25EE871CFE8AB647E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 83C5D31D0B42415F1390E2D8 /* PBXContainerItemProxy */;
+		};
+		25DA4E2512CDFFD6021321AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = F8AA0D0EC6D64802A5719C3B /* PBXContainerItemProxy */;
+		};
+		A596C167382C16252CA0EE06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 7DDAD8F8C12111AF4811E254 /* PBXContainerItemProxy */;
+		};
+		0002D6552EFE814FD146D0A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 0D3871E1F3475E7517C11DAE /* PBXContainerItemProxy */;
+		};
+		9C9EFD3305B6772DD454D1BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 33AA6E4B3160EAB176932C02 /* PBXContainerItemProxy */;
+		};
+		E697CA278502FCBE3DF71B4B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = A5C39D144C5EA4ED8170316B /* PBXContainerItemProxy */;
+		};
+		21A516EFFC53BEE4C56618FD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 9F94AA8E9C170F9E2F00488F /* PBXContainerItemProxy */;
+		};
+		43C5B343A949BC12820F9F31 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 6448A082547F433CB556D699 /* PBXContainerItemProxy */;
+		};
+		AEF0A2AA7A24681FA387480E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 7F411CD5D02226CD91C6E867 /* PBXContainerItemProxy */;
+		};
+		AC1A8BED96C4D58FC7D1DDB3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = B61B1DC1F50C75F1982F5772 /* PBXContainerItemProxy */;
+		};
+		ACFEB9517BFDBA54EC545DA0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 223D069AE93782598DF43B53 /* PBXContainerItemProxy */;
+		};
+		6682E4E989E15F8AE643CB47 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 5A6DDDEA187AA0F74E49397F /* PBXContainerItemProxy */;
+		};
+		23FCFD6C2A6F33EDCC38FE5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 3924A4150E3E841606AC6973 /* PBXContainerItemProxy */;
+		};
+		5743732302998B4C8AC868F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = A3F11485DDB7F5D26AFE30C6 /* PBXContainerItemProxy */;
+		};
+		D9901D086E4D9339B5C86382 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 2C44777BB694252F1019BBC2 /* PBXContainerItemProxy */;
+		};
+		D517C372D6CBD4F14A9D9F44 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 64305CCB896455DBF61019FB /* PBXContainerItemProxy */;
+		};
+		A90DABCC7A2CDEADEE6C0A6A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 06AB8F46EA48404D41580008 /* PBXContainerItemProxy */;
+		};
+		6F03DA49A94A96B99A4EF8F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = AB4815BEBB7C8A6AD33633E1 /* PBXContainerItemProxy */;
+		};
+		C836EE7C5C7A60EE86D30346 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 08CF6DD0752FF4B6EB200A21 /* PBXContainerItemProxy */;
+		};
+		DF82B831B53DE7292D5E9964 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 6DDB1F7033258E9AB21EA747 /* PBXContainerItemProxy */;
+		};
+		2873C22900A5471EEE308F44 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = F6A59E8230182970AAFAD90E /* PBXContainerItemProxy */;
+		};
+		6A3670F7ED2FB3DC912673A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 95CCBC7A1C82F71761EFEA3A /* PBXContainerItemProxy */;
+		};
+		7BED28B93FC622E70285193F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = C357A28289E4438D223F9D1F /* PBXContainerItemProxy */;
+		};
+		AE18B4A941410AF1E9EB2C39 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = AF12C745775DA663D5801D86 /* PBXContainerItemProxy */;
+		};
+		567C59D216A00661C1735B71 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = 41A1E81A8532A5DD20DFD258 /* PBXContainerItemProxy */;
+		};
+		9E21A41300824D7FE26AC0EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 0A0285FCEBF66C754FC7ECDA /* PBXContainerItemProxy */;
+		};
+		9C5EC76DEA1CE7723A6C0536 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = E5D2F4D92690CBFD362C4876 /* PBXContainerItemProxy */;
+		};
+		047D7735CC06D34CEFFC848D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = B18C7ADDD6554AF413F97139 /* PBXContainerItemProxy */;
+		};
+		7C8EFD3C1C6FD5506D6CDFD7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 89C4626765A2332E2F8CA14A /* PBXContainerItemProxy */;
+		};
+		8514EB6D36D868E99B841C35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 22246E628898185E84E240B5 /* PBXContainerItemProxy */;
+		};
+		8CE9D583316727707A5556D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = AD23BED14A990DF3D7FE3964 /* PBXContainerItemProxy */;
+		};
+		428C45E8B3100E5F39C72910 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = 419A600904F69C43AC28B8F7 /* PBXContainerItemProxy */;
+		};
+		CF5428BD6533169E0D93CE1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = 9AB243D2DB817BC0CFEBE031 /* PBXContainerItemProxy */;
+		};
+		2B8896159E9A6FA000CB103A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 852557F9468BAFD1E1D9A6F9 /* PBXContainerItemProxy */;
+		};
+		5D0E50A2B2EFD2D705B5F628 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 77D79B668875B0127E08F97C /* PBXContainerItemProxy */;
+		};
+		9B6BB5093F5EB64F87A33C28 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = CB06E2C2EC434AC632626FE8 /* PBXContainerItemProxy */;
+		};
+		81597701CC10B16EBDB9F4CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = A035D80987AED55D0893DC20 /* PBXContainerItemProxy */;
+		};
+		D132179DDD076E20EA04F821 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 566F736936ECD3440277C69A /* PBXContainerItemProxy */;
+		};
+		F92E0CAA1BB27E90ABE94ED9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 7E4B58F47D7BE60C5644185F /* PBXContainerItemProxy */;
+		};
+		FB965C8D68EB75CA2EE8403C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 4179603926F1FD7997B5B366 /* PBXContainerItemProxy */;
+		};
+		E1B797A0AB093997526DF4A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 5EE874FB2FCCB0D6AD986718 /* PBXContainerItemProxy */;
+		};
+		DE55DCBBA4B7371D3254281A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = D668A931FC81C84F5AE39292 /* PBXContainerItemProxy */;
+		};
+		92CA46EC72DA52C168C120A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = D1E62110F1AD924AEE627895 /* PBXContainerItemProxy */;
+		};
+		BAD78D2660ACFE7C57F4EBD3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = DE2F72A490CAFA391AE5754F /* PBXContainerItemProxy */;
+		};
+		1FF1352B04E69B575C815E2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 356D6114E99ECC4A3700B98F /* PBXContainerItemProxy */;
+		};
+		DFB5674E6EEE4C9A6173DF65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 45070B28D526719448E86CED /* PBXContainerItemProxy */;
+		};
+		BBDA466839AD37251CC37BD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = AAC12050057B547E178D4F49 /* PBXContainerItemProxy */;
+		};
+		F4D61788A51EFFB4178B82F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = 149F346A65C84D233DE235A2 /* PBXContainerItemProxy */;
+		};
+		0FEA3382DDFEBC95C2717DE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = F94E03E6F8C5D0A2C76D66D7 /* PBXContainerItemProxy */;
+		};
+		138E9A5BB66E1AC2AE63D87C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = 8438C41237BCFACCB990DDDC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4676,83 +6387,6 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_NAME = udpaktool;
-			};
-			name = Release;
-		};
-		BB05000600000000000000AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_NS_ASSERTIONS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/Libraries/**",
-										"$(SRCROOT)/Sources/LSPServerKit",
-					"$(SRCROOT)/Sources/Tools/udscript-lsp",
-				);
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = (
-					"-framework",
-					XCTest,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
-				PRODUCT_NAME = UDQuakeToolsTests;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-			};
-			name = Debug;
-		};
-		BB05000700000000000000AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Sources/Libraries/**",
-										"$(SRCROOT)/Sources/LSPServerKit",
-					"$(SRCROOT)/Sources/Tools/udscript-lsp",
-				);
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				OTHER_LDFLAGS = (
-					"-framework",
-					XCTest,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDQuakeToolsTests;
-				PRODUCT_NAME = UDQuakeToolsTests;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
@@ -5870,6 +7504,638 @@
 			};
 			name = Release;
 		};
+		8559F78810658AB925E4C056 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCommonTests;
+				PRODUCT_NAME = UDCommonTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		6B2D3DE42EDA3CEF3E05DDA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDCommonTests;
+				PRODUCT_NAME = UDCommonTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		3D254BA6479328EBB1E8DBF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDArchivesTests;
+				PRODUCT_NAME = UDArchivesTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		B370C8A07703A84265D49FE8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDArchivesTests;
+				PRODUCT_NAME = UDArchivesTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		B0E569D4DB84EFDA43D81342 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDDeclsTests;
+				PRODUCT_NAME = UDDeclsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		1A3000EC671F19080344A5D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDDeclsTests;
+				PRODUCT_NAME = UDDeclsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		0497BC0701F1456F698D3119 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDUITests;
+				PRODUCT_NAME = UDUITests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		C4DC2512887000CDE97E7C19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDUITests;
+				PRODUCT_NAME = UDUITests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		AAD0A7DF0289C0CD0F91EA18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDGUIEditorTests;
+				PRODUCT_NAME = UDGUIEditorTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		AA95E5E4FDE43739D3B8C183 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDGUIEditorTests;
+				PRODUCT_NAME = UDGUIEditorTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		1BCBD673478BA654857FA7C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDScriptsTests;
+				PRODUCT_NAME = UDScriptsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		54C6C2D36E5B9A41AFF09CCC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDScriptsTests;
+				PRODUCT_NAME = UDScriptsTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		848ABC72732C72F8E6009291 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDWorkspaceTests;
+				PRODUCT_NAME = UDWorkspaceTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		6809C64D2ED5C908BCB2848D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.UDWorkspaceTests;
+				PRODUCT_NAME = UDWorkspaceTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		916891ED0D46E462A869FB19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.LSPServerKitTests;
+				PRODUCT_NAME = LSPServerKitTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		922A41AD0DF2D80EE331C544 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Tests/Support",
+					"$(SRCROOT)/Sources/Libraries/**",
+										"$(SRCROOT)/Sources/LSPServerKit",
+					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.udquake.LSPServerKitTests;
+				PRODUCT_NAME = LSPServerKitTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -5896,15 +8162,6 @@
 			buildConfigurations = (
 				AA05000400000000000000AA /* Debug */,
 				AA05000500000000000000AA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		BB06000300000000000000AA /* Build configuration list for PBXNativeTarget "UDQuakeToolsTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BB05000600000000000000AA /* Debug */,
-				BB05000700000000000000AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -6022,6 +8279,78 @@
 			buildConfigurations = (
 				3B7A161A16E5762AFF4C041E /* Debug */,
 				34D2E5896A6C3ECFD5ECF995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7C9A780C8D34A217BC57B96F /* Build configuration list for PBXNativeTarget "UDCommonTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8559F78810658AB925E4C056 /* Debug */,
+				6B2D3DE42EDA3CEF3E05DDA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1E310043A4F8E7980EAB7B32 /* Build configuration list for PBXNativeTarget "UDArchivesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D254BA6479328EBB1E8DBF3 /* Debug */,
+				B370C8A07703A84265D49FE8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9961171CAD7C1F067756186A /* Build configuration list for PBXNativeTarget "UDDeclsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0E569D4DB84EFDA43D81342 /* Debug */,
+				1A3000EC671F19080344A5D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		466E3137BB8DE5C85126A399 /* Build configuration list for PBXNativeTarget "UDUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0497BC0701F1456F698D3119 /* Debug */,
+				C4DC2512887000CDE97E7C19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ABB17CF1D79001003C7DF9BB /* Build configuration list for PBXNativeTarget "UDGUIEditorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAD0A7DF0289C0CD0F91EA18 /* Debug */,
+				AA95E5E4FDE43739D3B8C183 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		987FE803F5A039FE81CEC41E /* Build configuration list for PBXNativeTarget "UDScriptsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1BCBD673478BA654857FA7C4 /* Debug */,
+				54C6C2D36E5B9A41AFF09CCC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		542429FF498D960D3505C7ED /* Build configuration list for PBXNativeTarget "UDWorkspaceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				848ABC72732C72F8E6009291 /* Debug */,
+				6809C64D2ED5C908BCB2848D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		23D5813C8218E6B91130E4E2 /* Build configuration list for PBXNativeTarget "LSPServerKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				916891ED0D46E462A869FB19 /* Debug */,
+				922A41AD0DF2D80EE331C544 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

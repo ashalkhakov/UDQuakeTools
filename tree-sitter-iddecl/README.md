@@ -9,7 +9,7 @@ editor (the app's PlugIns folder, beside idScript's and UDCodeKit's own).
 (`neo/framework/DeclManager.cpp`) does: an optional type, the decl's name,
 and a braced section. Its tokens are idLexer's under `DECL_LEXER_FLAGS`
 (path names, no escapes in strings). What is inside the braces is only
-tokens and nested braces: each type's own parser, ported in UDCore, is the
+tokens and nested braces: each type's own parser, ported in UDDecls, is the
 one that reads it.
 
 The generated `src/` is committed. The bundle needs no tree-sitter runtime

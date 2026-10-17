@@ -1,70 +1,13 @@
-BUNDLE_NAME = UDQuakeToolsTests
-# Built and run, never installed.
-UDQuakeToolsTests_STANDARD_INSTALL = no
-
-OBJC_RUNTIME_LIB = ng
-RUNTIME_VERSION = gnustep-2.0
-GS_WITH_ARC = 1
-
+# The libraries' unit tests, a bundle each (Tests/<library>), and
+# LSPServerKit's; Decl Browser's are Tests/DeclBrowser's, run on their own.
 include $(GNUSTEP_MAKEFILES)/common.make
 
-UDLIBS_DIR = ../Sources/Libraries
-include $(UDLIBS_DIR)/Libraries.make
+SUBPROJECTS = UDCommon UDArchives UDDecls UDUI UDGUIEditor UDScripts UDWorkspace LSPServerKit
 
-UDQuakeToolsTests_OBJC_FILES = \
-    UDScriptEventsTests.m \
-    UDScriptIndexTests.m \
-    UDJSONRPCConnectionTests.m \
-    UDScriptLanguageServerTests.m \
-    ../Sources/Tools/udscript-lsp/UDScriptLanguageServer.m \
-    UDArchiveEntryTests.m \
-    UDArchiveEditorTests.m \
-    UDArchiveWorkflowTests.m \
-    UDPAKCodecTests.m \
-    UDPK3CodecTests.m \
-    UDGameDetectionTests.m \
-    idFileSystemTests.m \
-    idDeclManagerTests.m \
-    idDeclFileWriteTests.m \
-    idUserInterfaceTests.m \
-    rvGEWorkspaceTests.m \
-    UDDeclTextCheckerTests.m \
-    UDDeclIncrementalStoreTests.m \
-    UDDeclCodecTests.m \
-    UDZipWriterTests.m \
-    UDZipFixture.m
+include $(GNUSTEP_MAKEFILES)/aggregate.make
 
-UDQuakeToolsTests_INCLUDE_DIRS = \
-    $(UDLIBS_INCLUDE_DIRS) \
-    -I../Sources/LSPServerKit \
-    -I../Sources/Tools/udscript-lsp
-
-# The incremental-store tests need the compiled data model in the test
-# bundle's resources (Xcode does the same for the Mac test target).
-UDQuakeToolsTests_XCDATAMODELD_FILES = ../Sources/Libraries/UDDecls/DeclModel.xcdatamodeld
-
-# CoreData is provided by FreeCoreData on GNUstep
-# (https://github.com/ashalkhakov/FreeCoreData — install it before building).
-ADDITIONAL_NATIVE_LIBS += CoreData
-
-# the libraries and LSPServerKit from the tree, built first (the root GNUmakefile);
-# udscript-lsp's server is tested here, compiled in.
-ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) -L../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lLSPServerKit -lXCTest -lBlocksRuntime
-
-XCTEST ?= xctest
-
+# Every bundle's, each to the end; failing if any failed.
 .PHONY: run-tests
-run-tests: all $(BUNDLE_NAME).bundle
-	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
-	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
-	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
-	$(XCTEST) "$(BUNDLE_NAME).bundle"
-
-# Compiles $(UDQuakeToolsTests_XCDATAMODELD_FILES) with momc and bundles
-# the .momd; installed into $(GNUSTEP_MAKEFILES) by FreeCoreData. Included
-# after the run-tests rule so run-tests stays the default goal.
-include $(GNUSTEP_MAKEFILES)/coredata-model.make
-
-include $(GNUSTEP_MAKEFILES)/bundle.make
-
+run-tests:
+	@failed=; for b in $(SUBPROJECTS); do $(MAKE) -C $$b run-tests || failed="$$failed $$b"; done; \
+	if [ -n "$$failed" ]; then echo "Failed:$$failed"; exit 1; fi

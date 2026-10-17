@@ -365,7 +365,7 @@
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GUV-prop-scroll">
                     <rect key="frame" x="0.0" y="0.0" width="260" height="510"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <clipView key="contentView" drawsBackground="NO" id="GUV-prop-scroll-cv">
+                    <clipView key="contentView" drawsBackground="NO" id="GUV-prop-scroll-cv" customClass="UDTopClipView">
                         <rect key="frame" x="0.0" y="0.0" width="260" height="510"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>

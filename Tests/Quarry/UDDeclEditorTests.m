@@ -712,6 +712,21 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqual(editor.bodiesController.selectionIndex, 2U, @"a click shows the body");
 }
 
+- (void)testTheInspectorIsLaidOutFromTheTop {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDAFEditorViewController *editor = [self openCrateIn:controller];
+    if (editor == nil) return;
+    NSView *inspector = editor.inspectorView;
+    for (NSNumber *height in @[@600, @1000]) {
+        [inspector setFrameSize:NSMakeSize(280, height.doubleValue)];
+        [inspector layoutSubtreeIfNeeded];
+        NSView *model = [self viewWithToolTip:@"model" inView:inspector];
+        NSRect frame = [inspector convertRect:model.bounds fromView:model];
+        CGFloat fromTop = inspector.isFlipped ? NSMinY(frame) : height.doubleValue - NSMaxY(frame);
+        XCTAssertLessThan(fromTop, 80.0, @"the figure's first field at the top, %@ high", height);
+    }
+}
+
 - (void)testEditingBodiesAndConstraintsIsAnEditOfTheFigure {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDAFEditorViewController *editor = [self openCrateIn:controller];
@@ -775,13 +790,20 @@ static NSString *const UDFixtureParticles =
     // the material's keywords in the inspector, no stage chosen
     XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"material");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"materialDescription" inView:editor.inspectorView]).stringValue, @"Glow");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"materialDescription" inView:editor.inspectorView]).stringValue, @"Glow");
     XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
     XCTAssertEqual(editor.stagesController.selectionIndex, (NSUInteger)NSNotFound);
     // a stage chosen in the centre: its keywords there instead
     [editor.stagesController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"stage");
-    XCTAssertEqualObjects(((NSTextField *)[self viewWithToolTip:@"map" inView:editor.inspectorView]).stringValue, @"textures/udtest/glow.tga");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"map" inView:editor.inspectorView]).stringValue, @"textures/udtest/glow.tga");
+    // the color keywords, one row each in their group, each with its help
+    for (NSString *key in @[@"color", @"red", @"green", @"blue", @"alpha", @"rgb", @"rgba"]) {
+        NSView *row = [self viewBoundTo:key inView:editor.inspectorView];
+        XCTAssertNotNil(row, @"%@", key);
+        XCTAssertTrue([row.toolTip hasPrefix:key], @"%@'s help: %@", key, row.toolTip);
+    }
+    XCTAssertTrue([[[self viewBoundTo:@"rgb" inView:editor.inspectorView] toolTip] containsString:@"one expression for the three"]);
     XCTAssertEqualObjects([editor tableView:editor.stagesTable objectValueForTableColumn:[editor.stagesTable tableColumnWithIdentifier:@"stage"] row:0],
                           @"stage 0");
 

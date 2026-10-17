@@ -175,7 +175,7 @@
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-escroll">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="FXE-escroll-cv">
+                                <clipView key="contentView" drawsBackground="NO" id="FXE-escroll-cv" customClass="UDTopClipView">
                                     <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -241,7 +241,7 @@
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-ascroll">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="FXE-ascroll-cv">
+                                <clipView key="contentView" drawsBackground="NO" id="FXE-ascroll-cv" customClass="UDTopClipView">
                                     <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>

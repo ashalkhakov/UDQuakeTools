@@ -299,6 +299,21 @@ NSString *UDDoom3InstallPath(void) {
     return found;
 }
 
+- (NSView *)viewBoundTo:(NSString *)key inView:(NSView *)view {
+    NSString *keyPath = [@"selection." stringByAppendingString:key];
+    __block NSView *found = nil;
+    [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
+        for (NSString *binding in @[NSValueBinding, NSSelectedValueBinding, NSSelectedIndexBinding]) {
+            if ([[candidate infoForBinding:binding][NSObservedKeyPathKey] isEqualToString:keyPath]) {
+                found = candidate;
+                return NO;
+            }
+        }
+        return YES;
+    }];
+    return found;
+}
+
 - (NSButton *)buttonTitled:(NSString *)title inView:(NSView *)view {
     __block NSButton *found = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {

@@ -24,6 +24,7 @@ Quarry_OBJC_FILES = \
     Model/UDFileItem.m \
     Model/UDFolder.m \
     Editors/UDImageViewerViewController.m \
+    Editors/UDTopClipView.m \
     Editors/Decls/UDPDAEditorViewController.m \
     Editors/UDDeclEditorViewController.m \
     Editors/Decls/UDTableEditorViewController.m \

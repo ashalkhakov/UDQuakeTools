@@ -71,6 +71,9 @@ NSString * _Nullable UDDoom3InstallPath(void);
 
 /// Finds views by what a user sees: a button's title, or the first subview
 /// of a class.
+/// The control under @a view bound to selection.<key> (its value, selected
+/// value or index): found by what it edits, its tooltip being help.
+- (nullable __kindof NSView *)viewBoundTo:(NSString *)key inView:(NSView *)view;
 - (nullable NSButton *)buttonTitled:(NSString *)title inView:(NSView *)view;
 - (nullable __kindof NSView *)firstSubviewOfClass:(Class)cls inView:(NSView *)view;
 - (nullable NSSegmentedControl *)segmentedControlWithAction:(SEL)action inView:(NSView *)view;

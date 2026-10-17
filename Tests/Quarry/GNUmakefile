@@ -43,6 +43,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/Model/UDFileItem.m \
     $(APP_DIR)/Model/UDFolder.m \
     $(APP_DIR)/Editors/UDImageViewerViewController.m \
+    $(APP_DIR)/Editors/UDTopClipView.m \
     $(APP_DIR)/Editors/Decls/UDPDAEditorViewController.m \
     $(APP_DIR)/Editors/UDDeclEditorViewController.m \
     $(APP_DIR)/Editors/Decls/UDTableEditorViewController.m \

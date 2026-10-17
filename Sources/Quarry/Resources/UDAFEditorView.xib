@@ -332,7 +332,7 @@
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-fscroll">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="AFE-fscroll-cv">
+                                <clipView key="contentView" drawsBackground="NO" id="AFE-fscroll-cv" customClass="UDTopClipView">
                                     <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -846,7 +846,7 @@
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-bscroll">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="AFE-bscroll-cv">
+                                <clipView key="contentView" drawsBackground="NO" id="AFE-bscroll-cv" customClass="UDTopClipView">
                                     <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -1448,7 +1448,7 @@
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFE-cscroll">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="AFE-cscroll-cv">
+                                <clipView key="contentView" drawsBackground="NO" id="AFE-cscroll-cv" customClass="UDTopClipView">
                                     <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>

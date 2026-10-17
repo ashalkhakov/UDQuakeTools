@@ -878,6 +878,7 @@ static BOOL UDStringHasUppercase(NSString *value) {
     idList<pack_t *>            serverPaks;
  */
     BOOL                        loadedFileFromDir;        // set to YES once a file was loaded from a directory - can't switch to pure anymore
+    NSArray<NSString *>         *pakFileIndex;            // (not the engine's) every pak entry's name, for filesUnder:
     /*
     idList<int>                restartChecksums;        // used during a restart to set things in right order
     int                        restartGamePakChecksum;
@@ -2263,6 +2264,63 @@ static inline int Icmpn(NSString *a, NSString *b, NSUInteger n) {
     [self getFileList:relativePath extensions:extensions list:list hashIndex:hashIndex fullRelativePath:YES gamedir:gamedir error:error];
 
     return (int)list.count;
+}
+
+- (NSArray<NSString *> *)filesUnder:(NSArray<NSString *> *)folders extensions:(NSArray<NSString *> *)extensions {
+    NSMutableArray<NSString *> *prefixes = [NSMutableArray array];
+    for (NSString *folder in folders) {
+        [prefixes addObject:folder.length > 0 ? [[folder lowercaseString] stringByAppendingString:@"/"] : @""];
+    }
+    NSMutableSet<NSString *> *wanted = [NSMutableSet set];
+    for (NSString *extension in extensions) {
+        [wanted addObject:[extension.lowercaseString stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]]];
+    }
+    NSMutableArray<NSString *> *files = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    void (^consider)(NSString *) = ^(NSString *path) {
+        NSString *lower = path.lowercaseString;
+        if (![wanted containsObject:lower.pathExtension] || [seen containsObject:lower]) return;
+        for (NSString *prefix in prefixes) {
+            if (prefix.length == 0 || [lower hasPrefix:prefix]) {
+                [seen addObject:lower];
+                [files addObject:path];
+                return;
+            }
+        }
+    };
+    // the paks' entries, gathered once
+    if (pakFileIndex == nil && searchPaths != nil) {
+        NSMutableArray<NSString *> *index = [NSMutableArray array];
+        for (searchpath_t *search = searchPaths; search != nil; search = search->next) {
+            if (search->pack == nil) continue;
+            pack_t *pak = search->pack;
+            for (int i = 0; i < pak->numfiles; i++) {
+                [index addObject:((fileInPack_t *)[pak->buildBuffer objectAtIndex:i])->name];
+            }
+        }
+        pakFileIndex = index;
+    }
+    // in the search paths' order: a folder on disk before the paks after it
+    NSUInteger pakAt = 0;
+    for (searchpath_t *search = searchPaths; search != nil; search = search->next) {
+        if (search->dir) {
+            NSString *root = [self buildOSPath:search->dir->path game:search->dir->gamedir relativePath:@""];
+            for (NSString *prefix in prefixes) {
+                NSString *top = prefix.length > 0 ? [root stringByAppendingPathComponent:prefix] : root;
+                NSDirectoryEnumerator *walk = [[NSFileManager defaultManager] enumeratorAtPath:top];
+                for (NSString *relative in walk) {
+                    consider(prefix.length > 0 ? [prefix stringByAppendingString:relative] : relative);
+                }
+            }
+        } else if (search->pack) {
+            int count = search->pack->numfiles;
+            for (int i = 0; i < count && pakAt + (NSUInteger)i < pakFileIndex.count; i++) {
+                consider(pakFileIndex[pakAt + (NSUInteger)i]);
+            }
+            pakAt += (NSUInteger)count;
+        }
+    }
+    return files;
 }
 
 -(idFileList *)listFilesTree:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sort inGameDir:(NSString *)gamedir error:(NSError **)error {
@@ -4371,6 +4429,7 @@ void idFileSystemLocal::SetRestartChecksums( const int pureChecksums[ MAX_PURE_P
     _settings = settings;
     
     searchPaths = nil;
+    pakFileIndex = nil;
     readCount = 0;
     loadCount = 0;
     loadStack = 0;

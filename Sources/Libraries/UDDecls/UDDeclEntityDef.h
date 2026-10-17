@@ -42,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// editor_usage, and each key's editor_var (editor_int, editor_bool, ...).
 - (nullable NSString *)ud_usage;
 - (nullable NSString *)ud_helpForKey:(NSString *)key;
+/// The type the editor_* key that gives @a key's help names: "var",
+/// "int", "float", "bool", "color", "mat", "model", "gui" or "snd"; nil
+/// for none.
+- (nullable NSString *)ud_editorTypeForKey:(NSString *)key;
 @end
 
 @interface UDDeclMapDef : UDDeclEntityDef

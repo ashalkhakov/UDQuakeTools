@@ -255,6 +255,10 @@ static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.materi
         case 3: return [UDReferenceField fieldTitled:@"The editor's image" key:@"qerEditorImage" controller:self.objectController kind:UDReferenceImages];
         case 4: return [UDReferenceField fieldTitled:@"The light's falloff image" key:@"lightFalloffImage" controller:self.objectController kind:UDReferenceImages];
         case 5: return [UDReferenceField fieldTitled:@"A GUI" key:@"guisurf" controller:self.objectController kind:UDReferenceGuis];
+        case 6: return [UDReferenceField fieldTitled:@"A cube map" key:@"cubeMap" controller:self.stagesController kind:UDReferenceCubeMaps];
+        case 7: return [UDReferenceField fieldTitled:@"The stage's program" key:@"program" controller:self.stagesController kind:UDReferencePrograms];
+        case 8: return [UDReferenceField fieldTitled:@"The stage's vertex program" key:@"vertexProgram" controller:self.stagesController kind:UDReferencePrograms];
+        case 9: return [UDReferenceField fieldTitled:@"The stage's fragment program" key:@"fragmentProgram" controller:self.stagesController kind:UDReferencePrograms];
     }
     return nil;
 }

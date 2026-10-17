@@ -1,14 +1,15 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
  * UDGuiScriptsController.h — the inspector's Scripts, structured (not the
- * engine's: its GEItemScriptsDlg edited a window's scripts as text). For a
- * window: its events (each script it has, added from a menu of the events
- * it may have, taken off, opened) and its variables. For an event (its row
- * in the navigator): the event and its parameter, its statements as rows
- * (an if's within it, its else after), added from a menu of the commands,
- * taken off, dragged into another order; and the chosen statement's every
- * parameter, named, with what it is. Each edit is one Undo. Laid out in
- * UDGuiViewerView.xib.
+ * engine's: its GEItemScriptsDlg edited a window's scripts as text). A
+ * window's, in one column: its events (each script it has, added from a
+ * menu of the events it may have, taken off, chosen), under them the
+ * chosen event's script (the event and its parameter, its statements as
+ * rows, an if's within it, its else after, added from a menu of the
+ * commands, taken off, dragged into another order; and the chosen
+ * statement's every parameter, named, with what it is), and its variables.
+ * An event's row in the navigator chooses it too. Each edit is one Undo.
+ * Laid out in UDGuiViewerView.xib.
  */
 
 #import <Cocoa/Cocoa.h>
@@ -37,13 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id target;
 @property (nonatomic, nullable) SEL action;
 
-/// What the pane shows: @a window's events and variables, or (an event's
-/// key) that event's script; nothing, for no window.
+/// What the pane shows: @a window's events, variables, and @a key's
+/// script (nil: the event chosen before in the window's, else its first);
+/// nothing, for no window.
 - (void)showWindow:(nullable idWindow *)window event:(nullable NSString *)key;
 @property (nonatomic, weak, readonly, nullable) idWindow *window;
 @property (nonatomic, copy, readonly, nullable) NSString *eventKey;
 
-// The pages: "none", "window", "event"
+// The pages: "none", "window"
 @property (weak) IBOutlet NSTabView *pages;
 @property (weak) IBOutlet NSTextField *message;
 
@@ -53,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSTableView *variablesTable;
 - (IBAction)addEvent:(nullable id)sender;
 - (IBAction)removeEvent:(nullable id)sender;
+/// The events' chosen row's script shown (its row in the navigator chosen).
 - (IBAction)openEvent:(nullable id)sender;
 - (IBAction)addOrRemoveVariable:(nullable id)sender;
 

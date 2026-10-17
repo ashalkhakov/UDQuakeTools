@@ -387,6 +387,27 @@ static NSString *const UDViewerScript =
     }
 }
 
+/// The source shown, nothing of the canvas over it: on GNUstep the GL
+/// view's X window taken down while it is hidden, put up as it draws again
+/// (the stack's NSOpenGLView, gnustep-patches' opengl-view-hidden).
+- (void)testTheSourceIsNotUnderTheCanvas {
+    UDWorkspaceWindowController *controller = [self openFixture];
+    if (controller == nil) return;
+    UDGuiEditorViewController *editor = [self openDesignIn:controller];
+    UDGuiGLView *gl = (UDGuiGLView *)editor.guiView.glView;
+    if (gl == nil) return;
+    [editor.view.window display];
+    XCTAssertEqual(gl.openGLContext.view, gl, @"drawn");
+    editor.showsSource = YES;
+    XCTAssertTrue([gl isHiddenOrHasHiddenAncestor]);
+#ifdef GNUSTEP
+    XCTAssertNil(gl.openGLContext.view, @"its X window down");
+#endif
+    editor.showsSource = NO;
+    [editor.view.window display];
+    XCTAssertEqual(gl.openGLContext.view, gl, @"drawn again");
+}
+
 #pragma mark - The time
 
 /// Whether the lamp's backcolor is green.
@@ -805,13 +826,16 @@ static NSString *const UDViewerScript =
     [self chooseWindow:@"Go" in:editor];
     XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"window");
     XCTAssertEqual([scripts numberOfRowsInTableView:scripts.eventsTable], 1);
+    XCTAssertEqualObjects(scripts.eventKey, @"onAction", @"its first event's script, under its events");
+    XCTAssertEqual(scripts.eventsTable.selectedRow, 0);
+    XCTAssertEqual(scripts.statementsOutline.numberOfRows, 2);
 
     // an event's: its statements, one chosen, its parameters named
     [self openEvent:@"onAction" in:editor];
     XCTAssertEqualObjects(editor.selectedEvent.key, @"onAction");
     NSOutlineView *navigator = editor.windowsOutline;
     XCTAssertEqualObjects([self rowName:navigator.selectedRow of:navigator], @"\u0192 onAction", @"its row, under Go, chosen in the navigator");
-    XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"event");
+    XCTAssertEqualObjects(scripts.pages.selectedTabViewItem.identifier, @"window", @"the events still there, the script under them");
     XCTAssertEqualObjects(scripts.eventPopUp.titleOfSelectedItem, @"onAction");
     XCTAssertEqual(scripts.statementsOutline.numberOfRows, 2);
     XCTAssertEqualObjects([self statementAtRow:1 in:editor], @"set \"cmd\" \"udtest_go\"");
@@ -862,6 +886,15 @@ static NSString *const UDViewerScript =
     [scripts changeEvent:scripts.eventParameterField];
     XCTAssertEqualObjects(editor.selectedEvent.key, @"onTime 250");
     XCTAssertTrue([editor.designWorkspace.text containsString:@"onTime 250"], @"%@", editor.designWorkspace.text);
+
+    // the events' rows choose the script shown, the navigator following
+    XCTAssertEqual([scripts numberOfRowsInTableView:scripts.eventsTable], 2);
+    [scripts.eventsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    [scripts openEvent:nil];
+    XCTAssertEqualObjects(scripts.eventKey, @"onAction");
+    XCTAssertEqualObjects(scripts.eventPopUp.titleOfSelectedItem, @"onAction");
+    XCTAssertEqualObjects(editor.selectedEvent.key, @"onAction");
+    XCTAssertEqualObjects([self rowName:navigator.selectedRow of:navigator], @"\u0192 onAction");
 
     // a variable
     [self chooseWindow:@"Go" in:editor];

@@ -393,4 +393,24 @@
     [self.fileSystem freeFileList:fileList];
 }
 
+- (void)testFilesUnderMergesPaksAndFoldersInOnePass {
+    NSString *scriptsDir = [[self.rootDir stringByAppendingPathComponent:self.gameDir] stringByAppendingPathComponent:@"scripts/deep"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:scriptsDir withIntermediateDirectories:YES attributes:nil error:nil];
+    [@"loose" writeToFile:[scriptsDir stringByAppendingPathComponent:@"Loose.SHADER"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    [@"shadow" writeToFile:[scriptsDir.stringByDeletingLastPathComponent stringByAppendingPathComponent:@"base.shader"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
+    NSArray<NSString *> *files = [self.fileSystem filesUnder:@[@"scripts"] extensions:@[@".shader"]];
+    NSCountedSet *counts = [NSCountedSet setWithArray:files];
+    // the paks' and the folders', at any depth, each once, in any case
+    XCTAssertEqual([counts countForObject:@"scripts/base.shader"], 1u);
+    XCTAssertTrue([files containsObject:@"scripts/sub/nested.shader"]);
+    XCTAssertTrue([files containsObject:@"scripts/deep/Loose.SHADER"]);
+    // not another extension's, not a folder whose name only starts the same
+    XCTAssertFalse([files containsObject:@"scripts/backup.shader.bak"]);
+    XCTAssertFalse([files containsObject:@"scripts_backup/old.shader"]);
+    XCTAssertFalse([files containsObject:@"maps/q3dm1.bsp"]);
+    // every folder: ""
+    XCTAssertTrue([[self.fileSystem filesUnder:@[@""] extensions:@[@"bsp"]] containsObject:@"maps/q3dm1.bsp"]);
+}
+
 @end

@@ -8,6 +8,16 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UDEntityDefEditorViewController">
             <connections>
+                <outlet property="inspectorView" destination="EDI-root" id="EDI-o-inspectorView"/>
+                <outlet property="valuePages" destination="EDI-pages" id="EDI-o-valuePages"/>
+                <outlet property="keyLabel" destination="EDI-key" id="EDI-o-keyLabel"/>
+                <outlet property="kindLabel" destination="EDI-kind" id="EDI-o-kindLabel"/>
+                <outlet property="numberField" destination="EDI-number" id="EDI-o-numberField"/>
+                <outlet property="vectorXField" destination="EDI-x" id="EDI-o-vectorXField"/>
+                <outlet property="vectorYField" destination="EDI-y" id="EDI-o-vectorYField"/>
+                <outlet property="vectorZField" destination="EDI-z" id="EDI-o-vectorZField"/>
+                <outlet property="boolCheckbox" destination="EDI-bool" id="EDI-o-boolCheckbox"/>
+                <outlet property="colorWell" destination="EDI-color" id="EDI-o-colorWell"/>
                 <outlet property="view" destination="EDE-root" id="UDE-o-view"/>
                 <outlet property="objectController" destination="EDE-oc" id="UDE-o-objectController"/>
                 <outlet property="keyValuesController" destination="EDE-ac" id="UDE-o-keyValuesController"/>
@@ -305,6 +315,301 @@
                         <binding destination="-2" name="value" keyPath="selectedKeyHelp" id="EDE-help-b"/>
                     </connections>
                 </textField>
+            </subviews>
+        </customView>
+        <customView id="EDI-root">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-scroll">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" drawsBackground="NO" id="EDI-scroll-cv" customClass="UDTopClipView">
+                        <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view id="EDI-doc">
+                                <rect key="frame" x="0.0" y="0.0" width="265" height="200"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                <subviews>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-h1">
+                                        <rect key="frame" x="8" y="170" width="200" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" title="Spawn Arg" id="EDI-h1-c">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-key">
+                                        <rect key="frame" x="12" y="146" width="241" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" title="" id="EDI-key-c">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-kind">
+                                        <rect key="frame" x="12" y="128" width="241" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" title="" id="EDI-kind-c">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-sep">
+                                        <rect key="frame" x="12" y="110" width="241" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    </box>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-h2">
+                                        <rect key="frame" x="8" y="84" width="200" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" title="Value" id="EDI-h2-c">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <tabView type="noTabsNoBorder" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-pages">
+                                        <rect key="frame" x="0.0" y="28" width="265" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <tabViewItems>
+                                            <tabViewItem label="none" identifier="none" id="EDI-p-none">
+                                                <view key="view" id="EDI-p-none-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-none">
+                                                            <rect key="frame" x="12" y="4" width="241" height="42"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="wordWrapping" selectable="YES" title="Select one of its own spawn args. One it inherits is set here once overridden." id="EDI-none-c">
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="text" identifier="text" id="EDI-p-text">
+                                                <view key="view" id="EDI-p-text-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <textField toolTip="The value, as the file has it." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-text">
+                                                            <rect key="frame" x="12" y="26" width="241" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-text-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <binding destination="EDE-ac" name="value" keyPath="selection.value" id="EDI-text-b">
+                                                                    <dictionary key="options">
+                                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                                    </dictionary>
+                                                                </binding>
+                                                            </connections>
+                                                        </textField>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="reference" identifier="reference" id="EDI-p-reference">
+                                                <view key="view" id="EDI-p-reference-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <textField toolTip="What it names: the &quot;…&quot; picks it." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-ref">
+                                                            <rect key="frame" x="12" y="26" width="213" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-ref-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <binding destination="EDE-ac" name="value" keyPath="selection.value" id="EDI-ref-b">
+                                                                    <dictionary key="options">
+                                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                                    </dictionary>
+                                                                </binding>
+                                                            </connections>
+                                                        </textField>
+                                                        <button toolTip="Choose what it names" verticalHuggingPriority="750" fixedFrame="YES" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-pick">
+                                                            <rect key="frame" x="229" y="25" width="24" height="23"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="push" title="…" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EDI-pick-c">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="pickReference:" target="-2" id="EDI-pick-a"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="number" identifier="number" id="EDI-p-number">
+                                                <view key="view" id="EDI-p-number-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <textField toolTip="A number." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-number">
+                                                            <rect key="frame" x="12" y="26" width="100" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-number-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-number-a"/>
+                                                            </connections>
+                                                        </textField>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="vector" identifier="vector" id="EDI-p-vector">
+                                                <view key="view" id="EDI-p-vector-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <textField toolTip="The vector's X." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-x">
+                                                            <rect key="frame" x="12" y="26" width="76" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-x-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-x-a"/>
+                                                            </connections>
+                                                        </textField>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-xl">
+                                                            <rect key="frame" x="12" y="8" width="76" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" selectable="YES" title="X" id="EDI-xl-c">
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField toolTip="The vector's Y." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-y">
+                                                            <rect key="frame" x="94" y="26" width="76" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-y-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-y-a"/>
+                                                            </connections>
+                                                        </textField>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-yl">
+                                                            <rect key="frame" x="94" y="8" width="76" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" selectable="YES" title="Y" id="EDI-yl-c">
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField toolTip="The vector's Z." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-z">
+                                                            <rect key="frame" x="176" y="26" width="76" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-z-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-z-a"/>
+                                                            </connections>
+                                                        </textField>
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-zl">
+                                                            <rect key="frame" x="176" y="8" width="76" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" selectable="YES" title="Z" id="EDI-zl-c">
+                                                                <font key="font" metaFont="smallSystem"/>
+                                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="bool" identifier="bool" id="EDI-p-bool">
+                                                <view key="view" id="EDI-p-bool-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <button toolTip="On (1) or off (0)." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-bool">
+                                                            <rect key="frame" x="10" y="26" width="241" height="18"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="check" title="On" bezelStyle="regularSquare" imagePosition="left" inset="2" id="EDI-bool-c">
+                                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-bool-a"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="color" identifier="color" id="EDI-p-color">
+                                                <view key="view" id="EDI-p-color-v">
+                                                    <rect key="frame" x="0.0" y="0.0" width="265" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <colorWell toolTip="The colour: red, green and blue from 0 to 1." fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-color">
+                                                            <rect key="frame" x="12" y="24" width="44" height="25"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <connections>
+                                                                <action selector="valueEdited:" target="-2" id="EDI-color-a"/>
+                                                            </connections>
+                                                        </colorWell>
+                                                        <textField toolTip="The colour as the file has it: red, green and blue from 0 to 1." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDI-colortext">
+                                                            <rect key="frame" x="64" y="26" width="189" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="EDI-colortext-c">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <binding destination="EDE-ac" name="value" keyPath="selection.value" id="EDI-colortext-b">
+                                                                    <dictionary key="options">
+                                                                        <bool key="NSValidatesImmediately" value="YES"/>
+                                                                    </dictionary>
+                                                                </binding>
+                                                            </connections>
+                                                        </textField>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                        </tabViewItems>
+                                    </tabView>
+                                </subviews>
+                            </view>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="EDI-scroll-hs">
+                        <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="EDI-scroll-vs">
+                        <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
             </subviews>
         </customView>
     </objects>

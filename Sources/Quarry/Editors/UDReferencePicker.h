@@ -19,9 +19,12 @@ typedef NS_ENUM(NSInteger, UDReferenceKind) {
     UDReferenceMaterials,   // material decls, and images (what a material may be)
     UDReferenceImages,      // image files, with their extensions
     UDReferenceModels,      // model files
+    UDReferenceEntityModels,// what an entity's model names: a modelDef, or a model file
     UDReferenceVideos,      // cinematics (.roq)
     UDReferenceGuis,        // GUI files
     UDReferenceSounds,      // sound files (.wav, .ogg)
+    UDReferenceCubeMaps,    // cube maps' names (name_px.tga …, name_forward.tga …)
+    UDReferencePrograms,    // ARB programs, by their names under glprogs/
     UDReferenceNames,       // names the editor gives (joints, bodies, actions)
 };
 

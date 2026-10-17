@@ -161,7 +161,9 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
 
 - (void)dealloc {
     NSOpenGLContext *context = _prepared ? self.openGLContext : nil;
-    if (context != nil) {
+    // (none to make current with, its X window down: what it made goes
+    // with the context)
+    if (context != nil && context.view == self) {
         [context makeCurrentContext];
         for (NSNumber *texture in _textures.objectEnumerator) {
             GLuint name = texture.unsignedIntValue;
@@ -286,9 +288,9 @@ static GLuint UDGLCompile(GLenum type, const char *prelude, const char *source, 
 }
 
 /// The frame drawn into the back buffer; NO when there is no drawable (the
-/// view in no window).
+/// view in no window, or hidden).
 - (BOOL)_render {
-    if (self.window == nil) return NO;
+    if (self.window == nil || [self isHiddenOrHasHiddenAncestor]) return NO;
     NSOpenGLContext *context = self.openGLContext;
     // the drawable is the view's once its context has it (NSOpenGLView
     // hands it over when it first draws through -display)

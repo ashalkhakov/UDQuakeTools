@@ -157,6 +157,12 @@ typedef enum {
 // The returned files include a full relative path.
 // The extension must include a leading dot and may not contain wildcards.
 -(idFileList *)listFilesTree:(NSString *)relativePath extension:(NSString *)extension sorted:(BOOL)sort inGameDir:(NSString *)gamedir error:(NSError **)error;
+/// (not the engine's) Every file under one of @a folders ("" for all)
+/// with one of @a extensions (".tga", …; case ignored), as the search
+/// paths have them, each once: in one pass over the paks' entries (kept
+/// until the file system starts again) and the folders' trees on disk.
+/// ListFilesTree's results, in milliseconds, not seconds.
+- (NSArray<NSString *> *)filesUnder:(NSArray<NSString *> *)folders extensions:(NSArray<NSString *> *)extensions;
 // Frees the given file list.
 -(void)freeFileList:(idFileList *)fileList;
 // Converts a relative path to a full OS path.

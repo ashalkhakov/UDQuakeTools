@@ -133,4 +133,30 @@ static NSString *const UDLampScript =
     XCTAssertEqual(found.firstObject.column, 16);
 }
 
+/// A function's variables, for a debugger: its parameters, then what its
+/// body declares, wherever the line is in the body; none outside one.
+- (void)testAFunctionsVariablesAreItsParametersAndLocals {
+    NSString *script =
+        @"float lampCount;\n"                                          // 1
+        @"void lamp::flicker( float times, entity e ) {\n"             // 2
+        @"    float i, left = times * 2;\n"                            // 3
+        @"    vector v = e.getOrigin();\n"                             // 4
+        @"    while( i < left ) {\n"                                   // 5
+        @"        string s = \"x\";\n"                                 // 6
+        @"        i = i + 1;\n"                                        // 7
+        @"        sys.wait( 0.1 );\n"                                  // 8
+        @"    }\n"                                                     // 9
+        @"    return;\n"                                               // 10
+        @"}\n"                                                         // 11
+        @"object lamp {\n"                                             // 12
+        @"    void dim() { float half = 0.5; brightness = half; }\n"  // 13
+        @"};\n";
+    NSArray *flicker = @[@"times", @"e", @"i", @"left", @"v", @"s"];
+    XCTAssertEqualObjects([UDScriptIndex variablesOfFunctionAtLine:7 inText:script], flicker);
+    XCTAssertEqualObjects([UDScriptIndex variablesOfFunctionAtLine:2 inText:script], flicker, @"its first line");
+    XCTAssertEqualObjects([UDScriptIndex variablesOfFunctionAtLine:11 inText:script], flicker, @"its last");
+    XCTAssertEqualObjects([UDScriptIndex variablesOfFunctionAtLine:13 inText:script], @[@"half"], @"a method in its object");
+    XCTAssertNil([UDScriptIndex variablesOfFunctionAtLine:1 inText:script], @"no function's");
+}
+
 @end

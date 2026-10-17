@@ -143,3 +143,4 @@ after-all::
 	@for b in $(UD_GRAMMARS); do rm -rf $(GNUSTEP_BUILD_DIR)/Quarry.app/PlugIns/`basename $$b`; \
 	    cp -R $$b $(GNUSTEP_BUILD_DIR)/Quarry.app/PlugIns/; done
 	@cp ../Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp $(GNUSTEP_BUILD_DIR)/Quarry.app/
+	@cp ../Tools/udscript-dap/$(GNUSTEP_OBJ_DIR_NAME)/udscript-dap $(GNUSTEP_BUILD_DIR)/Quarry.app/

@@ -313,30 +313,40 @@ In order of value against cost; LOC is the MFC original's size.
 
 ## 3. Script debugger
 
-The debugger speaks the Debug Adapter Protocol, so VS Code (and any DAP
-client) debugs idScript, and so does this toolkit's own script editor,
-through UDCodeKit.
+The debugger speaks the Debug Adapter Protocol, and this toolkit's own script
+editor is its client, through UDCodeKit (no VS Code extension: the idScript
+bundle brings the adapter as it brings the language server).
 
 - [ ] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
       gutter, the debug bar (continue, step over/in/out), the debug navigator
       (threads and their call stacks), the variables view and the console.
       A grammar bundle brings its own debug adapter the way it brings its
-      language server, as VS Code's extensions do, and the UI is the same
-      for every language.
+      language server, and the UI is the same for every language.
 - [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
       its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
       language server (clangd), with build and run from the editor.
 - [ ] idScript's bundle brings the adapter below, and Quarry debugs
       scripts with UDCodeKit's debugger UI.
-- [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
-      `idBitMsg`, `DBMSG_*` — documented only by the source:
-      `neo/tools/debugger/DebuggerMessages.h`, `DebuggerClient.cpp`):
-      breakpoints, break/resume/step, call stack, threads, variables and
-      watches, the console mirrored as output. `UDBitMsg` is already ported.
-- [ ] Launch and attach configurations: start the game for debugging from
-      the workspace (`+set fs_game … +set com_enableDebuggerServer 1`), or
-      attach to one running.
-- [ ] A VS Code extension packaging the adapter, with idScript syntax.
+- [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
+      27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
+      speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where
+      the game finds no code), break/resume/step over/step in (the game has
+      no step out), threads, the call stack (a script in a pak served by
+      reference), a frame's variables (its function's parameters and locals,
+      read from the script, each asked of the game, which cannot list them),
+      hovers and watches, the console both ways (the game's output; a command
+      typed). Checked against upstream dhewm3 1.5.5 on the retail data.
+- [x] Launch and attach: launch starts the game with its debugger server on
+      (`+set com_enableDebuggerServer 1`) on the workspace's paths, its own
+      output forwarded; attach asks a running one.
+- [ ] Quarry's launch configurations: the game's executable and arguments,
+      kept in the workspace.
+
+The engine's own gaps, for the fork: `GetRegisterValue` aborts the game
+(`idTypeDef::SuperClass` throws) for a name it does not find in a
+namespace's function, so the adapter asks for those functions' variables
+only; and a call's frame shows the line after the call (the return
+statement).
 
 ## 4. Live edit bridge (needs the dhewm3 fork)
 

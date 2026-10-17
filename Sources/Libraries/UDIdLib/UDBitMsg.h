@@ -22,4 +22,17 @@
 - (void)writeBits:(uint32_t)value numBits:(int)numBits;
 - (uint32_t)readBits:(int)numBits;
 
+// idBitMsg's: a short with its sign (WriteBits( c, -16 )), an int, and a
+// string, byte-aligned and ended by a 0 (GetByteSpace). ReadShort and
+// ReadInt read -1 past the end; ReadString stops there, at a 0 or a 255,
+// and reads '%' as '.' (as it guards the engine's printf-style routines).
+- (void)writeByteAlign;
+- (void)writeShort:(int)value;
+- (void)writeInt:(int)value;
+- (void)writeString:(NSString *)string;
+- (void)readByteAlign;
+- (int)readShort;
+- (int)readInt;
+- (NSString *)readString;
+
 @end

@@ -269,6 +269,91 @@ static BOOL UDIs(const idToken *token, const char *text) {
     return walk->definitions;
 }
 
+/// What is no type: the statements' words that come before a name.
+static BOOL UDIsStatementWord(const char *text) {
+    static const char *const words[] = { "return", "thread", "if", "else", "while", "for", "do", "delete",
+                                         "new", "break", "continue", "scriptEvent", "object", "namespace" };
+    for (size_t i = 0; i < sizeof words / sizeof words[0]; i++) {
+        if (strcmp(text, words[i]) == 0) return YES;
+    }
+    return NO;
+}
+
++ (NSArray<NSString *> *)variablesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text {
+    NSMutableData *bytes = [[text dataUsingEncoding:NSUTF8StringEncoding] mutableCopy] ?: [NSMutableData data];
+    int length = (int)bytes.length;
+    [bytes appendBytes:"" length:1];
+    idLexer *lexer = [[idLexer alloc] initWithFlags:LEXFL_NOERRORS | LEXFL_NOWARNINGS | LEXFL_NOFATALERRORS fileSystem:nil];
+    if (![lexer loadMemory:bytes.bytes length:length name:@"" startLine:1 error:NULL]) return nil;
+
+    // The tokens past the preprocessor's lines: their text, and whether
+    // each is a name, and its line.
+    NSMutableArray<NSString *> *texts = [NSMutableArray array];
+    NSMutableData *kinds = [NSMutableData data];        // BOOL: a name
+    NSMutableData *lines = [NSMutableData data];        // int
+    idToken token;
+    idToken_Init(&token);
+    while ([lexer readToken:&token error:NULL]) {
+        if (token.type == TT_PUNCTUATION && UDIs(&token, "#")) {
+            [lexer skipRestOfLine:NULL];
+            continue;
+        }
+        [texts addObject:@(token.text)];
+        BOOL name = token.type == TT_NAME;
+        [kinds appendBytes:&name length:sizeof name];
+        [lines appendBytes:&token.line length:sizeof token.line];
+    }
+    NSUInteger count = texts.count;
+    const BOOL *isName = kinds.bytes;
+    const int *lineOf = lines.bytes;
+#define UD_IS(index, string) [texts[(index)] isEqualToString:@string]
+
+    // A function's body: a '{' after a ')' where no function is open (an
+    // object's braces hold its methods'); its parameters, the parentheses'.
+    for (NSUInteger i = 1; i < count; i++) {
+        if (!(UD_IS(i, "{") && UD_IS(i - 1, ")"))) continue;
+        NSInteger open = (NSInteger)i - 1, depth = 0;
+        for (; open >= 0; open--) {
+            if (UD_IS((NSUInteger)open, ")")) depth++;
+            else if (UD_IS((NSUInteger)open, "(") && --depth == 0) break;
+        }
+        NSUInteger end = i;
+        int braces = 0;
+        for (; end < count; end++) {
+            if (UD_IS(end, "{")) braces++;
+            else if (UD_IS(end, "}") && --braces == 0) break;
+        }
+        if (end >= count) end = count - 1;
+        if (open >= 0 && line >= lineOf[i] && line <= lineOf[end]) {
+            NSMutableOrderedSet<NSString *> *names = [NSMutableOrderedSet orderedSet];
+            // the parameters: each "<type> <name>", the name before ',' or ')'
+            for (NSUInteger p = (NSUInteger)open + 2; p < i; p++) {
+                if ((UD_IS(p, ",") || UD_IS(p, ")")) && isName[p - 1] && isName[p - 2]) [names addObject:texts[p - 1]];
+            }
+            // the declarations: "<type> <name>" then '=', ';' or ','; after a
+            // ',' at the statement's level, another name
+            for (NSUInteger d = i + 1; d + 2 <= end; d++) {
+                if (!isName[d] || !isName[d + 1] || UDIsStatementWord(texts[d].UTF8String)) continue;
+                if (!(UD_IS(d + 2, "=") || UD_IS(d + 2, ";") || UD_IS(d + 2, ","))) continue;
+                if (UD_IS(d - 1, ".") || isName[d - 1]) continue;
+                [names addObject:texts[d + 1]];
+                int parens = 0;
+                NSUInteger n = d + 2;
+                for (; n < end && !UD_IS(n, ";"); n++) {
+                    if (UD_IS(n, "(")) parens++;
+                    else if (UD_IS(n, ")")) parens--;
+                    else if (parens == 0 && UD_IS(n, ",") && n + 1 < end && isName[n + 1]) [names addObject:texts[n + 1]];
+                }
+                d = n;
+            }
+            return names.array;
+        }
+        i = end;            // past this body: its blocks are no functions
+    }
+#undef UD_IS
+    return nil;
+}
+
 - (void)setText:(NSString *)text forPath:(NSString *)path {
     _byPath[path] = [[self class] definitionsInText:text path:path];
 }

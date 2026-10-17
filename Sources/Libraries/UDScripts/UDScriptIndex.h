@@ -60,6 +60,14 @@ typedef NS_ENUM(NSInteger, UDScriptDefinitionKind) {
 /// The definitions in one script, as read.
 + (NSArray<UDScriptDefinition *> *)definitionsInText:(NSString *)text path:(NSString *)path;
 
+/// The variables of the function or method whose body holds @a line
+/// (1-based, as the compiler numbers them) of @a text: its parameters, then
+/// what its body declares (ParseVariableDef's "<type> <name>", "a, b"), each
+/// once, in order; nil where no body holds the line. What a debugger asks
+/// the game's interpreter for, which can read a variable by name but not
+/// list them.
++ (nullable NSArray<NSString *> *)variablesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text;
+
 @end
 
 NS_ASSUME_NONNULL_END

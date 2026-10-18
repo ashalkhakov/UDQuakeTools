@@ -335,7 +335,8 @@ bundle brings the adapter as it brings the language server).
       hover values, watch expressions, conditional breakpoints, hit counts and
       logpoints (edited from the gutter), the Breakpoints navigator, Run to
       Cursor; breakpoints and watches kept as the workspace's state.
-- [x] Steps that stay in their thread and step out, a method's Fields: the
+- [x] Steps that stay in their thread and step out, a method's `self`
+      opening to its fields (and its superclasses', as VS Code's `this`): the
       adapter does them with stock dhewm3 1.5.5 (temporary breakpoints, the
       scripts' object declarations), and dhewm3 itself with its fixes
       (dhewm/dhewm3#785: step over that stops, steps scoped to their thread,
@@ -353,6 +354,35 @@ bundle brings the adapter as it brings the language server).
 - [x] Launch and attach: launch starts the game with its debugger server on
       (`+set com_enableDebuggerServer 1`) on the workspace's paths, its own
       output forwarded; attach asks a running one.
+
+Polish, against Xcode's debugger. First what the adapter and Quarry can do
+alone (UDCodeKit has the client side of each already):
+
+- [ ] Expressions in watches and hovers, not only a variable's name:
+      `UDScriptExpression` (the breakpoints' conditions) evaluates them,
+      `self.field` included, the variables asked of the game as a condition's
+      are.
+- [ ] Restart (⌘R while debugging): the adapter stops the game and launches
+      it again, the breakpoints kept (`supportsRestartRequest`).
+- [ ] The variables view as Xcode's: values that changed since the last stop
+      marked, what was expanded (`self`) kept so across steps, a filter field.
+- [ ] Behaviors: Quarry comes forward and shows the debug navigator when the
+      game stops, and gives the game back the focus on continue.
+
+Then what needs dhewm3, as follow-ups to #786 (a capability each, the adapter
+going on without them on stock 1.5.5):
+
+- [ ] Stop on script errors (Xcode's exception breakpoints): the game tells
+      the debugger of an `idInterpreter::Error` before it kills the thread,
+      the adapter offers it as an exception filter, the stop showing the
+      message.
+- [ ] Every thread's call stack, not only the stopped one's.
+- [ ] Threads' names and states (waiting, its time), which the debug
+      navigator shows.
+- [ ] An entity's spawnargs and script object, when an `$entity` value opens.
+- [ ] Setting a variable's value from the variables view (`setVariable`).
+- [ ] Jump to line (moving a thread's next instruction), the editor's
+      `gotoTargets`.
 
 Stock dhewm3 1.5.5's own gaps, which the adapter works around and #785
 fixes: `GetRegisterValue` aborts the game (`idTypeDef::SuperClass` throws)

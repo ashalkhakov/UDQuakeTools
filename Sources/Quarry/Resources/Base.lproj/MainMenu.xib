@@ -781,6 +781,11 @@
                                     <action selector="runToCursor:" target="-1" id="QDM-runtocursor-a"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Jump to Cursor" id="QDM-jumptocursor">
+                                <connections>
+                                    <action selector="jumpToCursor:" target="-1" id="QDM-jumptocursor-a"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Toggle Breakpoint" keyEquivalent="\" id="QDM-breakpoint">
                                 <connections>
                                     <action selector="toggleBreakpoint:" target="-1" id="QDM-breakpoint-a"/>

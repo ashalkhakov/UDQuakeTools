@@ -39,20 +39,49 @@ typedef NS_ENUM(int, UDScriptDebuggerMessage) {
     UDScriptDebuggerVersion,
     UDScriptDebuggerStepOut,
     UDScriptDebuggerInspectVariables,
+    // and stopping at the scripts' errors, other threads' call stacks, an
+    // entity, setting a variable, the line the stopped thread goes on from
+    UDScriptDebuggerBreakOnErrors,
+    UDScriptDebuggerScriptError,
+    UDScriptDebuggerInspectThreadCallstack,
+    UDScriptDebuggerInspectEntity,
+    UDScriptDebuggerSetVariable,
+    UDScriptDebuggerSetNextStatement,
 };
 
 /// DBMSG_VERSION's capabilities (DBCAP_*).
 typedef NS_OPTIONS(int, UDScriptDebuggerCapabilities) {
     UDScriptDebuggerCapabilityStepOut = 1,
     UDScriptDebuggerCapabilityInspectVariables = 2,
+    UDScriptDebuggerCapabilityBreakOnErrors = 4,
+    UDScriptDebuggerCapabilityThreadCallstacks = 8,
+    UDScriptDebuggerCapabilityInspectEntity = 16,
+    UDScriptDebuggerCapabilitySetVariable = 32,
+    UDScriptDebuggerCapabilitySetNextStatement = 64,
 };
 
-/// A variable DBMSG_INSPECTVARIABLES lists (DBVAR_*: a parameter or local,
-/// or a field of the object the function is a method of).
+/// DBMSG_BREAKONERRORS' flags (DBERR_*).
+typedef NS_OPTIONS(int, UDScriptDebuggerErrorFlags) {
+    UDScriptDebuggerBreakOnScriptErrors = 1,
+    UDScriptDebuggerBreakOnScriptWarnings = 2,
+};
+
+/// A listed variable's kind (DBVAR_*).
+typedef NS_ENUM(int, UDScriptVariableKind) {
+    UDScriptVariableLocal = 0,
+    UDScriptVariableField = 1,
+    UDScriptVariableSpawnArg = 2,
+};
+
+/// A variable DBMSG_INSPECTVARIABLES or DBMSG_INSPECTENTITY lists (DBVAR_*:
+/// a parameter or local, a field of the object the function is a method of
+/// or of the entity's, one of the entity's spawn args).
 @interface UDScriptVariableInfo : NSObject
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, copy, readonly) NSString *value;
+@property (nonatomic, readonly) UDScriptVariableKind kind;
 @property (nonatomic, readonly, getter=isField) BOOL field;
+- (instancetype)initWithName:(NSString *)name value:(NSString *)value kind:(UDScriptVariableKind)kind;
 - (instancetype)initWithName:(NSString *)name value:(NSString *)value field:(BOOL)field;
 @end
 
@@ -114,6 +143,23 @@ typedef NS_OPTIONS(int, UDScriptDebuggerCapabilities) {
                 scopeDepth:(int)scopeDepth;
 /// DBMSG_INSPECTSCRIPTS's answer: the scripts the game loaded.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveScripts:(NSArray<NSString *> *)paths;
+/// DBMSG_SCRIPTERROR: the DBMSG_BREAK that follows is a stop at a script
+/// error (the game drops the map once resumed) or warning.
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didStopAtScriptError:(NSString *)message isError:(BOOL)isError;
+/// DBMSG_INSPECTTHREADCALLSTACK's answer: thread @a number's frames, the
+/// innermost first (none, for no such thread).
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveCallstack:(NSArray<UDScriptStackFrame *> *)frames
+                    thread:(int)number;
+/// DBMSG_INSPECTENTITY's answer: its spawn args and its script object's
+/// fields (none, for no such entity).
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveEntity:(NSString *)name
+                 variables:(NSArray<UDScriptVariableInfo *> *)variables;
+/// DBMSG_SETVARIABLE's answer: @a value is what the variable has now, or
+/// why it was not set.
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didSetVariable:(NSString *)name
+                scopeDepth:(int)scopeDepth set:(BOOL)set value:(NSString *)value;
+/// DBMSG_SETNEXTSTATEMENT's answer: @a line, or 0 when the thread could not go on from it.
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didSetNextStatementLine:(int)line;
 @end
 
 @interface UDScriptDebuggerConnection : NSObject
@@ -150,6 +196,14 @@ typedef NS_OPTIONS(int, UDScriptDebuggerCapabilities) {
 - (void)inspectVariable:(NSString *)name scopeDepth:(int)scopeDepth;
 - (void)inspectScripts;
 - (void)executeCommand:(NSString *)command;
+/// A newer server's, as its capabilities say: which errors stop it, another
+/// thread's call stack, an entity, setting a variable (@a value as the game
+/// writes values), the line the stopped thread goes on from.
+- (void)setBreakOnErrors:(UDScriptDebuggerErrorFlags)flags;
+- (void)inspectCallstackOfThread:(int)number;
+- (void)inspectEntity:(NSString *)name;
+- (void)setVariable:(NSString *)name value:(NSString *)value scopeDepth:(int)scopeDepth;
+- (void)setNextStatementLine:(int)line;
 
 /// One message's bytes, as the connection sends it (for the tests).
 + (NSData *)messageWithType:(UDScriptDebuggerMessage)type;

@@ -87,6 +87,7 @@
 - (IBAction)toggleDebugArea:(nullable id)sender;
 /// Debug > Run to Cursor, from the window: the selected script's tab's.
 - (IBAction)runToCursor:(nullable id)sender;
+- (IBAction)jumpToCursor:(nullable id)sender;
 @property (nonatomic, readonly, getter=isDebugAreaShown) BOOL debugAreaShown;
 
 @end

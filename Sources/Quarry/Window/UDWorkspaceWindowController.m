@@ -874,6 +874,12 @@ static const CGFloat UDDebugAreaMinimum = 80;
     else NSBeep();
 }
 
+- (IBAction)jumpToCursor:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor jumpToCursor:sender];
+    else NSBeep();
+}
+
 - (IBAction)toggleDebugArea:(id)sender {
     [self _setDebugAreaShown:!self.debugAreaShown];
 }
@@ -937,6 +943,10 @@ static const CGFloat UDDebugAreaMinimum = 80;
     if (sel_isEqual(action, @selector(runToCursor:))) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
         return [editor isKindOfClass:[UDTextEditorViewController class]] && self.scriptDebugger.session.canContinue;
+    }
+    if (sel_isEqual(action, @selector(jumpToCursor:))) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] && self.scriptDebugger.session.canJump;
     }
     if (sel_isEqual(action, @selector(toggleDebugArea:))) {
         menuItem.title = self.debugAreaShown ? @"Hide Debug Area" : @"Show Debug Area";

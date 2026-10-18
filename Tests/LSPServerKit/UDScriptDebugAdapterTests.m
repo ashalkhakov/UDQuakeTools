@@ -342,6 +342,101 @@ static NSString *const UDLampScript =
     XCTAssertEqualObjects([[_game receiveType:17 within:3] readString], @"give all");
 }
 
+/// A newer server's capabilities: the scripts' errors as exception
+/// filters, another thread's call stack, an entity opening to its fields
+/// and spawn args, setting a variable, going on from another line.
+- (void)testANewerServersErrorsThreadsEntitiesSettingAndGoto {
+    if (_game == nil) return;
+    [self attachAndStop];
+    UDBitMsg *version = [_game message:18 /* VERSION */];
+    [version writeInt:2];
+    [version writeInt:4 | 8 | 16 | 32 | 64];
+    [_game send:version];
+    [self responseTo:[self request:@"setExceptionBreakpoints" arguments:@{ @"filters": @[ @"errors" ] }]];
+    UDBitMsg *errors = [_game receiveType:21 /* BREAKONERRORS */ within:3];
+    XCTAssertEqual([errors readInt], 1, @"errors, not warnings");
+    [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]];
+
+    // another thread's frames; they have no scopes
+    NSInteger other = [self request:@"stackTrace" arguments:@{ @"threadId": @5 }];
+    XCTAssertEqual([[_game receiveType:23 /* INSPECTTHREADCALLSTACK */ within:3] readInt], 5);
+    UDBitMsg *stack = [_game message:23];
+    [stack writeInt:5];
+    [stack writeShort:1];
+    [stack writeString:@"lamp_blink(  )"];
+    [stack writeString:@"script/lamp.script"];
+    [stack writeInt:7];
+    [_game send:stack];
+    NSArray *frames = [self responseTo:other][@"body"][@"stackFrames"];
+    XCTAssertEqualObjects([frames valueForKey:@"name"], @[ @"lamp_blink" ]);
+    XCTAssertEqualObjects(frames[0][@"line"], @7);
+    XCTAssertEqualObjects([self responseTo:[self request:@"scopes" arguments:@{ @"frameId": frames[0][@"id"] }]][@"body"][@"scopes"], @[]);
+
+    // an entity opens: its script object's fields, then its spawn args
+    NSInteger watch = [self request:@"evaluate" arguments:@{ @"expression": @"lamp", @"frameId": @1, @"context": @"watch" }];
+    UDBitMsg *inspect = [_game receiveType:11 within:3];
+    int depth = [inspect readShort];
+    [self answerVariable:[inspect readString] value:@"$lamp_1" depth:depth];
+    NSNumber *lamp = [self responseTo:watch][@"body"][@"variablesReference"];
+    XCTAssertGreaterThan(lamp.integerValue, 0);
+    NSInteger opened = [self request:@"variables" arguments:@{ @"variablesReference": lamp }];
+    XCTAssertEqualObjects([[_game receiveType:24 /* INSPECTENTITY */ within:3] readString], @"$lamp_1");
+    UDBitMsg *entity = [_game message:24];
+    [entity writeString:@"$lamp_1"];
+    [entity writeShort:2];
+    [entity writeString:@"brightness"];
+    [entity writeString:@"0.5"];
+    [entity writeBits:1 numBits:8];
+    [entity writeString:@"classname"];
+    [entity writeString:@"light"];
+    [entity writeBits:2 numBits:8];
+    [_game send:entity];
+    NSArray *fields = [self responseTo:opened][@"body"][@"variables"];
+    XCTAssertEqualObjects([fields valueForKey:@"name"], (@[ @"brightness", @"spawnArgs" ]));
+    NSArray *spawnArgs = [self responseTo:[self request:@"variables" arguments:@{ @"variablesReference": fields[1][@"variablesReference"] }]][@"body"][@"variables"];
+    XCTAssertEqualObjects(spawnArgs[0][@"name"], @"classname");
+    XCTAssertEqualObjects(spawnArgs[0][@"value"], @"\"light\"");
+
+    // a local set, as the game answers
+    NSInteger set = [self request:@"setVariable" arguments:@{ @"variablesReference": @1, @"name": @"level", @"value": @"2" }];
+    UDBitMsg *setting = [_game receiveType:25 /* SETVARIABLE */ within:3];
+    XCTAssertEqual((short)[setting readShort], -1);
+    XCTAssertEqualObjects([setting readString], @"level");
+    XCTAssertEqualObjects([setting readString], @"2");
+    UDBitMsg *setAnswer = [_game message:25];
+    [setAnswer writeShort:-1];
+    [setAnswer writeString:@"level"];
+    [setAnswer writeBits:1 numBits:8];
+    [setAnswer writeString:@"2"];
+    [_game send:setAnswer];
+    XCTAssertEqualObjects([self responseTo:set][@"body"][@"value"], @"2");
+
+    // going on from line 4: stopped there again
+    NSDictionary *targets = [self responseTo:[self request:@"gotoTargets" arguments:@{ @"source": @{ @"path": _script }, @"line": @4 }]];
+    XCTAssertEqualObjects(targets[@"body"][@"targets"][0][@"line"], @4);
+    NSInteger jump = [self request:@"goto" arguments:@{ @"threadId": @4, @"targetId": @4 }];
+    XCTAssertEqual([[_game receiveType:26 /* SETNEXTSTATEMENT */ within:3] readInt], 4);
+    UDBitMsg *jumped = [_game message:26];
+    [jumped writeInt:4];
+    [jumped writeInt:99];
+    [_game send:jumped];
+    XCTAssertEqualObjects([self responseTo:jump][@"success"], @YES);
+    XCTAssertEqualObjects([self event:@"stopped"][@"body"][@"reason"], @"goto");
+    XCTAssertNotNil([_game receiveType:12 /* INSPECTCALLSTACK */ within:3], @"where it is now");
+
+    // a script error stops it, saying what
+    [self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]];
+    XCTAssertNotNil([_game receiveType:7 /* RESUME */ within:3]);
+    UDBitMsg *error = [_game message:22 /* SCRIPTERROR */];
+    [error writeBits:1 numBits:8];
+    [error writeString:@"lamp exploded"];
+    [_game send:error];
+    [self breakAtLine:4 path:@"script/lamp.script" thread:4];
+    NSDictionary *stopped = [self event:@"stopped"];
+    XCTAssertEqualObjects(stopped[@"body"][@"reason"], @"exception");
+    XCTAssertEqualObjects(stopped[@"body"][@"description"], @"Script error: lamp exploded");
+}
+
 /// A line with no code: the game takes the breakpoint off, and it is
 /// unverified; a script elsewhere is never one of the game's.
 - (void)testABreakpointTheGameRefusesIsUnverified {

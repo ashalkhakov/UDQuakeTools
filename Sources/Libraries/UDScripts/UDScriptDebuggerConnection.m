@@ -49,12 +49,20 @@
 
 @implementation UDScriptVariableInfo
 
-- (instancetype)initWithName:(NSString *)name value:(NSString *)value field:(BOOL)field {
+- (instancetype)initWithName:(NSString *)name value:(NSString *)value kind:(UDScriptVariableKind)kind {
     if (!(self = [super init])) return nil;
     _name = [name copy];
     _value = [value copy];
-    _field = field;
+    _kind = kind;
     return self;
+}
+
+- (instancetype)initWithName:(NSString *)name value:(NSString *)value field:(BOOL)field {
+    return [self initWithName:name value:value kind:field ? UDScriptVariableField : UDScriptVariableLocal];
+}
+
+- (BOOL)isField {
+    return _kind == UDScriptVariableField;
 }
 
 @end
@@ -228,6 +236,62 @@ static NSError *UDSocketError(NSString *what) {
     [self _send:message];
 }
 
+- (void)setBreakOnErrors:(UDScriptDebuggerErrorFlags)flags {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerBreakOnErrors];
+    [message writeInt:flags];
+    [self _send:message];
+}
+
+- (void)inspectCallstackOfThread:(int)number {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerInspectThreadCallstack];
+    [message writeInt:number];
+    [self _send:message];
+}
+
+- (void)inspectEntity:(NSString *)name {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerInspectEntity];
+    [message writeString:name];
+    [self _send:message];
+}
+
+- (void)setVariable:(NSString *)name value:(NSString *)value scopeDepth:(int)scopeDepth {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerSetVariable];
+    [message writeShort:scopeDepth];
+    [message writeString:name];
+    [message writeString:value];
+    [self _send:message];
+}
+
+- (void)setNextStatementLine:(int)line {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerSetNextStatement];
+    [message writeInt:line];
+    [self _send:message];
+}
+
+/// MSG_WriteInterpreterInfo's: a short depth, then each frame.
+static NSArray<UDScriptStackFrame *> *UDReadFrames(UDBitMsg *message) {
+    NSMutableArray<UDScriptStackFrame *> *frames = [NSMutableArray array];
+    for (int depth = (short)[message readShort]; depth > 0; depth--) {
+        NSString *function = [message readString];
+        NSString *path = [message readString];
+        int line = [message readInt];
+        [frames addObject:[[UDScriptStackFrame alloc] initWithFunction:function path:path line:line]];
+    }
+    return frames;
+}
+
+/// A short count, then each one's name, value and kind (a byte).
+static NSArray<UDScriptVariableInfo *> *UDReadVariables(UDBitMsg *message) {
+    NSMutableArray<UDScriptVariableInfo *> *variables = [NSMutableArray array];
+    for (int count = (short)[message readShort]; count > 0; count--) {
+        NSString *name = [message readString];
+        NSString *value = [message readString];
+        UDScriptVariableKind kind = (UDScriptVariableKind)[message readBits:8];
+        [variables addObject:[[UDScriptVariableInfo alloc] initWithName:name value:value kind:kind]];
+    }
+    return variables;
+}
+
 #pragma mark - Receiving (rvDebuggerClient::ProcessMessages)
 
 - (void)_readPackets {
@@ -280,13 +344,7 @@ static NSError *UDSocketError(NSString *what) {
             break;
         }
         case UDScriptDebuggerInspectCallstack: {
-            NSMutableArray<UDScriptStackFrame *> *frames = [NSMutableArray array];
-            for (int depth = (short)[message readShort]; depth > 0; depth--) {
-                NSString *function = [message readString];
-                NSString *path = [message readString];
-                int line = [message readInt];
-                [frames addObject:[[UDScriptStackFrame alloc] initWithFunction:function path:path line:line]];
-            }
+            NSArray<UDScriptStackFrame *> *frames = UDReadFrames(message);
             if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveCallstack:)]) {
                 [delegate debuggerConnection:self didReceiveCallstack:frames];
             }
@@ -338,15 +396,50 @@ static NSError *UDSocketError(NSString *what) {
         }
         case UDScriptDebuggerInspectVariables: {
             int depth = (short)[message readShort];
-            NSMutableArray<UDScriptVariableInfo *> *variables = [NSMutableArray array];
-            for (int count = (short)[message readShort]; count > 0; count--) {
-                NSString *name = [message readString];
-                NSString *value = [message readString];
-                BOOL field = [message readBits:8] == 1;
-                [variables addObject:[[UDScriptVariableInfo alloc] initWithName:name value:value field:field]];
-            }
+            NSArray<UDScriptVariableInfo *> *variables = UDReadVariables(message);
             if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveVariables:scopeDepth:)]) {
                 [delegate debuggerConnection:self didReceiveVariables:variables scopeDepth:depth];
+            }
+            break;
+        }
+        case UDScriptDebuggerScriptError: {
+            BOOL isError = [message readBits:8] != 0;
+            NSString *text = [message readString];
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didStopAtScriptError:isError:)]) {
+                [delegate debuggerConnection:self didStopAtScriptError:text isError:isError];
+            }
+            break;
+        }
+        case UDScriptDebuggerInspectThreadCallstack: {
+            int number = [message readInt];
+            NSArray<UDScriptStackFrame *> *frames = UDReadFrames(message);
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveCallstack:thread:)]) {
+                [delegate debuggerConnection:self didReceiveCallstack:frames thread:number];
+            }
+            break;
+        }
+        case UDScriptDebuggerInspectEntity: {
+            NSString *name = [message readString];
+            NSArray<UDScriptVariableInfo *> *variables = UDReadVariables(message);
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveEntity:variables:)]) {
+                [delegate debuggerConnection:self didReceiveEntity:name variables:variables];
+            }
+            break;
+        }
+        case UDScriptDebuggerSetVariable: {
+            int depth = (short)[message readShort];
+            NSString *name = [message readString];
+            BOOL set = [message readBits:8] != 0;
+            NSString *value = [message readString];
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didSetVariable:scopeDepth:set:value:)]) {
+                [delegate debuggerConnection:self didSetVariable:name scopeDepth:depth set:set value:value];
+            }
+            break;
+        }
+        case UDScriptDebuggerSetNextStatement: {
+            int line = [message readInt];
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didSetNextStatementLine:)]) {
+                [delegate debuggerConnection:self didSetNextStatementLine:line];
             }
             break;
         }

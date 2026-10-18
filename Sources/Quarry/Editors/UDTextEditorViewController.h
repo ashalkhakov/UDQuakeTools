@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 /** Debug > Run to Cursor: the code editor's (a temporary breakpoint at the
     caret's line, then on). */
 - (IBAction)runToCursor:(nullable id)sender;
+/// The stopped thread goes on from the caret's line (UDCodeKit's Jump to Cursor).
+- (IBAction)jumpToCursor:(nullable id)sender;
 /** The code editor's box for the breakpoint at @a line (1-based). */
 - (void)editBreakpointAtLine:(NSInteger)line;
 

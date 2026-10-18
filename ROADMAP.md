@@ -373,20 +373,23 @@ alone (UDCodeKit has the client side of each already):
       game stops, and gives the game back the focus when it goes on (the
       adapter's `process` event: a game it launched).
 
-Then what needs dhewm3, as follow-ups to #786 (a capability each, the adapter
-going on without them on stock 1.5.5):
+Then what needs dhewm3, added to #786 (a capability each, the adapter going
+on without them on stock 1.5.5, which refuses them):
 
-- [ ] Stop on script errors (Xcode's exception breakpoints): the game tells
-      the debugger of an `idInterpreter::Error` before it kills the thread,
-      the adapter offers it as an exception filter, the stop showing the
-      message.
-- [ ] Every thread's call stack, not only the stopped one's.
-- [ ] Threads' names and states (waiting, its time), which the debug
-      navigator shows.
-- [ ] An entity's spawnargs and script object, when an `$entity` value opens.
-- [ ] Setting a variable's value from the variables view (`setVariable`).
-- [ ] Jump to line (moving a thread's next instruction), the editor's
-      `gotoTargets`.
+- [x] Stop on script errors (Xcode's exception breakpoints): the client asks
+      (`DBMSG_BREAKONERRORS`), the game stops in `idInterpreter::Error` and
+      `::Warning` before it handles them, saying why (`DBMSG_SCRIPTERROR`);
+      Script Errors and Script Warnings are the adapter's exception filters.
+- [x] Every thread's call stack (`DBMSG_INSPECTTHREADCALLSTACK`), not only
+      the stopped one's (their variables are not read).
+- [x] Threads' states in the debug navigator (waiting, ending), which the
+      game already said.
+- [x] An entity opens to its script object's fields and its spawn args
+      (`DBMSG_INSPECTENTITY`), self too.
+- [x] Setting a variable from the variables view (`DBMSG_SETVARIABLE`): a
+      parameter, local or field.
+- [x] Jump to line (Debug > Jump to Cursor, `DBMSG_SETNEXTSTATEMENT`): a line
+      of the function the thread is in.
 
 Stock dhewm3 1.5.5's own gaps, which the adapter works around and #785
 fixes: `GetRegisterValue` aborts the game (`idTypeDef::SuperClass` throws)

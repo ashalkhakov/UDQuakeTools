@@ -313,6 +313,35 @@ static NSString *const UDLampScript =
     XCTAssertEqualObjects(output[@"body"][@"output"], @"lamp lit\n");
 }
 
+/// Watches, hovers and the console take expressions, their variables
+/// asked of the game; in the console what is none, or a name that is no
+/// variable here, is the game's command.
+- (void)testExpressionsAreEvaluatedInWatchesAndTheConsole {
+    if (_game == nil) return;
+    [self attachAndStop];
+    [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]];
+    NSInteger watch = [self request:@"evaluate" arguments:@{ @"expression": @"level * 2 + color.y", @"frameId": @1, @"context": @"watch" }];
+    NSMutableSet *asked = [NSMutableSet set];
+    for (int i = 0; i < 2; i++) {
+        UDBitMsg *inspect = [_game receiveType:11 /* INSPECTVARIABLE */ within:3];
+        int depth = [inspect readShort];
+        NSString *name = [inspect readString];
+        [asked addObject:name];
+        [self answerVariable:name value:[name isEqualToString:@"color"] ? @"1,0.5,0" : @"2" depth:depth];
+    }
+    XCTAssertEqualObjects(asked, ([NSSet setWithArray:@[@"level", @"color"]]));
+    XCTAssertEqualObjects([self responseTo:watch][@"body"][@"result"], @"4.5");
+
+    NSInteger typed = [self request:@"evaluate" arguments:@{ @"expression": @"noclip", @"frameId": @1, @"context": @"repl" }];
+    UDBitMsg *inspect = [_game receiveType:11 within:3];
+    int depth = [inspect readShort];
+    [self answerVariable:[inspect readString] value:@"???" depth:depth];
+    XCTAssertEqualObjects([self responseTo:typed][@"success"], @YES);
+    XCTAssertEqualObjects([[_game receiveType:17 /* EXECCOMMAND */ within:3] readString], @"noclip");
+    [self responseTo:[self request:@"evaluate" arguments:@{ @"expression": @"give all", @"context": @"repl" }]];
+    XCTAssertEqualObjects([[_game receiveType:17 within:3] readString], @"give all");
+}
+
 /// A line with no code: the game takes the breakpoint off, and it is
 /// unverified; a script elsewhere is never one of the game's.
 - (void)testABreakpointTheGameRefusesIsUnverified {
@@ -583,6 +612,17 @@ static NSString *const UDLampScript =
     XCTAssertNil([UDScriptExpression expressionWithText:@"count >" error:&error]);
     XCTAssertNil([UDScriptExpression expressionWithText:@"(count" error:&error]);
     XCTAssertEqualObjects([[UDScriptExpression expressionWithText:@"count" error:NULL] names], [NSSet setWithObject:@"count"]);
+    // a vector's components, a method's self.field (the field's name)
+    XCTAssertEqualObjects([[UDScriptExpression expressionWithText:@"origin.y * 2" error:NULL] valueWithVariables:values error:NULL], @4);
+    XCTAssertNil([UDScriptExpression expressionWithText:@"origin.w" error:&error]);
+    UDScriptExpression *field = [UDScriptExpression expressionWithText:@"self.count" error:NULL];
+    XCTAssertEqualObjects(field.names, [NSSet setWithObject:@"count"]);
+    XCTAssertTrue(field.isVariable);
+    XCTAssertFalse([UDScriptExpression expressionWithText:@"count + 1" error:NULL].isVariable);
+    // as a watch shows them
+    XCTAssertEqualObjects([UDScriptExpression displayOf:[[UDScriptExpression expressionWithText:@"name + \"s\"" error:NULL]
+                                                         valueWithVariables:values error:NULL]], @"\"lamps\"");
+    XCTAssertEqualObjects([UDScriptExpression displayOf:@2.5], @"2.5");
     // hit counts, as VS Code's
     XCTAssertTrue([UDScriptExpression hitCount:5 passes:@"5" error:NULL]);
     XCTAssertFalse([UDScriptExpression hitCount:4 passes:@"== 5" error:NULL]);

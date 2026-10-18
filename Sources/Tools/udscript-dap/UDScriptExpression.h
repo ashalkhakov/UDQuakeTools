@@ -9,6 +9,8 @@
 //  % and parentheses) over numbers, strings ("text"), entities ($name) and
 //  variables, whose values are as the game formats them: a float "%g", a
 //  vector "x,y,z", a boolean 1 or 0, a string quoted, an entity "$name".
+//  A vector's .x, .y and .z are its components; self.field, in a method,
+//  is the field (the name the game reads it by).
 //
 
 #import <Foundation/Foundation.h>
@@ -24,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) NSString *text;
 /// The variables it reads.
 @property (nonatomic, copy, readonly) NSSet<NSString *> *names;
+/// Whether it is a variable alone (self.field too): its value the game's text.
+@property (nonatomic, readonly) BOOL isVariable;
 
 /// Its value (an NSNumber, or an NSString), the variables' as the game gave
 /// them (a name missing: no such variable, an error).
@@ -33,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isTrue:(id)value;
 /// A value as a logpoint prints it.
 + (NSString *)textOf:(id)value;
+/// A value as a watch shows it: a string quoted, as the game shows one.
++ (NSString *)displayOf:(id)value;
 
 /// A logpoint's message in pieces: its text (NSString) and, for each
 /// {expression} in it, the expression (UDScriptExpression); nil, with

@@ -7,7 +7,8 @@
 
 // A parsed expression: a tree of nodes, each an array whose first element
 // says what it is: @[@"n", number], @[@"s", string], @[@"v", name],
-// @[@"!", operand], @[@"-", operand] (negation), @[op, left, right].
+// @[@"!", operand], @[@"-", operand] (negation), @[@".", operand, member]
+// (a vector's x, y or z), @[op, left, right].
 
 @interface UDScriptExpression ()
 @property (nonatomic, copy, readwrite) NSString *text;
@@ -35,12 +36,12 @@ static BOOL UDIsNameCharacter(unichar c) {
 }
 
 /// The tokens of @a text: names (a "$" one an entity), numbers, strings
-/// (with their quotes), operators.
+/// (with their quotes), operators ("." a member's).
 static NSArray<NSString *> *UDTokens(NSString *text, NSString **error) {
     NSMutableArray<NSString *> *tokens = [NSMutableArray array];
     NSUInteger length = text.length, i = 0;
     NSArray<NSString *> *operators = @[@"||", @"&&", @"==", @"!=", @"<=", @">=", @"<", @">", @"!", @"+", @"-", @"*", @"/",
-                                       @"%", @"(", @")"];
+                                       @"%", @"(", @")", @"."];
     while (i < length) {
         unichar c = [text characterAtIndex:i];
         if (c == ' ' || c == '\t' || c == '\n' || c == '\r') { i++; continue; }
@@ -119,7 +120,19 @@ static NSArray<NSArray<NSString *> *> *UDLevels(void) {
         NSArray *operand = [self unary];
         return operand ? @[@"-", operand] : nil;
     }
-    return [self primary];
+    NSArray *operand = [self primary];
+    // a member: a vector's component
+    while (operand != nil && [self take:@"."]) {
+        NSString *member = [self peek];
+        if (![member isEqualToString:@"x"] && ![member isEqualToString:@"y"] && ![member isEqualToString:@"z"]) {
+            error = member != nil ? [NSString stringWithFormat:@"'%@' is no vector's member (x, y, z)", member]
+                                  : @"The expression ends too soon";
+            return nil;
+        }
+        at++;
+        operand = @[@".", operand, member];
+    }
+    return operand;
 }
 
 - (NSArray *)primary {
@@ -143,6 +156,12 @@ static NSArray<NSArray<NSString *> *> *UDLevels(void) {
     if (c == '$') return @[@"s", token];
     if ((c >= '0' && c <= '9') || c == '.') return @[@"n", @(token.doubleValue)];
     if (UDIsNameStart(c)) {
+        // self.field: the field, which a method reads by its name
+        if ([token isEqualToString:@"self"] && [[self peek] isEqualToString:@"."] && at + 1 < tokens.count
+            && UDIsNameStart([tokens[at + 1] characterAtIndex:0])) {
+            token = tokens[at + 1];
+            at += 2;
+        }
         [names addObject:token];
         return @[@"v", token];
     }
@@ -204,6 +223,16 @@ static BOOL UDIsNumber(id value) {
         }
         return UDValueOfVariable(value);
     }
+    if ([kind isEqualToString:@"."]) {
+        id vector = [self _evaluate:node[1] variables:values error:error];
+        if (vector == nil) return nil;
+        NSArray<NSString *> *components = [UDIsNumber(vector) ? @"" : vector componentsSeparatedByString:@","];
+        if (components.count != 3) {
+            if (error) *error = [NSString stringWithFormat:@".%@ takes a vector", node[2]];
+            return nil;
+        }
+        return @([components[[@[@"x", @"y", @"z"] indexOfObject:node[2]]] doubleValue]);
+    }
     if (node.count == 2) {
         id operand = [self _evaluate:node[1] variables:values error:error];
         if (operand == nil) return nil;
@@ -261,6 +290,18 @@ static BOOL UDIsNumber(id value) {
 + (NSString *)textOf:(id)value {
     if (UDIsNumber(value)) return [NSString stringWithFormat:@"%g", [value doubleValue]];
     return value;
+}
+
++ (NSString *)displayOf:(id)value {
+    if (UDIsNumber(value)) return [self textOf:value];
+    NSString *text = value;
+    // an entity, a vector: as the game writes them; a string quoted
+    if ([text hasPrefix:@"$"] || [text componentsSeparatedByString:@","].count == 3) return text;
+    return [NSString stringWithFormat:@"\"%@\"", text];
+}
+
+- (BOOL)isVariable {
+    return [self.tree[0] isEqualToString:@"v"];
 }
 
 + (NSArray *)partsOfMessage:(NSString *)message error:(NSString **)error {

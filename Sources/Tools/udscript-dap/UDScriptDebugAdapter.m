@@ -8,6 +8,7 @@
 #import "UDScriptExpression.h"
 #import "UDWorkspace.h"
 #import "idFileSystem.h"
+#include <signal.h>
 
 /// A breakpoint as the client set it, and as the game has it.
 @interface UDScriptBreakpoint : NSObject
@@ -38,6 +39,8 @@
 /// A method's self: its fields' reference, and its object's name.
 @property (nonatomic) NSInteger selfReference;
 @property (nonatomic, copy, nullable) NSString *selfObject;
+/// An evaluate's: the expression the values are for.
+@property (nonatomic, strong, nullable) UDScriptExpression *expression;
 @end
 
 @implementation UDScriptVariablesQuery
@@ -388,13 +391,30 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     // the game takes its breakpoints off and goes on
     if (_game.connected) [_game sendDisconnect];
     id terminate = request.arguments[@"terminateDebuggee"];
+    [_game close];
     if (_task != nil && (terminate == nil || [terminate boolValue])) {
         NSTask *task = _task;
         _task = nil;
         [task terminate];
+        // answered once it is gone, its debugger's port free (a restart
+        // starts another at once)
+        [self _respond:request whenGone:task tries:30];
+        return;
     }
-    [_game close];
     [request respondWithBody:nil];
+}
+
+/// @a request answered when @a task has exited, looked at every tenth of a
+/// second; after @a tries, killed.
+- (void)_respond:(UDDAPRequest *)request whenGone:(NSTask *)task tries:(int)tries {
+    if ([task isRunning] && tries == 0) kill(task.processIdentifier, SIGKILL);
+    if (![task isRunning] || tries == 0) {
+        [request respondWithBody:nil];
+        return;
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 10), _queue, ^{
+        [self _respond:request whenGone:task tries:tries - 1];
+    });
 }
 
 - (void)terminate:(UDDAPRequest *)request {
@@ -1004,32 +1024,16 @@ static NSString *UDFunctionName(NSString *function) {
 - (void)_answerVariables:(UDScriptVariablesQuery *)query {
     if (query.request.answered) return;
     [_variableQueries removeObject:query];
+    if (query.expression != nil) {
+        [self _answerEvaluate:query];
+        return;
+    }
     NSMutableArray *variables = [NSMutableArray array];
     for (NSString *name in query.names) {
         NSString *value = query.values[name] ?: @"???";
-        if ([query.request.command isEqualToString:@"evaluate"]) {
-            if ([value isEqualToString:@"???"] && ![query.request.arguments[@"context"] isEqual:@"watch"]) {
-                [query.request failWithMessage:[NSString stringWithFormat:@"%@ is not a variable here", name]];
-            } else {
-                [query.request respondWithBody:@{ @"result": value, @"variablesReference": @0 }];
-            }
-            return;
-        }
         [variables addObject:[self _describeVariable:name value:value selfReference:query.selfReference object:query.selfObject]];
     }
     [query.request respondWithBody:@{ @"variables": variables }];
-}
-
-/// What can be a variable's name: idScript's names, and an object's field
-/// ("$player1.health" is not).
-static BOOL UDIsVariableName(NSString *text) {
-    if (text.length == 0) return NO;
-    NSCharacterSet *letters = [NSCharacterSet characterSetWithCharactersInString:
-                               @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"];
-    NSCharacterSet *nameCharacters = [NSCharacterSet characterSetWithCharactersInString:
-                                      @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"];
-    if (![letters characterIsMember:[text characterAtIndex:0]]) return NO;
-    return [text rangeOfCharacterFromSet:nameCharacters.invertedSet].location == NSNotFound;
 }
 
 /// Whether the game can be asked for @a name in frame @a index. In a
@@ -1055,40 +1059,98 @@ static BOOL UDIsVariableName(NSString *text) {
     return text != nil;
 }
 
+/// Watches, hovers and the console: an expression (UDScriptExpression),
+/// its variables asked of the game and it evaluated here. In the console,
+/// what is not one (or a name that is no variable here: "noclip") is a
+/// command for the game, as is anything after a "/".
 - (void)evaluate:(UDDAPRequest *)request {
-    NSString *expression = [request.arguments[@"expression"] isKindOfClass:[NSString class]] ? request.arguments[@"expression"] : @"";
-    expression = [expression stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSString *context = request.arguments[@"context"];
-    BOOL console = [context isEqual:@"repl"];
-    BOOL command = [expression hasPrefix:@"/"] || [expression hasPrefix:@"\\"];
-    if (console && (command || !_stopped || !UDIsVariableName(expression))) {
-        if (!_game.connected) {
-            [request failWithMessage:@"The game is not connected"];
-            return;
-        }
-        [_game executeCommand:command ? [expression substringFromIndex:1] : expression];
-        [request respondWithBody:@{ @"result": @"", @"variablesReference": @0 }];
+    NSString *text = [request.arguments[@"expression"] isKindOfClass:[NSString class]] ? request.arguments[@"expression"] : @"";
+    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    BOOL console = [request.arguments[@"context"] isEqual:@"repl"];
+    BOOL command = [text hasPrefix:@"/"] || [text hasPrefix:@"\\"];
+    NSString *why = nil;
+    UDScriptExpression *expression = command ? nil : [UDScriptExpression expressionWithText:text error:&why];
+    if (console && (command || !_stopped || expression == nil)) {
+        [self _executeCommand:command ? [text substringFromIndex:1] : text request:request];
         return;
     }
-    if (!_stopped || !UDIsVariableName(expression)) {
-        [request failWithMessage:_stopped ? @"Only a variable's name can be read" : @"The game is running"];
+    if (!_stopped) {
+        [request failWithMessage:@"The game is running"];
+        return;
+    }
+    if (expression == nil) {
+        [request failWithMessage:why];
         return;
     }
     NSInteger frame = request.arguments[@"frameId"] ? [request.arguments[@"frameId"] integerValue] - 1 : 0;
-    if (![self _canInspect:expression inFrame:frame]) {
-        [request failWithMessage:[NSString stringWithFormat:@"%@ is not a variable here", expression]];
+    for (NSString *name in expression.names) {
+        if ([self _canInspect:name inFrame:frame]) continue;
+        if (console && expression.isVariable) [self _executeCommand:text request:request];
+        else [request failWithMessage:[NSString stringWithFormat:@"%@ is not a variable here", name]];
         return;
     }
     UDScriptVariablesQuery *query = [[UDScriptVariablesQuery alloc] init];
     query.request = request;
     query.scopeDepth = (frame >= 0 && frame < (NSInteger)_frames.count) ? [self _scopeDepthOfFrame:frame] : -1;
-    query.names = @[expression];
+    query.names = expression.names.allObjects;
     query.values = [NSMutableDictionary dictionary];
+    query.expression = expression;
+    NSString *object = [self _objectOfFrame:frame];
+    if (object != nil && [expression.names containsObject:@"self"]) {
+        query.selfReference = frame * 2 + 2;
+        query.selfObject = object;
+    }
+    if (query.names.count == 0) {
+        [self _answerEvaluate:query];
+        return;
+    }
     [_variableQueries addObject:query];
-    [_game inspectVariable:expression scopeDepth:query.scopeDepth];
+    for (NSString *name in query.names) [_game inspectVariable:name scopeDepth:query.scopeDepth];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, UDGameAnswerTimeout), _queue, ^{
         [self _answerVariables:query];
     });
+}
+
+- (void)_executeCommand:(NSString *)command request:(UDDAPRequest *)request {
+    if (!_game.connected) {
+        [request failWithMessage:@"The game is not connected"];
+        return;
+    }
+    [_game executeCommand:command];
+    [request respondWithBody:@{ @"result": @"", @"variablesReference": @0 }];
+}
+
+/// An evaluate's expression, its variables read: a variable alone as the
+/// game writes it (a watch's missing one "???", as VS Code shows it; self
+/// opening to its fields), else its value.
+- (void)_answerEvaluate:(UDScriptVariablesQuery *)query {
+    [_variableQueries removeObject:query];
+    UDDAPRequest *request = query.request;
+    UDScriptExpression *expression = query.expression;
+    NSString *context = request.arguments[@"context"];
+    if (expression.isVariable) {
+        NSString *name = expression.names.anyObject;
+        NSString *value = query.values[name] ?: @"???";
+        // (a method's self the stock game cannot print: its type, as Locals shows it)
+        BOOL isSelf = query.selfReference > 0 && [name isEqualToString:@"self"];
+        if ([value isEqualToString:@"???"] && !isSelf && ![context isEqual:@"watch"]) {
+            if ([context isEqual:@"repl"]) [self _executeCommand:expression.text request:request];
+            else [request failWithMessage:[NSString stringWithFormat:@"%@ is not a variable here", name]];
+            return;
+        }
+        NSDictionary *described = [self _describeVariable:name value:value selfReference:query.selfReference object:query.selfObject];
+        NSMutableDictionary *body = [@{ @"result": described[@"value"], @"variablesReference": described[@"variablesReference"] } mutableCopy];
+        if (described[@"type"] != nil) body[@"type"] = described[@"type"];
+        [request respondWithBody:body];
+        return;
+    }
+    NSString *why = nil;
+    id value = [expression valueWithVariables:query.values error:&why];
+    if (value == nil) {
+        [request failWithMessage:why];
+        return;
+    }
+    [request respondWithBody:@{ @"result": [UDScriptExpression displayOf:value], @"variablesReference": @0 }];
 }
 
 #pragma mark - Sources

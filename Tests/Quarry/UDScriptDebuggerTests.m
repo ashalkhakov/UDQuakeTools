@@ -91,6 +91,12 @@ static NSString *const UDFixtureScript =
     // Attach: the game connects, and has the breakpoint as it names the script
     [controller attachDebugger:nil];
     XCTAssertTrue(controller.debugAreaShown);
+    // shown after being hidden: the variables inside the area, none of them over its top
+    NSView *area = controller.scriptDebugger.area.view;
+    NSScrollView *variables = controller.scriptDebugger.area.variablesView.enclosingScrollView;
+    NSRect inArea = [variables convertRect:variables.bounds toView:area];
+    XCTAssertTrue(NSHeight(area.bounds) > 0 && NSContainsRect(area.bounds, inArea), @"%@ in %@",
+                  NSStringFromRect(inArea), NSStringFromRect(area.bounds));
     XCTAssertNotNil([self receive:1 /* CONNECT */ within:20], @"the adapter asks the game");
     [self.game send:[self.game message:2 /* CONNECTED */]];
     UDBitMsg *add = [self receive:4 /* ADDBREAKPOINT */ within:10];

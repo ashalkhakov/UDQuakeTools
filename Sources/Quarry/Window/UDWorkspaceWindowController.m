@@ -832,6 +832,10 @@ static const CGFloat UDDebugAreaMinimum = 80;
 
 - (void)_layOutDebugPane {
     NSRect bounds = self.debugPane.bounds;
+    // hidden: the bar and the area keep their size, as their own views'
+    // autoresizing does not come back from none (the variables' scroll view
+    // came back reaching over the area's top, its first row under it)
+    if (!self.debugAreaShown || NSHeight(bounds) < 1) return;
     NSView *bar = self.scriptDebugger.bar.view;
     CGFloat barHeight = MIN(NSHeight(bar.frame) > 0 ? NSHeight(bar.frame) : 28, NSHeight(bounds));
     BOOL flipped = self.debugPane.isFlipped;

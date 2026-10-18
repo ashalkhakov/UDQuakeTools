@@ -35,6 +35,9 @@
 @property (nonatomic) int scopeDepth;
 @property (nonatomic, copy) NSArray<NSString *> *names;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *values;
+/// A method's self: its fields' reference, and its object's name.
+@property (nonatomic) NSInteger selfReference;
+@property (nonatomic, copy, nullable) NSString *selfObject;
 @end
 
 @implementation UDScriptVariablesQuery
@@ -864,21 +867,28 @@ static NSString *UDFunctionName(NSString *function) {
     return owner;
 }
 
-/// Its scopes: Locals (its parameters and locals), and for a method Fields
-/// (its object's, and its superclasses'). A scope's reference: the frame's
-/// twice, and one or two.
+/// Its scope: Locals (its parameters and locals), a method's self first,
+/// which opens to its fields (its object's, and its superclasses'), as VS
+/// Code shows a method's this. A reference: the frame's twice, and one
+/// (its locals) or two (its self's fields).
 - (void)scopes:(UDDAPRequest *)request {
     NSInteger frame = [request.arguments[@"frameId"] integerValue] - 1;
     if (!_stopped || frame < 0 || frame >= (NSInteger)_frames.count) {
         [request respondWithBody:@{ @"scopes": @[] }];
         return;
     }
-    NSMutableArray *scopes = [NSMutableArray arrayWithObject:@{ @"name": @"Locals", @"presentationHint": @"locals",
-                                                                @"variablesReference": @(frame * 2 + 1), @"expensive": @NO }];
-    if ([self _objectOfFrame:frame] != nil) {
-        [scopes addObject:@{ @"name": @"Fields", @"variablesReference": @(frame * 2 + 2), @"expensive": @NO }];
+    [request respondWithBody:@{ @"scopes": @[ @{ @"name": @"Locals", @"presentationHint": @"locals",
+                                                 @"variablesReference": @(frame * 2 + 1), @"expensive": @NO } ] }];
+}
+
+/// A variable's description; self, a method's, opening to its fields.
+- (NSDictionary *)_describeVariable:(NSString *)name value:(NSString *)value selfReference:(NSInteger)reference object:(NSString *)object {
+    if (reference > 0 && [name isEqualToString:@"self"]) {
+        // the stock game cannot print an object: its type, then
+        NSString *shown = [value isEqualToString:@"???"] || value.length == 0 ? object : [NSString stringWithFormat:@"%@ (%@)", value, object];
+        return @{ @"name": name, @"value": shown, @"type": object, @"variablesReference": @(reference) };
     }
-    [request respondWithBody:@{ @"scopes": scopes }];
+    return @{ @"name": name, @"value": value, @"variablesReference": @0 };
 }
 
 /// The fields of @a object and its superclasses, the object's first, as the
@@ -921,20 +931,22 @@ static NSString *UDFunctionName(NSString *function) {
     if (_engineCapabilities & UDScriptDebuggerCapabilityInspectVariables) {
         BOOL asked = NO;
         for (NSArray *waiting in _listRequests) asked = asked || [waiting[1] intValue] == depth;
-        [_listRequests addObject:@[request, @(depth), @(fields)]];
+        [_listRequests addObject:@[request, @(depth), @(fields), @(fields ? 0 : frame * 2 + 2), [self _objectOfFrame:frame] ?: @""]];
         if (!asked) [_game inspectVariablesAtScopeDepth:depth];
         return;
     }
     // else the names the script has, each asked of the game; frame 0 is
     // where it stopped, under it each line is the call's
     UDScriptStackFrame *at = _frames[(NSUInteger)frame];
+    NSString *object = [self _objectOfFrame:frame];
     NSArray<NSString *> *names = nil;
     if (fields) {
-        NSString *object = [self _objectOfFrame:frame];
         names = object != nil ? [self _fieldsOfObject:object] : nil;
     } else {
         NSString *text = [self _textOf:at.path];
         names = text != nil ? [UDScriptIndex variablesOfFunctionAtLine:at.line inText:text] : nil;
+        // a method's self, which the script does not declare
+        if (object != nil) names = [@[@"self"] arrayByAddingObjectsFromArray:names ?: @[]];
     }
     if (names.count == 0) {
         [request respondWithBody:@{ @"variables": @[] }];
@@ -945,6 +957,10 @@ static NSString *UDFunctionName(NSString *function) {
     query.scopeDepth = depth;
     query.names = names;
     query.values = [NSMutableDictionary dictionary];
+    if (!fields && object != nil) {
+        query.selfReference = frame * 2 + 2;
+        query.selfObject = object;
+    }
     [_variableQueries addObject:query];
     for (NSString *name in names) [_game inspectVariable:name scopeDepth:query.scopeDepth];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, UDGameAnswerTimeout), _queue, ^{
@@ -959,9 +975,11 @@ static NSString *UDFunctionName(NSString *function) {
         [_listRequests removeObject:waiting];
         BOOL fields = [waiting[2] boolValue];
         NSMutableArray *answer = [NSMutableArray array];
+        NSString *object = waiting[4];
+        NSInteger reference = object.length > 0 ? [waiting[3] integerValue] : 0;
         for (UDScriptVariableInfo *variable in variables) {
             if (variable.field != fields) continue;
-            [answer addObject:@{ @"name": variable.name, @"value": variable.value, @"variablesReference": @0 }];
+            [answer addObject:[self _describeVariable:variable.name value:variable.value selfReference:reference object:object]];
         }
         [(UDDAPRequest *)waiting[0] respondWithBody:@{ @"variables": answer }];
     }
@@ -997,7 +1015,7 @@ static NSString *UDFunctionName(NSString *function) {
             }
             return;
         }
-        [variables addObject:@{ @"name": name, @"value": value, @"variablesReference": @0 }];
+        [variables addObject:[self _describeVariable:name value:value selfReference:query.selfReference object:query.selfObject]];
     }
     [query.request respondWithBody:@{ @"variables": variables }];
 }

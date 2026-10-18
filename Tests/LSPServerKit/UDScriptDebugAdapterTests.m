@@ -40,6 +40,7 @@ static NSString *const UDLampScript =
     NSInteger _seq;
     NSString *_root;
     NSString *_script;
+    NSNumber *_selfReference;
 }
 
 - (void)setUp {
@@ -476,22 +477,35 @@ static NSString *const UDLampScript =
     XCTAssertNotNil([self event:@"stopped"]);
     NSArray *frames = [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]][@"body"][@"stackFrames"];
     NSArray *scopes = [self responseTo:[self request:@"scopes" arguments:@{ @"frameId": frames[0][@"id"] }]][@"body"][@"scopes"];
-    XCTAssertEqualObjects([scopes valueForKey:@"name"], (@[@"Locals", @"Fields"]), @"a method's");
-    NSInteger fields = [self request:@"variables" arguments:@{ @"variablesReference": scopes[1][@"variablesReference"] }];
-    UDBitMsg *list = [_game receiveType:20 /* INSPECTVARIABLES */ within:3];
-    XCTAssertEqual([list readShort], -1);
-    UDBitMsg *answer = [_game message:20];
-    [answer writeShort:-1];
-    [answer writeShort:2];
-    [answer writeString:@"level"];
-    [answer writeString:@"0.5"];
-    [answer writeBits:0 numBits:8];
-    [answer writeString:@"brightness"];
-    [answer writeString:@"1"];
-    [answer writeBits:1 numBits:8];
-    [_game send:answer];
-    NSArray *variables = [self responseTo:fields][@"body"][@"variables"];
-    XCTAssertEqualObjects([variables valueForKey:@"name"], @[@"brightness"]);
+    XCTAssertEqualObjects([scopes valueForKey:@"name"], @[@"Locals"]);
+    // the server's list: Locals with self, which opens to the fields
+    for (int i = 0; i < 2; i++) {
+        NSInteger asked = [self request:@"variables" arguments:@{ @"variablesReference": i == 0 ? scopes[0][@"variablesReference"] : _selfReference }];
+        UDBitMsg *list = [_game receiveType:20 /* INSPECTVARIABLES */ within:3];
+        XCTAssertEqual([list readShort], -1);
+        UDBitMsg *answer = [_game message:20];
+        [answer writeShort:-1];
+        [answer writeShort:3];
+        [answer writeString:@"self"];
+        [answer writeString:@"$lamp_1"];
+        [answer writeBits:0 numBits:8];
+        [answer writeString:@"level"];
+        [answer writeString:@"0.5"];
+        [answer writeBits:0 numBits:8];
+        [answer writeString:@"brightness"];
+        [answer writeString:@"1"];
+        [answer writeBits:1 numBits:8];
+        [_game send:answer];
+        NSArray *variables = [self responseTo:asked][@"body"][@"variables"];
+        if (i == 0) {
+            XCTAssertEqualObjects([variables valueForKey:@"name"], (@[@"self", @"level"]));
+            XCTAssertEqualObjects(variables[0][@"value"], @"$lamp_1 (lamp)");
+            _selfReference = variables[0][@"variablesReference"];
+            XCTAssertGreaterThan([_selfReference integerValue], 0, @"self opens");
+        } else {
+            XCTAssertEqualObjects([variables valueForKey:@"name"], @[@"brightness"], @"self's fields");
+        }
+    }
 
     [self responseTo:[self request:@"stepOut" arguments:@{ @"threadId": @4 }]];
     XCTAssertNotNil([_game receiveType:19 /* STEPOUT */ within:3], @"the server's own step");
@@ -524,8 +538,17 @@ static NSString *const UDLampScript =
     XCTAssertNotNil([self event:@"stopped"]);
     NSArray *frames = [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]][@"body"][@"stackFrames"];
     NSArray *scopes = [self responseTo:[self request:@"scopes" arguments:@{ @"frameId": frames[0][@"id"] }]][@"body"][@"scopes"];
-    XCTAssertEqual(scopes.count, 2u);
-    NSInteger fields = [self request:@"variables" arguments:@{ @"variablesReference": scopes[1][@"variablesReference"] }];
+    XCTAssertEqual(scopes.count, 1u);
+    // Locals: self (the script declares it not), which opens to the fields
+    NSInteger locals = [self request:@"variables" arguments:@{ @"variablesReference": scopes[0][@"variablesReference"] }];
+    UDBitMsg *inspectSelf = [_game receiveType:11 within:3];
+    int selfDepth = [inspectSelf readShort];
+    XCTAssertEqualObjects([inspectSelf readString], @"self");
+    [self answerVariable:@"self" value:@"???" depth:selfDepth];
+    NSArray *localVariables = [self responseTo:locals][@"body"][@"variables"];
+    XCTAssertEqualObjects(localVariables[0][@"name"], @"self");
+    XCTAssertEqualObjects(localVariables[0][@"value"], @"lamp", @"the stock game cannot print an object: its type");
+    NSInteger fields = [self request:@"variables" arguments:@{ @"variablesReference": localVariables[0][@"variablesReference"] }];
     NSMutableArray *asked = [NSMutableArray array];
     for (int i = 0; i < 2; i++) {
         UDBitMsg *inspect = [_game receiveType:11 within:3];

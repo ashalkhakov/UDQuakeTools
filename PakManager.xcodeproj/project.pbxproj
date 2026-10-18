@@ -1045,6 +1045,7 @@
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
 		7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */; };
 		A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */; };
+		B5AA782F246B4860F59F9289 /* UDScreenshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 26B2C14F681F2010391504EA /* UDScreenshotTests.m */; };
 		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
 		D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
@@ -3231,6 +3232,7 @@
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
 		B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebuggerTests.m; sourceTree = "<group>"; };
+		26B2C14F681F2010391504EA /* UDScreenshotTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScreenshotTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
@@ -3949,6 +3951,7 @@
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
 				B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */,
+				26B2C14F681F2010391504EA /* UDScreenshotTests.m */,
 			);
 			path = Quarry;
 			sourceTree = "<group>";
@@ -5500,6 +5503,7 @@
 				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
 				7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */,
 				A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */,
+				B5AA782F246B4860F59F9289 /* UDScreenshotTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

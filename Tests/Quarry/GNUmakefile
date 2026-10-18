@@ -37,6 +37,7 @@ QuarryTests_OBJC_FILES = \
     UDPakInstallTests.m \
     UDGuiViewerTests.m \
     UDScriptDebuggerTests.m \
+    UDScreenshotTests.m \
     ../Support/UDFakeScriptDebugger.m \
     $(APP_DIR)/App/UDAppDocumentController.m \
     $(APP_DIR)/Editors/UDBaseEditorViewController.m \

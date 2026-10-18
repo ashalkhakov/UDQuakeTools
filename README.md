@@ -15,9 +15,14 @@ The editors are the ones id shipped with Doom 3 (the Windows-only MFC tools in
 decides how something looks or behaves, that code is ported, so a material,
 particle or GUI looks and runs in the editor as it does in the game.
 
-| Pak Manager on macOS | Pak Manager on Linux (GNUstep) |
-|---|---|
-| ![Pak Manager on macOS](Screenshots/pakmanager-mac.png) | ![Pak Manager on GNUstep](Screenshots/pakmanager-gs.png) |
+| | macOS | Linux (GNUstep) |
+|---|:---:|:---:|
+| The main menu in the GUI editor's design | ![The GUI editor on macOS](Screenshots/quarry-gui-macos.png) | ![The GUI editor on GNUstep](Screenshots/quarry-gui-gnustep.png) |
+| A material, lit as the game lights it | ![The material editor on macOS](Screenshots/quarry-material-macos.png) | ![The material editor on GNUstep](Screenshots/quarry-material-gnustep.png) |
+| A particle system playing | ![The particle editor on macOS](Screenshots/quarry-particle-macos.png) | ![The particle editor on GNUstep](Screenshots/quarry-particle-gnustep.png) |
+
+![The script debugger, stopped in Mars City](Screenshots/quarry-debugger-gnustep.png)
+*The script debugger, stopped at a breakpoint as Mars City starts, `self` opened (Linux).*
 
 ## Get it
 
@@ -53,6 +58,10 @@ To build from source, see [Building](docs/building.md).
 | **UDLauncher** | Opens the others |
 | `udpaktool` | Lists and extracts archives from the command line |
 | `udscript-lsp`, `udscript-dap` | idScript's language server and debug adapter, which Quarry starts for itself |
+
+| Pak Manager on macOS | Pak Manager on Linux (GNUstep) |
+|---|---|
+| ![Pak Manager on macOS](Screenshots/pakmanager-mac.png) | ![Pak Manager on GNUstep](Screenshots/pakmanager-gs.png) |
 
 ## What Quarry does
 

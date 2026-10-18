@@ -106,6 +106,31 @@ and the GNUstep runtime. What is UDQuakeTools' own:
 CI makes and smoke-tests the image on every push, and a `v*` tag releases it
 with update information, for Gear Lever, AppImageUpdate and AppImagePool.
 
+## Screenshots
+
+The README's screenshots are taken by `Tests/Quarry/UDScreenshotTests.m`, of
+Quarry's own windows on a retail Doom 3 install. It runs only when
+`UD_SCREENSHOTS` names a folder to write them to. `UD_SCREENSHOT_GAME` is the
+dhewm3 the debugger scene runs; without it, that scene is skipped.
+
+- **Linux (GNUstep):** run the case under a large enough virtual display, as a
+  user that isn't root (dhewm3 refuses root), with ImageMagick installed:
+
+  ```sh
+  UD_DOOM3_PATH=/doom3 UD_SCREENSHOTS=$PWD/Screenshots UD_SCREENSHOT_GAME=/path/to/dhewm3 \
+    UD_SCRIPT_DAP=$PWD/Sources/Tools/udscript-dap/obj/udscript-dap \
+    xvfb-run -a -s "-screen 0 1600x1000x24" xctest -XCTest UDScreenshotTests Tests/Quarry/QuarryTests.bundle
+  ```
+
+- **macOS:** the test runner has no Screen Recording permission, so a
+  terminal that has it takes the pictures while the case runs:
+
+  ```sh
+  Scripts/screenshot-watch.sh "$PWD/Screenshots" &
+  TEST_RUNNER_UD_SCREENSHOTS="$PWD/Screenshots" xcodebuild -project PakManager.xcodeproj \
+    -scheme QuarryTests -destination 'platform=macOS' test -only-testing:QuarryTests/UDScreenshotTests
+  ```
+
 ## Releases
 
 A `v*` tag releases everything: the AppImage, and the macOS apps zipped, with

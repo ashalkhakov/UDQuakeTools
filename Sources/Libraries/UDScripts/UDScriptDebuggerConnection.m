@@ -193,11 +193,6 @@ static NSError *UDSocketError(NSString *what) {
 - (void)stepInto { [self _sendType:UDScriptDebuggerStepInto]; }
 - (void)stepOut { [self _sendType:UDScriptDebuggerStepOut]; }
 
-- (void)inspectVariablesAtScopeDepth:(int)scopeDepth {
-    UDBitMsg *message = [[self class] _message:UDScriptDebuggerInspectVariables];
-    [message writeShort:scopeDepth];
-    [self _send:message];
-}
 - (void)inspectCallstack { [self _sendType:UDScriptDebuggerInspectCallstack]; }
 - (void)inspectThreads { [self _sendType:UDScriptDebuggerInspectThreads]; }
 - (void)inspectScripts { [self _sendType:UDScriptDebuggerInspectScripts]; }
@@ -248,14 +243,22 @@ static NSError *UDSocketError(NSString *what) {
     [self _send:message];
 }
 
+- (void)inspectVariablesOfThread:(int)number scopeDepth:(int)scopeDepth {
+    UDBitMsg *message = [[self class] _message:UDScriptDebuggerInspectVariables];
+    [message writeInt:number];
+    [message writeShort:scopeDepth];
+    [self _send:message];
+}
+
 - (void)inspectEntity:(NSString *)name {
     UDBitMsg *message = [[self class] _message:UDScriptDebuggerInspectEntity];
     [message writeString:name];
     [self _send:message];
 }
 
-- (void)setVariable:(NSString *)name value:(NSString *)value scopeDepth:(int)scopeDepth {
+- (void)setVariable:(NSString *)name value:(NSString *)value thread:(int)number scopeDepth:(int)scopeDepth {
     UDBitMsg *message = [[self class] _message:UDScriptDebuggerSetVariable];
+    [message writeInt:number];
     [message writeShort:scopeDepth];
     [message writeString:name];
     [message writeString:value];
@@ -394,14 +397,7 @@ static NSArray<UDScriptVariableInfo *> *UDReadVariables(UDBitMsg *message) {
             }
             break;
         }
-        case UDScriptDebuggerInspectVariables: {
-            int depth = (short)[message readShort];
-            NSArray<UDScriptVariableInfo *> *variables = UDReadVariables(message);
-            if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveVariables:scopeDepth:)]) {
-                [delegate debuggerConnection:self didReceiveVariables:variables scopeDepth:depth];
-            }
-            break;
-        }
+
         case UDScriptDebuggerScriptError: {
             BOOL isError = [message readBits:8] != 0;
             NSString *text = [message readString];
@@ -418,6 +414,15 @@ static NSArray<UDScriptVariableInfo *> *UDReadVariables(UDBitMsg *message) {
             }
             break;
         }
+        case UDScriptDebuggerInspectVariables: {
+            int number = [message readInt];
+            int depth = (short)[message readShort];
+            NSArray<UDScriptVariableInfo *> *variables = UDReadVariables(message);
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didReceiveVariables:scopeDepth:thread:)]) {
+                [delegate debuggerConnection:self didReceiveVariables:variables scopeDepth:depth thread:number];
+            }
+            break;
+        }
         case UDScriptDebuggerInspectEntity: {
             NSString *name = [message readString];
             NSArray<UDScriptVariableInfo *> *variables = UDReadVariables(message);
@@ -427,12 +432,13 @@ static NSArray<UDScriptVariableInfo *> *UDReadVariables(UDBitMsg *message) {
             break;
         }
         case UDScriptDebuggerSetVariable: {
+            int number = [message readInt];
             int depth = (short)[message readShort];
             NSString *name = [message readString];
             BOOL set = [message readBits:8] != 0;
             NSString *value = [message readString];
-            if ([delegate respondsToSelector:@selector(debuggerConnection:didSetVariable:scopeDepth:set:value:)]) {
-                [delegate debuggerConnection:self didSetVariable:name scopeDepth:depth set:set value:value];
+            if ([delegate respondsToSelector:@selector(debuggerConnection:didSetVariable:thread:scopeDepth:set:value:)]) {
+                [delegate debuggerConnection:self didSetVariable:name thread:number scopeDepth:depth set:set value:value];
             }
             break;
         }

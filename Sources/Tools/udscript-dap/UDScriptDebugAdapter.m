@@ -66,6 +66,9 @@ static const int UDStepBreakpointBase = 1000000;
 /// references here.
 static const NSInteger UDOtherFrameBase = 1 << 24;
 static const NSInteger UDEntityReferenceBase = 1 << 20;
+/// Other threads' frames' variables' references: their frame's (its place
+/// in _otherFrames) twice, and one (its locals) or two (its self's fields).
+static const NSInteger UDOtherReferenceBase = 1 << 22;
 
 static NSString *UDFunctionName(NSString *function);
 
@@ -110,7 +113,6 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     int _nextStepBreakpoint;
     BOOL _pauseAsked;
     UDScriptConditionQuery *_conditionQuery;
-    NSMutableArray<NSArray *> *_listRequests;    // @[request, depth, kind] waiting on DBMSG_INSPECTVARIABLES
     UDScriptIndex *_objectIndex;                 // the loaded scripts' objects, for their fields
 
     // a newer server's (its capabilities say): which of the scripts' errors
@@ -127,7 +129,11 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     NSMutableArray<NSArray *> *_entityReferences;
     NSMutableDictionary<NSString *, NSArray<UDScriptVariableInfo *> *> *_entities;
     NSMutableArray<NSArray *> *_entityRequests;          // @[request, reference]
-    NSMutableDictionary<NSNumber *, NSString *> *_selfEntities;   // a frame's self's entity
+    NSMutableDictionary<NSNumber *, NSString *> *_selfEntities;   // a self's entity, by its fields' reference
+    // other threads' frames' variables (by @[thread, depth]), and the
+    // requests waiting on them: @[key, request]
+    NSMutableDictionary<NSArray *, NSArray<UDScriptVariableInfo *> *> *_threadVariables;
+    NSMutableArray<NSArray *> *_threadVariableRequests;
     NSMutableArray<UDDAPRequest *> *_setRequests;
     UDDAPRequest *_gotoRequest;
 }
@@ -160,7 +166,6 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     _sourceReferences = [NSMutableArray array];
     _stepBreakpoints = [NSMutableArray array];
     _nextStepBreakpoint = UDStepBreakpointBase;
-    _listRequests = [NSMutableArray array];
     _threadFrames = [NSMutableDictionary dictionary];
     _threadStackRequests = [NSMutableArray array];
     _otherFrames = [NSMutableArray array];
@@ -168,6 +173,8 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     _entities = [NSMutableDictionary dictionary];
     _entityRequests = [NSMutableArray array];
     _selfEntities = [NSMutableDictionary dictionary];
+    _threadVariables = [NSMutableDictionary dictionary];
+    _threadVariableRequests = [NSMutableArray array];
     _setRequests = [NSMutableArray array];
     _roots = @[];
     return self;
@@ -665,6 +672,8 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     [_entityReferences removeAllObjects];
     [_entities removeAllObjects];
     [_selfEntities removeAllObjects];
+    [_threadVariables removeAllObjects];
+    [_threadVariableRequests removeAllObjects];
     _scriptError = nil;
 }
 
@@ -916,7 +925,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     id thread = request.arguments[@"threadId"];
     if (thread != nil && _threads != nil && [thread intValue] != [self _currentThread]) {
         // another thread's: a newer server's, else none
-        if (!(_engineCapabilities & UDScriptDebuggerCapabilityThreadCallstacks)) {
+        if (!(_engineCapabilities & UDScriptDebuggerCapabilityInspect)) {
             [request respondWithBody:@{ @"stackFrames": @[], @"totalFrames": @0 }];
             return;
         }
@@ -1011,7 +1020,10 @@ static NSString *UDFunctionName(NSString *function) {
 /// for weapon_shotgun::fire); nil for a function, or one of a namespace.
 - (NSString *)_objectOfFrame:(NSInteger)index {
     if (index < 0 || index >= (NSInteger)_frames.count) return nil;
-    UDScriptStackFrame *frame = _frames[(NSUInteger)index];
+    return [self _objectOfStackFrame:_frames[(NSUInteger)index]];
+}
+
+- (NSString *)_objectOfStackFrame:(UDScriptStackFrame *)frame {
     NSString *function = UDFunctionName(frame.function);
     NSRange scope = [function rangeOfString:@"::" options:NSBackwardsSearch];
     if (scope.location == NSNotFound) return nil;
@@ -1028,7 +1040,15 @@ static NSString *UDFunctionName(NSString *function) {
 /// (its locals) or two (its self's fields).
 - (void)scopes:(UDDAPRequest *)request {
     NSInteger frame = [request.arguments[@"frameId"] integerValue] - 1;
-    // (another thread's frame has none: the game reads the stopped thread's)
+    // another thread's frame: its Locals, when the game reads them (a newer one)
+    NSInteger place = frame + 1 - UDOtherFrameBase;
+    if (_stopped && place >= 0 && place < (NSInteger)_otherFrames.count) {
+        BOOL can = (_engineCapabilities & UDScriptDebuggerCapabilityInspect) != 0;
+        [request respondWithBody:@{ @"scopes": can ? @[ @{ @"name": @"Locals", @"presentationHint": @"locals",
+                                                          @"variablesReference": @(UDOtherReferenceBase + place * 2 + 1),
+                                                          @"expensive": @NO } ] : @[] }];
+        return;
+    }
     if (!_stopped || frame < 0 || frame >= (NSInteger)_frames.count) {
         [request respondWithBody:@{ @"scopes": @[] }];
         return;
@@ -1043,7 +1063,7 @@ static NSString *UDFunctionName(NSString *function) {
         // the stock game cannot print an object: its type, then
         NSString *shown = [value isEqualToString:@"???"] || value.length == 0 ? object : [NSString stringWithFormat:@"%@ (%@)", value, object];
         // its entity's spawn args, under its fields
-        if ([self _isEntity:value]) _selfEntities[@((reference - 2) / 2)] = value;
+        if ([self _isEntity:value]) _selfEntities[@(reference)] = value;
         return @{ @"name": name, @"value": shown, @"type": object, @"variablesReference": @(reference) };
     }
     // an entity opens to its script object's fields and its spawn args (a newer server's)
@@ -1055,7 +1075,7 @@ static NSString *UDFunctionName(NSString *function) {
 }
 
 - (BOOL)_isEntity:(NSString *)value {
-    return (_engineCapabilities & UDScriptDebuggerCapabilityInspectEntity) && [value hasPrefix:@"$"]
+    return (_engineCapabilities & UDScriptDebuggerCapabilityInspect) && [value hasPrefix:@"$"]
         && ![value isEqualToString:@"$null_entity"] && value.length > 1;
 }
 
@@ -1144,6 +1164,10 @@ static NSString *UDFunctionName(NSString *function) {
 
 - (void)variables:(UDDAPRequest *)request {
     NSInteger asked = [request.arguments[@"variablesReference"] integerValue];
+    if (_stopped && asked >= UDOtherReferenceBase && (asked - UDOtherReferenceBase - 1) / 2 < (NSInteger)_otherFrames.count) {
+        [self _whenListedOtherFrame:(asked - UDOtherReferenceBase - 1) / 2 answer:request];
+        return;
+    }
     if (_stopped && asked >= UDEntityReferenceBase && asked - UDEntityReferenceBase < (NSInteger)_entityReferences.count) {
         [self _variablesOfEntity:request reference:asked];
         return;
@@ -1157,11 +1181,9 @@ static NSString *UDFunctionName(NSString *function) {
     }
     int depth = [self _scopeDepthOfFrame:frame];
     // a server that lists them: its list
-    if (_engineCapabilities & UDScriptDebuggerCapabilityInspectVariables) {
-        BOOL asked = NO;
-        for (NSArray *waiting in _listRequests) asked = asked || [waiting[1] intValue] == depth;
-        [_listRequests addObject:@[request, @(depth), @(fields), @(fields ? 0 : frame * 2 + 2), [self _objectOfFrame:frame] ?: @""]];
-        if (!asked) [_game inspectVariablesAtScopeDepth:depth];
+    if (_engineCapabilities & UDScriptDebuggerCapabilityInspect) {
+        [self _whenListed:@[@([self _currentThread]), @(depth)] answer:request fieldsReference:frame * 2 + 2
+                   object:[self _objectOfFrame:frame] ?: @""];
         return;
     }
     // else the names the script has, each asked of the game; frame 0 is
@@ -1197,23 +1219,101 @@ static NSString *UDFunctionName(NSString *function) {
     });
 }
 
-- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
-                scopeDepth:(int)scopeDepth {
-    for (NSArray *waiting in [_listRequests copy]) {
-        if ([waiting[1] intValue] != scopeDepth) continue;
-        [_listRequests removeObject:waiting];
-        BOOL fields = [waiting[2] boolValue];
-        NSMutableArray *answer = [NSMutableArray array];
-        NSString *object = waiting[4];
-        NSInteger reference = object.length > 0 ? [waiting[3] integerValue] : 0;
-        for (UDScriptVariableInfo *variable in variables) {
-            if (variable.field != fields) continue;
-            [answer addObject:[self _describeVariable:variable.name value:variable.value selfReference:reference object:object]];
-        }
-        NSString *entity = fields ? _selfEntities[@([self _frameOfScopeDepth:scopeDepth])] : nil;
-        if (entity != nil) [answer addObject:[self _spawnArgsOf:entity]];
-        [(UDDAPRequest *)waiting[0] respondWithBody:@{ @"variables": answer }];
+/// A frame's listed variables: its locals (a method's self opening to its
+/// fields, at @a fieldsReference), or its self's fields (and its entity's
+/// spawn args).
+- (void)_answer:(UDDAPRequest *)request variables:(NSArray<UDScriptVariableInfo *> *)variables fields:(BOOL)fields
+fieldsReference:(NSInteger)fieldsReference object:(NSString *)object {
+    NSMutableArray *answer = [NSMutableArray array];
+    NSInteger reference = object.length > 0 && !fields ? fieldsReference : 0;
+    for (UDScriptVariableInfo *variable in variables) {
+        if (variable.field != fields) continue;
+        [answer addObject:[self _describeVariable:variable.name value:variable.value selfReference:reference object:object]];
     }
+    NSString *entity = fields ? _selfEntities[@(fieldsReference)] : nil;
+    if (entity != nil) [answer addObject:[self _spawnArgsOf:entity]];
+    [request respondWithBody:@{ @"variables": answer }];
+}
+
+#pragma mark - Other threads' variables
+
+/// Another thread's frame (its place in _otherFrames): its thread, and its
+/// scope depth in that thread's call stack.
+- (NSArray *)_keyOfOtherFrame:(NSInteger)place {
+    NSArray *frame = _otherFrames[(NSUInteger)place];
+    NSInteger index = [frame[1] integerValue];
+    NSInteger count = (NSInteger)_threadFrames[frame[0]].count;
+    return @[frame[0], @(index == 0 ? -1 : count - index)];
+}
+
+- (UDScriptStackFrame *)_stackFrameOfOtherFrame:(NSInteger)place {
+    NSArray *frame = _otherFrames[(NSUInteger)place];
+    NSArray<UDScriptStackFrame *> *frames = _threadFrames[frame[0]];
+    NSUInteger index = [frame[1] unsignedIntegerValue];
+    return index < frames.count ? frames[index] : nil;
+}
+
+- (void)_whenListedOtherFrame:(NSInteger)place answer:(UDDAPRequest *)request {
+    [self _whenListed:[self _keyOfOtherFrame:place] answer:request fieldsReference:UDOtherReferenceBase + place * 2 + 2
+               object:[self _objectOfStackFrame:[self _stackFrameOfOtherFrame:place]] ?: @""];
+}
+
+#pragma mark - A thread's frame's variables, as the game lists them
+
+/// @a request (variables or evaluate) answered once the game has listed the
+/// variables of the frame @a key says (@[thread, scope depth]; the stopped
+/// thread's or another's): its self's fields at @a fieldsReference, the
+/// object its function is a method of @a object.
+- (void)_whenListed:(NSArray *)key answer:(UDDAPRequest *)request fieldsReference:(NSInteger)fieldsReference
+             object:(NSString *)object {
+    if (_threadVariables[key] != nil) {
+        [self _answer:request listed:_threadVariables[key] fieldsReference:fieldsReference object:object];
+        return;
+    }
+    BOOL asked = NO;
+    for (NSArray *waiting in _threadVariableRequests) asked = asked || [waiting[0] isEqual:key];
+    [_threadVariableRequests addObject:@[key, request, @(fieldsReference), object]];
+    if (!asked) [_game inspectVariablesOfThread:[key[0] intValue] scopeDepth:[key[1] intValue]];
+}
+
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
+                scopeDepth:(int)scopeDepth thread:(int)number {
+    if (!_stopped) return;
+    NSArray *key = @[@(number), @(scopeDepth)];
+    _threadVariables[key] = variables;
+    for (NSArray *waiting in [_threadVariableRequests copy]) {
+        if (![waiting[0] isEqual:key]) continue;
+        [_threadVariableRequests removeObject:waiting];
+        [self _answer:waiting[1] listed:variables fieldsReference:[waiting[2] integerValue] object:waiting[3]];
+    }
+}
+
+- (void)_answer:(UDDAPRequest *)request listed:(NSArray<UDScriptVariableInfo *> *)variables fieldsReference:(NSInteger)fieldsReference
+         object:(NSString *)object {
+    if ([request.command isEqualToString:@"variables"]) {
+        BOOL fields = [request.arguments[@"variablesReference"] integerValue] == fieldsReference;
+        [self _answer:request variables:variables fields:fields fieldsReference:fieldsReference object:object];
+        return;
+    }
+    // an evaluate: its expression over the frame's variables
+    UDScriptVariablesQuery *query = [[UDScriptVariablesQuery alloc] init];
+    query.request = request;
+    query.expression = [UDScriptExpression expressionWithText:[request.arguments[@"expression"]
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] error:NULL];
+    if (query.expression == nil) {
+        [request failWithMessage:@"Not an expression"];
+        return;
+    }
+    query.names = query.expression.names.allObjects;
+    query.values = [NSMutableDictionary dictionary];
+    for (UDScriptVariableInfo *variable in variables) {
+        if ([query.expression.names containsObject:variable.name]) query.values[variable.name] = variable.value;
+    }
+    if (object.length > 0 && [query.expression.names containsObject:@"self"]) {
+        query.selfReference = fieldsReference;
+        query.selfObject = object;
+    }
+    [self _answerEvaluate:query];
 }
 
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveValue:(NSString *)value
@@ -1253,27 +1353,35 @@ static NSString *UDFunctionName(NSString *function) {
 
 #pragma mark - Setting a variable, going on from another line
 
-/// A local, a parameter or one of self's fields (a newer server's).
+/// A local, a parameter or one of self's fields (a newer server's), of the
+/// stopped thread's frames or another's.
 - (void)setVariable:(UDDAPRequest *)request {
     NSInteger reference = [request.arguments[@"variablesReference"] integerValue];
     NSString *name = request.arguments[@"name"];
     NSString *value = request.arguments[@"value"];
-    if (!(_engineCapabilities & UDScriptDebuggerCapabilitySetVariable)) {
+    if (!(_engineCapabilities & UDScriptDebuggerCapabilityInspect)) {
         [request failWithMessage:@"This dhewm3 cannot set a variable"];
         return;
     }
-    NSInteger frame = (reference - 1) / 2;
-    if (!_stopped || reference < 1 || reference >= UDEntityReferenceBase || frame >= (NSInteger)_frames.count
-        || ![name isKindOfClass:[NSString class]] || ![value isKindOfClass:[NSString class]]) {
+    NSArray *key = nil;
+    NSInteger place = (reference - UDOtherReferenceBase - 1) / 2;
+    if (reference >= UDOtherReferenceBase && place < (NSInteger)_otherFrames.count) {
+        key = [self _keyOfOtherFrame:place];
+    } else if (reference >= 1 && reference < UDEntityReferenceBase && (reference - 1) / 2 < (NSInteger)_frames.count) {
+        key = @[@([self _currentThread]), @([self _scopeDepthOfFrame:(reference - 1) / 2])];
+    }
+    if (!_stopped || key == nil || ![name isKindOfClass:[NSString class]] || ![value isKindOfClass:[NSString class]]) {
         [request failWithMessage:@"Only a function's variables and its object's fields can be set"];
         return;
     }
     [_setRequests addObject:request];
-    [_game setVariable:name value:value scopeDepth:[self _scopeDepthOfFrame:frame]];
+    [_game setVariable:name value:value thread:[key[0] intValue] scopeDepth:[key[1] intValue]];
 }
 
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didSetVariable:(NSString *)name
-                scopeDepth:(int)scopeDepth set:(BOOL)set value:(NSString *)value {
+                    thread:(int)number scopeDepth:(int)scopeDepth set:(BOOL)set value:(NSString *)value {
+    // what was listed of the frame is not what it has now
+    if (set) [_threadVariables removeObjectForKey:@[@(number), @(scopeDepth)]];
     for (UDDAPRequest *request in [_setRequests copy]) {
         if (![request.arguments[@"name"] isEqual:name]) continue;
         [_setRequests removeObject:request];
@@ -1289,24 +1397,42 @@ static NSString *UDFunctionName(NSString *function) {
     NSDictionary *source = request.arguments[@"source"];
     NSString *path = [source isKindOfClass:[NSDictionary class]] ? source[@"path"] : nil;
     int line = [request.arguments[@"line"] intValue];
-    if (!(_engineCapabilities & UDScriptDebuggerCapabilitySetNextStatement)) {
+    if (!(_engineCapabilities & UDScriptDebuggerCapabilityInspect)) {
         [request failWithMessage:@"This dhewm3 cannot go on from another line"];
         return;
     }
     NSString *gamePath = [path isKindOfClass:[NSString class]] ? [self gamePathOf:path] : nil;
     UDScriptStackFrame *top = _frames.firstObject;
-    BOOL here = _stopped && top != nil && gamePath != nil && [gamePath caseInsensitiveCompare:top.path] == NSOrderedSame;
-    [request respondWithBody:@{ @"targets": here ? @[ @{ @"id": @(line), @"label": [NSString stringWithFormat:@"Line %d", line],
-                                                         @"line": @(line) } ] : @[] }];
+    if (!_stopped || top == nil) {
+        [request failWithMessage:@"The game is not stopped"];
+        return;
+    }
+    // the function the stopped thread is in: a script thread jumps within it
+    NSString *function = UDFunctionName(top.function);
+    NSString *text = [self _textOf:top.path];
+    NSRange lines = text != nil ? [UDScriptIndex linesOfFunctionAtLine:top.line inText:text] : NSMakeRange(NSNotFound, 0);
+    BOOL sameFile = gamePath != nil && [gamePath caseInsensitiveCompare:top.path] == NSOrderedSame;
+    if (!sameFile || (lines.location != NSNotFound && !NSLocationInRange((NSUInteger)line, lines))) {
+        [request failWithMessage:[NSString stringWithFormat:@"The thread is stopped in %@: it can only jump to a line of that function",
+                                  function]];
+        return;
+    }
+    [request respondWithBody:@{ @"targets": @[ @{ @"id": @(line), @"label": [NSString stringWithFormat:@"Line %d", line],
+                                                  @"line": @(line) } ] }];
 }
 
 - (void)gotoRequest:(UDDAPRequest *)request {
-    if (!(_engineCapabilities & UDScriptDebuggerCapabilitySetNextStatement)) {
+    if (!(_engineCapabilities & UDScriptDebuggerCapabilityInspect)) {
         [request failWithMessage:@"This dhewm3 cannot go on from another line"];
         return;
     }
     if (!_stopped) {
         [request failWithMessage:@"The game is not stopped"];
+        return;
+    }
+    id thread = request.arguments[@"threadId"];
+    if (thread != nil && [thread intValue] != [self _currentThread]) {
+        [request failWithMessage:@"Only the thread the game stopped in can jump"];
         return;
     }
     _gotoRequest = request;
@@ -1319,7 +1445,7 @@ static NSString *UDFunctionName(NSString *function) {
     _gotoRequest = nil;
     if (request == nil) return;
     if (line == 0) {
-        [request failWithMessage:[NSString stringWithFormat:@"The thread cannot go on from line %@: it is not one of its function's",
+        [request failWithMessage:[NSString stringWithFormat:@"Line %@ has no code of the function the thread is in",
                                   request.arguments[@"targetId"]]];
         return;
     }
@@ -1378,6 +1504,16 @@ static NSString *UDFunctionName(NSString *function) {
         return;
     }
     NSInteger frame = request.arguments[@"frameId"] ? [request.arguments[@"frameId"] integerValue] - 1 : 0;
+    // in another thread's frame: over its variables, as the game lists them
+    NSInteger place = frame + 1 - UDOtherFrameBase;
+    if (place >= 0) {
+        if (place >= (NSInteger)_otherFrames.count || !(_engineCapabilities & UDScriptDebuggerCapabilityInspect)) {
+            [request failWithMessage:@"This dhewm3 cannot read another thread's variables"];
+            return;
+        }
+        [self _whenListedOtherFrame:place answer:request];
+        return;
+    }
     for (NSString *name in expression.names) {
         if ([self _canInspect:name inFrame:frame]) continue;
         if (console && expression.isVariable) [self _executeCommand:text request:request];

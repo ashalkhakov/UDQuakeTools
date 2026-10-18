@@ -35,29 +35,26 @@ typedef NS_ENUM(int, UDScriptDebuggerMessage) {
     UDScriptDebuggerInspectScripts,
     UDScriptDebuggerExecCommand,
     // a newer server's (protocol 2): its version and capabilities, step out,
-    // a frame's variables listed
+    // stopping at the scripts' errors; any thread's call stack and a frame's
+    // variables (listed, set), an entity, the line the stopped thread goes on from
     UDScriptDebuggerVersion,
     UDScriptDebuggerStepOut,
-    UDScriptDebuggerInspectVariables,
-    // and stopping at the scripts' errors, other threads' call stacks, an
-    // entity, setting a variable, the line the stopped thread goes on from
     UDScriptDebuggerBreakOnErrors,
     UDScriptDebuggerScriptError,
     UDScriptDebuggerInspectThreadCallstack,
-    UDScriptDebuggerInspectEntity,
+    UDScriptDebuggerInspectVariables,
     UDScriptDebuggerSetVariable,
+    UDScriptDebuggerInspectEntity,
     UDScriptDebuggerSetNextStatement,
 };
 
 /// DBMSG_VERSION's capabilities (DBCAP_*).
 typedef NS_OPTIONS(int, UDScriptDebuggerCapabilities) {
     UDScriptDebuggerCapabilityStepOut = 1,
-    UDScriptDebuggerCapabilityInspectVariables = 2,
+    /// The game answers the thread call stacks, variables (listed, set),
+    /// entities and the next statement.
+    UDScriptDebuggerCapabilityInspect = 2,
     UDScriptDebuggerCapabilityBreakOnErrors = 4,
-    UDScriptDebuggerCapabilityThreadCallstacks = 8,
-    UDScriptDebuggerCapabilityInspectEntity = 16,
-    UDScriptDebuggerCapabilitySetVariable = 32,
-    UDScriptDebuggerCapabilitySetNextStatement = 64,
 };
 
 /// DBMSG_BREAKONERRORS' flags (DBERR_*).
@@ -138,9 +135,6 @@ typedef NS_ENUM(int, UDScriptVariableKind) {
 /// nothing).
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVersion:(int)version
               capabilities:(UDScriptDebuggerCapabilities)capabilities;
-/// DBMSG_INSPECTVARIABLES' answer.
-- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
-                scopeDepth:(int)scopeDepth;
 /// DBMSG_INSPECTSCRIPTS's answer: the scripts the game loaded.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveScripts:(NSArray<NSString *> *)paths;
 /// DBMSG_SCRIPTERROR: the DBMSG_BREAK that follows is a stop at a script
@@ -150,6 +144,9 @@ typedef NS_ENUM(int, UDScriptVariableKind) {
 /// innermost first (none, for no such thread).
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveCallstack:(NSArray<UDScriptStackFrame *> *)frames
                     thread:(int)number;
+/// DBMSG_INSPECTVARIABLES' answer: a frame of thread @a number's.
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
+                scopeDepth:(int)scopeDepth thread:(int)number;
 /// DBMSG_INSPECTENTITY's answer: its spawn args and its script object's
 /// fields (none, for no such entity).
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveEntity:(NSString *)name
@@ -157,7 +154,7 @@ typedef NS_ENUM(int, UDScriptVariableKind) {
 /// DBMSG_SETVARIABLE's answer: @a value is what the variable has now, or
 /// why it was not set.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didSetVariable:(NSString *)name
-                scopeDepth:(int)scopeDepth set:(BOOL)set value:(NSString *)value;
+                    thread:(int)number scopeDepth:(int)scopeDepth set:(BOOL)set value:(NSString *)value;
 /// DBMSG_SETNEXTSTATEMENT's answer: @a line, or 0 when the thread could not go on from it.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didSetNextStatementLine:(int)line;
 @end
@@ -186,9 +183,6 @@ typedef NS_ENUM(int, UDScriptVariableKind) {
 - (void)stepInto;
 /// A newer server's (UDScriptDebuggerCapabilityStepOut).
 - (void)stepOut;
-/// A newer server's (UDScriptDebuggerCapabilityInspectVariables): the
-/// variables of the frame at @a scopeDepth (as for -inspectVariable:).
-- (void)inspectVariablesAtScopeDepth:(int)scopeDepth;
 - (void)inspectCallstack;
 - (void)inspectThreads;
 /// @a scopeDepth: -1 for the function stopped in, else the interpreter's
@@ -196,13 +190,17 @@ typedef NS_ENUM(int, UDScriptVariableKind) {
 - (void)inspectVariable:(NSString *)name scopeDepth:(int)scopeDepth;
 - (void)inspectScripts;
 - (void)executeCommand:(NSString *)command;
-/// A newer server's, as its capabilities say: which errors stop it, another
-/// thread's call stack, an entity, setting a variable (@a value as the game
-/// writes values), the line the stopped thread goes on from.
+/// A newer server's, as its capabilities say: which errors stop it; while
+/// stopped, any thread's (the stopped one's too) call stack, the variables
+/// of a frame of it (@a scopeDepth: -1 for the function it is in, else the
+/// interpreter's call stack index of the frame's), one of them set (@a value
+/// as the game writes values); an entity; the line the stopped thread goes
+/// on from.
 - (void)setBreakOnErrors:(UDScriptDebuggerErrorFlags)flags;
 - (void)inspectCallstackOfThread:(int)number;
+- (void)inspectVariablesOfThread:(int)number scopeDepth:(int)scopeDepth;
+- (void)setVariable:(NSString *)name value:(NSString *)value thread:(int)number scopeDepth:(int)scopeDepth;
 - (void)inspectEntity:(NSString *)name;
-- (void)setVariable:(NSString *)name value:(NSString *)value scopeDepth:(int)scopeDepth;
 - (void)setNextStatementLine:(int)line;
 
 /// One message's bytes, as the connection sends it (for the tests).

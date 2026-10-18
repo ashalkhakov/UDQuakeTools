@@ -330,8 +330,7 @@ bundle brings the adapter as it brings the language server).
       its executable and arguments), Attach a running one; breakpoints in the
       script tabs' gutters (a pak's script named where it would be in the
       mod's folder, as the adapter names it), the debug navigator tab, the
-      debug bar and area under the editors. (Needs UDCodeKit's debugger,
-      ashalkhakov/UDCodeKit#45, released and pinned.)
+      debug bar and area under the editors (UDCodeKit 0.4.0).
 - [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
       27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
       speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where

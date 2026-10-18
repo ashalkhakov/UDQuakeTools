@@ -5,6 +5,7 @@
 
 #import "UDScriptDebugAdapter.h"
 #import "UDScriptIndex.h"
+#import "UDScriptExpression.h"
 #import "UDWorkspace.h"
 #import "idFileSystem.h"
 
@@ -13,6 +14,15 @@
 @property (nonatomic) int identifier;
 @property (nonatomic) int line;
 @property (nonatomic) BOOL verified;
+/// DAP's SourceBreakpoint options, which the adapter keeps (the game has
+/// none): a condition, a hit count condition, a logpoint's message in
+/// pieces; and how often it was reached.
+@property (nonatomic, strong, nullable) UDScriptExpression *condition;
+@property (nonatomic, copy, nullable) NSString *hitCondition;
+@property (nonatomic, copy, nullable) NSArray *logParts;
+@property (nonatomic) NSInteger hits;
+/// Why the options do not read, if they do not.
+@property (nonatomic, copy, nullable) NSString *problem;
 @end
 
 @implementation UDScriptBreakpoint
@@ -29,6 +39,21 @@
 
 @implementation UDScriptVariablesQuery
 @end
+
+/// The variables a stop's breakpoints' conditions and messages read, asked
+/// of the game before the stop is decided.
+@interface UDScriptConditionQuery : NSObject
+@property (nonatomic, copy) NSArray<UDScriptBreakpoint *> *breakpoints;
+@property (nonatomic, copy) NSSet<NSString *> *names;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *values;
+@property (nonatomic) BOOL decided;
+@end
+
+@implementation UDScriptConditionQuery
+@end
+
+/// A step's temporary breakpoints' identifiers start here, away from the client's.
+static const int UDStepBreakpointBase = 1000000;
 
 /// How long an answer the game owes is waited for.
 static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
@@ -50,7 +75,6 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 
     BOOL _stopped;
     NSString *_stopReason;
-    NSString *_pendingReason;                    // a step or pause asked for
     int _stopLine;
     NSString *_stopPath;
     NSArray<UDScriptThreadInfo *> *_threads;
@@ -61,6 +85,19 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     BOOL _announceStop;
     NSMutableArray<UDScriptVariablesQuery *> *_variableQueries;
     NSMutableArray<NSString *> *_sourceReferences;   // game paths, by sourceReference - 1
+
+    int _engineVersion;                          // DBMSG_VERSION's (0: a server that does not say)
+    UDScriptDebuggerCapabilities _engineCapabilities;
+    // a step: the thread it is of, its temporary breakpoints (a server
+    // whose steps other threads end: the steps the adapter takes itself)
+    BOOL _stepping;
+    int _stepThread;
+    NSMutableArray<NSNumber *> *_stepBreakpoints;
+    int _nextStepBreakpoint;
+    BOOL _pauseAsked;
+    UDScriptConditionQuery *_conditionQuery;
+    NSMutableArray<NSArray *> *_listRequests;    // @[request, depth, kind] waiting on DBMSG_INSPECTVARIABLES
+    UDScriptIndex *_objectIndex;                 // the loaded scripts' objects, for their fields
 }
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue output:(FILE *)output {
@@ -75,7 +112,8 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
              @[@"setBreakpoints", @"setBreakpoints:"], @[@"configurationDone", @"configurationDone:"],
              @[@"threads", @"threads:"], @[@"stackTrace", @"stackTrace:"], @[@"scopes", @"scopes:"],
              @[@"variables", @"variables:"], @[@"evaluate", @"evaluate:"], @[@"continue", @"continueRequest:"],
-             @[@"next", @"next:"], @[@"stepIn", @"stepIn:"], @[@"pause", @"pause:"], @[@"source", @"source:"],
+             @[@"next", @"next:"], @[@"stepIn", @"stepIn:"], @[@"stepOut", @"stepOut:"], @[@"pause", @"pause:"],
+             @[@"source", @"source:"],
              @[@"loadedSources", @"loadedSources:"], @[@"disconnect", @"disconnect:"], @[@"terminate", @"terminate:"]]) {
         [_connection setRequestAction:NSSelectorFromString(command[1]) forCommand:command[0]];
     }
@@ -87,6 +125,9 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     _scriptRequests = [NSMutableArray array];
     _variableQueries = [NSMutableArray array];
     _sourceReferences = [NSMutableArray array];
+    _stepBreakpoints = [NSMutableArray array];
+    _nextStepBreakpoint = UDStepBreakpointBase;
+    _listRequests = [NSMutableArray array];
     _roots = @[];
     return self;
 }
@@ -199,6 +240,9 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
         @"supportsStepBack": @NO,
         @"supportsSetVariable": @NO,
         @"supportsRestartRequest": @NO,
+        @"supportsConditionalBreakpoints": @YES,
+        @"supportsHitConditionalBreakpoints": @YES,
+        @"supportsLogPoints": @YES,
     }];
 }
 
@@ -365,6 +409,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     // rvDebuggerClient::SendBreakpoints: the game has none of them now
     for (NSString *path in _breakpoints) {
         for (UDScriptBreakpoint *breakpoint in _breakpoints[path]) {
+            if (breakpoint.problem != nil) continue;
             [_game addBreakpointAtLine:breakpoint.line path:path identifier:breakpoint.identifier onceOnly:NO];
             if (breakpoint.verified) continue;
             // the game's to refuse now (no code on its line)
@@ -435,11 +480,24 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
         UDScriptBreakpoint *breakpoint = [[UDScriptBreakpoint alloc] init];
         breakpoint.identifier = _nextBreakpoint++;
         breakpoint.line = [asking[@"line"] intValue];
+        NSString *problem = nil;
+        NSString *condition = [asking[@"condition"] isKindOfClass:[NSString class]] ? asking[@"condition"] : nil;
+        if (condition.length > 0) breakpoint.condition = [UDScriptExpression expressionWithText:condition error:&problem];
+        NSString *hitCondition = [asking[@"hitCondition"] isKindOfClass:[NSString class]] ? asking[@"hitCondition"] : nil;
+        if (hitCondition.length > 0 && problem == nil) {
+            [UDScriptExpression hitCount:1 passes:hitCondition error:&problem];
+            breakpoint.hitCondition = hitCondition;
+        }
+        NSString *logMessage = [asking[@"logMessage"] isKindOfClass:[NSString class]] ? asking[@"logMessage"] : nil;
+        if (logMessage.length > 0 && problem == nil) breakpoint.logParts = [UDScriptExpression partsOfMessage:logMessage error:&problem];
+        breakpoint.problem = problem;
         // the game's answer, if it is connected: none is yes
-        breakpoint.verified = _game.connected;
+        breakpoint.verified = _game.connected && breakpoint.problem == nil;
         [set addObject:breakpoint];
-        if (_game.connected) [_game addBreakpointAtLine:breakpoint.line path:gamePath identifier:breakpoint.identifier onceOnly:NO];
-        [answered addObject:[self _describe:breakpoint path:gamePath message:nil]];
+        if (_game.connected && breakpoint.problem == nil) {
+            [_game addBreakpointAtLine:breakpoint.line path:gamePath identifier:breakpoint.identifier onceOnly:NO];
+        }
+        [answered addObject:[self _describe:breakpoint path:gamePath message:breakpoint.problem]];
     }
     _breakpoints[gamePath] = set;
     [request respondWithBody:@{ @"breakpoints": answered }];
@@ -469,16 +527,27 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 
 #pragma mark - Stopping and going on
 
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVersion:(int)version
+              capabilities:(UDScriptDebuggerCapabilities)capabilities {
+    _engineVersion = version;
+    _engineCapabilities = capabilities;
+}
+
+/// A server whose steps stay in their thread (the protocol's version 2 on).
+- (BOOL)_engineSteps {
+    return (_engineCapabilities & UDScriptDebuggerCapabilityStepOut) != 0;
+}
+
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didBreakAtLine:(int)line path:(NSString *)path {
     _stopped = YES;
     _stopLine = line;
     _stopPath = [path copy];
-    _stopReason = _pendingReason ?: @"breakpoint";
-    _pendingReason = nil;
+    _stopReason = nil;
     _frames = nil;
     _threads = nil;
+    _conditionQuery = nil;
     [_variableQueries removeAllObjects];
-    // stopped in which thread: the threads' answer says, then the client is told
+    // stopped in which thread: the threads' answer says, then the stop is decided
     _announceStop = YES;
     [_game inspectThreads];
     [_game inspectCallstack];
@@ -494,6 +563,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     _stopped = NO;
     _frames = nil;
     _threads = nil;
+    _conditionQuery = nil;
     [_variableQueries removeAllObjects];
 }
 
@@ -504,24 +574,157 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     return 1;
 }
 
-- (NSArray<NSNumber *> *)_breakpointsAtStop {
-    NSMutableArray *hit = [NSMutableArray array];
+/// The client's breakpoints where the game stopped.
+- (NSArray<UDScriptBreakpoint *> *)_breakpointsAtStop {
+    NSMutableArray<UDScriptBreakpoint *> *hit = [NSMutableArray array];
     for (NSString *gamePath in _breakpoints) {
         if ([gamePath caseInsensitiveCompare:_stopPath] != NSOrderedSame) continue;
         for (UDScriptBreakpoint *breakpoint in _breakpoints[gamePath]) {
-            if (breakpoint.line == _stopLine) [hit addObject:@(breakpoint.identifier)];
+            if (breakpoint.line == _stopLine && breakpoint.problem == nil) [hit addObject:breakpoint];
         }
     }
     return hit;
 }
 
-- (void)_go:(UDDAPRequest *)request reason:(NSString *)reason {
+/// The game stopped, the thread known: a stop the client is told of, or
+/// one the adapter goes on from (a step's temporary breakpoint reached by
+/// another thread; a breakpoint whose condition or hit count says no; a
+/// logpoint).
+- (void)_decideStop {
+    BOOL ownStep = _stepping && [self _currentThread] == _stepThread;
+    NSArray<UDScriptBreakpoint *> *hit = [self _breakpointsAtStop];
+    if (_pauseAsked) {
+        [self _announceStop:@"pause" breakpoints:@[]];
+        return;
+    }
+    if (hit.count == 0) {
+        if (_stepping && !ownStep) [self _goOnSilently];
+        else [self _announceStop:_stepping ? @"step" : @"breakpoint" breakpoints:@[]];
+        return;
+    }
+    // what the breakpoints' conditions and messages read, asked first
+    NSMutableSet<NSString *> *names = [NSMutableSet set];
+    for (UDScriptBreakpoint *breakpoint in hit) {
+        breakpoint.hits += 1;
+        if (breakpoint.condition != nil) [names unionSet:breakpoint.condition.names];
+        for (id part in breakpoint.logParts) {
+            if ([part isKindOfClass:[UDScriptExpression class]]) [names unionSet:[(UDScriptExpression *)part names]];
+        }
+    }
+    UDScriptConditionQuery *query = [[UDScriptConditionQuery alloc] init];
+    query.breakpoints = hit;
+    query.names = names;
+    query.values = [NSMutableDictionary dictionary];
+    _conditionQuery = query;
+    if (names.count == 0) {
+        [self _decideBreakpoints:query];
+        return;
+    }
+    for (NSString *name in names) [_game inspectVariable:name scopeDepth:-1];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, UDGameAnswerTimeout), _queue, ^{
+        [self _decideBreakpoints:query];
+    });
+}
+
+/// The breakpoints reached, their variables read: a logpoint's message
+/// printed; a stop if any breakpoint (no logpoint) says so; else on.
+- (void)_decideBreakpoints:(UDScriptConditionQuery *)query {
+    if (query.decided || query != _conditionQuery) return;
+    query.decided = YES;
+    _conditionQuery = nil;
+    NSMutableArray<NSNumber *> *stopping = [NSMutableArray array];
+    for (UDScriptBreakpoint *breakpoint in query.breakpoints) {
+        NSString *problem = nil;
+        if (breakpoint.hitCondition != nil && ![UDScriptExpression hitCount:breakpoint.hits passes:breakpoint.hitCondition error:&problem]) {
+            continue;
+        }
+        if (breakpoint.condition != nil) {
+            id value = [breakpoint.condition valueWithVariables:query.values error:&problem];
+            if (value == nil) {
+                // a condition that cannot be evaluated stops, and says why (as VS Code)
+                [self _output:[NSString stringWithFormat:@"The breakpoint's condition (%@): %@\n", breakpoint.condition.text, problem]
+                     category:@"stderr"];
+            } else if (![UDScriptExpression isTrue:value]) {
+                continue;
+            }
+        }
+        if (breakpoint.logParts != nil) {
+            NSMutableString *message = [NSMutableString string];
+            for (id part in breakpoint.logParts) {
+                if ([part isKindOfClass:[NSString class]]) {
+                    [message appendString:part];
+                    continue;
+                }
+                NSString *why = nil;
+                id value = [(UDScriptExpression *)part valueWithVariables:query.values error:&why];
+                [message appendString:value != nil ? [UDScriptExpression textOf:value] : [NSString stringWithFormat:@"<%@>", why]];
+            }
+            [message appendString:@"\n"];
+            [_connection sendEvent:@"output" body:@{ @"category": @"console", @"output": message,
+                                                     @"source": [self _sourceOf:_stopPath], @"line": @(_stopLine) }];
+            continue;
+        }
+        [stopping addObject:@(breakpoint.identifier)];
+    }
+    BOOL ownStep = _stepping && [self _currentThread] == _stepThread;
+    if (stopping.count > 0) [self _announceStop:@"breakpoint" breakpoints:stopping];
+    else if (ownStep) [self _announceStop:@"step" breakpoints:@[]];
+    else [self _goOnSilently];
+}
+
+/// The client told: stopped (the step's temporary breakpoints taken off).
+- (void)_announceStop:(NSString *)reason breakpoints:(NSArray<NSNumber *> *)identifiers {
+    [self _endStep];
+    _pauseAsked = NO;
+    _stopReason = reason;
+    NSMutableDictionary *body = [@{ @"reason": reason, @"threadId": @([self _currentThread]), @"allThreadsStopped": @YES } mutableCopy];
+    if (identifiers.count > 0) body[@"hitBreakpointIds"] = identifiers;
+    [_connection sendEvent:@"stopped" body:body];
+}
+
+/// On, as if the game had not stopped (the step, if any, kept).
+- (void)_goOnSilently {
+    [self _forgetStop];
+    [_game resume];
+}
+
+- (void)_endStep {
+    for (NSNumber *identifier in _stepBreakpoints) [_game removeBreakpoint:identifier.intValue];
+    [_stepBreakpoints removeAllObjects];
+    _stepping = NO;
+}
+
+/// A step's temporary breakpoints, where a server whose steps other threads
+/// end does not stop: the lines of the function stopped in (but the one it
+/// is on), for step over and into, and the lines of the function under it,
+/// where it returns to.
+- (void)_addStepBreakpoints:(BOOL)inFunction {
+    NSMutableArray<NSArray *> *spans = [NSMutableArray array];       // @[frame, skip its line]
+    if (inFunction && _frames.count > 0) [spans addObject:@[_frames[0], @YES]];
+    if (_frames.count > 1) [spans addObject:@[_frames[1], @NO]];
+    for (NSArray *span in spans) {
+        UDScriptStackFrame *frame = span[0];
+        NSString *text = [self _textOf:frame.path];
+        if (text == nil) continue;
+        NSRange lines = [UDScriptIndex linesOfFunctionAtLine:frame.line inText:text];
+        if (lines.location == NSNotFound) continue;
+        for (NSUInteger line = lines.location; line < NSMaxRange(lines); line++) {
+            if ([span[1] boolValue] && (int)line == frame.line) continue;
+            int identifier = _nextStepBreakpoint++;
+            [_stepBreakpoints addObject:@(identifier)];
+            [_game addBreakpointAtLine:(int)line path:frame.path identifier:identifier onceOnly:NO];
+        }
+    }
+}
+
+- (void)_go:(UDDAPRequest *)request {
     if (!_game.connected) {
         [request failWithMessage:@"The game is not connected"];
         return;
     }
-    _pendingReason = reason;
-    if ([request.command isEqualToString:@"pause"]) {
+    NSString *command = request.command;
+    if ([command isEqualToString:@"pause"]) {
+        _pauseAsked = YES;
         [_game breakNext];
         [request respondWithBody:nil];
         return;
@@ -530,17 +733,35 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
         [request failWithMessage:@"The game is running"];
         return;
     }
-    if ([request.command isEqualToString:@"next"]) [_game stepOver];
-    else if ([request.command isEqualToString:@"stepIn"]) [_game stepInto];
-    else [_game resume];
+    BOOL step = ![command isEqualToString:@"continue"];
+    [self _endStep];
+    if (step) {
+        _stepping = YES;
+        _stepThread = [self _currentThread];
+    }
+    if ([command isEqualToString:@"continue"]) {
+        [_game resume];
+    } else if ([self _engineSteps]) {
+        if ([command isEqualToString:@"next"]) [_game stepOver];
+        else if ([command isEqualToString:@"stepIn"]) [_game stepInto];
+        else [_game stepOut];
+    } else {
+        // the stock server's steps end when any thread returns from its
+        // last function: the adapter's own, a temporary breakpoint where the
+        // step may end, a stop elsewhere gone on from
+        [self _addStepBreakpoints:![command isEqualToString:@"stepOut"]];
+        if ([command isEqualToString:@"stepIn"]) [_game stepInto];
+        else [_game resume];
+    }
     [self _forgetStop];
-    [request respondWithBody:[request.command isEqualToString:@"continue"] ? @{ @"allThreadsContinued": @YES } : nil];
+    [request respondWithBody:[command isEqualToString:@"continue"] ? @{ @"allThreadsContinued": @YES } : nil];
 }
 
-- (void)continueRequest:(UDDAPRequest *)request { [self _go:request reason:nil]; }
-- (void)next:(UDDAPRequest *)request { [self _go:request reason:@"step"]; }
-- (void)stepIn:(UDDAPRequest *)request { [self _go:request reason:@"step"]; }
-- (void)pause:(UDDAPRequest *)request { [self _go:request reason:@"pause"]; }
+- (void)continueRequest:(UDDAPRequest *)request { [self _go:request]; }
+- (void)next:(UDDAPRequest *)request { [self _go:request]; }
+- (void)stepIn:(UDDAPRequest *)request { [self _go:request]; }
+- (void)stepOut:(UDDAPRequest *)request { [self _go:request]; }
+- (void)pause:(UDDAPRequest *)request { [self _go:request]; }
 
 #pragma mark - Threads and frames
 
@@ -566,10 +787,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     _threads = threads;
     if (_announceStop) {
         _announceStop = NO;
-        NSMutableDictionary *body = [@{ @"reason": _stopReason ?: @"breakpoint", @"threadId": @([self _currentThread]),
-                                        @"allThreadsStopped": @YES } mutableCopy];
-        if ([_stopReason isEqualToString:@"breakpoint"]) body[@"hitBreakpointIds"] = [self _breakpointsAtStop];
-        [_connection sendEvent:@"stopped" body:body];
+        [self _decideStop];
     }
     NSArray<UDDAPRequest *> *waiting = [_threadRequests copy];
     [_threadRequests removeAllObjects];
@@ -631,33 +849,100 @@ static NSString *UDFunctionName(NSString *function) {
 
 #pragma mark - Variables
 
+/// The object frame @a index's function is a method of ("weapon_shotgun"
+/// for weapon_shotgun::fire); nil for a function, or one of a namespace.
+- (NSString *)_objectOfFrame:(NSInteger)index {
+    if (index < 0 || index >= (NSInteger)_frames.count) return nil;
+    UDScriptStackFrame *frame = _frames[(NSUInteger)index];
+    NSString *function = UDFunctionName(frame.function);
+    NSRange scope = [function rangeOfString:@"::" options:NSBackwardsSearch];
+    if (scope.location == NSNotFound) return nil;
+    NSString *owner = [function substringToIndex:scope.location];
+    for (UDScriptDefinition *definition in [UDScriptIndex definitionsInText:[self _textOf:frame.path] ?: @"" path:frame.path]) {
+        if (definition.kind == UDScriptDefinitionNamespace && [definition.qualifiedName isEqualToString:owner]) return nil;
+    }
+    return owner;
+}
+
+/// Its scopes: Locals (its parameters and locals), and for a method Fields
+/// (its object's, and its superclasses'). A scope's reference: the frame's
+/// twice, and one or two.
 - (void)scopes:(UDDAPRequest *)request {
     NSInteger frame = [request.arguments[@"frameId"] integerValue] - 1;
     if (!_stopped || frame < 0 || frame >= (NSInteger)_frames.count) {
         [request respondWithBody:@{ @"scopes": @[] }];
         return;
     }
-    [request respondWithBody:@{ @"scopes": @[ @{ @"name": @"Locals", @"presentationHint": @"locals",
-                                                @"variablesReference": @(frame + 1), @"expensive": @NO } ] }];
+    NSMutableArray *scopes = [NSMutableArray arrayWithObject:@{ @"name": @"Locals", @"presentationHint": @"locals",
+                                                                @"variablesReference": @(frame * 2 + 1), @"expensive": @NO }];
+    if ([self _objectOfFrame:frame] != nil) {
+        [scopes addObject:@{ @"name": @"Fields", @"variablesReference": @(frame * 2 + 2), @"expensive": @NO }];
+    }
+    [request respondWithBody:@{ @"scopes": scopes }];
+}
+
+/// The fields of @a object and its superclasses, the object's first, as the
+/// loaded scripts declare them.
+- (NSArray<NSString *> *)_fieldsOfObject:(NSString *)object {
+    if (_objectIndex == nil) {
+        _objectIndex = [[UDScriptIndex alloc] init];
+        for (NSString *path in _loadedScripts ?: @[]) {
+            NSString *text = [self _textOf:path];
+            if (text != nil) [_objectIndex setText:text forPath:path];
+        }
+    }
+    NSMutableOrderedSet<NSString *> *fields = [NSMutableOrderedSet orderedSet];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+    for (NSString *name = object; name != nil && ![seen containsObject:name]; ) {
+        [seen addObject:name];
+        NSString *superclass = nil;
+        for (UDScriptDefinition *definition in [_objectIndex definitionsOfName:name]) {
+            if (definition.kind == UDScriptDefinitionObject) superclass = definition.superclassName;
+        }
+        NSString *prefix = [name stringByAppendingString:@"::"];
+        for (UDScriptDefinition *definition in _objectIndex.allDefinitions) {
+            if (definition.kind == UDScriptDefinitionField && [definition.qualifiedName hasPrefix:prefix]) [fields addObject:definition.name];
+        }
+        name = superclass;
+    }
+    return fields.array;
 }
 
 - (void)variables:(UDDAPRequest *)request {
-    NSInteger frame = [request.arguments[@"variablesReference"] integerValue] - 1;
-    if (!_stopped || frame < 0 || frame >= (NSInteger)_frames.count) {
+    NSInteger reference = [request.arguments[@"variablesReference"] integerValue] - 1;
+    NSInteger frame = reference / 2;
+    BOOL fields = reference % 2 == 1;
+    if (!_stopped || reference < 0 || frame >= (NSInteger)_frames.count) {
         [request respondWithBody:@{ @"variables": @[] }];
         return;
     }
-    // frame 0 is where it stopped; under it, each line is the call's
+    int depth = [self _scopeDepthOfFrame:frame];
+    // a server that lists them: its list
+    if (_engineCapabilities & UDScriptDebuggerCapabilityInspectVariables) {
+        BOOL asked = NO;
+        for (NSArray *waiting in _listRequests) asked = asked || [waiting[1] intValue] == depth;
+        [_listRequests addObject:@[request, @(depth), @(fields)]];
+        if (!asked) [_game inspectVariablesAtScopeDepth:depth];
+        return;
+    }
+    // else the names the script has, each asked of the game; frame 0 is
+    // where it stopped, under it each line is the call's
     UDScriptStackFrame *at = _frames[(NSUInteger)frame];
-    NSString *text = [self _textOf:at.path];
-    NSArray<NSString *> *names = text != nil ? [UDScriptIndex variablesOfFunctionAtLine:at.line inText:text] : nil;
+    NSArray<NSString *> *names = nil;
+    if (fields) {
+        NSString *object = [self _objectOfFrame:frame];
+        names = object != nil ? [self _fieldsOfObject:object] : nil;
+    } else {
+        NSString *text = [self _textOf:at.path];
+        names = text != nil ? [UDScriptIndex variablesOfFunctionAtLine:at.line inText:text] : nil;
+    }
     if (names.count == 0) {
         [request respondWithBody:@{ @"variables": @[] }];
         return;
     }
     UDScriptVariablesQuery *query = [[UDScriptVariablesQuery alloc] init];
     query.request = request;
-    query.scopeDepth = [self _scopeDepthOfFrame:frame];
+    query.scopeDepth = depth;
     query.names = names;
     query.values = [NSMutableDictionary dictionary];
     [_variableQueries addObject:query];
@@ -667,8 +952,29 @@ static NSString *UDFunctionName(NSString *function) {
     });
 }
 
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
+                scopeDepth:(int)scopeDepth {
+    for (NSArray *waiting in [_listRequests copy]) {
+        if ([waiting[1] intValue] != scopeDepth) continue;
+        [_listRequests removeObject:waiting];
+        BOOL fields = [waiting[2] boolValue];
+        NSMutableArray *answer = [NSMutableArray array];
+        for (UDScriptVariableInfo *variable in variables) {
+            if (variable.field != fields) continue;
+            [answer addObject:@{ @"name": variable.name, @"value": variable.value, @"variablesReference": @0 }];
+        }
+        [(UDDAPRequest *)waiting[0] respondWithBody:@{ @"variables": answer }];
+    }
+}
+
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveValue:(NSString *)value
                   variable:(NSString *)name scopeDepth:(int)scopeDepth {
+    UDScriptConditionQuery *condition = _conditionQuery;
+    if (condition != nil && scopeDepth == -1 && [condition.names containsObject:name] && condition.values[name] == nil) {
+        condition.values[name] = value;
+        if (condition.values.count == condition.names.count) [self _decideBreakpoints:condition];
+        return;
+    }
     for (UDScriptVariablesQuery *query in [_variableQueries copy]) {
         if (query.scopeDepth != scopeDepth || ![query.names containsObject:name] || query.values[name] != nil) continue;
         query.values[name] = value;
@@ -716,6 +1022,7 @@ static BOOL UDIsVariableName(NSString *text) {
 /// object's method, whose fields it looks up) anything.
 - (BOOL)_canInspect:(NSString *)name inFrame:(NSInteger)index {
     if (index < 0 || index >= (NSInteger)_frames.count) return NO;
+    if (_engineVersion >= 2) return YES;
     UDScriptStackFrame *frame = _frames[(NSUInteger)index];
     NSString *function = UDFunctionName(frame.function);
     NSRange scope = [function rangeOfString:@"::" options:NSBackwardsSearch];

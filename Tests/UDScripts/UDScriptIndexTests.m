@@ -159,4 +159,22 @@ static NSString *const UDLampScript =
     XCTAssertNil([UDScriptIndex variablesOfFunctionAtLine:1 inText:script], @"no function's");
 }
 
+/// An object's superclass, and a function's lines, for a debugger.
+- (void)testAnObjectsSuperclassAndAFunctionsLines {
+    NSString *script =
+        @"object lamp : light_base {\n"      // 1
+        @"    float brightness;\n"           // 2
+        @"};\n"                              // 3
+        @"void lamp::glow() {\n"             // 4
+        @"    brightness = 1;\n"             // 5
+        @"}\n";                              // 6
+    UDScriptDefinition *lamp = [UDScriptIndex definitionsInText:script path:@"script/lamp.script"].firstObject;
+    XCTAssertEqual(lamp.kind, UDScriptDefinitionObject);
+    XCTAssertEqualObjects(lamp.superclassName, @"light_base");
+    NSRange lines = [UDScriptIndex linesOfFunctionAtLine:5 inText:script];
+    XCTAssertEqual(lines.location, 4u);
+    XCTAssertEqual(lines.length, 3u);
+    XCTAssertEqual([UDScriptIndex linesOfFunctionAtLine:2 inText:script].location, (NSUInteger)NSNotFound);
+}
+
 @end

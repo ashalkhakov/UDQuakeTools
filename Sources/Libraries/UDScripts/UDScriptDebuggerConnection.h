@@ -34,7 +34,27 @@ typedef NS_ENUM(int, UDScriptDebuggerMessage) {
     UDScriptDebuggerStepInto,
     UDScriptDebuggerInspectScripts,
     UDScriptDebuggerExecCommand,
+    // a newer server's (protocol 2): its version and capabilities, step out,
+    // a frame's variables listed
+    UDScriptDebuggerVersion,
+    UDScriptDebuggerStepOut,
+    UDScriptDebuggerInspectVariables,
 };
+
+/// DBMSG_VERSION's capabilities (DBCAP_*).
+typedef NS_OPTIONS(int, UDScriptDebuggerCapabilities) {
+    UDScriptDebuggerCapabilityStepOut = 1,
+    UDScriptDebuggerCapabilityInspectVariables = 2,
+};
+
+/// A variable DBMSG_INSPECTVARIABLES lists (DBVAR_*: a parameter or local,
+/// or a field of the object the function is a method of).
+@interface UDScriptVariableInfo : NSObject
+@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly) NSString *value;
+@property (nonatomic, readonly, getter=isField) BOOL field;
+- (instancetype)initWithName:(NSString *)name value:(NSString *)value field:(BOOL)field;
+@end
 
 /// A call stack entry, as MSG_WriteCallstackFunc writes it: the function
 /// ("lamp::flicker(  )"), and the script and line it is at (for the
@@ -85,6 +105,13 @@ typedef NS_ENUM(int, UDScriptDebuggerMessage) {
 /// DBMSG_INSPECTVARIABLE's answer: "???" for what it cannot read.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveValue:(NSString *)value
                   variable:(NSString *)name scopeDepth:(int)scopeDepth;
+/// DBMSG_VERSION: a server that says what it supports (an older one says
+/// nothing).
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVersion:(int)version
+              capabilities:(UDScriptDebuggerCapabilities)capabilities;
+/// DBMSG_INSPECTVARIABLES' answer.
+- (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveVariables:(NSArray<UDScriptVariableInfo *> *)variables
+                scopeDepth:(int)scopeDepth;
 /// DBMSG_INSPECTSCRIPTS's answer: the scripts the game loaded.
 - (void)debuggerConnection:(UDScriptDebuggerConnection *)connection didReceiveScripts:(NSArray<NSString *> *)paths;
 @end
@@ -111,6 +138,11 @@ typedef NS_ENUM(int, UDScriptDebuggerMessage) {
 - (void)breakNext;
 - (void)stepOver;
 - (void)stepInto;
+/// A newer server's (UDScriptDebuggerCapabilityStepOut).
+- (void)stepOut;
+/// A newer server's (UDScriptDebuggerCapabilityInspectVariables): the
+/// variables of the frame at @a scopeDepth (as for -inspectVariable:).
+- (void)inspectVariablesAtScopeDepth:(int)scopeDepth;
 - (void)inspectCallstack;
 - (void)inspectThreads;
 /// @a scopeDepth: -1 for the function stopped in, else the interpreter's

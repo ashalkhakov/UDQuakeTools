@@ -10,6 +10,7 @@
 #import "UDScriptDebugAdapter.h"
 #import "UDJSONRPCConnection.h"
 #import "UDFakeScriptDebugger.h"
+#import "UDScriptExpression.h"
 
 #include <poll.h>
 #include <unistd.h>
@@ -117,6 +118,62 @@ static NSString *const UDLampScript =
     return [self messageWhere:^BOOL(NSDictionary *message) {
         return [message[@"type"] isEqual:@"event"] && [message[@"event"] isEqual:name];
     }];
+}
+
+#pragma mark - The game's side
+
+/// DBMSG_BREAK, and (once asked) the threads' answer, @a thread the current one.
+- (void)breakAtLine:(int)line path:(NSString *)path thread:(int)thread {
+    UDBitMsg *broke = [_game message:9 /* BREAK */];
+    [broke writeInt:line];
+    [broke writeString:path];
+    [_game send:broke];
+    XCTAssertNotNil([_game receiveType:13 /* INSPECTTHREADS */ within:3]);
+    UDBitMsg *threads = [_game message:13];
+    [threads writeShort:2];
+    for (int number = 4; number <= 5; number++) {
+        [threads writeString:number == 4 ? @"main" : @"lamp_blink"];
+        [threads writeInt:number];
+        [threads writeBits:number == thread ? 1 : 0 numBits:1];
+        [threads writeBits:0 numBits:3];
+    }
+    [_game send:threads];
+}
+
+/// DBMSG_INSPECTCALLSTACK's answer: @[function, path, line] each.
+- (void)sendCallstack:(NSArray<NSArray *> *)frames {
+    UDBitMsg *stack = [_game message:12];
+    [stack writeShort:(int)frames.count];
+    for (NSArray *frame in frames) {
+        [stack writeString:frame[0]];
+        [stack writeString:frame[1]];
+        [stack writeInt:[frame[2] intValue]];
+    }
+    [_game send:stack];
+}
+
+/// The temporary breakpoints a step set (their lines), up to its RESUME.
+- (NSSet<NSNumber *> *)stepBreakpointLinesUntilResume {
+    NSMutableSet<NSNumber *> *lines = [NSMutableSet set];
+    for (;;) {
+        int type = -1;
+        UDBitMsg *message = [_game receiveWithin:3 type:&type];
+        if (message == nil || type == 7 /* RESUME */ || type == 15 /* STEPINTO */) break;
+        if (type != 4) continue;
+        [message readBits:1];
+        int line = [message readInt];
+        if ([message readInt] >= 1000000) [lines addObject:@(line)];
+    }
+    return lines;
+}
+
+/// A variable's value, as the game answers DBMSG_INSPECTVARIABLE.
+- (void)answerVariable:(NSString *)name value:(NSString *)value depth:(int)depth {
+    UDBitMsg *answer = [_game message:11];
+    [answer writeShort:depth];
+    [answer writeString:name];
+    [answer writeString:value];
+    [_game send:answer];
 }
 
 #pragma mark - The session
@@ -232,22 +289,16 @@ static NSString *const UDLampScript =
     [self responseTo:[self request:@"evaluate" arguments:@{ @"expression": @"/god", @"context": @"repl" }]];
     XCTAssertEqualObjects([[_game receiveType:17 /* EXECCOMMAND */ within:3] readString], @"god");
 
-    // a step, then going on
+    // a step (the stock server's own steps end when any thread returns: the
+    // adapter's, temporary breakpoints where it may end), then going on
     [self responseTo:[self request:@"next" arguments:@{ @"threadId": @4 }]];
-    XCTAssertNotNil([_game receiveType:14 /* STEPOVER */ within:3]);
-    UDBitMsg *broke = [_game message:9];
-    [broke writeInt:4];
-    [broke writeString:@"script/lamp.script"];
-    [_game send:broke];
-    XCTAssertNotNil([_game receiveType:13 within:3]);
-    UDBitMsg *threads2 = [_game message:13];
-    [threads2 writeShort:1];
-    [threads2 writeString:@"main"];
-    [threads2 writeInt:4];
-    [threads2 writeBits:1 numBits:1];
-    [threads2 writeBits:0 numBits:3];
-    [_game send:threads2];
+    NSSet<NSNumber *> *lines = [self stepBreakpointLinesUntilResume];
+    XCTAssertTrue([lines containsObject:@4] && [lines containsObject:@2], @"the function's lines: %@", lines);
+    XCTAssertFalse([lines containsObject:@3], @"not the one it is on: %@", lines);
+    XCTAssertTrue([lines containsObject:@9], @"the caller's, where it returns: %@", lines);
+    [self breakAtLine:4 path:@"script/lamp.script" thread:4];
     XCTAssertEqualObjects([self event:@"stopped"][@"body"][@"reason"], @"step");
+    XCTAssertNotNil([_game receiveType:5 /* REMOVEBREAKPOINT */ within:3], @"the step's breakpoints taken off");
     XCTAssertEqualObjects([self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]][@"success"], @YES);
     XCTAssertNotNil([_game receiveType:7 /* RESUME */ within:3]);
 
@@ -327,6 +378,199 @@ static NSString *const UDLampScript =
     XCTAssertNotNil(inspect, @"its parameter is");
     [inspect readShort];
     XCTAssertEqualObjects([inspect readString], @"level");
+}
+
+/// A breakpoint's condition, hit count and log message: the adapter reads
+/// what they name and decides (the game has none of them).
+- (void)testABreakpointsConditionHitCountAndLogMessageAreTheAdapters {
+    if (_game == nil) return;
+    [self attachAndStop];
+    [self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]];
+    XCTAssertNotNil([_game receiveType:7 within:3]);
+    NSDictionary *set = [self responseTo:[self request:@"setBreakpoints" arguments:@{ @"source": @{ @"path": _script }, @"breakpoints": @[
+        @{ @"line": @2, @"condition": @"level > 1 && level != 3" },
+        @{ @"line": @3, @"hitCondition": @"2" },
+        @{ @"line": @4, @"logMessage": @"glowing {level * 2} {{x}}" },
+        @{ @"line": @9, @"condition": @"level >" } ] }]];
+    NSArray *answered = set[@"body"][@"breakpoints"];
+    XCTAssertEqualObjects(answered[3][@"verified"], @NO, @"a condition that does not read");
+    XCTAssertNotNil(answered[3][@"message"]);
+
+    // the condition false: on, the client told nothing
+    [self breakAtLine:2 path:@"script/lamp.script" thread:4];
+    UDBitMsg *inspect = [_game receiveType:11 within:3];
+    XCTAssertEqual([inspect readShort], -1);
+    XCTAssertEqualObjects([inspect readString], @"level");
+    [self answerVariable:@"level" value:@"0.5" depth:-1];
+    XCTAssertNotNil([_game receiveType:7 /* RESUME */ within:3], @"level 0.5: on");
+    // true: stopped
+    [self breakAtLine:2 path:@"script/lamp.script" thread:4];
+    XCTAssertNotNil([_game receiveType:11 within:3]);
+    [self answerVariable:@"level" value:@"2" depth:-1];
+    NSDictionary *stopped = [self event:@"stopped"];
+    XCTAssertEqualObjects(stopped[@"body"][@"reason"], @"breakpoint");
+    [self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]];
+    XCTAssertNotNil([_game receiveType:7 within:3]);
+
+    // the hit count: the second time
+    [self breakAtLine:3 path:@"script/lamp.script" thread:4];
+    XCTAssertNotNil([_game receiveType:7 within:3], @"the first time: on");
+    [self breakAtLine:3 path:@"script/lamp.script" thread:4];
+    XCTAssertEqualObjects([self event:@"stopped"][@"body"][@"reason"], @"breakpoint");
+    [self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]];
+    XCTAssertNotNil([_game receiveType:7 within:3]);
+
+    // the logpoint: its message, and on
+    [self breakAtLine:4 path:@"script/lamp.script" thread:4];
+    XCTAssertNotNil([_game receiveType:11 within:3]);
+    [self answerVariable:@"level" value:@"1.5" depth:-1];
+    NSDictionary *logged = [self messageWhere:^BOOL(NSDictionary *message) {
+        return [message[@"event"] isEqual:@"output"] && [message[@"body"][@"category"] isEqual:@"console"];
+    }];
+    XCTAssertEqualObjects(logged[@"body"][@"output"], @"glowing 3 {x}\n");
+    XCTAssertNotNil([_game receiveType:7 within:3], @"a logpoint does not stop");
+}
+
+/// A step's breakpoint reached by another thread is gone on from; the
+/// step ends in its own thread.
+- (void)testAStepEndsInItsOwnThread {
+    if (_game == nil) return;
+    [self attachAndStop];
+    [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]];
+    [self responseTo:[self request:@"stepOut" arguments:@{ @"threadId": @4 }]];
+    NSSet<NSNumber *> *lines = [self stepBreakpointLinesUntilResume];
+    XCTAssertTrue([lines containsObject:@9], @"step out: the caller's lines %@", lines);
+    XCTAssertFalse([lines containsObject:@2], @"not the function's: %@", lines);
+    [self breakAtLine:9 path:@"script/lamp.script" thread:5];
+    XCTAssertNotNil([_game receiveType:7 /* RESUME */ within:3], @"another thread there: on");
+    [self breakAtLine:9 path:@"script/lamp.script" thread:4];
+    XCTAssertEqualObjects([self event:@"stopped"][@"body"][@"reason"], @"step");
+}
+
+/// A server that says it can (DBMSG_VERSION): its own steps, and its lists
+/// of a frame's variables, Locals and Fields.
+- (void)testANewerServersStepsAndVariablesAreUsed {
+    if (_game == nil) return;
+    NSString *lamps = [_root stringByAppendingPathComponent:@"base/script/lamps.script"];
+    [@"object lamp {\n"
+     @"    float brightness;\n"
+     @"    void glow( float level );\n"
+     @"};\n"
+     @"void lamp::glow( float level ) {\n"
+     @"    brightness = level;\n"
+     @"}\n" writeToFile:lamps atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [self responseTo:[self request:@"initialize" arguments:@{}]];
+    NSInteger attach = [self request:@"attach" arguments:@{ @"sourceRoots": @[[_root stringByAppendingPathComponent:@"base"]],
+                                                           @"port": @([UDFakeScriptDebugger gamePort]),
+                                                           @"localPort": @([UDFakeScriptDebugger debuggerPort]) }];
+    XCTAssertNotNil([_game receiveType:1 within:3]);
+    [_game send:[_game message:2]];
+    UDBitMsg *version = [_game message:18 /* VERSION */];
+    [version writeInt:2];
+    [version writeInt:3];
+    [_game send:version];
+    XCTAssertEqualObjects([self responseTo:attach][@"success"], @YES);
+
+    [self breakAtLine:6 path:@"script/lamps.script" thread:4];
+    [self sendCallstack:@[ @[ @"lamp::glow(  )", @"script/lamps.script", @6 ] ]];
+    XCTAssertNotNil([self event:@"stopped"]);
+    NSArray *frames = [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]][@"body"][@"stackFrames"];
+    NSArray *scopes = [self responseTo:[self request:@"scopes" arguments:@{ @"frameId": frames[0][@"id"] }]][@"body"][@"scopes"];
+    XCTAssertEqualObjects([scopes valueForKey:@"name"], (@[@"Locals", @"Fields"]), @"a method's");
+    NSInteger fields = [self request:@"variables" arguments:@{ @"variablesReference": scopes[1][@"variablesReference"] }];
+    UDBitMsg *list = [_game receiveType:20 /* INSPECTVARIABLES */ within:3];
+    XCTAssertEqual([list readShort], -1);
+    UDBitMsg *answer = [_game message:20];
+    [answer writeShort:-1];
+    [answer writeShort:2];
+    [answer writeString:@"level"];
+    [answer writeString:@"0.5"];
+    [answer writeBits:0 numBits:8];
+    [answer writeString:@"brightness"];
+    [answer writeString:@"1"];
+    [answer writeBits:1 numBits:8];
+    [_game send:answer];
+    NSArray *variables = [self responseTo:fields][@"body"][@"variables"];
+    XCTAssertEqualObjects([variables valueForKey:@"name"], @[@"brightness"]);
+
+    [self responseTo:[self request:@"stepOut" arguments:@{ @"threadId": @4 }]];
+    XCTAssertNotNil([_game receiveType:19 /* STEPOUT */ within:3], @"the server's own step");
+}
+
+/// Without a newer server, a method's fields come from the scripts: its
+/// object's and its superclasses'.
+- (void)testAMethodsFieldsAreItsObjectsAndItsSuperclasses {
+    if (_game == nil) return;
+    NSString *lamps = [_root stringByAppendingPathComponent:@"base/script/lamps.script"];
+    [@"object light_base {\n"
+     @"    float lit;\n"
+     @"};\n"
+     @"object lamp : light_base {\n"
+     @"    float brightness;\n"
+     @"    void glow();\n"
+     @"};\n"
+     @"void lamp::glow() {\n"
+     @"    brightness = 1;\n"
+     @"}\n" writeToFile:lamps atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    [self attachAndStop];
+    UDBitMsg *scripts = [_game message:16 /* INSPECTSCRIPTS */];
+    [scripts writeInt:2];
+    [scripts writeString:@"script/lamp.script"];
+    [scripts writeString:@"script/lamps.script"];
+    [_game send:scripts];
+    [self responseTo:[self request:@"continue" arguments:@{ @"threadId": @4 }]];
+    [self breakAtLine:9 path:@"script/lamps.script" thread:4];
+    [self sendCallstack:@[ @[ @"lamp::glow(  )", @"script/lamps.script", @9 ] ]];
+    XCTAssertNotNil([self event:@"stopped"]);
+    NSArray *frames = [self responseTo:[self request:@"stackTrace" arguments:@{ @"threadId": @4 }]][@"body"][@"stackFrames"];
+    NSArray *scopes = [self responseTo:[self request:@"scopes" arguments:@{ @"frameId": frames[0][@"id"] }]][@"body"][@"scopes"];
+    XCTAssertEqual(scopes.count, 2u);
+    NSInteger fields = [self request:@"variables" arguments:@{ @"variablesReference": scopes[1][@"variablesReference"] }];
+    NSMutableArray *asked = [NSMutableArray array];
+    for (int i = 0; i < 2; i++) {
+        UDBitMsg *inspect = [_game receiveType:11 within:3];
+        int depth = [inspect readShort];
+        NSString *name = [inspect readString];
+        [asked addObject:name];
+        [self answerVariable:name value:@"1" depth:depth];
+    }
+    XCTAssertEqualObjects(asked, (@[@"brightness", @"lit"]), @"the object's, then its superclass's");
+    XCTAssertEqual([[self responseTo:fields][@"body"][@"variables"] count], 2u);
+}
+
+/// The adapter's expressions, over the game's formatting of values.
+- (void)testExpressionsAreEvaluatedOverTheGamesValues {
+    NSDictionary *values = @{ @"count": @"3", @"name": @"\"lamp\"", @"owner": @"$player1", @"origin": @"1,2,3", @"missing": @"???" };
+    NSArray<NSArray *> *cases = @[
+        @[@"count > 2 && count != 4", @YES], @[@"!(count == 3)", @NO], @[@"count * 2 - 1 == 5", @YES],
+        @[@"name == \"lamp\"", @YES], @[@"owner == $player1", @YES], @[@"origin == \"1,2,3\"", @YES],
+        @[@"count % 2 == 1 || missing", @YES], @[@"-count < 0", @YES],
+    ];
+    for (NSArray *test in cases) {
+        NSString *error = nil;
+        UDScriptExpression *expression = [UDScriptExpression expressionWithText:test[0] error:&error];
+        XCTAssertNotNil(expression, @"%@: %@", test[0], error);
+        id value = [expression valueWithVariables:values error:&error];
+        XCTAssertNotNil(value, @"%@: %@", test[0], error);
+        XCTAssertEqual([UDScriptExpression isTrue:value], [test[1] boolValue], @"%@", test[0]);
+    }
+    NSString *error = nil;
+    XCTAssertNil([[UDScriptExpression expressionWithText:@"missing > 1" error:NULL] valueWithVariables:values error:&error]);
+    XCTAssertTrue([error containsString:@"missing"], @"%@", error);
+    XCTAssertNil([UDScriptExpression expressionWithText:@"count >" error:&error]);
+    XCTAssertNil([UDScriptExpression expressionWithText:@"(count" error:&error]);
+    XCTAssertEqualObjects([[UDScriptExpression expressionWithText:@"count" error:NULL] names], [NSSet setWithObject:@"count"]);
+    // hit counts, as VS Code's
+    XCTAssertTrue([UDScriptExpression hitCount:5 passes:@"5" error:NULL]);
+    XCTAssertFalse([UDScriptExpression hitCount:4 passes:@"== 5" error:NULL]);
+    XCTAssertTrue([UDScriptExpression hitCount:6 passes:@">= 5" error:NULL]);
+    XCTAssertTrue([UDScriptExpression hitCount:10 passes:@"% 5" error:NULL]);
+    XCTAssertFalse([UDScriptExpression hitCount:1 passes:@"often" error:&error]);
+    // a logpoint's pieces
+    NSArray *parts = [UDScriptExpression partsOfMessage:@"a {count} {{b}}" error:NULL];
+    XCTAssertEqual(parts.count, 3u);
+    XCTAssertEqualObjects(parts[0], @"a ");
+    XCTAssertEqualObjects(parts[2], @" {b}");
 }
 
 @end

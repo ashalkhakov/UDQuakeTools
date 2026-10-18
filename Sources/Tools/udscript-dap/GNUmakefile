@@ -9,7 +9,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 UDLIBS_DIR = ../../Libraries
 include $(UDLIBS_DIR)/Libraries.make
 
-udscript-dap_OBJC_FILES = main.m UDScriptDebugAdapter.m
+udscript-dap_OBJC_FILES = main.m UDScriptDebugAdapter.m UDScriptExpression.m
 
 udscript-dap_INCLUDE_DIRS = $(UDLIBS_INCLUDE_DIRS) -I../../LSPServerKit
 

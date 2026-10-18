@@ -8,6 +8,7 @@
 
 @interface UDScriptDefinition ()
 @property (nonatomic, copy, readwrite, nullable) NSString *parameters;
+@property (nonatomic, copy, readwrite, nullable) NSString *superclassName;
 @end
 
 @implementation UDScriptDefinition
@@ -137,7 +138,12 @@ static BOOL UDIs(const idToken *token, const char *text) {
     idToken_Init(&token);
     idToken_Init(&name);
     NSString *scope = [objectName stringByAppendingString:@"::"];
-    while ([self next:&token] && !UDIs(&token, "{")) {}       // ": <parent>"
+    UDScriptDefinition *object = definitions.lastObject;
+    BOOL parent = NO;
+    while ([self next:&token] && !UDIs(&token, "{")) {         // ": <parent>"
+        if (parent && token.type == TT_NAME) object.superclassName = @(token.text);
+        parent = UDIs(&token, ":");
+    }
     while ([self next:&token]) {
         if (UDIs(&token, "}")) break;
         if (UDIs(&token, ";")) continue;
@@ -280,6 +286,18 @@ static BOOL UDIsStatementWord(const char *text) {
 }
 
 + (NSArray<NSString *> *)variablesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text {
+    return [self _functionAtLine:line inText:text lines:NULL];
+}
+
++ (NSRange)linesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text {
+    NSRange lines = NSMakeRange(NSNotFound, 0);
+    [self _functionAtLine:line inText:text lines:&lines];
+    return lines;
+}
+
+/// The function whose body holds @a line: its variables, and in
+/// @a bodyLines its first and last line.
++ (NSArray<NSString *> *)_functionAtLine:(NSInteger)line inText:(NSString *)text lines:(NSRange *)bodyLines {
     NSMutableData *bytes = [[text dataUsingEncoding:NSUTF8StringEncoding] mutableCopy] ?: [NSMutableData data];
     int length = (int)bytes.length;
     [bytes appendBytes:"" length:1];
@@ -325,6 +343,7 @@ static BOOL UDIsStatementWord(const char *text) {
         }
         if (end >= count) end = count - 1;
         if (open >= 0 && line >= lineOf[i] && line <= lineOf[end]) {
+            if (bodyLines != NULL) *bodyLines = NSMakeRange((NSUInteger)lineOf[i], (NSUInteger)(lineOf[end] - lineOf[i] + 1));
             NSMutableOrderedSet<NSString *> *names = [NSMutableOrderedSet orderedSet];
             // the parameters: each "<type> <name>", the name before ',' or ')'
             for (NSUInteger p = (NSUInteger)open + 2; p < i; p++) {

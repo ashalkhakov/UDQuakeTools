@@ -352,7 +352,9 @@
 			children = (
 				DA9A00000000000000000001 /* main.m */,
 				3CCA08301F3D3C6438DFB4FE /* UDScriptDebugAdapter.h */,
+				25BB37F8B711117400B0AAA1 /* UDScriptExpression.h */,
 				A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */,
+				DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */,
 			);
 			path = "udscript-dap";
 			sourceTree = "<group>";
@@ -363,6 +365,7 @@
 			files = (
 				DA9A00000000000000000002 /* main.m in Sources */,
 				C0EED8DAFF40EE7720BDD8A1 /* UDScriptDebugAdapter.m in Sources */,
+				80FDC3F91307964AEB70F42A /* UDScriptExpression.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -643,13 +646,17 @@
 			remoteInfo = LSPServerKit;
 		};
 		3CCA08301F3D3C6438DFB4FE /* UDScriptDebugAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebugAdapter.h; sourceTree = "<group>"; };
+		25BB37F8B711117400B0AAA1 /* UDScriptExpression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptExpression.h; sourceTree = "<group>"; };
 		A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebugAdapter.m; sourceTree = "<group>"; };
+		DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptExpression.m; sourceTree = "<group>"; };
 		C0EED8DAFF40EE7720BDD8A1 /* UDScriptDebugAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */; };
+		80FDC3F91307964AEB70F42A /* UDScriptExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */; };
 		A1550A492053AB6A9E9FD5AC /* UDFakeScriptDebugger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFakeScriptDebugger.h; sourceTree = "<group>"; };
 		8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFakeScriptDebugger.m; sourceTree = "<group>"; };
 		866C09EB04834533E0783FCA /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 		90AE985B00574CF16AA29815 /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 		614A56AB831EF86732909960 /* UDScriptDebugAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */; };
+		41F4694CD4CD8CC634EE0647 /* UDScriptExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */; };
 		DA9A00000000000000000013 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA00000100000000000000AA /* Project object */;
@@ -5731,6 +5738,7 @@
 			files = (
 				90AE985B00574CF16AA29815 /* UDFakeScriptDebugger.m in Sources */,
 				614A56AB831EF86732909960 /* UDScriptDebugAdapter.m in Sources */,
+				41F4694CD4CD8CC634EE0647 /* UDScriptExpression.m in Sources */,
 				ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */,
 				0FC5AABC301F6BCBA3203B3A /* UDScriptDebugAdapterTests.m in Sources */,
 				70714D4961B21D7B87993D1F /* UDDAPConnectionTests.m in Sources */,

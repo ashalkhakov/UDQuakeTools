@@ -17,6 +17,7 @@ LSPServerKitTests_OBJC_FILES = \
     UDScriptDebugAdapterTests.m \
     ../../Sources/Tools/udscript-lsp/UDScriptLanguageServer.m \
     ../../Sources/Tools/udscript-dap/UDScriptDebugAdapter.m \
+    ../../Sources/Tools/udscript-dap/UDScriptExpression.m \
     ../Support/UDFakeScriptDebugger.m
 
 LSPServerKitTests_INCLUDE_DIRS = \

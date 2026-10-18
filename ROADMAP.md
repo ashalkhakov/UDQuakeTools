@@ -338,10 +338,10 @@ bundle brings the adapter as it brings the language server).
 - [x] Steps that stay in their thread and step out, a method's `self`
       opening to its fields (and its superclasses', as VS Code's `this`): the
       adapter does them with stock dhewm3 1.5.5 (temporary breakpoints, the
-      scripts' object declarations), and dhewm3 itself with its fixes
-      (dhewm/dhewm3#785: step over that stops, steps scoped to their thread,
-      a caller's locals, entities; #786: DBMSG_VERSION, DBMSG_STEPOUT,
-      DBMSG_INSPECTVARIABLES).
+      scripts' object declarations), and our dhewm3 fork itself with its
+      fixes (ashalkhakov/dhewm3#1: step over that stops, steps scoped to
+      their thread, a caller's locals, entities; protocol 2's
+      DBMSG_VERSION, DBMSG_STEPOUT, DBMSG_INSPECTVARIABLES).
 - [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
       27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
       speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where
@@ -373,15 +373,15 @@ alone (UDCodeKit has the client side of each already):
       game stops, and gives the game back the focus when it goes on (the
       adapter's `process` event: a game it launched).
 
-Then what needs dhewm3, added to #786 (a capability each, the adapter going
-on without them on stock 1.5.5, which refuses them):
+Then what needs dhewm3, in our fork's protocol 2 (ashalkhakov/dhewm3#1; the
+adapter goes on without it on stock 1.5.5, which refuses them):
 
 - [x] Stop on script errors (Xcode's exception breakpoints): the client asks
       (`DBMSG_BREAKONERRORS`), the game stops in `idInterpreter::Error` and
       `::Warning` before it handles them, saying why (`DBMSG_SCRIPTERROR`);
       Script Errors and Script Warnings are the adapter's exception filters.
-- [x] Every thread's call stack (`DBMSG_INSPECTTHREADCALLSTACK`), not only
-      the stopped one's (their variables are not read).
+- [x] Every thread's call stack and variables (`DBMSG_INSPECTTHREADCALLSTACK`,
+      `DBMSG_INSPECTVARIABLES` naming the thread), not only the stopped one's.
 - [x] Threads' states in the debug navigator (waiting, ending), which the
       game already said.
 - [x] An entity opens to its script object's fields and its spawn args
@@ -391,7 +391,7 @@ on without them on stock 1.5.5, which refuses them):
 - [x] Jump to line (Debug > Jump to Cursor, `DBMSG_SETNEXTSTATEMENT`): a line
       of the function the thread is in.
 
-Stock dhewm3 1.5.5's own gaps, which the adapter works around and #785
+Stock dhewm3 1.5.5's own gaps, which the adapter works around and our fork
 fixes: `GetRegisterValue` aborts the game (`idTypeDef::SuperClass` throws)
 for a name it does not find in a namespace's function, so the adapter asks
 for those functions' variables only; a caller's locals are read at the

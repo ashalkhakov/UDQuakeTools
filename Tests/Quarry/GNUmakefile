@@ -36,6 +36,9 @@ QuarryTests_OBJC_FILES = \
     UDDoom3WorkspaceTests.m \
     UDPakInstallTests.m \
     UDGuiViewerTests.m \
+    UDScriptDebuggerTests.m \
+    UDScreenshotTests.m \
+    ../Support/UDFakeScriptDebugger.m \
     $(APP_DIR)/App/UDAppDocumentController.m \
     $(APP_DIR)/Editors/UDBaseEditorViewController.m \
     $(APP_DIR)/App/UDDeclBrowser.m \
@@ -73,6 +76,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/Model/UDPathTree.m \
     $(APP_DIR)/Model/UDProject.m \
     $(APP_DIR)/Scripts/UDScriptServer.m \
+    $(APP_DIR)/Scripts/UDScriptDebugger.m \
     $(APP_DIR)/Editors/UDTextEditorViewController.m \
     $(APP_DIR)/Model/UDWorkspaceItem.m \
     $(APP_DIR)/Documents/UDBaseDocument.m \
@@ -89,6 +93,7 @@ QuarryTests_OBJC_FILES = \
 
 QuarryTests_INCLUDE_DIRS = \
     -I. \
+    -I../Support \
     $(QUARRY_INCLUDE_DIRS) \
     $(UDLIBS_INCLUDE_DIRS)
 
@@ -148,6 +153,7 @@ run-tests: all $(BUNDLE_NAME).bundle
 	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
 	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit:$(CURDIR)/../../tree-sitter-idscript:$(CURDIR)/../../tree-sitter-iddecl" \
 	UD_SCRIPT_LSP="$(CURDIR)/../../Sources/Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp" \
+	UD_SCRIPT_DAP="$(CURDIR)/../../Sources/Tools/udscript-dap/$(GNUSTEP_OBJ_DIR_NAME)/udscript-dap" \
 	timeout -s ABRT $(TEST_TIMEOUT) $(XCTEST) "$(BUNDLE_NAME).bundle"
 
 include $(GNUSTEP_MAKEFILES)/coredata-model.make

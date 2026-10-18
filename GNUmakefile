@@ -1,6 +1,7 @@
 #
 # UDQuakeTools on GNUstep: the libraries, the launcher, Quarry (with the
-# scripts' language server, udscript-lsp), Pak Manager and udpaktool, and
+# scripts' language server, udscript-lsp, and debug adapter, udscript-dap),
+# Pak Manager and udpaktool, and
 # their tests.
 #
 #   make            the libraries, the apps, udpaktool and the test bundles
@@ -18,7 +19,7 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = UDQuakeTools
-SUBPROJECTS = Sources/Libraries Sources/LSPServerKit tree-sitter-idscript tree-sitter-iddecl Sources/Tools/udscript-lsp Sources/UDLauncher Sources/Quarry \
+SUBPROJECTS = Sources/Libraries Sources/LSPServerKit tree-sitter-idscript tree-sitter-iddecl Sources/Tools/udscript-lsp Sources/Tools/udscript-dap Sources/UDLauncher Sources/Quarry \
               Sources/PakManager Sources/Tools/udpaktool Tests Tests/Quarry
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make

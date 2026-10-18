@@ -1,147 +1,159 @@
 # UDQuakeTools
 
-UDQuakeTools is a GNUstep/macOS toolkit for browsing and editing idTech archives and
-idTech 4 (Doom 3) decls, on the way to authoring whole mods (`ROADMAP.md`).
-It ships as a single AppImage on Linux containing the launcher and Quarry,
-and for macOS as UDLauncher, which updates itself (UDLauncher ▸ Check for
-Updates…). Quarry builds and is tested on the Mac as well; archives
-need nothing beyond zlib on either system (the minizip reader that came with
-the Doom 3 file system reads them, UDZipWriter writes them).
+[![Build](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml/badge.svg)](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml)
 
-## Applications
+The tools to make a Doom 3 mod, for **macOS and Linux**. Quarry opens a game
+install or a mod, finds every declaration in it, loose or inside its paks,
+and edits them in editors of their own: materials lit as the game lights
+them, particles and FX playing as the game plays them, GUIs that run and
+can be laid out on a canvas. Scripts are written with completion and debugged
+in a running game. What you change is saved into your mod, and the game's own
+files are left as they are.
 
-- **UDLauncher** — entry point: a simple window with buttons to launch the other tools
-- **Pak Manager** — manage pak/pk3/pk4 archive files
-- **Quarry** — browse, search and edit the decls of a Doom 3 install or mod
-  (a structured PDA editor; the other decl types as text), saving overrides
-- **udpaktool** — command-line listing and extraction of archives
+The editors are the ones id shipped with Doom 3 (the Windows-only MFC tools in
+`neo/tools`), rebuilt in Objective-C and AppKit. Where the engine's code
+decides how something looks or behaves, that code is ported, so a material,
+particle or GUI looks and runs in the editor as it does in the game.
 
-## Project Layout
+| | macOS | Linux (GNUstep) |
+|---|:---:|:---:|
+| The main menu in the GUI editor's design | ![The GUI editor on macOS](Screenshots/quarry-gui-macos.png) | ![The GUI editor on GNUstep](Screenshots/quarry-gui-gnustep.png) |
+| A material, lit as the game lights it | ![The material editor on macOS](Screenshots/quarry-material-macos.png) | ![The material editor on GNUstep](Screenshots/quarry-material-gnustep.png) |
+| A particle system playing | ![The particle editor on macOS](Screenshots/quarry-particle-macos.png) | ![The particle editor on GNUstep](Screenshots/quarry-particle-gnustep.png) |
 
-- `Sources/Libraries`: the libraries, each its own (`lib<name>`; `<name>.framework` in Xcode), bottom up:
-  - `UDIdLib`: idLib (ported): lexer, parser, strings, dictionaries, math
-  - `UDCommon`: the engine's framework (ported): file system, cvars, decl manager
-  - `UDArchives`: the archive model and its codecs — PAK, PAK2, Daikatana PAK, PK3, PK4, and the zip writer
-  - `UDImages`: images and image programs, as the renderer loads them
-  - `UDDecls`: a Core Data layer over the decls, and their parsers
-  - `UDRenderer`: the software renderer, the GUI model, MD5 meshes, particles and FX
-  - `UDUI`: the GUI code (ported): `idUserInterface`, its windows and scripts
-  - `UDGUIEditor`: the GUI editor's model (ported)
-  - `UDScripts`: script events and the script index
-  - `UDWorkspace`: the workspace, games and their detection
-- `Sources/UDLauncher`: Launcher application linking bundled tools
-- `Sources/PakManager`: Pak Manager GUI app (GNUstep + Cocoa/AppKit)
-- `Sources/Quarry`: Quarry GUI app
-- `Sources/Tools/udpaktool`: CLI utility target
-- `Tests/<library>`: each library's unit tests; `Tests/Quarry`: tests driving the Quarry app
-- `Scripts`: the AppImage desktop entry and smoke test (the build and packaging
-  themselves are gnustep-release-actions')
+![The script debugger, stopped in Mars City](Screenshots/quarry-debugger-gnustep.png)
+*The script debugger, stopped at a breakpoint as Mars City starts, `self` opened (Linux).*
 
-## Prerequisites
+## Get it
 
-### macOS (Xcode build)
+Download from [Releases](https://github.com/ashalkhakov/UDQuakeTools/releases/latest):
 
-- Xcode with command line tools
+| Platform | Download | |
+|---|---|---|
+| macOS | `UDLauncher-macOS-*.zip` | The launcher, which opens the other apps; updates itself (UDLauncher > Check for Updates…) |
+| macOS | `DeclBrowser-macOS-*.zip`, `PakManager-macOS-*.zip` | Quarry and Pak Manager on their own |
+| Linux x86_64 | `UDQuakeTools-*-x86_64.AppImage` | The launcher, Quarry, Pak Manager and the command-line tools in one file; updated by Gear Lever, AppImageUpdate or AppImagePool |
 
-### GNUstep/Linux build
+The macOS apps aren't notarized yet. If macOS says an app is damaged, clear
+its quarantine once after unzipping:
 
-- clang / clang++
-- cmake
-- make
-- git
-- python3
-- GNUstep dependencies required by your distro
-- [FreeCoreData](https://github.com/ashalkhakov/FreeCoreData) — the CoreData
-  implementation for GNUstep. The decl editing layer (UDDeclIncrementalStore
-  and the decl entity classes in UDDecls) is built on CoreData, so FreeCoreData
-  **must be installed before building the libraries**:
-
-  ```bash
-  git clone https://github.com/ashalkhakov/FreeCoreData
-  cd FreeCoreData
-  . /usr/share/GNUstep/Makefiles/GNUstep.sh
-  make && sudo make install
-  ```
-
-  The makefiles link it as the `CoreData` framework
-  (`ADDITIONAL_NATIVE_LIBS += CoreData`). FreeCoreData also provides `momc` and
-  `coredata-model.make`, which compile `DeclModel.xcdatamodeld` into the
-  apps' and test bundles' resources as Xcode does.
-
-## Build
-
-### macOS (Xcode)
-
-Open `PakManager.xcodeproj` and build the desired scheme (e.g. `Pak Manager`,
-`Quarry`, `udpaktool` or `UDLauncher`), with Sparkle's XCFramework in
-`.deps/` (gnustep-release-actions' `scripts/deps.sh apple` fetches the version
-`.github/pins.env` names). What CI builds and checks there is
-`Makefile.apple`: `make -f Makefile.apple`, `check`, `install`.
-
-### GNUstep stack and apps
-
-The stack is the patched GNUstep every app here builds on, the release
-[gnustep-patches](https://github.com/ashalkhakov/gnustep-patches) publishes
-and `.github/pins.env` names (an archive that unpacks into `/opt/gnustep`; its
-`Scripts/build-gnustep.sh` builds the same on a machine of your own), with
-FreeCoreData's release on it (gnustep-release-actions' `scripts/deps.sh
-linux` unpacks both). Then:
-
-```bash
-. /opt/gnustep/System/Library/Makefiles/GNUstep.sh
-make && make check && make install   # the libraries, the launcher, Quarry; the tests
+```sh
+xattr -dr com.apple.quarantine UDLauncher.app
 ```
 
-## AppImage Packaging
+The AppImage is built on Ubuntu 22.04, so it needs glibc 2.35 or later and a
+desktop's usual libraries (fontconfig, X11, OpenGL). CI tests it on Ubuntu,
+and it also runs on Fedora 42, which Bazzite is built on. Where there's no
+FUSE, `./UDQuakeTools-*.AppImage --appimage-extract-and-run` runs it anyway.
 
-`UDQuakeTools-<version>-x86_64.AppImage` is made by
-[gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
-`appimage`, the same as every app's image: the launcher (UDLauncher) as the
-entry point, Quarry, the libraries, FreeCoreData and the GNUstep runtime. What
-is UDQuakeTools' own is `.github/release/appimage.conf` (what `make install`
-put in the prefix goes in it) and its smoke test, `Scripts/appimage-smoke.sh`;
-the desktop entry is in `Scripts/appimage`. CI makes and
-smoke-tests it on every push (`.github/workflows/build.yml`); a `v*` tag
-releases it, with update information.
+Every push also uploads builds to its [Actions run](https://github.com/ashalkhakov/UDQuakeTools/actions).
+To build from source, see [Building](docs/building.md).
 
-## Tests
+## What's in it
 
-The suites, on both systems:
+| App | What it's for |
+|---|---|
+| **Quarry** | Browse, search and edit a game's or mod's declarations, GUIs and scripts, and debug the scripts |
+| **Pak Manager** | Open, extract and make archives: Quake's PAK, Daikatana's PAK, PAK2, PK3 and PK4 |
+| **UDLauncher** | Opens the others |
+| `udpaktool` | Lists and extracts archives from the command line |
+| `udscript-lsp`, `udscript-dap` | idScript's language server and debug adapter, which Quarry starts for itself |
 
-- `Tests/<library>` — each library's: the archive codecs (and `UDZipWriter`
-  against the Doom 3 reader), the ported file system and decl manager, the
-  decl incremental store, the GUI code and its editor, the script index.
-- `Tests/Quarry` — Quarry, driven through its own windows: a
-  workspace opens, the outline is expanded and a row selected, fields are
-  typed into, the PDA editor's email sheet is filled in and OKed, File ▸
-  Save is sent; then the decl file written and a freshly opened workspace
-  are checked. The PDA cases run on a small loose fixture; the pak cases on
-  a made-up install the tests write themselves (two pk4s holding PDAs,
-  emails, materials, a table, a skin, a GUI and a script), covering the same
-  ground as the Doom 3 cases on every machine, plus a later pak overriding an
-  earlier one. The Doom 3 cases
-  browse a retail install and edit `admin_moses` out of `pak000.pk4`; they
-  read `$UD_DOOM3_PATH` (default `/Volumes/ExtraSSD/games/DOOM 3`), check
-  that its `base/` comes out unchanged (saves go to a scratch `fs_savepath`),
-  and check nothing when there is no install, as on CI.
+| Pak Manager on macOS | Pak Manager on Linux (GNUstep) |
+|---|---|
+| ![Pak Manager on macOS](Screenshots/pakmanager-mac.png) | ![Pak Manager on GNUstep](Screenshots/pakmanager-gs.png) |
 
-Running them:
+## What Quarry does
 
-- macOS: `make -f Makefile.apple check`, or the `Libraries` (unit) and
-  `QuarryTests` schemes in Xcode.
-- GNUstep: `make check` (under `xvfb-run` when there is no display), after
-  `make`. To include the Doom 3 cases in docker, mount the install read-only
-  and point at it:
+- **A workspace over a game.** Open Doom 3, Resurrection of Evil or a mod
+  folder. Quarry reads the game's paks as the engine does, a later pak
+  overriding an earlier one, and lists every declaration, GUI and script
+  in one outline you can filter and search. An edit is saved to your mod's
+  folder (`fs_savepath`), never into the paks.
+- **An editor for each declaration type**, each with its own Issues tab
+  listing what the game wouldn't find or would refuse:
+  - **Materials:** keywords and stages, with a preview of the material on a
+    square lit as the game's ARB2 interaction pass lights it.
+  - **Particles and FX:** every stage parameter, with the system playing in
+    a preview as the engine plays it.
+  - **Articulated figures:** bodies and constraints, the joints taken from the
+    model.
+  - **entityDefs and mapDefs:** what they inherit and override.
+  - **PDAs** with their emails, audio logs and videos, plus sound shaders,
+    skins and tables.
 
-  ```bash
-  docker run --rm -v "$PWD:/src" -v "/path/to/DOOM 3:/doom3:ro" -e UD_DOOM3_PATH=/doom3 <image> \
-    sh -c '. /opt/gnustep/System/Library/Makefiles/GNUstep.sh && cd /src && make && make check'
-  ```
+  Anything else opens as highlighted text with Test Declaration. A
+  declaration is written back the way the engine wrote it, untouched text
+  byte for byte.
+- **A GUI editor.** The `.gui` runs on the game's clock, its scripts and
+  events working and the mouse and keys going to it, so the main menu or a
+  PDA is fully interactive. In Design mode, windows are selected, moved and
+  sized on a canvas with handles and a grid. A timeline takes the GUI to
+  any moment, and the windows' properties and scripts are edited in
+  inspectors.
+- **A script editor and debugger.** `.script` files get highlighting, parse
+  errors as you type, completion of events and functions with their
+  arguments, help on hover, and Jump to Definition across the mod. Run starts
+  the game with your breakpoints set, and when it stops you get:
+  - the threads and their call stacks;
+  - the variables, with `self` opening to its fields;
+  - expressions in watches, hovers and the console;
+  - conditional breakpoints and logpoints;
+  - step over, into and out, and Run to Cursor.
 
-## Notes
+  See [Debugging scripts](docs/debugging.md).
+- **Pickers and an expression editor.** Wherever a name is typed (a
+  material, image, table, sound, model, skin, entityDef or font) a picker
+  lists what the game has, at once even for a retail install's 13,000
+  materials and images. A material's registers and a GUI's conditions open
+  in an expression editor, checked as the engine parses them.
 
-- Roadmap and todo list: `ROADMAP.md`
-- License: GPL-3.0-or-later (`LICENSE`). The ported idFileSystem, idDeclManager,
-  lexer and parser are ported from the Doom 3 GPL source (via openQ4), which
-  is GPLv3 with id Software's additional terms; see the headers of those files.
+## Limitations
 
+- **Doom 3 and its expansion only.** Quake 4 and other idTech 4 games are on
+  the roadmap. Pak Manager opens archives from Quake, Quake II, Quake III and
+  Daikatana, but Quarry edits only Doom 3's declarations.
+- **No 3D previews and no map editing yet.** Models, lights and articulated
+  figures in motion need a running engine, through a planned edit bridge.
+  Maps are DarkRadiant's job.
+- **The full script debugger needs our fork of dhewm3**
+  ([ashalkhakov/dhewm3](https://github.com/ashalkhakov/dhewm3)): a dhewm3 for
+  mod authoring, kept up to date with dhewm3. Stock dhewm3 1.5.5 can be
+  debugged too, but without stopping at script errors, other threads'
+  variables, entities' spawn args, setting variables or jumping.
+- **On Linux** the apps run on GNUstep, patched by
+  [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches) until the
+  fixes are upstream; the AppImage carries it.
+- **No Windows build yet.**
+
+The plan, editor by editor: [ROADMAP.md](ROADMAP.md).
+
+## Layout
+
+| Path | What |
+|---|---|
+| `Sources/Libraries/` | The libraries, bottom up: `UDIdLib` (idLib, ported), `UDCommon` (the engine's file system and decl manager, ported), `UDArchives`, `UDImages`, `UDDecls`, `UDRenderer`, `UDUI` (the GUI code, ported), `UDGUIEditor`, `UDScripts`, `UDWorkspace` |
+| `Sources/Quarry/` | Quarry, in folders by part: `App`, `Model`, `Documents`, `Window`, `Editors`, `Preview`, `GUIEditor`, `Scripts` |
+| `Sources/PakManager/`, `Sources/UDLauncher/` | Pak Manager and the launcher |
+| `Sources/LSPServerKit/`, `Sources/Tools/` | The language-server framework; `udpaktool`, `udscript-lsp`, `udscript-dap` |
+| `tree-sitter-iddecl/`, `tree-sitter-idscript/` | The grammars Quarry's editors highlight with |
+| `Tests/` | Each library's unit tests; `Tests/Quarry` drives Quarry through its own windows |
+| `docs/` | Building, testing, debugging scripts |
+
+Quarry's text editor, its tabs and its debugger views come from
+[UDCodeKit](https://github.com/ashalkhakov/UDCodeKit).
+
+## Documentation
+
+- [Building](docs/building.md): Xcode, make on GNUstep, the tests, the
+  AppImage
+- [Debugging scripts](docs/debugging.md): setting up a game to debug, what
+  works with stock dhewm3 and with our fork
+- [Roadmap](ROADMAP.md): every editor, done and to do
+
+## License
+
+GPL 3.0 or later (`LICENSE`). The code ported from Doom 3 (idLib, the file
+system, the decl manager, the GUI code, the parsers and the renderer's
+passes) comes from the Doom 3 GPL source, which is GPLv3 with id Software's
+additional terms; see those files' headers.

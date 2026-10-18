@@ -130,7 +130,7 @@
                                     <action selector="saveDocumentAs:" target="-1" id="mDf-zr-I0C"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Revert to Saved" keyEquivalent="r" id="KaW-ft-85H">
+                            <menuItem title="Revert to Saved" id="KaW-ft-85H">
                                 <connections>
                                     <action selector="revertDocumentToSaved:" target="-1" id="iJ3-Pv-kwq"/>
                                 </connections>
@@ -725,6 +725,75 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showGuiEditorOptions:" target="-1" id="GEV-opts-a"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Debug" id="QDM-debug">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Debug" id="QDM-debug-menu">
+                        <items>
+                            <menuItem title="Run" keyEquivalent="r" id="QDM-run">
+                                <connections>
+                                    <action selector="startDebugging:" target="-1" id="QDM-run-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Attach to Game" id="QDM-attach">
+                                <connections>
+                                    <action selector="attachDebugger:" target="-1" id="QDM-attach-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Stop" keyEquivalent="." id="QDM-stop">
+                                <connections>
+                                    <action selector="stopDebugging:" target="-1" id="QDM-stop-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="QDM-sep1"/>
+                            <menuItem title="Continue" keyEquivalent="y" id="QDM-continue">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="debugContinueOrPause:" target="-1" id="QDM-continue-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Step Over" keyEquivalent="&#xF709;" id="QDM-stepover">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="debugStepOver:" target="-1" id="QDM-stepover-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Step Into" keyEquivalent="&#xF70A;" id="QDM-stepinto">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="debugStepInto:" target="-1" id="QDM-stepinto-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Step Out" keyEquivalent="&#xF70B;" id="QDM-stepout">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="debugStepOut:" target="-1" id="QDM-stepout-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="QDM-sep2"/>
+                            <menuItem title="Run to Cursor" keyEquivalent="c" id="QDM-runtocursor">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="runToCursor:" target="-1" id="QDM-runtocursor-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Jump to Cursor" id="QDM-jumptocursor">
+                                <connections>
+                                    <action selector="jumpToCursor:" target="-1" id="QDM-jumptocursor-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Toggle Breakpoint" keyEquivalent="\" id="QDM-breakpoint">
+                                <connections>
+                                    <action selector="toggleBreakpoint:" target="-1" id="QDM-breakpoint-a"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Debug Area" keyEquivalent="Y" id="QDM-area">
+                                <connections>
+                                    <action selector="toggleDebugArea:" target="-1" id="QDM-area-a"/>
                                 </connections>
                             </menuItem>
                         </items>

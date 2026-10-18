@@ -33,6 +33,11 @@
             value = "$(BUILT_PRODUCTS_DIR)/udscript-lsp"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UD_SCRIPT_DAP"
+            value = "$(BUILT_PRODUCTS_DIR)/udscript-dap"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
       <Testables>
          <TestableReference

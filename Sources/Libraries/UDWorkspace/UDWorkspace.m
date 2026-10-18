@@ -82,6 +82,9 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
     } else {
         self.com_singleDeclFileWriteMode = 1; // default
     }
+
+    self.gameExecutable = dict[@"gameExecutable"] ?: @"";
+    self.gameArguments = dict[@"gameArguments"] ?: @"";
 }
 
 - (NSDictionary *)dictionaryRepresentation {
@@ -102,7 +105,9 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
         @"decl_show": @(self.decl_show),
         @"com_SingleDeclFile": @(self.com_SingleDeclFile),
         @"com_singleDeclFileName": self.com_singleDeclFileName,
-        @"com_singleDeclFileWriteMode": @(self.com_singleDeclFileWriteMode)
+        @"com_singleDeclFileWriteMode": @(self.com_singleDeclFileWriteMode),
+        @"gameExecutable": self.gameExecutable ?: @"",
+        @"gameArguments": self.gameArguments ?: @""
     } mutableCopy];
     if (_toolSettings.count > 0) {
         dict[@"tools"] = _toolSettings;
@@ -203,6 +208,45 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
         return nil;
     }
     return [UDDeclIncrementalStore newEditingContextForCoordinator:coordinator];
+}
+
+#pragma mark - Game paths on disk
+
+- (NSArray<NSString *> *)gameFolders {
+    NSMutableArray<NSString *> *games = [NSMutableArray array];
+    for (NSString *game in @[self.fs_game ?: @"", self.fs_game_base ?: @""]) {
+        if (game.length > 0 && ![games containsObject:game]) [games addObject:game];
+    }
+    if (![games containsObject:@"base"]) [games addObject:@"base"];
+    NSMutableArray<NSString *> *folders = [NSMutableArray array];
+    for (NSString *base in @[self.fs_savepath ?: @"", self.fs_basepath ?: @"", self.fs_cdpath ?: @""]) {
+        if (base.length == 0) continue;
+        for (NSString *game in games) {
+            NSString *folder = [base.stringByStandardizingPath stringByAppendingPathComponent:game];
+            if (![folders containsObject:folder]) [folders addObject:folder];
+        }
+    }
+    return folders;
+}
+
+- (NSString *)diskPathOfGamePath:(NSString *)gamePath {
+    NSFileManager *files = [NSFileManager defaultManager];
+    NSString *existing = nil;
+    for (NSString *folder in self.gameFolders) {
+        NSString *path = [folder stringByAppendingPathComponent:gamePath];
+        if ([files fileExistsAtPath:path]) return path;
+        if (existing == nil && [files fileExistsAtPath:folder]) existing = folder;
+    }
+    return [existing ?: self.gameFolders.firstObject ?: @"" stringByAppendingPathComponent:gamePath];
+}
+
+- (NSString *)gamePathOfDiskPath:(NSString *)path {
+    NSString *standard = path.stringByStandardizingPath;
+    for (NSString *folder in self.gameFolders) {
+        NSString *prefix = [folder stringByAppendingString:@"/"];
+        if ([standard hasPrefix:prefix]) return [standard substringFromIndex:prefix.length];
+    }
+    return nil;
 }
 
 @end

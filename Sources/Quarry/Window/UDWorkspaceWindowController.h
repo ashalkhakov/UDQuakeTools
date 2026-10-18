@@ -14,7 +14,7 @@
  *              panes go in (UDInspecting), "No Inspector" when it has none
  * The sides keep their width as the window grows; the centre takes it.
  */
-@class UDTabBarView, DMTabBar;
+@class UDTabBarView, DMTabBar, UDScriptDebugger;
 
 @protocol UDErrorsViewControllerDelegate;
 
@@ -33,6 +33,14 @@
 @property (weak, nonatomic) IBOutlet DMTabBar *inspectorTabBar;
 @property (weak, nonatomic) IBOutlet NSView *inspectorHost;
 @property (weak, nonatomic) IBOutlet NSTextField *inspectorPlaceholder;
+// The debugger's: its navigator tab's host; under the editors (editorSplit's
+// second pane), the debug bar over the debug area.
+@property (weak, nonatomic) IBOutlet NSView *debugNavigatorHost;
+@property (weak, nonatomic) IBOutlet NSView *breakpointNavigatorHost;
+@property (weak, nonatomic) IBOutlet NSSplitView *editorSplit;
+@property (weak, nonatomic) IBOutlet NSView *debugPane;
+@property (weak, nonatomic) IBOutlet NSView *debugBarHost;
+@property (weak, nonatomic) IBOutlet NSView *debugAreaHost;
 
 @property (nonatomic, strong, nonnull) UDDeclBrowser *declBrowser;
 
@@ -65,4 +73,21 @@
 // Opens the file at @a path (in the workspace's file system) in its tab,
 // selecting @a length characters from @a line's @a character (0-based).
 - (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
+/// The scripts' debugger (UDScriptDebugger): Debug > Run starts the
+/// workspace's game for debugging, Attach a game started so; the session's
+/// actions, the debug area shown or hidden.
+@property (nonatomic, strong, readonly) UDScriptDebugger *scriptDebugger;
+- (IBAction)startDebugging:(nullable id)sender;
+- (IBAction)attachDebugger:(nullable id)sender;
+- (IBAction)stopDebugging:(nullable id)sender;
+- (IBAction)debugContinueOrPause:(nullable id)sender;
+- (IBAction)debugStepOver:(nullable id)sender;
+- (IBAction)debugStepInto:(nullable id)sender;
+- (IBAction)debugStepOut:(nullable id)sender;
+- (IBAction)toggleDebugArea:(nullable id)sender;
+/// Debug > Run to Cursor, from the window: the selected script's tab's.
+- (IBAction)runToCursor:(nullable id)sender;
+- (IBAction)jumpToCursor:(nullable id)sender;
+@property (nonatomic, readonly, getter=isDebugAreaShown) BOOL debugAreaShown;
+
 @end

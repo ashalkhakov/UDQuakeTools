@@ -125,4 +125,59 @@
     return value;
 }
 
+// -----------------------------------------------------------------------------
+// idBitMsg's shorts, ints and strings
+// -----------------------------------------------------------------------------
+- (void)writeByteAlign {
+    _writeBit = (_writeBit + 7) & ~7;
+    if ((NSInteger)_data.length < (_writeBit >> 3)) {
+        _data.length = (NSUInteger)(_writeBit >> 3);
+    }
+}
+
+- (void)writeShort:(int)value {
+    [self writeBits:(uint32_t)value numBits:16];
+}
+
+- (void)writeInt:(int)value {
+    [self writeBits:(uint32_t)value numBits:32];
+}
+
+- (void)writeString:(NSString *)string {
+    NSData *bytes = [string dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES] ?: [NSData data];
+    [self writeByteAlign];
+    const uint8_t *src = bytes.bytes;
+    for (NSUInteger i = 0; i < bytes.length; i++) {
+        [self writeBits:src[i] numBits:8];
+    }
+    [self writeBits:0 numBits:8];
+}
+
+- (void)readByteAlign {
+    _readBit = (_readBit + 7) & ~7;
+}
+
+- (int)readShort {
+    if (_readBit + 16 > (NSInteger)_data.length * 8) return -1;
+    return (int)(int16_t)[self readBits:16];
+}
+
+- (int)readInt {
+    if (_readBit + 32 > (NSInteger)_data.length * 8) return -1;
+    return (int)[self readBits:32];
+}
+
+- (NSString *)readString {
+    [self readByteAlign];
+    NSMutableData *bytes = [NSMutableData data];
+    while (_readBit + 8 <= (NSInteger)_data.length * 8) {
+        uint8_t c = (uint8_t)[self readBits:8];
+        if (c == 0 || c == 255) break;
+        if (c == '%') c = '.';
+        [bytes appendBytes:&c length:1];
+    }
+    return [[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding]
+        ?: [[NSString alloc] initWithData:bytes encoding:NSISOLatin1StringEncoding];
+}
+
 @end

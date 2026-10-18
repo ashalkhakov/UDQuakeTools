@@ -1,5 +1,5 @@
 #import "UDBaseEditorViewController.h"
-@class UDBaseDocument, UDDiagnosticStore;
+@class UDBaseDocument, UDDiagnosticStore, UDBreakpointStore;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +36,21 @@ NS_ASSUME_NONNULL_BEGIN
 /** The text's own edits taken off the document's undo stack (when an edit
     of another kind takes their place). */
 - (void)forgetTextEdits;
+
+/** The window's breakpoints, which a script's tab shows in its gutter (and
+    sets there), its script named as the debugger names it (UDWorkspace's
+    diskPathOfGamePath:). */
+@property (nonatomic, strong, nullable) UDBreakpointStore *breakpointStore;
+/** Debug > Toggle Breakpoint (⌘\): the code editor's, at the caret (a
+    script's tab only). */
+- (IBAction)toggleBreakpoint:(nullable id)sender;
+/** Debug > Run to Cursor: the code editor's (a temporary breakpoint at the
+    caret's line, then on). */
+- (IBAction)runToCursor:(nullable id)sender;
+/// The stopped thread goes on from the caret's line (UDCodeKit's Jump to Cursor).
+- (IBAction)jumpToCursor:(nullable id)sender;
+/** The code editor's box for the breakpoint at @a line (1-based). */
+- (void)editBreakpointAtLine:(NSInteger)line;
 
 /** Selects @a length characters from @a line's @a character (0-based; UTF-16). */
 - (void)selectLine:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;

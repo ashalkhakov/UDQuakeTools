@@ -5,12 +5,16 @@ script (maps through external tools), with the editors Doom 3 shipped (the MFC t
 `neo/tools` in dhewm3) recreated in Objective-C/AppKit — on macOS, Linux and
 Windows, and publish the result without leaving it.
 
-What exists today (October 2026): Quarry (workspace over a game
-install, outline/filter/search of every registered decl type, tabs, undo,
-Save/Save All/Save As into `fs_savepath`), a structured PDA editor, raw text
-editing for everything else, Pak Manager (PAK/PAK2/Daikatana/PK3/PK4), the
-ported Doom 3 file system and decl manager with a Core Data layer over it,
-and XCTest suites driving the apps on macOS and GNUstep in CI.
+What exists today (October 2026): Quarry, a workspace over a game install
+or mod (an outline, filter and search of every registered decl type, tabs,
+undo, saving into `fs_savepath`), with a structured editor for each decl type
+(PDA, material with its lit preview, particle and FX with theirs, AF,
+entityDef, sound shader, skin, table), pickers and an expression editor, the
+GUI editor (the GUI run on the game's clock, designed on a canvas), the script
+editor over `udscript-lsp`, and the script debugger over `udscript-dap`; Pak
+Manager (PAK/PAK2/Daikatana/PK3/PK4); the ported Doom 3 file system, decl
+manager and GUI code with a Core Data layer over the decls; and XCTest suites
+driving the apps on macOS and GNUstep in CI.
 
 Reference material for every editor below: the MFC originals in dhewm3's
 `neo/tools/<tool>` (layouts in `neo/sys/win32/rc/*.rc`) and the Dear ImGui
@@ -313,30 +317,93 @@ In order of value against cost; LOC is the MFC original's size.
 
 ## 3. Script debugger
 
-The debugger speaks the Debug Adapter Protocol, so VS Code (and any DAP
-client) debugs idScript, and so does this toolkit's own script editor,
-through UDCodeKit.
+The debugger speaks the Debug Adapter Protocol, and this toolkit's own script
+editor is its client, through UDCodeKit (no VS Code extension: the idScript
+bundle brings the adapter as it brings the language server).
 
-- [ ] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
+- [x] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
       gutter, the debug bar (continue, step over/in/out), the debug navigator
       (threads and their call stacks), the variables view and the console.
       A grammar bundle brings its own debug adapter the way it brings its
-      language server, as VS Code's extensions do, and the UI is the same
-      for every language.
-- [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
-      its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
-      language server (clangd), with build and run from the editor.
-- [ ] idScript's bundle brings the adapter below, and Quarry debugs
-      scripts with UDCodeKit's debugger UI.
-- [ ] A DAP adapter for dhewm3's debugger protocol (UDP 27980/27981,
-      `idBitMsg`, `DBMSG_*` — documented only by the source:
-      `neo/tools/debugger/DebuggerMessages.h`, `DebuggerClient.cpp`):
-      breakpoints, break/resume/step, call stack, threads, variables and
-      watches, the console mirrored as output. `UDBitMsg` is already ported.
-- [ ] Launch and attach configurations: start the game for debugging from
-      the workspace (`+set fs_game … +set com_enableDebuggerServer 1`), or
-      attach to one running.
-- [ ] A VS Code extension packaging the adapter, with idScript syntax.
+      language server, and the UI is the same for every language (UDCodeKit
+      0.4.0 to 0.6.1).
+- [ ] **Next:** a simple C and Objective-C IDE for GNUstep, UDCode used
+      every day: boot it up, open a project, build, run, debug and change
+      it. Objective-C as a mode whose bundle brings an adapter over gdb or
+      lldb (lldb-dap) alongside its language server (clangd), with build
+      and run from the editor. Not live coding: editing, building and
+      debugging a GNUstep project.
+- [x] Quarry debugs scripts with UDCodeKit's debugger UI (UDScriptDebugger):
+      Debug > Run starts the workspace's game (Workspace Settings > Debugging:
+      its executable and arguments), Attach a running one; breakpoints in the
+      script tabs' gutters (a pak's script named where it would be in the
+      mod's folder, as the adapter names it), the debug navigator tab, the
+      debug bar and area under the editors (UDCodeKit 0.4.0).
+- [x] VS Code's debugging, in Xcode's views (UDCodeKit 0.5.0):
+      hover values, watch expressions, conditional breakpoints, hit counts and
+      logpoints (edited from the gutter), the Breakpoints navigator, Run to
+      Cursor; breakpoints and watches kept as the workspace's state.
+- [x] Steps that stay in their thread and step out, a method's `self`
+      opening to its fields (and its superclasses', as VS Code's `this`): the
+      adapter does them with stock dhewm3 1.5.5 (temporary breakpoints, the
+      scripts' object declarations), and our dhewm3 fork itself with its
+      fixes (ashalkhakov/dhewm3#1: step over that stops, steps scoped to
+      their thread, a caller's locals, entities; protocol 2's
+      DBMSG_VERSION, DBMSG_STEPOUT, DBMSG_INSPECTVARIABLES).
+- [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
+      27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
+      speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where
+      the game finds no code), break/resume/step over/step in (the game has
+      no step out), threads, the call stack (a script in a pak served by
+      reference), a frame's variables (its function's parameters and locals,
+      read from the script, each asked of the game, which cannot list them),
+      hovers and watches, the console both ways (the game's output; a command
+      typed). Checked against upstream dhewm3 1.5.5 on the retail data.
+- [x] Launch and attach: launch starts the game with its debugger server on
+      (`+set com_enableDebuggerServer 1`) on the workspace's paths, its own
+      output forwarded; attach asks a running one.
+
+Polish, against Xcode's debugger. First what the adapter and Quarry can do
+alone (UDCodeKit has the client side of each already):
+
+- [x] Expressions in watches, hovers and the console, not only a variable's
+      name: `UDScriptExpression` (the breakpoints' conditions) evaluates
+      them, `self.field` and a vector's `.x` included, the variables asked of
+      the game as a condition's are. In the console, what is no expression
+      (or a name that is no variable here: `noclip`) is the game's command.
+- [x] Restart (⌘R while debugging, as Xcode's): Quarry ends the session, the
+      adapter answering once the game has quit (its debugger's port free),
+      and runs it again, the breakpoints kept.
+- [x] The variables view as Xcode's (UDCodeKit 0.6.0): values that changed
+      since the last stop blue, what was expanded (`self`) kept so across
+      steps, a filter field.
+- [x] Behaviors: Quarry comes forward and shows the debug navigator when the
+      game stops, and gives the game back the focus when it goes on (the
+      adapter's `process` event: a game it launched).
+
+Then what needs dhewm3, in our fork's protocol 2 (ashalkhakov/dhewm3#1; the
+adapter goes on without it on stock 1.5.5, which refuses them):
+
+- [x] Stop on script errors (Xcode's exception breakpoints): the client asks
+      (`DBMSG_BREAKONERRORS`), the game stops in `idInterpreter::Error` and
+      `::Warning` before it handles them, saying why (`DBMSG_SCRIPTERROR`);
+      Script Errors and Script Warnings are the adapter's exception filters.
+- [x] Every thread's call stack and variables (`DBMSG_INSPECTTHREADCALLSTACK`,
+      `DBMSG_INSPECTVARIABLES` naming the thread), not only the stopped one's.
+- [x] Threads' states in the debug navigator (waiting, ending), which the
+      game already said.
+- [x] An entity opens to its script object's fields and its spawn args
+      (`DBMSG_INSPECTENTITY`), self too.
+- [x] Setting a variable from the variables view (`DBMSG_SETVARIABLE`): a
+      parameter, local or field.
+- [x] Jump to line (Debug > Jump to Cursor, `DBMSG_SETNEXTSTATEMENT`): a line
+      of the function the thread is in.
+
+Stock dhewm3 1.5.5's own gaps, which the adapter works around and our fork
+fixes: `GetRegisterValue` aborts the game (`idTypeDef::SuperClass` throws)
+for a name it does not find in a namespace's function, so the adapter asks
+for those functions' variables only; a caller's locals are read at the
+wrong stack base; a call's frame shows the line after the call.
 
 ## 4. Live edit bridge (needs the dhewm3 fork)
 

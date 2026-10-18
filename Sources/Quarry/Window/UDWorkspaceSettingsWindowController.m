@@ -194,4 +194,20 @@
                                 message:@"Choose the secondary read-only data directory (fs_cdpath)."];
 }
 
+- (IBAction)selectGameExecutable:(id)sender {
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    panel.canChooseFiles = YES;
+    panel.canChooseDirectories = NO;
+    panel.allowsMultipleSelection = NO;
+    panel.title = @"Select the Game";
+    panel.message = @"Choose the game the scripts are debugged in (dhewm3, or its application).";
+    panel.prompt = @"Select";
+    NSString *current = self.scratchWorkspace.gameExecutable;
+    panel.directoryURL = [NSURL fileURLWithPath:current.length > 0 ? current.stringByDeletingLastPathComponent : NSHomeDirectory()];
+    [panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse result) {
+        NSURL *url = panel.URLs.firstObject;
+        if (result == NSModalResponseOK && url != nil) self.scratchWorkspace.gameExecutable = url.path;
+    }];
+}
+
 @end

@@ -41,6 +41,10 @@ typedef NS_ENUM(NSInteger, UDScriptDefinitionKind) {
 /// A function's or method's parameters, as written between its parentheses
 /// ("float times", "" for none); nil for what is no function.
 @property (nonatomic, copy, readonly, nullable) NSString *parameters;
+/// An object's superclass, as its declaration names it ("weapon_base" for
+/// "object weapon_shotgun : weapon_base"); nil for none, and for what is
+/// no object.
+@property (nonatomic, copy, readonly, nullable) NSString *superclassName;
 @end
 
 @interface UDScriptIndex : NSObject
@@ -59,6 +63,17 @@ typedef NS_ENUM(NSInteger, UDScriptDefinitionKind) {
 
 /// The definitions in one script, as read.
 + (NSArray<UDScriptDefinition *> *)definitionsInText:(NSString *)text path:(NSString *)path;
+
+/// The variables of the function or method whose body holds @a line
+/// (1-based, as the compiler numbers them) of @a text: its parameters, then
+/// what its body declares (ParseVariableDef's "<type> <name>", "a, b"), each
+/// once, in order; nil where no body holds the line. What a debugger asks
+/// the game's interpreter for, which can read a variable by name but not
+/// list them.
++ (nullable NSArray<NSString *> *)variablesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text;
+/// The lines (1-based, its braces' first to last) of the function or
+/// method whose body holds @a line; {NSNotFound, 0} where none does.
++ (NSRange)linesOfFunctionAtLine:(NSInteger)line inText:(NSString *)text;
 
 @end
 

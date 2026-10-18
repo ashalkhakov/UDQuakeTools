@@ -6,7 +6,9 @@
 	objectVersion = 56;
 	objects = {
 		ED2000000000000000000001 /* UDJSONRPCConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDJSONRPCConnection.h; sourceTree = "<group>"; };
+		4689A180C231455F5D813175 /* UDDAPConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDAPConnection.h; sourceTree = "<group>"; };
 		ED2000000000000000000002 /* UDJSONRPCConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDJSONRPCConnection.m; sourceTree = "<group>"; };
+		9906BF496B2B4F89CF17F5A4 /* UDDAPConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDAPConnection.m; sourceTree = "<group>"; };
 		ED2000000000000000000003 /* UDLanguageServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDLanguageServer.h; sourceTree = "<group>"; };
 		ED2000000000000000000004 /* UDLanguageServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDLanguageServer.m; sourceTree = "<group>"; };
 		ED2000000000000000000005 /* LSPServerKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LSPServerKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -14,7 +16,9 @@
 			isa = PBXGroup;
 			children = (
 				ED2000000000000000000001 /* UDJSONRPCConnection.h */,
+				4689A180C231455F5D813175 /* UDDAPConnection.h */,
 				ED2000000000000000000002 /* UDJSONRPCConnection.m */,
+				9906BF496B2B4F89CF17F5A4 /* UDDAPConnection.m */,
 				ED2000000000000000000003 /* UDLanguageServer.h */,
 				ED2000000000000000000004 /* UDLanguageServer.m */,
 			);
@@ -23,14 +27,17 @@
 			sourceTree = "<group>";
 		};
 		ED2000000000000000000007 /* UDJSONRPCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000002 /* UDJSONRPCConnection.m */; };
+		1FCE9CA1F248536C577FF132 /* UDDAPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 9906BF496B2B4F89CF17F5A4 /* UDDAPConnection.m */; };
 		ED2000000000000000000008 /* UDLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000004 /* UDLanguageServer.m */; };
 		ED2000000000000000000009 /* UDJSONRPCConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000001 /* UDJSONRPCConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9260D99D07A1196182E468BC /* UDDAPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4689A180C231455F5D813175 /* UDDAPConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ED200000000000000000000A /* UDLanguageServer.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000003 /* UDLanguageServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		ED200000000000000000000B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				ED2000000000000000000007 /* UDJSONRPCConnection.m in Sources */,
+				1FCE9CA1F248536C577FF132 /* UDDAPConnection.m in Sources */,
 				ED2000000000000000000008 /* UDLanguageServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED2000000000000000000009 /* UDJSONRPCConnection.h in Headers */,
+				9260D99D07A1196182E468BC /* UDDAPConnection.h in Headers */,
 				ED200000000000000000000A /* UDLanguageServer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -159,8 +167,12 @@
 			targetProxy = ED2000000000000000000016 /* PBXContainerItemProxy */;
 		};
 		ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDJSONRPCConnectionTests.m; sourceTree = "<group>"; };
+		9125B68D320B6FA92B6ED3A6 /* UDScriptDebugAdapterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebugAdapterTests.m; sourceTree = "<group>"; };
+		5EAD4971853377C3A33DDA8F /* UDDAPConnectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDAPConnectionTests.m; sourceTree = "<group>"; };
 		ED2000000000000000000019 /* UDScriptLanguageServerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptLanguageServerTests.m; sourceTree = "<group>"; };
 		ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */; };
+		0FC5AABC301F6BCBA3203B3A /* UDScriptDebugAdapterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9125B68D320B6FA92B6ED3A6 /* UDScriptDebugAdapterTests.m */; };
+		70714D4961B21D7B87993D1F /* UDDAPConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EAD4971853377C3A33DDA8F /* UDDAPConnectionTests.m */; };
 		ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000019 /* UDScriptLanguageServerTests.m */; };
 		ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000013 /* UDScriptLanguageServer.m */; };
 		ED2000000000000000000021 /* LSPServerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -332,6 +344,332 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 
+		DA9A00000000000000000001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DA9A00000000000000000002 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA9A00000000000000000001 /* main.m */; };
+		DA9A00000000000000000003 /* udscript-dap */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "udscript-dap"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA9A00000000000000000004 /* udscript-dap */ = {
+			isa = PBXGroup;
+			children = (
+				DA9A00000000000000000001 /* main.m */,
+				3CCA08301F3D3C6438DFB4FE /* UDScriptDebugAdapter.h */,
+				25BB37F8B711117400B0AAA1 /* UDScriptExpression.h */,
+				A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */,
+				DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */,
+			);
+			path = "udscript-dap";
+			sourceTree = "<group>";
+		};
+		DA9A00000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA9A00000000000000000002 /* main.m in Sources */,
+				C0EED8DAFF40EE7720BDD8A1 /* UDScriptDebugAdapter.m in Sources */,
+				80FDC3F91307964AEB70F42A /* UDScriptExpression.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DA9A00000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				344C27FF87D3E4EB98FF4924 /* UDIdLib.framework in Frameworks */,
+				D877D26536A618C0F49CA8AA /* UDCommon.framework in Frameworks */,
+				98A85B42304AE4D009B0EBF0 /* UDArchives.framework in Frameworks */,
+				C5CC2E63D01315B93D55E181 /* UDImages.framework in Frameworks */,
+				0C1B5CE74D7FF99C2337CA83 /* UDDecls.framework in Frameworks */,
+				A6EDE157B65C4F4CFF138658 /* UDRenderer.framework in Frameworks */,
+				AD8A885E80BC71C247F79195 /* UDUI.framework in Frameworks */,
+				EDB89168FA7CB67283DC5A47 /* UDGUIEditor.framework in Frameworks */,
+				548A5E943E6701EAF7399D9F /* UDScripts.framework in Frameworks */,
+				92707BDEE30DC7CF4F649B3D /* UDWorkspace.framework in Frameworks */,
+				DA9A00000000000000000007 /* Foundation.framework in Frameworks */,
+				50B90917E2076E6CA2CE70E1 /* LSPServerKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DA9A00000000000000000007 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
+		DA9A0000000000000000000B /* udscript-dap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DA9A0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-dap" */;
+			buildPhases = (
+				DA9A00000000000000000005 /* Sources */,
+				DA9A00000000000000000006 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				32D1C627DBDE60501F19FBB0 /* PBXTargetDependency */,
+				0E2D7127013BF2C482358085 /* PBXTargetDependency */,
+				FF1ED967C17282EF4D3FB318 /* PBXTargetDependency */,
+				7795437C0F8B2F223CCDB7D1 /* PBXTargetDependency */,
+				39970557410FB31F9E6582FF /* PBXTargetDependency */,
+				BBA7EE3C5D6BFF95B1D5CD5B /* PBXTargetDependency */,
+				18EEC8184AF9CA8FCD31A32C /* PBXTargetDependency */,
+				4160AFABB73778A6E392E582 /* PBXTargetDependency */,
+				E53D4EDBDA6E3FE15965BD15 /* PBXTargetDependency */,
+				DF384DC3EA6A445A7BCE4E37 /* PBXTargetDependency */,
+				1F8098A3B64213F37A896FC5 /* PBXTargetDependency */,
+			);
+			name = "udscript-dap";
+			productName = "udscript-dap";
+			productReference = DA9A00000000000000000003 /* udscript-dap */;
+			productType = "com.apple.product-type.tool";
+		};
+		DA9A0000000000000000000C /* Build configuration list for PBXNativeTarget "udscript-dap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA9A0000000000000000000D /* Debug */,
+				DA9A0000000000000000000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DA9A0000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/**",
+					"$(SRCROOT)/Sources/LSPServerKit",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-dap";
+			};
+			name = Debug;
+		};
+		DA9A0000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/Sources/Libraries/**",
+					"$(SRCROOT)/Sources/LSPServerKit",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_NAME = "udscript-dap";
+			};
+			name = Release;
+		};
+		DA9A0000000000000000000F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DA9A0000000000000000000B;
+			remoteInfo = "udscript-dap";
+		};
+		DA9A00000000000000000010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DA9A0000000000000000000B /* udscript-dap */;
+			targetProxy = DA9A0000000000000000000F /* PBXContainerItemProxy */;
+		};
+		DA9A00000000000000000011 /* udscript-dap in Embed udscript-dap */ = {isa = PBXBuildFile; fileRef = DA9A00000000000000000003 /* udscript-dap */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		DA9A00000000000000000012 /* Embed udscript-dap */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				DA9A00000000000000000011 /* udscript-dap in Embed udscript-dap */,
+			);
+			name = "Embed udscript-dap";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		344C27FF87D3E4EB98FF4924 /* UDIdLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64ED218A483996F9CF44BE3 /* UDIdLib.framework */; };
+		D877D26536A618C0F49CA8AA /* UDCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D61149FE7350ED17F3647B /* UDCommon.framework */; };
+		98A85B42304AE4D009B0EBF0 /* UDArchives.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6062E05CA860510F66A068FD /* UDArchives.framework */; };
+		C5CC2E63D01315B93D55E181 /* UDImages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACB25E92A25FD977D8DEF9B /* UDImages.framework */; };
+		0C1B5CE74D7FF99C2337CA83 /* UDDecls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EDB4AFF20CC4EA653331C0 /* UDDecls.framework */; };
+		A6EDE157B65C4F4CFF138658 /* UDRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E31A0099EC60E5A3021E10 /* UDRenderer.framework */; };
+		AD8A885E80BC71C247F79195 /* UDUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EECADD4F76AD8E51C286C5B1 /* UDUI.framework */; };
+		EDB89168FA7CB67283DC5A47 /* UDGUIEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F913E63B5388AF2B1FC2862B /* UDGUIEditor.framework */; };
+		548A5E943E6701EAF7399D9F /* UDScripts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C21974321174D5857F81AFC5 /* UDScripts.framework */; };
+		92707BDEE30DC7CF4F649B3D /* UDWorkspace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826F1BCAB3CF46BD8481F2E0 /* UDWorkspace.framework */; };
+		50B90917E2076E6CA2CE70E1 /* LSPServerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2000000000000000000005 /* LSPServerKit.framework */; };
+		32D1C627DBDE60501F19FBB0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71977493C653CE069D4FD70 /* UDIdLib */;
+			targetProxy = 143AC27A1A4C66AD8A732C6F /* PBXContainerItemProxy */;
+		};
+		143AC27A1A4C66AD8A732C6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71977493C653CE069D4FD70;
+			remoteInfo = UDIdLib;
+		};
+		0E2D7127013BF2C482358085 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02765894139EB401B2243F2E /* UDCommon */;
+			targetProxy = 1C4084445C941E9D3EAE5365 /* PBXContainerItemProxy */;
+		};
+		1C4084445C941E9D3EAE5365 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02765894139EB401B2243F2E;
+			remoteInfo = UDCommon;
+		};
+		FF1ED967C17282EF4D3FB318 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB9414176BEDEF4DAF97BF0 /* UDArchives */;
+			targetProxy = 432EB419B033D4EB18975DB6 /* PBXContainerItemProxy */;
+		};
+		432EB419B033D4EB18975DB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB9414176BEDEF4DAF97BF0;
+			remoteInfo = UDArchives;
+		};
+		7795437C0F8B2F223CCDB7D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9921947C6187716263FA03BD /* UDImages */;
+			targetProxy = A334534A09B647142F4EDC33 /* PBXContainerItemProxy */;
+		};
+		A334534A09B647142F4EDC33 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9921947C6187716263FA03BD;
+			remoteInfo = UDImages;
+		};
+		39970557410FB31F9E6582FF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEFCFFF22B9A4D807C22B1F7 /* UDDecls */;
+			targetProxy = E81B366B9943E9689D8540B7 /* PBXContainerItemProxy */;
+		};
+		E81B366B9943E9689D8540B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEFCFFF22B9A4D807C22B1F7;
+			remoteInfo = UDDecls;
+		};
+		BBA7EE3C5D6BFF95B1D5CD5B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C5E83F5220F979289293F7E4 /* UDRenderer */;
+			targetProxy = 9510A3317C866B6FC4790DDB /* PBXContainerItemProxy */;
+		};
+		9510A3317C866B6FC4790DDB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C5E83F5220F979289293F7E4;
+			remoteInfo = UDRenderer;
+		};
+		18EEC8184AF9CA8FCD31A32C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90AAC2F3E6321A51AD2C446 /* UDUI */;
+			targetProxy = 7EEEA9C59BB47F4C22658D32 /* PBXContainerItemProxy */;
+		};
+		7EEEA9C59BB47F4C22658D32 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90AAC2F3E6321A51AD2C446;
+			remoteInfo = UDUI;
+		};
+		4160AFABB73778A6E392E582 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EDF8EAA67836A163CDA7F7D /* UDGUIEditor */;
+			targetProxy = F3DEEAAC60B1713A268532D3 /* PBXContainerItemProxy */;
+		};
+		F3DEEAAC60B1713A268532D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EDF8EAA67836A163CDA7F7D;
+			remoteInfo = UDGUIEditor;
+		};
+		E53D4EDBDA6E3FE15965BD15 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F846BFEF6B2DFFE06A6B88F /* UDScripts */;
+			targetProxy = D5768938F7C14778AA021A72 /* PBXContainerItemProxy */;
+		};
+		D5768938F7C14778AA021A72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F846BFEF6B2DFFE06A6B88F;
+			remoteInfo = UDScripts;
+		};
+		DF384DC3EA6A445A7BCE4E37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 45DDFC20A8F45BC4A2794B6D /* UDWorkspace */;
+			targetProxy = 5272B841AFBF8AD88826A3A7 /* PBXContainerItemProxy */;
+		};
+		5272B841AFBF8AD88826A3A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 45DDFC20A8F45BC4A2794B6D;
+			remoteInfo = UDWorkspace;
+		};
+		1F8098A3B64213F37A896FC5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ED200000000000000000000E /* LSPServerKit */;
+			targetProxy = BCD93226300A6CA4FCE0D023 /* PBXContainerItemProxy */;
+		};
+		BCD93226300A6CA4FCE0D023 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ED200000000000000000000E;
+			remoteInfo = LSPServerKit;
+		};
+		3CCA08301F3D3C6438DFB4FE /* UDScriptDebugAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebugAdapter.h; sourceTree = "<group>"; };
+		25BB37F8B711117400B0AAA1 /* UDScriptExpression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptExpression.h; sourceTree = "<group>"; };
+		A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebugAdapter.m; sourceTree = "<group>"; };
+		DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptExpression.m; sourceTree = "<group>"; };
+		C0EED8DAFF40EE7720BDD8A1 /* UDScriptDebugAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */; };
+		80FDC3F91307964AEB70F42A /* UDScriptExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */; };
+		A1550A492053AB6A9E9FD5AC /* UDFakeScriptDebugger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDFakeScriptDebugger.h; sourceTree = "<group>"; };
+		8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDFakeScriptDebugger.m; sourceTree = "<group>"; };
+		866C09EB04834533E0783FCA /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
+		90AE985B00574CF16AA29815 /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
+		614A56AB831EF86732909960 /* UDScriptDebugAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4247B7C42060F1EBFA4C59B /* UDScriptDebugAdapter.m */; };
+		41F4694CD4CD8CC634EE0647 /* UDScriptExpression.m in Sources */ = {isa = PBXBuildFile; fileRef = DAE972BC244C0415BEC10F62 /* UDScriptExpression.m */; };
+		DA9A00000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DA9A0000000000000000000B;
+			remoteInfo = "udscript-dap";
+		};
+		DA9A00000000000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DA9A0000000000000000000B /* udscript-dap */;
+			targetProxy = DA9A00000000000000000013 /* PBXContainerItemProxy */;
+		};
+		92A97CD38C1CD0465FCBDA22 /* UDFakeScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */; };
 /* Begin PBXBuildFile section */
 		AF7E50172F726A0C78A3C8E9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
 		902F0A0371C8BE1A7CAEAB3A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 212EA36225CB84430A3DB034 /* OpenGL.framework */; };
@@ -453,7 +791,9 @@
 		58E7C8040171C2598E709B47 /* UDExpressionEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = A2D8D0335870525A2E5A69E7 /* UDExpressionEditor.m */; };
 		CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65393027987300157501 /* UDTextEditorViewController.m */; };
 		EC1F00000000000000000001 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
+		BB9A3C06FE8A53A3C73ED1D7 /* UDScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */; };
 		EC1F00000000000000000002 /* UDScriptServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1F00000000000000000003 /* UDScriptServer.m */; };
+		D000F919359527848B26B916 /* UDScriptDebugger.m in Sources */ = {isa = PBXBuildFile; fileRef = A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */; };
 		CEFC653E3027987300157501 /* UDBaseEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65373027987300157501 /* UDBaseEditorViewController.m */; };
 		CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65433027994F00157501 /* UDTextFileDocument.m */; };
 		CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFC65413027994F00157501 /* UDWorkspaceDocument.m */; };
@@ -704,6 +1044,8 @@
 		478984B19C51DFCAC7360BE3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */; };
 		7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */; };
+		A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */; };
+		B5AA782F246B4860F59F9289 /* UDScreenshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 26B2C14F681F2010391504EA /* UDScreenshotTests.m */; };
 		751BB298D173634C751D4633 /* idDeclFileWriteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */; };
 		D69CF16C3C4CAD30D4BA4B64 /* UDUpdater-Apple.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B97A4F12D332875F726939 /* UDUpdater-Apple.m */; };
 		6E6CC63767D2CB19D08271B4 /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D9C272BA0091EEC7F8E0C2 /* Sparkle.xcframework */; };
@@ -711,12 +1053,15 @@
 		D480F402CEA9040802A2A778 /* UDDeclTextChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */; };
 		5C0E00000000000000000001 /* UDScriptEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000005 /* UDScriptEvents.m */; };
 		5C0F00000000000000000001 /* UDScriptIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000005 /* UDScriptIndex.m */; };
+		844981B4E06CCF96FFAEDC3E /* UDScriptDebuggerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F2735319B75127DA864871 /* UDScriptDebuggerConnection.m */; };
 		93C7736A839A2C42A87FE296 /* UDDeclTextChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5C0E00000000000000000002 /* UDScriptEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000004 /* UDScriptEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5C0F00000000000000000002 /* UDScriptIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000004 /* UDScriptIndex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D77FF4CF9A2DA2B60DEEB635 /* UDScriptDebuggerConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 041670B1445A8A5B1D544539 /* UDScriptDebuggerConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A41137BF2D95726931AB51 /* UDDeclTextCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */; };
 		5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E00000000000000000006 /* UDScriptEventsTests.m */; };
 		5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F00000000000000000006 /* UDScriptIndexTests.m */; };
+		37B63DFAC9C04A4E2BE6CDA5 /* UDScriptDebuggerConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B789B4885D86E48E726BAB1 /* UDScriptDebuggerConnectionTests.m */; };
 		EC0D00000000000000000004 /* UDCodeKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; };
 		EC0D00000000000000000005 /* UDCodeKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000001 /* UDCodeKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EC0D00000000000000000006 /* UDPieceTable.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D00000000000000000002 /* UDPieceTable.xcframework */; };
@@ -2708,7 +3053,9 @@
 		CEFC65383027987300157501 /* UDTextEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextEditorViewController.h; sourceTree = "<group>"; };
 		CEFC65393027987300157501 /* UDTextEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDTextEditorViewController.m; sourceTree = "<group>"; };
 		EC1F00000000000000000003 /* UDScriptServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptServer.m; sourceTree = "<group>"; };
+		A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebugger.m; sourceTree = "<group>"; };
 		EC1F00000000000000000004 /* UDScriptServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptServer.h; sourceTree = "<group>"; };
+		92E48CB9A0F8330A0ADB5841 /* UDScriptDebugger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebugger.h; sourceTree = "<group>"; };
 		CEFC653A3027987300157501 /* UDImageViewerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDImageViewerViewController.h; sourceTree = "<group>"; };
 		BF6EF605130C9BD647F22E53 /* UDTopClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTopClipView.h; sourceTree = "<group>"; };
 		A7A1C7065A8E7599821A7EB8 /* UDReferencePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDReferencePicker.h; sourceTree = "<group>"; };
@@ -2884,16 +3231,21 @@
 		395D2B3D3773407E57B6B678 /* QuarryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuarryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
+		B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebuggerTests.m; sourceTree = "<group>"; };
+		26B2C14F681F2010391504EA /* UDScreenshotTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScreenshotTests.m; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
 		5C0F00000000000000000004 /* UDScriptIndex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptIndex.h; sourceTree = "<group>"; };
+		041670B1445A8A5B1D544539 /* UDScriptDebuggerConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebuggerConnection.h; sourceTree = "<group>"; };
 		76ABD94098D66E589C8D3462 /* UDDeclTextChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextChecker.m; sourceTree = "<group>"; };
 		5C0E00000000000000000005 /* UDScriptEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEvents.m; sourceTree = "<group>"; };
 		5C0F00000000000000000005 /* UDScriptIndex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptIndex.m; sourceTree = "<group>"; };
+		34F2735319B75127DA864871 /* UDScriptDebuggerConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebuggerConnection.m; sourceTree = "<group>"; };
 		013A2FA4EBBE7490C24BE229 /* UDDeclTextCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDDeclTextCheckerTests.m; sourceTree = "<group>"; };
 		5C0E00000000000000000006 /* UDScriptEventsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptEventsTests.m; sourceTree = "<group>"; };
 		5C0F00000000000000000006 /* UDScriptIndexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptIndexTests.m; sourceTree = "<group>"; };
+		2B789B4885D86E48E726BAB1 /* UDScriptDebuggerConnectionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDScriptDebuggerConnectionTests.m; sourceTree = "<group>"; };
 		EC0D00000000000000000001 /* UDCodeKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDCodeKit.xcframework; path = .deps/UDCodeKit.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000002 /* UDPieceTable.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = UDPieceTable.xcframework; path = .deps/UDPieceTable.xcframework; sourceTree = SOURCE_ROOT; };
 		EC0D00000000000000000003 /* LSPKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LSPKit.xcframework; path = .deps/LSPKit.xcframework; sourceTree = SOURCE_ROOT; };
@@ -3339,6 +3691,7 @@
 				AA00050100000000000000AA /* udpaktool */,
 				ED2000000000000000000005 /* LSPServerKit.framework */,
 				EC1E00000000000000000003 /* udscript-lsp */,
+				DA9A00000000000000000003 /* udscript-dap */,
 				FF00050000000000000000AA /* UDLauncher.app */,
 				395D2B3D3773407E57B6B678 /* QuarryTests.xctest */,
 			);
@@ -3418,6 +3771,7 @@
 			children = (
 				AA00000800000000000000AA /* udpaktool */,
 				EC1E00000000000000000004 /* udscript-lsp */,
+				DA9A00000000000000000004 /* udscript-dap */,
 			);
 			name = Tools;
 			path = Sources/Tools;
@@ -3596,6 +3950,8 @@
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
+				B31EA23E407442CD210A4D58 /* UDScriptDebuggerTests.m */,
+				26B2C14F681F2010391504EA /* UDScreenshotTests.m */,
 			);
 			path = Quarry;
 			sourceTree = "<group>";
@@ -3798,7 +4154,9 @@
 				5C0E00000000000000000004 /* UDScriptEvents.h */,
 				5C0E00000000000000000005 /* UDScriptEvents.m */,
 				5C0F00000000000000000004 /* UDScriptIndex.h */,
+				041670B1445A8A5B1D544539 /* UDScriptDebuggerConnection.h */,
 				5C0F00000000000000000005 /* UDScriptIndex.m */,
+				34F2735319B75127DA864871 /* UDScriptDebuggerConnection.m */,
 			);
 			path = UDScripts;
 			sourceTree = "<group>";
@@ -3897,7 +4255,9 @@
 			isa = PBXGroup;
 			children = (
 				EC1F00000000000000000004 /* UDScriptServer.h */,
+				92E48CB9A0F8330A0ADB5841 /* UDScriptDebugger.h */,
 				EC1F00000000000000000003 /* UDScriptServer.m */,
+				A6D83678CBD52B37C5EFA007 /* UDScriptDebugger.m */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -4024,6 +4384,7 @@
 			children = (
 				5C0E00000000000000000006 /* UDScriptEventsTests.m */,
 				5C0F00000000000000000006 /* UDScriptIndexTests.m */,
+				2B789B4885D86E48E726BAB1 /* UDScriptDebuggerConnectionTests.m */,
 			);
 			path = UDScripts;
 			sourceTree = "<group>";
@@ -4041,6 +4402,8 @@
 			isa = PBXGroup;
 			children = (
 				ED2000000000000000000018 /* UDJSONRPCConnectionTests.m */,
+				9125B68D320B6FA92B6ED3A6 /* UDScriptDebugAdapterTests.m */,
+				5EAD4971853377C3A33DDA8F /* UDDAPConnectionTests.m */,
 				ED2000000000000000000019 /* UDScriptLanguageServerTests.m */,
 			);
 			path = LSPServerKit;
@@ -4049,6 +4412,8 @@
 		869E309887C64E2B1F2BFBAE /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				A1550A492053AB6A9E9FD5AC /* UDFakeScriptDebugger.h */,
+				8E5E0527C77B2A2DB81D794A /* UDFakeScriptDebugger.m */,
 				DABB2ABEACDB7FF8331CCF7D /* UDZipFixture.h */,
 				EEE5A03E00C82FC6E5B16658 /* UDZipFixture.m */,
 			);
@@ -4206,6 +4571,7 @@
 			files = (
 				5C0E00000000000000000002 /* UDScriptEvents.h in Headers */,
 				5C0F00000000000000000002 /* UDScriptIndex.h in Headers */,
+				D77FF4CF9A2DA2B60DEEB635 /* UDScriptDebuggerConnection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4287,6 +4653,7 @@
 				EC0D00000000000000000010 /* Copy UDCodeKit's grammars into PlugIns */,
 				DD09000000000000000000AA /* Embed Frameworks */,
 				EC1E00000000000000000012 /* Embed udscript-lsp */,
+				DA9A00000000000000000012 /* Embed udscript-dap */,
 			);
 			buildRules = (
 			);
@@ -4304,6 +4671,7 @@
 				EC1D00000000000000000006 /* PBXTargetDependency */,
 				ED1D00000000000000000006 /* PBXTargetDependency */,
 				EC1E00000000000000000010 /* PBXTargetDependency */,
+				DA9A00000000000000000010 /* PBXTargetDependency */,
 			);
 			name = "Quarry";
 			productName = Quarry;
@@ -4353,6 +4721,7 @@
 				EC1D00000000000000000007 /* PBXTargetDependency */,
 				ED1D00000000000000000007 /* PBXTargetDependency */,
 				EC1E00000000000000000014 /* PBXTargetDependency */,
+				DA9A00000000000000000014 /* PBXTargetDependency */,
 			);
 			name = QuarryTests;
 			productName = QuarryTests;
@@ -4851,6 +5220,7 @@
 				DD04000000000000000000AA /* Quarry */,
 				AA04000100000000000000AA /* udpaktool */,
 				EC1E0000000000000000000B /* udscript-lsp */,
+				DA9A0000000000000000000B /* udscript-dap */,
 				FF04000000000000000000AA /* UDLauncher */,
 				9D5D57CB7DB90240B958F42D /* QuarryTests */,
 			);
@@ -5049,6 +5419,7 @@
 				58E7C8040171C2598E709B47 /* UDExpressionEditor.m in Sources */,
 				CEFC653D3027987300157501 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000001 /* UDScriptServer.m in Sources */,
+				BB9A3C06FE8A53A3C73ED1D7 /* UDScriptDebugger.m in Sources */,
 				CEFC65463027994F00157501 /* UDTextFileDocument.m in Sources */,
 				CEFC654C3029E5FE00157501 /* UDDeclDocument.m in Sources */,
 				CEFC65473027994F00157501 /* UDWorkspaceDocument.m in Sources */,
@@ -5072,6 +5443,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92A97CD38C1CD0465FCBDA22 /* UDFakeScriptDebugger.m in Sources */,
 				6046DF8D5CD56900C2CB0851 /* UDQuarryTestCase.m in Sources */,
 				919D5258A170002EDEC8A771 /* UDPDAEditorTests.m in Sources */,
 				E7C4513177F01FFEA85CAD15 /* UDTableSkinEditorTests.m in Sources */,
@@ -5121,6 +5493,7 @@
 				9BE1B6ACD5D76A2010909F67 /* UDExpressionEditor.m in Sources */,
 				070E737371DA4C58DF8E1D06 /* UDTextEditorViewController.m in Sources */,
 				EC1F00000000000000000002 /* UDScriptServer.m in Sources */,
+				D000F919359527848B26B916 /* UDScriptDebugger.m in Sources */,
 				398E27A47EFA1ABA487E8EE4 /* UDTextFileDocument.m in Sources */,
 				F5D06B6F8703ACFEF050F624 /* UDDeclDocument.m in Sources */,
 				A380478DB345584B4D0854D9 /* UDWorkspaceDocument.m in Sources */,
@@ -5129,6 +5502,8 @@
 				6EAA4E7BB774866765BAA719 /* UDAppDocumentController.m in Sources */,
 				3F71594F3536A098B531F41B /* UDPakInstallTests.m in Sources */,
 				7E5D3F1C36D889FF2023C055 /* UDGuiViewerTests.m in Sources */,
+				A8FCAC3E6EBC2F01895A0A45 /* UDScriptDebuggerTests.m in Sources */,
+				B5AA782F246B4860F59F9289 /* UDScreenshotTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5276,6 +5651,7 @@
 			files = (
 				5C0E00000000000000000001 /* UDScriptEvents.m in Sources */,
 				5C0F00000000000000000001 /* UDScriptIndex.m in Sources */,
+				844981B4E06CCF96FFAEDC3E /* UDScriptDebuggerConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5344,8 +5720,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				866C09EB04834533E0783FCA /* UDFakeScriptDebugger.m in Sources */,
 				5C0E00000000000000000003 /* UDScriptEventsTests.m in Sources */,
 				5C0F00000000000000000003 /* UDScriptIndexTests.m in Sources */,
+				37B63DFAC9C04A4E2BE6CDA5 /* UDScriptDebuggerConnectionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5362,7 +5740,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90AE985B00574CF16AA29815 /* UDFakeScriptDebugger.m in Sources */,
+				614A56AB831EF86732909960 /* UDScriptDebugAdapter.m in Sources */,
+				41F4694CD4CD8CC634EE0647 /* UDScriptExpression.m in Sources */,
 				ED200000000000000000001A /* UDJSONRPCConnectionTests.m in Sources */,
+				0FC5AABC301F6BCBA3203B3A /* UDScriptDebugAdapterTests.m in Sources */,
+				70714D4961B21D7B87993D1F /* UDDAPConnectionTests.m in Sources */,
 				ED200000000000000000001B /* UDScriptLanguageServerTests.m in Sources */,
 				ED200000000000000000001C /* UDScriptLanguageServer.m in Sources */,
 			);
@@ -7623,6 +8006,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7661,6 +8045,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7702,6 +8087,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7740,6 +8126,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7781,6 +8168,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7819,6 +8207,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7860,6 +8249,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7898,6 +8288,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7939,6 +8330,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7977,6 +8369,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8018,6 +8411,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8056,6 +8450,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8097,6 +8492,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8135,6 +8531,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8176,6 +8573,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8214,6 +8612,7 @@
 					"$(SRCROOT)/Sources/Libraries/**",
 										"$(SRCROOT)/Sources/LSPServerKit",
 					"$(SRCROOT)/Sources/Tools/udscript-lsp",
+					"$(SRCROOT)/Sources/Tools/udscript-dap",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -1,4 +1,5 @@
 #import "UDQuarryTestCase.h"
+#import <objc/runtime.h>
 #import "UDDeclEditorViewController.h"
 #import "UDReferencePicker.h"
 
@@ -358,7 +359,7 @@ NSString *UDDoom3InstallPath(void) {
     __block NSSegmentedControl *found = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
         if ([candidate isKindOfClass:[NSSegmentedControl class]] &&
-            [(NSSegmentedControl *)candidate action] == action) {
+            sel_isEqual([(NSSegmentedControl *)candidate action], action)) {
             found = (NSSegmentedControl *)candidate;
             return NO;
         }
@@ -443,7 +444,7 @@ NSString *UDDoom3InstallPath(void) {
         with:(void (^)(UDReferencePicker *picker))choose picker:(UDReferencePicker *(^)(void))picker {
     __block NSButton *button = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
-        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == action
+        if ([candidate isKindOfClass:[NSButton class]] && sel_isEqual([(NSButton *)candidate action], action)
             && [(NSButton *)candidate tag] == tag) {
             button = (NSButton *)candidate;
             return NO;
@@ -487,7 +488,7 @@ NSString *UDDoom3InstallPath(void) {
          with:(void (^)(id controller))block {
     __block NSButton *button = nil;
     [self forEachViewUnder:view do:^BOOL(NSView *candidate) {
-        if ([candidate isKindOfClass:[NSButton class]] && [(NSButton *)candidate action] == action && [(NSButton *)candidate tag] == tag) {
+        if ([candidate isKindOfClass:[NSButton class]] && sel_isEqual([(NSButton *)candidate action], action) && [(NSButton *)candidate tag] == tag) {
             button = (NSButton *)candidate;
             return NO;
         }

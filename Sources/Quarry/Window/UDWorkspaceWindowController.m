@@ -22,6 +22,8 @@
 #import "idDeclManager.h"
 #import "DMTabBar.h"
 #import "UDTabBadge.h"
+#import "UDScriptDebugger.h"
+#import <objc/runtime.h>
 
 // The panes' widths: what each side opens at, the least it can be dragged
 // to, and the least the editors keep (RDLKit's designer's, near enough).
@@ -29,6 +31,9 @@ static const CGFloat UDNavigatorWidth = 240;
 static const CGFloat UDInspectorWidth = 280;
 static const CGFloat UDSidePaneMinimum = 160;
 static const CGFloat UDEditorsMinimum = 400;
+// the editors over the debug area: each at least so high
+static const CGFloat UDEditorsMinimumHeight = 120;
+static const CGFloat UDDebugAreaMinimum = 80;
 
 @interface UDWorkspaceWindowController ()
 @property (nonatomic, strong) UDEditorTabManager *tabManager;
@@ -47,6 +52,13 @@ static const CGFloat UDEditorsMinimum = 400;
 @property (nonatomic, copy) NSArray<DMTabBarItem *> *navigatorItems;
 @property (nonatomic) NSInteger navigatorFixedCount;
 @property (nonatomic, copy) NSArray<UDEditorPane *> *navigatorPanes;
+@property (nonatomic, strong, readwrite) UDScriptDebugger *scriptDebugger;
+/// The debug area's height while shown (kept while it is hidden).
+@property (nonatomic) CGFloat debugAreaHeight;
+@property (nonatomic, readwrite, getter=isDebugAreaShown) BOOL debugAreaShown;
+@end
+
+@interface UDWorkspaceWindowController (UDScriptDebuggerDelegate) <UDScriptDebuggerDelegate, UDBreakpointNavigatorDelegate>
 @end
 
 @implementation UDWorkspaceWindowController
@@ -91,6 +103,7 @@ static const CGFloat UDEditorsMinimum = 400;
                                                  name:UDEditorTabManagerSelectionDidChangeNotification
                                                object:self.tabManager];
     [self _buildPanes];
+    [self _buildDebugger];
     [self _selectedEditorDidChange:nil];
 }
 
@@ -103,6 +116,8 @@ static const CGFloat UDEditorsMinimum = 400;
         @[ @"D", @"Decls and files", @0.47, @0.53, @0.64 ],
         @[ @"F", @"Find", @0.36, @0.55, @0.42 ],
         @[ @"I", @"Issues", @0.78, @0.42, @0.25 ],
+        @[ @"Db", @"Debug", @0.36, @0.62, @0.45 ],
+        @[ @"Bp", @"Breakpoints", @0.30, @0.50, @0.80 ],
     ];
     NSMutableArray<DMTabBarItem *> *items = [NSMutableArray array];
     for (NSUInteger i = 0; i < navigator.count && i < (NSUInteger)self.navigatorTabView.numberOfTabViewItems; i++) {
@@ -256,6 +271,7 @@ static const CGFloat UDEditorsMinimum = 400;
 /// they were dragged to, as Xcode's do. Below the window's least width,
 /// everyone gives, so none is squeezed away.
 - (BOOL)splitView:(NSSplitView *)splitView shouldAdjustSizeOfSubview:(NSView *)subview {
+    if (splitView == self.editorSplit) return subview != self.debugPane;     // the editors take the change
     NSArray<NSView *> *panes = splitView.subviews;
     if (NSWidth(splitView.bounds) < self.window.minSize.width) return YES;
     return subview != panes.firstObject && subview != panes.lastObject;
@@ -266,6 +282,10 @@ static const CGFloat UDEditorsMinimum = 400;
 // asks -shouldAdjustSizeOfSubview: about it, so the inspector could not keep
 // its width: the same rule, by hand. (RDLKit's designer's.)
 - (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+    if (splitView == self.editorSplit) {
+        [self _layOutEditorSplit];
+        return;
+    }
     NSArray<NSView *> *subviews = splitView.subviews;
     NSUInteger n = subviews.count;
     if (n == 0) return;
@@ -305,10 +325,12 @@ static const CGFloat UDEditorsMinimum = 400;
 /// Each side has a floor, so a pane dragged to nothing can be had back;
 /// the editors keep theirs.
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposed ofSubviewAt:(NSInteger)index {
+    if (splitView == self.editorSplit) return MAX(proposed, UDEditorsMinimumHeight);
     return index == 0 ? MAX(proposed, UDSidePaneMinimum) : MAX(proposed, NSMinX([splitView.subviews[(NSUInteger)index] frame]) + UDEditorsMinimum);
 }
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposed ofSubviewAt:(NSInteger)index {
+    if (splitView == self.editorSplit) return MIN(proposed, NSHeight(splitView.bounds) - splitView.dividerThickness - UDDebugAreaMinimum);
     CGFloat width = NSWidth(splitView.bounds), divider = splitView.dividerThickness;
     if (index == (NSInteger)splitView.subviews.count - 2) {
         return MIN(proposed, width - UDSidePaneMinimum - divider);
@@ -654,6 +676,9 @@ static const CGFloat UDEditorsMinimum = 400;
     NSMutableArray<UDDiagnosticStore *> *stores = [NSMutableArray array];
     NSMutableArray<NSString *> *names = [NSMutableArray array];
     for (UDBaseEditorViewController *editor in [self.tabManager allEditors]) {
+        if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+            ((UDTextEditorViewController *)editor).breakpointStore = self.scriptDebugger.breakpoints;
+        }
         // A script's errors, a PDA's missing references: any editor's store.
         if (![editor respondsToSelector:@selector(diagnosticStore)]) continue;
         UDDiagnosticStore *store = [(id)editor diagnosticStore];
@@ -758,6 +783,179 @@ static const CGFloat UDEditorsMinimum = 400;
     }
 }
 
+#pragma mark - The debugger (UDScriptDebugger)
+
+/// The debugger's views in their hosts: the navigator's tab; the bar over
+/// the area, under the editors, hidden until a session starts.
+- (void)_buildDebugger {
+    self.scriptDebugger = [[UDScriptDebugger alloc] initWithWorkspace:self.workspace];
+    self.scriptDebugger.delegate = self;
+    NSView *navigator = self.scriptDebugger.navigator.view;
+    navigator.frame = self.debugNavigatorHost.bounds;
+    navigator.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.debugNavigatorHost addSubview:navigator];
+    NSView *breakpoints = self.scriptDebugger.breakpointNavigator.view;
+    breakpoints.frame = self.breakpointNavigatorHost.bounds;
+    breakpoints.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.breakpointNavigatorHost addSubview:breakpoints];
+    self.scriptDebugger.breakpointNavigator.delegate = self;
+    // the breakpoints and watches kept as VS Code keeps them: the
+    // workspace's state, not its settings (no save asked for)
+    NSString *workspacePath = [(NSDocument *)self.document fileURL].path ?: self.workspace.fs_basepath ?: @"Untitled";
+    self.scriptDebugger.breakpoints.autosaveName = [@"Quarry Debugger " stringByAppendingString:workspacePath];
+    [self.debugBarHost addSubview:self.scriptDebugger.bar.view];
+    [self.debugAreaHost addSubview:self.scriptDebugger.area.view];
+    self.debugAreaHeight = 240;
+    self.debugAreaShown = NO;
+    [self _layOutEditorSplit];
+}
+
+/// The editors over the debug area (its height kept, or none while it is
+/// hidden), and in it the bar over the area: laid out here, as a pane that
+/// was no height lays out nothing by its autoresizing.
+- (void)_layOutEditorSplit {
+    NSSplitView *split = self.editorSplit;
+    if (split == nil || split.subviews.count < 2) return;
+    NSRect bounds = split.bounds;
+    CGFloat divider = split.dividerThickness;
+    CGFloat pane = self.debugAreaShown ? MIN(self.debugAreaHeight, NSHeight(bounds) - divider - UDEditorsMinimumHeight) : 0;
+    pane = MAX(pane, 0);
+    CGFloat editorsHeight = NSHeight(bounds) - pane - (self.debugAreaShown ? divider : 0);
+    // the editors on top, flipped or not
+    BOOL flipped = split.isFlipped;
+    NSView *editors = split.subviews[0];
+    editors.frame = NSMakeRect(0, flipped ? 0 : NSHeight(bounds) - editorsHeight, NSWidth(bounds), editorsHeight);
+    self.debugPane.frame = NSMakeRect(0, flipped ? NSHeight(bounds) - pane : 0, NSWidth(bounds), pane);
+    self.debugPane.hidden = !self.debugAreaShown;
+    [self _layOutDebugPane];
+}
+
+- (void)_layOutDebugPane {
+    NSRect bounds = self.debugPane.bounds;
+    // hidden: the bar and the area keep their size, as their own views'
+    // autoresizing does not come back from none (the variables' scroll view
+    // came back reaching over the area's top, its first row under it)
+    if (!self.debugAreaShown || NSHeight(bounds) < 1) return;
+    NSView *bar = self.scriptDebugger.bar.view;
+    CGFloat barHeight = MIN(NSHeight(bar.frame) > 0 ? NSHeight(bar.frame) : 28, NSHeight(bounds));
+    BOOL flipped = self.debugPane.isFlipped;
+    self.debugBarHost.frame = NSMakeRect(0, flipped ? 0 : NSHeight(bounds) - barHeight, NSWidth(bounds), barHeight);
+    self.debugAreaHost.frame = NSMakeRect(0, flipped ? barHeight : 0, NSWidth(bounds), MAX(NSHeight(bounds) - barHeight, 0));
+    bar.frame = self.debugBarHost.bounds;
+    self.scriptDebugger.area.view.frame = self.debugAreaHost.bounds;
+}
+
+/// A divider's drag: the area's new height, kept.
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification {
+    if (notification.object != self.editorSplit || !self.debugAreaShown) return;
+    CGFloat height = NSHeight(self.debugPane.frame);
+    if (height >= UDDebugAreaMinimum) self.debugAreaHeight = height;
+    [self _layOutDebugPane];
+}
+
+- (void)_setDebugAreaShown:(BOOL)shown {
+    if (shown == self.debugAreaShown) return;
+    self.debugAreaShown = shown;
+    [self _layOutEditorSplit];
+    [self.editorSplit setNeedsDisplay:YES];
+}
+
+/// Debug > Toggle Breakpoint, from the window (on GNUstep a view's
+/// controller is not among its responders): the selected script's tab's.
+- (IBAction)toggleBreakpoint:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor toggleBreakpoint:sender];
+    else NSBeep();
+}
+
+- (IBAction)runToCursor:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor runToCursor:sender];
+    else NSBeep();
+}
+
+- (IBAction)jumpToCursor:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor jumpToCursor:sender];
+    else NSBeep();
+}
+
+- (IBAction)toggleDebugArea:(id)sender {
+    [self _setDebugAreaShown:!self.debugAreaShown];
+}
+
+- (void)_presentDebuggerError:(NSError *)error {
+    NSAlert *alert = [NSAlert alertWithError:error];
+    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+}
+
+- (IBAction)startDebugging:(id)sender {
+    NSError *error = nil;
+    if (![self.scriptDebugger run:&error]) [self _presentDebuggerError:error];
+}
+
+- (IBAction)attachDebugger:(id)sender {
+    NSError *error = nil;
+    if (![self.scriptDebugger attach:&error]) [self _presentDebuggerError:error];
+}
+
+- (IBAction)stopDebugging:(id)sender {
+    [self.scriptDebugger.bar stop:sender];
+}
+
+- (IBAction)debugContinueOrPause:(id)sender {
+    [self.scriptDebugger.bar continueOrPause:sender];
+}
+
+- (IBAction)debugStepOver:(id)sender {
+    [self.scriptDebugger.bar stepOver:sender];
+}
+
+- (IBAction)debugStepInto:(id)sender {
+    [self.scriptDebugger.bar stepInto:sender];
+}
+
+- (IBAction)debugStepOut:(id)sender {
+    [self.scriptDebugger.bar stepOut:sender];
+}
+
+/// The debugger's menu items: its bar's say for the session's actions
+/// (compared with sel_isEqual: GNUstep's runtime gives a XIB's selector
+/// another pointer).
+- (BOOL)_validateDebugAction:(SEL)action menuItem:(NSMenuItem *)menuItem handled:(BOOL *)handled {
+    *handled = YES;
+    UDDebugBarViewController *bar = self.scriptDebugger.bar;
+    // Run while debugging: a restart, as Xcode's
+    if (sel_isEqual(action, @selector(startDebugging:))) return self.workspace != nil;
+    if (sel_isEqual(action, @selector(attachDebugger:))) return self.workspace != nil && !self.scriptDebugger.debugging;
+    if (sel_isEqual(action, @selector(stopDebugging:))) return [bar canPerformAction:@selector(stop:)];
+    if (sel_isEqual(action, @selector(debugContinueOrPause:))) {
+        menuItem.title = self.scriptDebugger.session.state == UDDebugSessionStateRunning ? @"Pause" : @"Continue";
+        return [bar canPerformAction:@selector(continueOrPause:)];
+    }
+    if (sel_isEqual(action, @selector(debugStepOver:))) return [bar canPerformAction:@selector(stepOver:)];
+    if (sel_isEqual(action, @selector(debugStepInto:))) return [bar canPerformAction:@selector(stepInto:)];
+    if (sel_isEqual(action, @selector(debugStepOut:))) return [bar canPerformAction:@selector(stepOut:)];
+    if (sel_isEqual(action, @selector(toggleBreakpoint:))) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] && ((UDTextEditorViewController *)editor).breakpointStore != nil;
+    }
+    if (sel_isEqual(action, @selector(runToCursor:))) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] && self.scriptDebugger.session.canContinue;
+    }
+    if (sel_isEqual(action, @selector(jumpToCursor:))) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] && self.scriptDebugger.session.canJump;
+    }
+    if (sel_isEqual(action, @selector(toggleDebugArea:))) {
+        menuItem.title = self.debugAreaShown ? @"Hide Debug Area" : @"Show Debug Area";
+        return YES;
+    }
+    *handled = NO;
+    return NO;
+}
+
 #pragma mark - Jump to Definition
 
 - (IBAction)jumpToDefinition:(id)sender {
@@ -792,6 +990,9 @@ static const CGFloat UDEditorsMinimum = 400;
     if (self.isRestarting) {
         return NO;
     }
+    BOOL handled = NO;
+    BOOL valid = [self _validateDebugAction:action menuItem:menuItem handled:&handled];
+    if (handled) return valid;
 
     if (action == @selector(jumpToDefinition:) || action == @selector(testDecl:)) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
@@ -872,6 +1073,52 @@ static const CGFloat UDEditorsMinimum = 400;
 
 - (void)declBrowserDidClearSelection:(UDDeclBrowser *)browser {
     // TODO: do something about it?
+}
+
+@end
+
+@implementation UDWorkspaceWindowController (UDScriptDebuggerDelegate)
+
+/// The selected frame's script: opened, its line chosen (a pak's, read-only).
+- (void)scriptDebugger:(UDScriptDebugger *)debugger showScript:(NSString *)gamePath line:(NSInteger)line {
+    [self openFileAtPath:gamePath line:MAX(line - 1, 0) character:0 length:0];
+}
+
+/// A session: the debug area, and the debug navigator.
+- (void)scriptDebuggerDidStart:(UDScriptDebugger *)debugger {
+    [self _setDebugAreaShown:YES];
+    [self _showDebugNavigator];
+}
+
+/// Stopped: Quarry forward, at the debug navigator, as Xcode does.
+- (void)scriptDebuggerDidStop:(UDScriptDebugger *)debugger {
+    [NSApp activateIgnoringOtherApps:YES];
+    [self.window makeKeyAndOrderFront:nil];
+    [self _setDebugAreaShown:YES];
+    [self _showDebugNavigator];
+}
+
+- (void)_showDebugNavigator {
+    NSUInteger debug = 3;
+    if (debug < (NSUInteger)self.navigatorTabView.numberOfTabViewItems) {
+        self.navigatorTabBar.selectedIndex = debug;
+        [self.navigatorTabView selectTabViewItemAtIndex:(NSInteger)debug];
+    }
+}
+
+#pragma mark - UDBreakpointNavigatorDelegate
+
+- (void)breakpointNavigator:(UDBreakpointNavigatorViewController *)navigator showBreakpoint:(UDBreakpoint *)breakpoint {
+    NSString *gamePath = [self.workspace gamePathOfDiskPath:breakpoint.path];
+    if (gamePath != nil) [self openFileAtPath:gamePath line:MAX(breakpoint.line - 1, 0) character:0 length:0];
+}
+
+- (void)breakpointNavigator:(UDBreakpointNavigatorViewController *)navigator editBreakpoint:(UDBreakpoint *)breakpoint {
+    [self breakpointNavigator:navigator showBreakpoint:breakpoint];
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor editBreakpointAtLine:breakpoint.line];
+    }
 }
 
 @end

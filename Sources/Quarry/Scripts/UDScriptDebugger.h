@@ -9,6 +9,11 @@
  * A script is named by its path on disk, or where it would be in the mod's
  * folder when it is in a pak (UDWorkspace's diskPathOfGamePath:), as the
  * adapter names it too.
+ *
+ * Its behaviors, as Xcode's: a stop brings Quarry forward (the delegate's
+ * scriptDebuggerDidStop:); the game going on (and still running a moment
+ * later: not a step) brings the game forward, when the adapter says its
+ * process (one it launched).
  */
 
 #import <Cocoa/Cocoa.h>
@@ -24,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 /// A session started: its views want showing.
 - (void)scriptDebuggerDidStart:(UDScriptDebugger *)debugger;
+/// The game stopped (Xcode's behavior: Quarry comes forward, the debug
+/// navigator shown).
+- (void)scriptDebuggerDidStop:(UDScriptDebugger *)debugger;
 - (void)scriptDebuggerDidEnd:(UDScriptDebugger *)debugger;
 @end
 

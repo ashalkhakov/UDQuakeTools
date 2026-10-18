@@ -366,10 +366,12 @@ alone (UDCodeKit has the client side of each already):
 - [x] Restart (⌘R while debugging, as Xcode's): Quarry ends the session, the
       adapter answering once the game has quit (its debugger's port free),
       and runs it again, the breakpoints kept.
-- [ ] The variables view as Xcode's: values that changed since the last stop
-      marked, what was expanded (`self`) kept so across steps, a filter field.
-- [ ] Behaviors: Quarry comes forward and shows the debug navigator when the
-      game stops, and gives the game back the focus on continue.
+- [x] The variables view as Xcode's (UDCodeKit 0.6.0): values that changed
+      since the last stop blue, what was expanded (`self`) kept so across
+      steps, a filter field.
+- [x] Behaviors: Quarry comes forward and shows the debug navigator when the
+      game stops, and gives the game back the focus when it goes on (the
+      adapter's `process` event: a game it launched).
 
 Then what needs dhewm3, as follow-ups to #786 (a capability each, the adapter
 going on without them on stock 1.5.5):

@@ -190,6 +190,8 @@ static NSString *const UDFixtureScript =
     [self.game send:[self.game message:1 /* CONNECT */]];
     XCTAssertNotNil([self receive:2 /* CONNECTED */ within:10]);
     pid_t first = (pid_t)[self linesOf:started][0].intValue;
+    XCTAssertTrue([self spinUntil:^BOOL{ return controller.scriptDebugger.session.processID == first; } timeout:10],
+                  @"the game's process, as the adapter says it: %d", controller.scriptDebugger.session.processID);
     XCTAssertTrue([controller validateMenuItem:[[NSMenuItem alloc] initWithTitle:@"Run" action:@selector(startDebugging:) keyEquivalent:@""]],
                   @"Run while debugging");
 

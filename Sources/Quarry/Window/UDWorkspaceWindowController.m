@@ -1073,6 +1073,18 @@ static const CGFloat UDDebugAreaMinimum = 80;
 /// A session: the debug area, and the debug navigator.
 - (void)scriptDebuggerDidStart:(UDScriptDebugger *)debugger {
     [self _setDebugAreaShown:YES];
+    [self _showDebugNavigator];
+}
+
+/// Stopped: Quarry forward, at the debug navigator, as Xcode does.
+- (void)scriptDebuggerDidStop:(UDScriptDebugger *)debugger {
+    [NSApp activateIgnoringOtherApps:YES];
+    [self.window makeKeyAndOrderFront:nil];
+    [self _setDebugAreaShown:YES];
+    [self _showDebugNavigator];
+}
+
+- (void)_showDebugNavigator {
     NSUInteger debug = 3;
     if (debug < (NSUInteger)self.navigatorTabView.numberOfTabViewItems) {
         self.navigatorTabBar.selectedIndex = debug;

@@ -328,6 +328,9 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     }
     _task = task;
     [NSThread detachNewThreadSelector:@selector(_waitForExit:) toTarget:self withObject:task];
+    // its process, which a client brings forward as it runs
+    [_connection sendEvent:@"process" body:@{ @"name": program.lastPathComponent, @"systemProcessId": @(task.processIdentifier),
+                                              @"isLocalProcess": @YES, @"startMethod": @"launch" }];
     // the game says DBMSG_CONNECT as its debugger server starts
     _connectRequest = request;
 }

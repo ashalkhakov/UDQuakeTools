@@ -29,6 +29,11 @@
     return self;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+}
+
 - (BOOL)isDebugging {
     return self.session != nil && self.session.state != UDDebugSessionStateEnded;
 }
@@ -82,6 +87,10 @@
     session.adapterID = @"udscript";
     session.clientName = @"Quarry";
     session.delegate = self;
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    if (self.session != nil) [center removeObserver:self name:nil object:self.session];
+    [center addObserver:self selector:@selector(_sessionDidChangeState:)
+                   name:UDDebugSessionDidChangeStateNotification object:session];
     self.session = session;
     self.bar.session = session;
     self.navigator.session = session;
@@ -118,6 +127,29 @@
 
 - (void)stop {
     if (self.debugging) [self.session stop];
+}
+
+#pragma mark - Behaviors
+
+/// How long the game has to be running, after going on, to be brought
+/// forward: a step stops sooner.
+static const NSTimeInterval UDBringGameForwardDelay = 0.3;
+
+- (void)_sessionDidChangeState:(NSNotification *)note {
+    UDDebugSession *session = note.object;
+    if (session != self.session) return;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_bringGameForward) object:nil];
+    if (session.state == UDDebugSessionStateStopped) {
+        if ([self.delegate respondsToSelector:@selector(scriptDebuggerDidStop:)]) [self.delegate scriptDebuggerDidStop:self];
+    } else if (session.state == UDDebugSessionStateRunning && session.processID != 0) {
+        [self performSelector:@selector(_bringGameForward) withObject:nil afterDelay:UDBringGameForwardDelay];
+    }
+}
+
+- (void)_bringGameForward {
+    if (self.session.state != UDDebugSessionStateRunning || !NSApp.isActive) return;
+    NSRunningApplication *game = [NSRunningApplication runningApplicationWithProcessIdentifier:self.session.processID];
+    [game activateWithOptions:NSApplicationActivateIgnoringOtherApps];
 }
 
 #pragma mark - UDDebugSessionDelegate

@@ -9,6 +9,8 @@
 @interface UDScriptDebugger ()
 @property (nonatomic, strong, readwrite, nullable) UDDebugSession *session;
 @property (nonatomic, weak) UDWorkspace *workspace;
+/// Run asked while a session was on: run once it has ended.
+@property (nonatomic) BOOL restarting;
 @end
 
 @implementation UDScriptDebugger
@@ -91,6 +93,12 @@
 }
 
 - (BOOL)run:(NSError **)error {
+    if (self.debugging) {
+        // a restart: the game quit first, its debugger's port free
+        self.restarting = YES;
+        [self stop];
+        return YES;
+    }
     NSString *game = self.workspace.gameExecutable;
     if (game.length == 0) {
         if (error) *error = [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileNoSuchFileError userInfo:@{
@@ -122,6 +130,11 @@
 
 - (void)debugSessionDidEnd:(UDDebugSession *)session {
     if (session != self.session) return;
+    if (self.restarting) {
+        self.restarting = NO;
+        NSError *error = nil;
+        if ([self run:&error]) return;
+    }
     if ([self.delegate respondsToSelector:@selector(scriptDebuggerDidEnd:)]) [self.delegate scriptDebuggerDidEnd:self];
 }
 

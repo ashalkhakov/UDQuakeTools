@@ -358,12 +358,14 @@ bundle brings the adapter as it brings the language server).
 Polish, against Xcode's debugger. First what the adapter and Quarry can do
 alone (UDCodeKit has the client side of each already):
 
-- [ ] Expressions in watches and hovers, not only a variable's name:
-      `UDScriptExpression` (the breakpoints' conditions) evaluates them,
-      `self.field` included, the variables asked of the game as a condition's
-      are.
-- [ ] Restart (⌘R while debugging): the adapter stops the game and launches
-      it again, the breakpoints kept (`supportsRestartRequest`).
+- [x] Expressions in watches, hovers and the console, not only a variable's
+      name: `UDScriptExpression` (the breakpoints' conditions) evaluates
+      them, `self.field` and a vector's `.x` included, the variables asked of
+      the game as a condition's are. In the console, what is no expression
+      (or a name that is no variable here: `noclip`) is the game's command.
+- [x] Restart (⌘R while debugging, as Xcode's): Quarry ends the session, the
+      adapter answering once the game has quit (its debugger's port free),
+      and runs it again, the breakpoints kept.
 - [ ] The variables view as Xcode's: values that changed since the last stop
       marked, what was expanded (`self`) kept so across steps, a filter field.
 - [ ] Behaviors: Quarry comes forward and shows the debug navigator when the

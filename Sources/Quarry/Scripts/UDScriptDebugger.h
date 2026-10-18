@@ -48,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)adapterPath;
 
 /// Run: the game started for debugging. NO, with @a error (what to set),
-/// when the workspace names no game.
+/// when the workspace names no game. While a session is on, a restart: it
+/// ends (its game quits), and the game is run again.
 - (BOOL)run:(NSError **)error;
 /// Attach: a game started with com_enableDebuggerServer 1.
 - (BOOL)attach:(NSError **)error;

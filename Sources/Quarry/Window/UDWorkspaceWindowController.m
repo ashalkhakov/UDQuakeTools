@@ -915,9 +915,9 @@ static const CGFloat UDDebugAreaMinimum = 80;
 - (BOOL)_validateDebugAction:(SEL)action menuItem:(NSMenuItem *)menuItem handled:(BOOL *)handled {
     *handled = YES;
     UDDebugBarViewController *bar = self.scriptDebugger.bar;
-    if (sel_isEqual(action, @selector(startDebugging:)) || sel_isEqual(action, @selector(attachDebugger:))) {
-        return self.workspace != nil && !self.scriptDebugger.debugging;
-    }
+    // Run while debugging: a restart, as Xcode's
+    if (sel_isEqual(action, @selector(startDebugging:))) return self.workspace != nil;
+    if (sel_isEqual(action, @selector(attachDebugger:))) return self.workspace != nil && !self.scriptDebugger.debugging;
     if (sel_isEqual(action, @selector(stopDebugging:))) return [bar canPerformAction:@selector(stop:)];
     if (sel_isEqual(action, @selector(debugContinueOrPause:))) {
         menuItem.title = self.scriptDebugger.session.state == UDDebugSessionStateRunning ? @"Pause" : @"Continue";

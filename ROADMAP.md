@@ -321,14 +321,18 @@ The debugger speaks the Debug Adapter Protocol, and this toolkit's own script
 editor is its client, through UDCodeKit (no VS Code extension: the idScript
 bundle brings the adapter as it brings the language server).
 
-- [ ] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
+- [x] UDCodeKit is a DAP client with Xcode's debugger UI: breakpoints in the
       gutter, the debug bar (continue, step over/in/out), the debug navigator
       (threads and their call stacks), the variables view and the console.
       A grammar bundle brings its own debug adapter the way it brings its
-      language server, and the UI is the same for every language.
-- [ ] Objective-C as a mode UDCode can be used for every day on GNUstep:
-      its bundle brings an adapter over gdb or lldb (lldb-dap) alongside its
-      language server (clangd), with build and run from the editor.
+      language server, and the UI is the same for every language (UDCodeKit
+      0.4.0 to 0.6.1).
+- [ ] **Next:** a simple C and Objective-C IDE for GNUstep, UDCode used
+      every day: boot it up, open a project, build, run, debug and change
+      it. Objective-C as a mode whose bundle brings an adapter over gdb or
+      lldb (lldb-dap) alongside its language server (clangd), with build
+      and run from the editor. Not live coding: editing, building and
+      debugging a GNUstep project.
 - [x] Quarry debugs scripts with UDCodeKit's debugger UI (UDScriptDebugger):
       Debug > Run starts the workspace's game (Workspace Settings > Debugging:
       its executable and arguments), Attach a running one; breakpoints in the

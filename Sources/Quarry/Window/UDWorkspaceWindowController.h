@@ -36,6 +36,7 @@
 // The debugger's: its navigator tab's host; under the editors (editorSplit's
 // second pane), the debug bar over the debug area.
 @property (weak, nonatomic) IBOutlet NSView *debugNavigatorHost;
+@property (weak, nonatomic) IBOutlet NSView *breakpointNavigatorHost;
 @property (weak, nonatomic) IBOutlet NSSplitView *editorSplit;
 @property (weak, nonatomic) IBOutlet NSView *debugPane;
 @property (weak, nonatomic) IBOutlet NSView *debugBarHost;
@@ -84,6 +85,8 @@
 - (IBAction)debugStepInto:(nullable id)sender;
 - (IBAction)debugStepOut:(nullable id)sender;
 - (IBAction)toggleDebugArea:(nullable id)sender;
+/// Debug > Run to Cursor, from the window: the selected script's tab's.
+- (IBAction)runToCursor:(nullable id)sender;
 @property (nonatomic, readonly, getter=isDebugAreaShown) BOOL debugAreaShown;
 
 @end

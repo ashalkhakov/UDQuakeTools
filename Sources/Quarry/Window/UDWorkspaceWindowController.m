@@ -58,7 +58,7 @@ static const CGFloat UDDebugAreaMinimum = 80;
 @property (nonatomic, readwrite, getter=isDebugAreaShown) BOOL debugAreaShown;
 @end
 
-@interface UDWorkspaceWindowController (UDScriptDebuggerDelegate) <UDScriptDebuggerDelegate>
+@interface UDWorkspaceWindowController (UDScriptDebuggerDelegate) <UDScriptDebuggerDelegate, UDBreakpointNavigatorDelegate>
 @end
 
 @implementation UDWorkspaceWindowController
@@ -117,6 +117,7 @@ static const CGFloat UDDebugAreaMinimum = 80;
         @[ @"F", @"Find", @0.36, @0.55, @0.42 ],
         @[ @"I", @"Issues", @0.78, @0.42, @0.25 ],
         @[ @"Db", @"Debug", @0.36, @0.62, @0.45 ],
+        @[ @"Bp", @"Breakpoints", @0.30, @0.50, @0.80 ],
     ];
     NSMutableArray<DMTabBarItem *> *items = [NSMutableArray array];
     for (NSUInteger i = 0; i < navigator.count && i < (NSUInteger)self.navigatorTabView.numberOfTabViewItems; i++) {
@@ -793,6 +794,15 @@ static const CGFloat UDDebugAreaMinimum = 80;
     navigator.frame = self.debugNavigatorHost.bounds;
     navigator.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [self.debugNavigatorHost addSubview:navigator];
+    NSView *breakpoints = self.scriptDebugger.breakpointNavigator.view;
+    breakpoints.frame = self.breakpointNavigatorHost.bounds;
+    breakpoints.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.breakpointNavigatorHost addSubview:breakpoints];
+    self.scriptDebugger.breakpointNavigator.delegate = self;
+    // the breakpoints and watches kept as VS Code keeps them: the
+    // workspace's state, not its settings (no save asked for)
+    NSString *workspacePath = [(NSDocument *)self.document fileURL].path ?: self.workspace.fs_basepath ?: @"Untitled";
+    self.scriptDebugger.breakpoints.autosaveName = [@"Quarry Debugger " stringByAppendingString:workspacePath];
     [self.debugBarHost addSubview:self.scriptDebugger.bar.view];
     [self.debugAreaHost addSubview:self.scriptDebugger.area.view];
     self.debugAreaHeight = 240;
@@ -851,6 +861,12 @@ static const CGFloat UDDebugAreaMinimum = 80;
 - (IBAction)toggleBreakpoint:(id)sender {
     UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
     if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor toggleBreakpoint:sender];
+    else NSBeep();
+}
+
+- (IBAction)runToCursor:(id)sender {
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) [(UDTextEditorViewController *)editor runToCursor:sender];
     else NSBeep();
 }
 
@@ -913,6 +929,10 @@ static const CGFloat UDDebugAreaMinimum = 80;
     if (sel_isEqual(action, @selector(toggleBreakpoint:))) {
         UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
         return [editor isKindOfClass:[UDTextEditorViewController class]] && ((UDTextEditorViewController *)editor).breakpointStore != nil;
+    }
+    if (sel_isEqual(action, @selector(runToCursor:))) {
+        UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+        return [editor isKindOfClass:[UDTextEditorViewController class]] && self.scriptDebugger.session.canContinue;
     }
     if (sel_isEqual(action, @selector(toggleDebugArea:))) {
         menuItem.title = self.debugAreaShown ? @"Hide Debug Area" : @"Show Debug Area";
@@ -1057,6 +1077,21 @@ static const CGFloat UDDebugAreaMinimum = 80;
     if (debug < (NSUInteger)self.navigatorTabView.numberOfTabViewItems) {
         self.navigatorTabBar.selectedIndex = debug;
         [self.navigatorTabView selectTabViewItemAtIndex:(NSInteger)debug];
+    }
+}
+
+#pragma mark - UDBreakpointNavigatorDelegate
+
+- (void)breakpointNavigator:(UDBreakpointNavigatorViewController *)navigator showBreakpoint:(UDBreakpoint *)breakpoint {
+    NSString *gamePath = [self.workspace gamePathOfDiskPath:breakpoint.path];
+    if (gamePath != nil) [self openFileAtPath:gamePath line:MAX(breakpoint.line - 1, 0) character:0 length:0];
+}
+
+- (void)breakpointNavigator:(UDBreakpointNavigatorViewController *)navigator editBreakpoint:(UDBreakpoint *)breakpoint {
+    [self breakpointNavigator:navigator showBreakpoint:breakpoint];
+    UDBaseEditorViewController *editor = [self.tabManager selectedEditor];
+    if ([editor isKindOfClass:[UDTextEditorViewController class]]) {
+        [(UDTextEditorViewController *)editor editBreakpointAtLine:breakpoint.line];
     }
 }
 

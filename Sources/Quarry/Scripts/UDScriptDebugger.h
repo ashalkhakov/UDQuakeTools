@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) UDDebugBarViewController *bar;
 @property (nonatomic, strong, readonly) UDDebugNavigatorViewController *navigator;
 @property (nonatomic, strong, readonly) UDDebugAreaViewController *area;
+/// The breakpoints (and the adapter's exception filters), as a navigator lists them.
+@property (nonatomic, strong, readonly) UDBreakpointNavigatorViewController *breakpointNavigator;
 
 /// The adapter: $UD_SCRIPT_DAP (the tests'), else udscript-dap beside the
 /// app's executable.

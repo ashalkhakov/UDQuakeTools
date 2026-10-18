@@ -271,6 +271,15 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
     else NSBeep();
 }
 
+- (IBAction)runToCursor:(id)sender {
+    if (self.isScript && self.breakpointStore != nil) [self.editor runToCursor:sender];
+    else NSBeep();
+}
+
+- (void)editBreakpointAtLine:(NSInteger)line {
+    if (self.isScript && self.breakpointStore != nil) [self.editor editBreakpointAtLine:line];
+}
+
 - (void)setBreakpointStore:(UDBreakpointStore *)breakpointStore {
     _breakpointStore = breakpointStore;
     [self _showBreakpoints];

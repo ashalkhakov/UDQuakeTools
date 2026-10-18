@@ -72,6 +72,15 @@ static NSString *const UDFixtureScript =
     UDBreakpointStore *breakpoints = controller.scriptDebugger.breakpoints;
     XCTAssertNotNil([breakpoints breakpointAtLine:3 inFile:[workspace diskPathOfGamePath:@"script/udtest.script"]],
                     @"the script named as the adapter names it");
+    // the breakpoints navigator lists it; a watch, kept with it
+    UDBreakpointNavigatorViewController *navigator = controller.scriptDebugger.breakpointNavigator;
+    BOOL listed = NO;
+    for (NSInteger row = 0; row < navigator.outlineView.numberOfRows; row++) {
+        listed = listed || [navigator breakpointOfRow:row].line == 3;
+    }
+    XCTAssertTrue(listed, @"in the Breakpoints navigator");
+    [breakpoints addWatchExpression:@"count"];
+    XCTAssertTrue([breakpoints.autosaveName hasPrefix:@"Quarry Debugger "], @"kept as the workspace's state");
 
     // Attach: the game connects, and has the breakpoint as it names the script
     [controller attachDebugger:nil];
@@ -110,21 +119,25 @@ static NSString *const UDFixtureScript =
     UDTextEditorViewController *shown = (UDTextEditorViewController *)[[self tabManagerOf:controller] selectedEditor];
     XCTAssertEqualObjects(shown.item.path, @"script/udtest.script", @"the stopped frame's script, in its tab");
 
-    // its variables, each asked of the game by name
-    UDBitMsg *inspect = [self receive:11 /* INSPECTVARIABLE */ within:10];
-    XCTAssertNotNil(inspect);
-    int depth = [inspect readShort];
-    NSString *name = [inspect readString];
-    XCTAssertEqualObjects(name, @"count");
-    UDBitMsg *value = [self.game message:11];
-    [value writeShort:depth];
-    [value writeString:@"count"];
-    [value writeString:@"2"];
-    [self.game send:value];
-    XCTAssertTrue([self spinUntil:^BOOL{
+    // its variables and the watch, each asked of the game by name
+    NSDate *until = [NSDate dateWithTimeIntervalSinceNow:10];
+    BOOL answered = NO;
+    while (until.timeIntervalSinceNow > 0 && !answered) {
+        UDBitMsg *inspect = [self receive:11 /* INSPECTVARIABLE */ within:1];
+        if (inspect != nil) {
+            int depth = [inspect readShort];
+            NSString *name = [inspect readString];
+            UDBitMsg *value = [self.game message:11];
+            [value writeShort:depth];
+            [value writeString:name];
+            [value writeString:[name isEqualToString:@"count"] ? @"2" : @"???"];
+            [self.game send:value];
+        }
         UDDebugVariable *locals = session.scopes.firstObject;
-        return [[locals.children valueForKey:@"value"] containsObject:@"2"];
-    } timeout:10], @"%@", session.scopes.firstObject.children);
+        answered = [[locals.children valueForKey:@"value"] containsObject:@"2"]
+            && [[session.watches valueForKey:@"value"] containsObject:@"2"];
+    }
+    XCTAssertTrue(answered, @"locals %@, watches %@", session.scopes.firstObject.children, session.watches);
 
     // going on, then stopping
     [controller debugContinueOrPause:nil];
@@ -132,6 +145,7 @@ static NSString *const UDFixtureScript =
     [controller stopDebugging:nil];
     XCTAssertNotNil([self receive:3 /* DISCONNECT */ within:10], @"the game takes its breakpoints off and goes on");
     XCTAssertTrue([self spinUntil:^BOOL{ return !controller.scriptDebugger.debugging; } timeout:10]);
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:breakpoints.autosaveName];
 }
 
 @end

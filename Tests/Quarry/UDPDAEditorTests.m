@@ -1,3 +1,4 @@
+#import <objc/runtime.h>
 #import "UDQuarryTestCase.h"
 #import "UDWorkspace.h"
 
@@ -476,7 +477,7 @@ static NSString *const UDDanglingPDA =
     [self whenModalWindowAppears:^(NSWindow *window) {
         __block NSButton *pick = nil;
         [self forEachViewUnder:window.contentView do:^BOOL(NSView *view) {
-            if ([view isKindOfClass:[NSButton class]] && [(NSButton *)view action] == @selector(pickReference:) && [(NSButton *)view tag] == 2) {
+            if ([view isKindOfClass:[NSButton class]] && sel_isEqual([(NSButton *)view action], @selector(pickReference:)) && [(NSButton *)view tag] == 2) {
                 pick = (NSButton *)view;
                 return NO;
             }

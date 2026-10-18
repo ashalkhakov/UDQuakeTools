@@ -13,6 +13,7 @@
                 <outlet property="debugBarHost" destination="DBG-bar-hst" id="DBG-o-bar"/>
                 <outlet property="debugAreaHost" destination="DBG-are-hst" id="DBG-o-area"/>
                 <outlet property="debugNavigatorHost" destination="DBG-nav-hst" id="DBG-o-nav"/>
+                <outlet property="breakpointNavigatorHost" destination="DBG-bpn-hst" id="DBG-o-bpn"/>
                 <outlet property="representationControl" destination="rep-sc-001" id="rep-ot-001"/>
                 <outlet property="issuesHost" destination="IsT-hs-001" id="IsT-ol-001"/>
                 <outlet property="nameFilterField" destination="D99-4e-U2t" id="q4M-DV-AV5"/>
@@ -208,6 +209,18 @@
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <customView id="DBG-nav-hst" userLabel="Debug Navigator Host">
+                                                            <rect key="frame" x="0.0" y="0.0" width="144" height="367"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        </customView>
+                                                    </subviews>
+                                                </view>
+                                            </tabViewItem>
+                                            <tabViewItem label="Breakpoints" identifier="breakpoints" id="DBG-bpn-tab">
+                                                <view key="view" id="DBG-bpn-tbv">
+                                                    <rect key="frame" x="10" y="33" width="144" height="367"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <customView id="DBG-bpn-hst" userLabel="Breakpoint Navigator Host">
                                                             <rect key="frame" x="0.0" y="0.0" width="144" height="367"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         </customView>

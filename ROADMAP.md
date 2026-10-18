@@ -331,6 +331,16 @@ bundle brings the adapter as it brings the language server).
       script tabs' gutters (a pak's script named where it would be in the
       mod's folder, as the adapter names it), the debug navigator tab, the
       debug bar and area under the editors (UDCodeKit 0.4.0).
+- [x] VS Code's debugging, in Xcode's views (UDCodeKit 0.5.0):
+      hover values, watch expressions, conditional breakpoints, hit counts and
+      logpoints (edited from the gutter), the Breakpoints navigator, Run to
+      Cursor; breakpoints and watches kept as the workspace's state.
+- [x] Steps that stay in their thread and step out, a method's Fields: the
+      adapter does them with stock dhewm3 1.5.5 (temporary breakpoints, the
+      scripts' object declarations), and dhewm3 itself with its fixes
+      (dhewm/dhewm3#785: step over that stops, steps scoped to their thread,
+      a caller's locals, entities; #786: DBMSG_VERSION, DBMSG_STEPOUT,
+      DBMSG_INSPECTVARIABLES).
 - [x] **udscript-dap**, a DAP adapter for dhewm3's debugger protocol (UDP
       27980/27981, `idBitMsg`, `DBMSG_*`, as `neo/tools/debugger`'s client
       speaks it: `UDScriptDebuggerConnection`): breakpoints (unverified where
@@ -344,11 +354,11 @@ bundle brings the adapter as it brings the language server).
       (`+set com_enableDebuggerServer 1`) on the workspace's paths, its own
       output forwarded; attach asks a running one.
 
-The engine's own gaps, for the fork: `GetRegisterValue` aborts the game
-(`idTypeDef::SuperClass` throws) for a name it does not find in a
-namespace's function, so the adapter asks for those functions' variables
-only; and a call's frame shows the line after the call (the return
-statement).
+Stock dhewm3 1.5.5's own gaps, which the adapter works around and #785
+fixes: `GetRegisterValue` aborts the game (`idTypeDef::SuperClass` throws)
+for a name it does not find in a namespace's function, so the adapter asks
+for those functions' variables only; a caller's locals are read at the
+wrong stack base; a call's frame shows the line after the call.
 
 ## 4. Live edit bridge (needs the dhewm3 fork)
 

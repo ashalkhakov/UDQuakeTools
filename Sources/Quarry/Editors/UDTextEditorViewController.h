@@ -44,6 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 /** Debug > Toggle Breakpoint (⌘\): the code editor's, at the caret (a
     script's tab only). */
 - (IBAction)toggleBreakpoint:(nullable id)sender;
+/** Debug > Run to Cursor: the code editor's (a temporary breakpoint at the
+    caret's line, then on). */
+- (IBAction)runToCursor:(nullable id)sender;
+/** The code editor's box for the breakpoint at @a line (1-based). */
+- (void)editBreakpointAtLine:(NSInteger)line;
 
 /** Selects @a length characters from @a line's @a character (0-based; UTF-16). */
 - (void)selectLine:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;

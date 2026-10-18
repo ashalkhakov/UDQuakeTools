@@ -775,6 +775,12 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="QDM-sep2"/>
+                            <menuItem title="Run to Cursor" keyEquivalent="c" id="QDM-runtocursor">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="runToCursor:" target="-1" id="QDM-runtocursor-a"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Toggle Breakpoint" keyEquivalent="\" id="QDM-breakpoint">
                                 <connections>
                                     <action selector="toggleBreakpoint:" target="-1" id="QDM-breakpoint-a"/>

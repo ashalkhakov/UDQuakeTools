@@ -20,6 +20,10 @@
     _bar = [[UDDebugBarViewController alloc] init];
     _navigator = [[UDDebugNavigatorViewController alloc] init];
     _area = [[UDDebugAreaViewController alloc] init];
+    // the watches, before a session too
+    _area.breakpoints = _breakpoints;
+    _breakpointNavigator = [[UDBreakpointNavigatorViewController alloc] init];
+    _breakpointNavigator.breakpoints = _breakpoints;
     return self;
 }
 

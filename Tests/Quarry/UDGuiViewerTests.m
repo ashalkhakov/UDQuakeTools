@@ -242,17 +242,20 @@ static NSString *const UDViewerScript =
     if (controller == nil) return;
     NSArray<NSView *> *panes = controller.split.subviews;
     XCTAssertEqual(panes.count, 3u, @"navigator, editors, inspector");
-    // a window that fits any screen it is tested on (xvfb's is 1280 wide),
-    // then wider; on GNUstep the X server says when it has its new size
+    // a window that fits the screen it is tested on (xvfb's is 1280 wide,
+    // Windows CI's 1024), then 200 wider, still on it; on GNUstep the
+    // window server says when it has its new size
     NSWindow *window = controller.window;
     NSRect frame = window.frame;
-    frame.size.width = 1000;
+    CGFloat narrow = MIN(1000, NSWidth((window.screen ?: [NSScreen mainScreen]).visibleFrame) - 200);
+    frame.origin.x = NSMinX((window.screen ?: [NSScreen mainScreen]).visibleFrame);
+    frame.size.width = narrow;
     [window setFrame:frame display:YES];
-    [self spinUntil:^BOOL{ return NSWidth(window.frame) < 1001; } timeout:3.0];
+    [self spinUntil:^BOOL{ return NSWidth(window.frame) < narrow + 1; } timeout:3.0];
     CGFloat left = NSWidth(panes[0].frame), right = NSWidth(panes[2].frame), centre = NSWidth(panes[1].frame);
     XCTAssertGreaterThanOrEqual(left, 160);
     XCTAssertGreaterThanOrEqual(right, 160);
-    frame.size.width = 1200;
+    frame.size.width = narrow + 200;
     [window setFrame:frame display:YES];
     [self spinUntil:^BOOL{ return NSWidth(panes[1].frame) > centre + 100; } timeout:3.0];
     XCTAssertEqualWithAccuracy(NSWidth(panes[0].frame), left, 1, @"the navigator keeps its width");

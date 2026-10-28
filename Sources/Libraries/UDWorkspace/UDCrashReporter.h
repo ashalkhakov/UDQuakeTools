@@ -3,7 +3,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Process-wide crash diagnostics for the GNUstep/Linux builds.
+ * Process-wide crash diagnostics for the GNUstep builds (Linux, Windows).
  *
  * On Linux a segfault normally kills the app with NO output at all — no
  * crash dump, nothing on stderr — which makes field crashes undebuggable.
@@ -22,7 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
  * -rdynamic (see the Quarry GNUmakefile) so the executable's own
  * symbols resolve too.
  *
- * On macOS this is a no-op — the system crash reporter is better.
+ * On Windows (windows/) an unhandled-exception filter does the same: the
+ * exception's code and address, and a backtrace of module+offset frames
+ * (CaptureStackBackTrace), each fed to addr2line as Linux's are.
+ *
+ * Not built for macOS: the system crash reporter is better.
  *
  * Call once, first thing in main(), before NSApplicationMain.
  */

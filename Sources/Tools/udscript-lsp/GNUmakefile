@@ -23,6 +23,6 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # the libraries and LSPServerKit from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) -L../../LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lLSPServerKit
+udscript-lsp_TOOL_LIBS += $(UDLIBS_LIBS) -lLSPServerKit
 
 include $(GNUSTEP_MAKEFILES)/tool.make

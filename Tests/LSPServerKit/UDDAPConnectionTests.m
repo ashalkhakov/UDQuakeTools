@@ -7,8 +7,7 @@
 #import "UDDAPConnection.h"
 #import "UDJSONRPCConnection.h"
 
-#include <poll.h>
-#include <unistd.h>
+#import "UDTestPipe.h"
 
 @interface UDDAPConnectionTests : XCTestCase
 @property (nonatomic, strong, nullable) UDDAPRequest *held;
@@ -21,11 +20,7 @@
 
 - (void)setUp {
     [super setUp];
-    int fds[2];
-    XCTAssertEqual(pipe(fds), 0);
-    _reading = fdopen(fds[0], "r");
-    setvbuf(_reading, NULL, _IONBF, 0);
-    _written = fdopen(fds[1], "w");
+    XCTAssertTrue(UDTestPipe(&_reading, &_written));
 }
 
 - (void)tearDown {
@@ -36,8 +31,7 @@
 
 /// The next message written, or nil within a second.
 - (NSDictionary *)nextMessage {
-    struct pollfd wanted = { fileno(_reading), POLLIN, 0 };
-    if (poll(&wanted, 1, 1000) <= 0) return nil;
+    if (!UDTestPipeWait(_reading, 1)) return nil;
     NSData *body = [UDJSONRPCConnection readMessageFromFile:_reading];
     return body ? [NSJSONSerialization JSONObjectWithData:body options:0 error:NULL] : nil;
 }

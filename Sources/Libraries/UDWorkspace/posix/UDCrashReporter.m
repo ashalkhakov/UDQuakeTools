@@ -3,9 +3,7 @@
  * Crash diagnostics for the GNUstep/Linux builds. See UDCrashReporter.h.
  */
 
-#import "UDCrashReporter.h"
-
-#if !defined(__APPLE__)
+#import "../UDCrashReporter.h"
 
 #include <execinfo.h>
 #include <signal.h>
@@ -106,11 +104,3 @@ void UDInstallCrashDiagnostics(void) {
 
     NSSetUncaughtExceptionHandler(&UDCrashUncaughtExceptionHandler);
 }
-
-#else /* __APPLE__ */
-
-void UDInstallCrashDiagnostics(void) {
-    // macOS: the system crash reporter already produces full reports.
-}
-
-#endif

@@ -44,6 +44,6 @@ UDIdLib_LIBRARIES_DEPEND_UPON += $(call ud_own_libs,UDIdLib)
 
 # idFileSystem and idLexer call CFString's functions (gnustep-corebase);
 # the archives read zip (minizip) and write it (UDZipWriter) with zlib.
-ADDITIONAL_LDFLAGS += -ldispatch -lBlocksRuntime -lz -lgnustep-corebase
+$(LIBRARY_NAME)_LIBRARIES_DEPEND_UPON += $(UD_SYSTEM_LIBS)
 
 include $(GNUSTEP_MAKEFILES)/library.make

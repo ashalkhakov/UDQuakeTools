@@ -66,7 +66,7 @@ void idToken_BuiltinLine(idToken *token, const idToken *deftoken) {
 }
 
 void idToken_BuiltinFile(idToken *token, const char *fileName, const idToken *deftoken) {
-    strlcpy(token->text, fileName, MAX_TOKEN_CHARS);
+    snprintf(token->text, MAX_TOKEN_CHARS, "%s", fileName);
     token->length = (int)strlen(token->text);
     
     token->type = TT_NAME;
@@ -84,7 +84,7 @@ void idToken_BuiltinDate(idToken *token, const idToken *deftoken) {
     char buffer[32];
     strftime(buffer, sizeof(buffer), "\"%b %e %Y\"", tm_info);
     
-    strlcpy(token->text, buffer, MAX_TOKEN_CHARS);
+    snprintf(token->text, MAX_TOKEN_CHARS, "%s", buffer);
     token->length = (int)strlen(token->text);
     
     token->type = TT_STRING;
@@ -102,7 +102,7 @@ void idToken_BuiltinTime(idToken *token, const idToken *deftoken) {
     char buffer[32];
     strftime(buffer, sizeof(buffer), "\"%H:%M:%S\"", tm_info);
     
-    strlcpy(token->text, buffer, MAX_TOKEN_CHARS);
+    snprintf(token->text, MAX_TOKEN_CHARS, "%s", buffer);
     token->length = (int)strlen(token->text);
     
     token->type = TT_STRING;
@@ -118,7 +118,7 @@ void idToken_AssignFromToken(idToken *token, const idToken *other) {
 }
 
 void idToken_AssignFromString(idToken *token, const char *text) {
-    strlcpy(token->text, text, MAX_TOKEN_CHARS);
+    snprintf(token->text, MAX_TOKEN_CHARS, "%s", text);
     token->length = (int)strlen(token->text);
 }
 
@@ -253,7 +253,8 @@ void idToken_AppendDirty(idToken *token, char a) {
 }
 
 void idToken_AppendToken(idToken *token, const idToken *other) {
-    strlcat(token->text, other->text, MAX_TOKEN_CHARS);
+    size_t length = strlen(token->text);
+    snprintf(token->text + length, MAX_TOKEN_CHARS - length, "%s", other->text);
     token->length = (int)strlen(token->text);
 }
 

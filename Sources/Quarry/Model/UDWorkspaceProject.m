@@ -1,6 +1,6 @@
-#import "UDProject.h"
+#import "UDWorkspaceProject.h"
 
-@implementation UDProject
+@implementation UDWorkspaceProject
 
 - (instancetype)initWithName:(NSString *)name path:(NSString *)path {
     self = [super initWithName:name path:path];

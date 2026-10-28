@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, UDPK3ZIPEntrySourceErrorCode) {
 }
 
 - (nullable NSData *)readAll:(NSError **)error {
-    unzFile uf = unzOpen(self.fileURL.path.fileSystemRepresentation);
+    unzFile uf = unzOpen(self.fileURL.path.UTF8String);
     if (!uf) {
         if (error) {
             NSString *desc = [NSString stringWithFormat:@"Could not open ZIP archive: %@", self.fileURL.path];

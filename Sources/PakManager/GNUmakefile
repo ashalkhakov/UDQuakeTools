@@ -35,6 +35,6 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # the libraries from the tree beside this one, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -ldispatch -lBlocksRuntime
+PakManager_GUI_LIBS += $(UDLIBS_LIBS) -ldispatch $(UD_BLOCKS_LIBS)
 
 include $(GNUSTEP_MAKEFILES)/application.make

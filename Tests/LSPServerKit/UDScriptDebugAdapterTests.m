@@ -12,8 +12,7 @@
 #import "UDFakeScriptDebugger.h"
 #import "UDScriptExpression.h"
 
-#include <poll.h>
-#include <unistd.h>
+#import "UDTestPipe.h"
 
 static NSString *const UDLampScript =
     @"void lamp_glow( float level ) {\n"           // 1
@@ -45,11 +44,7 @@ static NSString *const UDLampScript =
 
 - (void)setUp {
     [super setUp];
-    int fds[2];
-    XCTAssertEqual(pipe(fds), 0);
-    _reading = fdopen(fds[0], "r");
-    setvbuf(_reading, NULL, _IONBF, 0);
-    _written = fdopen(fds[1], "w");
+    XCTAssertTrue(UDTestPipe(&_reading, &_written));
     _queue = dispatch_queue_create("UDScriptDebugAdapterTests", DISPATCH_QUEUE_SERIAL);
     _adapter = [[UDScriptDebugAdapter alloc] initWithQueue:_queue output:_written];
     _game = [[UDFakeScriptDebugger alloc] initWithPort:[UDFakeScriptDebugger gamePort] debuggerPort:[UDFakeScriptDebugger debuggerPort]];
@@ -85,8 +80,7 @@ static NSString *const UDLampScript =
 }
 
 - (NSDictionary *)readMessageWithin:(NSTimeInterval)timeout {
-    struct pollfd wanted = { fileno(_reading), POLLIN, 0 };
-    if (poll(&wanted, 1, (int)(timeout * 1000)) <= 0) return nil;
+    if (!UDTestPipeWait(_reading, timeout)) return nil;
     NSData *body = [UDJSONRPCConnection readMessageFromFile:_reading];
     return body ? [NSJSONSerialization JSONObjectWithData:body options:0 error:NULL] : nil;
 }
@@ -478,7 +472,8 @@ static NSString *const UDLampScript =
     XCTAssertEqualObjects(changed[@"body"][@"breakpoint"][@"line"], @6);
 
     NSDictionary *elsewhere = [self responseTo:[self request:@"setBreakpoints" arguments:@{
-        @"source": @{ @"path": @"/nowhere/else.script" }, @"breakpoints": @[ @{ @"line": @1 } ] }]];
+        @"source": @{ @"path": [NSTemporaryDirectory() stringByAppendingPathComponent:@"nowhere/else.script"] },
+        @"breakpoints": @[ @{ @"line": @1 } ] }]];
     XCTAssertEqualObjects(elsewhere[@"body"][@"breakpoints"][0][@"verified"], @NO);
 }
 

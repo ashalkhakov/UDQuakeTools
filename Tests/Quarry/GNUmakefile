@@ -37,6 +37,7 @@ QuarryTests_OBJC_FILES = \
     UDPakInstallTests.m \
     UDGuiViewerTests.m \
     UDScriptDebuggerTests.m \
+    $(wildcard $(UD_SYSTEM_DIR)/*.m) \
     UDScreenshotTests.m \
     ../Support/UDFakeScriptDebugger.m \
     $(APP_DIR)/App/UDAppDocumentController.m \
@@ -74,7 +75,7 @@ QuarryTests_OBJC_FILES = \
     $(APP_DIR)/GUIEditor/UDGuiEditorViewController.m \
     $(APP_DIR)/Preview/UDFXTimelineView.m \
     $(APP_DIR)/Model/UDPathTree.m \
-    $(APP_DIR)/Model/UDProject.m \
+    $(APP_DIR)/Model/UDWorkspaceProject.m \
     $(APP_DIR)/Scripts/UDScriptServer.m \
     $(APP_DIR)/Scripts/UDScriptDebugger.m \
     $(APP_DIR)/Editors/UDTextEditorViewController.m \
@@ -131,7 +132,7 @@ QuarryTests_NEEDS_GUI = yes
 ADDITIONAL_NATIVE_LIBS += CoreData
 # the libraries from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch -lBlocksRuntime
+QuarryTests_BUNDLE_LIBS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch $(UD_BLOCKS_LIBS)
 
 # The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
 # GLX and GL's headers are here (libgl-dev); without them it draws in
@@ -151,6 +152,7 @@ TEST_TIMEOUT ?= 900
 run-tests: all $(BUNDLE_NAME).bundle
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
 	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	PATH="$(UDLIBS_LD_PATH):$(CURDIR)/../../Sources/LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME):$$PATH" \
 	UD_PLUGINS_PATH="$(GNUSTEP_LOCAL_LIBRARY)/Bundles/UDCodeKit:$(CURDIR)/../../tree-sitter-idscript:$(CURDIR)/../../tree-sitter-iddecl" \
 	UD_SCRIPT_LSP="$(CURDIR)/../../Sources/Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp" \
 	UD_SCRIPT_DAP="$(CURDIR)/../../Sources/Tools/udscript-dap/$(GNUSTEP_OBJ_DIR_NAME)/udscript-dap" \

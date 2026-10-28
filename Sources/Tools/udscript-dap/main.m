@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 
 #import "UDScriptDebugAdapter.h"
+#import "UDStandardStreams.h"
 
 @interface UDScriptDebugAdapterMain : NSObject
 @end
@@ -32,6 +33,7 @@ int main(int argc, const char *argv[]) {
             fprintf(stderr, "Usage: udscript-dap\n");
             return 2;
         }
+        UDStandardStreamsForMessages();
         static UDScriptDebugAdapter *adapter;
         static UDScriptDebugAdapterMain *closer;
         adapter = [[UDScriptDebugAdapter alloc] initWithQueue:dispatch_get_main_queue() output:stdout];

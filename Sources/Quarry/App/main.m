@@ -11,7 +11,7 @@
 
 int main(int argc, const char *argv[]) {
 #if !defined(__APPLE__)
-    // Linux: print a backtrace on segfault/uncaught exception instead of
+    // Linux, Windows: print a backtrace on a crash/uncaught exception instead of
     // dying silently. No-op on macOS (guarded so the Xcode target does not
     // need the file at all).
     UDInstallCrashDiagnostics();

@@ -9,7 +9,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 UDLIBS_DIR = ../../Libraries
 include $(UDLIBS_DIR)/Libraries.make
 
-udscript-dap_OBJC_FILES = main.m UDScriptDebugAdapter.m UDScriptExpression.m
+udscript-dap_OBJC_FILES = main.m UDScriptDebugAdapter.m UDScriptExpression.m $(UD_SYSTEM_DIR)/UDKillTask.m
 
 udscript-dap_INCLUDE_DIRS = $(UDLIBS_INCLUDE_DIRS) -I../../LSPServerKit
 
@@ -23,6 +23,6 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # the libraries and LSPServerKit from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) -L../../LSPServerKit/$(GNUSTEP_OBJ_DIR_NAME)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lLSPServerKit -ldispatch
+udscript-dap_TOOL_LIBS += $(UDLIBS_LIBS) -lLSPServerKit -ldispatch
 
 include $(GNUSTEP_MAKEFILES)/tool.make

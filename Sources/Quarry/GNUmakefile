@@ -52,7 +52,7 @@ Quarry_OBJC_FILES = \
     GUIEditor/UDGuiEditorViewController.m \
     Preview/UDFXTimelineView.m \
     Model/UDPathTree.m \
-    Model/UDProject.m \
+    Model/UDWorkspaceProject.m \
     Scripts/UDScriptServer.m \
     Scripts/UDScriptDebugger.m \
     Editors/UDTextEditorViewController.m \
@@ -116,7 +116,8 @@ ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
 # backtrace (installed in App/main.m on Linux) resolves app frames by name.
 # UDCodeKit (the editor, its tab bar) from the prefix, where its release
 # archive is unpacked (.github/pins.env).
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch -lBlocksRuntime -rdynamic
+Quarry_GUI_LIBS += $(UDLIBS_LIBS) -lUDCodeKit -lUDPieceTable -lLSPKit -ldispatch $(UD_BLOCKS_LIBS)
+ADDITIONAL_LDFLAGS += $(UD_EXPORT_SYMBOLS)
 
 # The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
 # GLX and GL's headers are here (libgl-dev); without them it draws in

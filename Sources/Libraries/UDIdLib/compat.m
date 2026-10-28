@@ -37,8 +37,12 @@ void Sys_Mkdir(const char *path) {
     if ( path == NULL || path[0] == '\0' ) {
         return;
     }
-    if ( mkdir( path, 0777 ) == -1 && errno != EEXIST ) {
-        NSLog(@"Sys_Mkdir: mkdir '%s' failed: %s\n", path, strerror(errno));
+    NSError *error = nil;
+    NSString *folder = [[NSFileManager defaultManager] stringWithFileSystemRepresentation:path length:strlen(path)];
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:folder withIntermediateDirectories:NO attributes:nil error:&error]) {
+        BOOL directory = NO;
+        if ([[NSFileManager defaultManager] fileExistsAtPath:folder isDirectory:&directory] && directory) return;
+        NSLog(@"Sys_Mkdir: mkdir '%s' failed: %@\n", path, error.localizedDescription);
     }
 }
 

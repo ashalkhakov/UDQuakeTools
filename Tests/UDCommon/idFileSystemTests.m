@@ -11,6 +11,8 @@
 @property (nonatomic, strong) UDWorkspace *workspace;
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, copy) NSString *testFilePath;
+/// testFilePath as the file system takes it: relative to the game's folder.
+@property (nonatomic, copy) NSString *testFileName;
 @end
 
 @implementation idFileSystemTests
@@ -64,7 +66,8 @@
     self.fileSystem = self.workspace.fileSystem;
 
     // Use a temporary path for isolated testing
-    self.testFilePath = [fullGameDirPath stringByAppendingPathComponent:@"test_decl_file.decl"];
+    self.testFileName = @"test_decl_file.decl";
+    self.testFilePath = [fullGameDirPath stringByAppendingPathComponent:self.testFileName];
 }
 
 - (void)tearDown {
@@ -91,7 +94,7 @@
     NSError *error = nil;
     
     // 1. Test Writing
-    idFile *writeFile = [self.fileSystem openFileWrite:self.testFilePath basePath:@"fs_basepath" error:&error];
+    idFile *writeFile = [self.fileSystem openFileWrite:self.testFileName basePath:@"fs_basepath" error:&error];
     XCTAssertNotNil(writeFile, @"FileSystem should successfully open a file for writing");
     XCTAssertNil(error);
     
@@ -104,7 +107,7 @@
     writeFile = nil;
     
     // 2. Test Reading
-    idFile *readFile = [self.fileSystem openFileRead:self.testFilePath allowCopyFiles:YES gamedir:nil error:&error];
+    idFile *readFile = [self.fileSystem openFileRead:self.testFileName allowCopyFiles:YES gamedir:nil error:&error];
     XCTAssertNotNil(readFile, @"FileSystem should successfully open the existing file");
     XCTAssertEqual([readFile length], length, @"File length should match the written bytes");
     XCTAssertNil(error);
@@ -143,13 +146,13 @@
         p[i] = (unsigned char)(i % 251);
     }
 
-    idFile *writeFile = [self.fileSystem openFileWrite:self.testFilePath basePath:@"fs_basepath" error:&error];
+    idFile *writeFile = [self.fileSystem openFileWrite:self.testFileName basePath:@"fs_basepath" error:&error];
     XCTAssertNotNil(writeFile);
     XCTAssertEqual([writeFile write:payload.bytes length:total error:&error], total);
     XCTAssertTrue([self.fileSystem closeFile:writeFile error:&error]);
     writeFile = nil;
 
-    idFile *readFile = [self.fileSystem openFileRead:self.testFilePath allowCopyFiles:YES gamedir:nil error:&error];
+    idFile *readFile = [self.fileSystem openFileRead:self.testFileName allowCopyFiles:YES gamedir:nil error:&error];
     XCTAssertNotNil(readFile);
 
     // Read the file in small, uneven slices — mimicking structured reads

@@ -242,15 +242,16 @@ static NSString *const UDViewerScript =
     if (controller == nil) return;
     NSArray<NSView *> *panes = controller.split.subviews;
     XCTAssertEqual(panes.count, 3u, @"navigator, editors, inspector");
-    // a window that fits any screen it is tested on (xvfb's is 1280 wide),
-    // then wider; a screen narrower than that (Windows CI's, 1024) keeps it
-    // on the screen, and the editors take what growth there is. On GNUstep
-    // the window server says when it has its new size.
+    // a window that fits any screen it is tested on with room to grow
+    // (Windows CI's is 1024 wide, xvfb's 1280), then wider; a screen
+    // narrower than that keeps it on the screen, and the editors take what
+    // growth there is. On GNUstep the window server says when it has its
+    // new size.
     NSWindow *window = controller.window;
     NSRect frame = window.frame;
-    frame.size.width = 1000;
+    frame.size.width = 900;
     [window setFrame:frame display:YES];
-    [self spinUntil:^BOOL{ return NSWidth(window.frame) < 1001; } timeout:3.0];
+    [self spinUntil:^BOOL{ return NSWidth(window.frame) < 901; } timeout:3.0];
     CGFloat left = NSWidth(panes[0].frame), right = NSWidth(panes[2].frame), centre = NSWidth(panes[1].frame);
     CGFloat narrow = NSWidth(window.frame);
     XCTAssertGreaterThanOrEqual(left, 160);

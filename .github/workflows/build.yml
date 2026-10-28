@@ -41,7 +41,9 @@ jobs:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/windows.yml@v1
     with:
       tag: ${{ inputs.tag }}
-      extra-packages: sqlite3 zlib
+      # postgresql and libmariadbclient: FreeCoreData's PostgreSQL and MySQL
+      # stores, in its archive, link them, and the installer carries them
+      extra-packages: sqlite3 zlib postgresql libmariadbclient
 
   macos:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1

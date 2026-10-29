@@ -618,13 +618,14 @@ static NSString *const UDFixtureParticles =
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *editor = [self openSparkIn:controller];
     if (editor == nil) return;
-    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
+    XCTAssertEqualObjects([editor.inspectorPanes valueForKey:@"title"], (@[@"Particle", @"Stage"]));
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"stage", @"its first stage's parameters");
     XCTAssertNil([self viewBoundTo:@"totalParticles" inView:editor.view], @"in the inspector, not the centre");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"depthHack" inView:editor.documentInspectorView]).stringValue, @"0.001",
+                          @"the particle's own, in its pane, a stage chosen or not");
 
     [editor.stagesController setSelectionIndexes:[NSIndexSet indexSet]];
-    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"particle", @"no stage: the particle's");
-    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"depthHack" inView:editor.inspectorView]).stringValue, @"0.001");
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"none", @"no stage: No Stage Selected");
 
     // a second stage, dragged before the first
     [editor.stagesController setSelectionIndex:0];
@@ -680,9 +681,9 @@ static NSString *const UDFixtureParticles =
     if (editor == nil) return;
 
     XCTAssertEqual(editor.actionsTable.numberOfRows, 3);
-    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
-    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"fx", @"the FX's keywords first");
-    XCTAssertNotNil([self viewBoundTo:@"bindTo" inView:editor.inspectorView]);
+    XCTAssertEqualObjects([editor.inspectorPanes valueForKey:@"title"], (@[@"FX", @"Action"]));
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"none", @"no action chosen");
+    XCTAssertNotNil([self viewBoundTo:@"bindTo" inView:editor.documentInspectorView], @"the FX's keywords, in their pane");
     [editor.actionsController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"action", @"an action chosen: its keywords");
     XCTAssertEqualObjects(((NSPopUpButton *)[self viewBoundTo:@"kind" inView:editor.inspectorView]).titleOfSelectedItem, @"light");
@@ -760,18 +761,21 @@ static NSString *const UDFixtureParticles =
     UDAFEditorViewController *editor = [self openCrateIn:controller];
     if (editor == nil) return;
 
-    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
-    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"figure", @"nothing chosen: the figure's settings");
-    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalMass" inView:editor.inspectorView]).stringValue, @"40");
+    XCTAssertEqualObjects([editor.inspectorPanes valueForKey:@"title"], (@[@"Figure", @"Body", @"Constraint"]));
+    XCTAssertEqualObjects([self paneShownIn:controller], @"Figure", @"nothing chosen: the figure's settings");
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"none");
+    XCTAssertEqualObjects(editor.constraintInspectorTabs.selectedTabViewItem.identifier, @"none");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"totalMass" inView:editor.documentInspectorView]).stringValue, @"40");
     XCTAssertEqual(editor.bodiesTable.numberOfRows, 3);
     XCTAssertEqual(editor.constraintsTable.numberOfRows, 2);
     [editor.bodiesController setSelectionIndex:0];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"body");
     XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"jointName" inView:editor.inspectorView]).stringValue, @"origin");
     [editor.constraintsController setSelectionIndex:0];
-    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"constraint");
+    XCTAssertEqualObjects(editor.constraintInspectorTabs.selectedTabViewItem.identifier, @"constraint");
     XCTAssertEqual(editor.bodiesController.selectionIndexes.count, 0U, @"one list chosen at a time");
-    XCTAssertEqualObjects(((NSPopUpButton *)[self viewBoundTo:@"type" inView:editor.inspectorView]).titleOfSelectedItem, @"hinge");
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"none", @"no body: No Body Selected");
+    XCTAssertEqualObjects(((NSPopUpButton *)[self viewBoundTo:@"type" inView:editor.constraintInspectorView]).titleOfSelectedItem, @"hinge");
     XCTAssertNil([self viewBoundTo:@"totalMass" inView:editor.view], @"the keywords in the inspector, not the centre");
 
     // The mesh has a "Lid": idAnimator finds a joint by Icmp.
@@ -784,13 +788,14 @@ static NSString *const UDFixtureParticles =
     [controller errorsViewController:nil didSelectDiagnostic:latch inStore:editor.diagnosticStore];
     XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"body");
     XCTAssertEqual(editor.bodiesController.selectionIndex, 2U, @"a click shows the body");
+    XCTAssertEqualObjects([self paneShownIn:controller], @"Body", @"in its pane");
 }
 
 - (void)testTheInspectorIsLaidOutFromTheTop {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDAFEditorViewController *editor = [self openCrateIn:controller];
     if (editor == nil) return;
-    NSView *inspector = editor.inspectorView;
+    NSView *inspector = editor.documentInspectorView;
     for (NSNumber *height in @[@600, @1000]) {
         [inspector setFrameSize:NSMakeSize(280, height.doubleValue)];
         [inspector layoutSubtreeIfNeeded];
@@ -935,9 +940,9 @@ static NSString *const UDFixtureParticles =
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
-    NSComboBox *sort = [self viewBoundTo:@"sort" ofClass:[NSComboBox class] inView:editor.inspectorView];
+    NSComboBox *sort = [self viewBoundTo:@"sort" ofClass:[NSComboBox class] inView:editor.documentInspectorView];
     XCTAssertTrue([sort.objectValues containsObject:@"postProcess"], @"%@", sort.objectValues);
-    XCTAssertNotNil([self viewBoundTo:@"deform" ofClass:[NSComboBox class] inView:editor.inspectorView]);
+    XCTAssertNotNil([self viewBoundTo:@"deform" ofClass:[NSComboBox class] inView:editor.documentInspectorView]);
     [editor.stagesController setSelectionIndex:0];
     NSComboBox *texGen = [self viewBoundTo:@"texGen" ofClass:[NSComboBox class] inView:editor.inspectorView];
     XCTAssertNotNil(texGen);
@@ -973,20 +978,69 @@ static NSString *const UDFixtureParticles =
     XCTAssertGreaterThan(checked, 0U, @"%@", editor);
 }
 
+/// The title of the inspector pane the window shows.
+- (nullable NSString *)paneShownIn:(UDWorkspaceWindowController *)controller {
+    for (UDEditorPane *pane in [controller valueForKey:@"inspectorPanes"]) {
+        if (pane.view.superview == controller.inspectorHost) return pane.title;
+    }
+    return nil;
+}
+
+/// A click in @a table, as its action has it.
+- (void)click:(NSTableView *)table row:(NSInteger)row {
+    [table selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+    [NSApp sendAction:table.action to:table.target from:table];
+}
+
+/// A declaration's own keywords in a pane of their own, beside its selected
+/// stage's (action's, body's), as Xcode has a file's (issue #22: with a
+/// stage chosen, they were out of reach where the list can't be emptied, as
+/// on GNUstep); a click in the list shows the stage's pane.
+- (void)testTheDeclarationsOwnKeywordsHaveAPaneOfTheirOwn {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    NSArray *cases = @[@[@"Material", @"Stage", @"materialDescription", @"Glow"], @[@"FX", @"Action", @"bindTo", @""],
+                       @[@"Particle", @"Stage", @"depthHack", @"0.001"], @[@"Figure", @"Body", @"totalMass", @"40"]];
+    for (NSArray *one in cases) {
+        // each opened, so the window's inspector is its
+        UDDeclEditorViewController *editor = [one[0] isEqual:@"Material"] ? [self openMaterial:@"textures/udtest/glow" in:controller]
+                                           : [one[0] isEqual:@"FX"] ? [self openFXIn:controller]
+                                           : [one[0] isEqual:@"Particle"] ? [self openSparkIn:controller] : [self openCrateIn:controller];
+        if (editor == nil) continue;
+        NSTableView *table = [editor respondsToSelector:@selector(stagesTable)] ? [(id)editor stagesTable]
+                           : [editor respondsToSelector:@selector(actionsTable)] ? [(id)editor actionsTable] : [(id)editor bodiesTable];
+        [self click:table row:0];
+        XCTAssertEqualObjects([self paneShownIn:controller], one[1], @"a click on a %@: its pane", one[1]);
+
+        [controller showInspectorPaneTitled:one[0]];
+        XCTAssertEqualObjects([self paneShownIn:controller], one[0]);
+        XCTAssertEqual(table.selectedRow, 0, @"the %@ still chosen", one[1]);
+        NSTextField *field = (NSTextField *)[self viewBoundTo:one[2] inView:controller.inspectorHost];
+        XCTAssertNotNil(field, @"the %@'s own keywords, shown", one[0]);
+        XCTAssertEqualObjects(field.stringValue, one[3]);
+        XCTAssertTrue(field.isEnabled && field.isEditable, @"and edited there");
+
+        [self click:table row:0];
+        XCTAssertEqualObjects([self paneShownIn:controller], one[1], @"the %@'s again", one[1]);
+    }
+}
+
 - (void)testEveryInspectorControlHasHelp {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *particle = [self openSparkIn:controller];
-    [self checkHelpUnder:particle.inspectorView of:@"particle"];
+    [self checkHelpUnder:particle.documentInspectorView of:@"particle"];
+    [self checkHelpUnder:particle.inspectorView of:@"particle stage"];
     UDFXEditorViewController *fx = [self openFXIn:controller];
+    [self checkHelpUnder:fx.documentInspectorView of:@"fx"];
     [fx.actionsController setSelectionIndex:0];
-    [self checkHelpUnder:fx.inspectorView of:@"fx"];
+    [self checkHelpUnder:fx.inspectorView of:@"fx action"];
     UDAFEditorViewController *af = [self openCrateIn:controller];
-    for (NSString *tab in @[@"figure", @"body", @"constraint"]) {
-        [af.inspectorTabs selectTabViewItemWithIdentifier:tab];
-        [self checkHelpUnder:af.inspectorView of:[@"af " stringByAppendingString:tab]];
-    }
+    [self checkHelpUnder:af.documentInspectorView of:@"af figure"];
+    [af.inspectorTabs selectTabViewItemWithIdentifier:@"body"];
+    [self checkHelpUnder:af.inspectorView of:@"af body"];
+    [af.constraintInspectorTabs selectTabViewItemWithIdentifier:@"constraint"];
+    [self checkHelpUnder:af.constraintInspectorView of:@"af constraint"];
     UDMaterialEditorViewController *material = [self openMaterial:@"textures/udtest/glow" in:controller];
-    [self checkHelpUnder:material.inspectorView of:@"material"];
+    [self checkHelpUnder:material.documentInspectorView of:@"material"];
     [material.stagesController setSelectionIndex:0];
     [self checkHelpUnder:material.inspectorView of:@"material stage"];
 }
@@ -1004,10 +1058,10 @@ static NSString *const UDFixtureParticles =
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
 
-    // the material's keywords in the inspector, no stage chosen
-    XCTAssertEqualObjects(editor.inspectorPanes.firstObject.view, editor.inspectorView);
-    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"material");
-    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"materialDescription" inView:editor.inspectorView]).stringValue, @"Glow");
+    // the material's keywords in a pane of their own; no stage chosen
+    XCTAssertEqualObjects([editor.inspectorPanes valueForKey:@"title"], (@[@"Material", @"Stage"]));
+    XCTAssertEqualObjects(editor.inspectorTabs.selectedTabViewItem.identifier, @"none", @"No Stage Selected");
+    XCTAssertEqualObjects(((NSTextField *)[self viewBoundTo:@"materialDescription" inView:editor.documentInspectorView]).stringValue, @"Glow");
     XCTAssertEqual(editor.stagesTable.numberOfRows, 1);
     XCTAssertEqual(editor.stagesController.selectionIndex, (NSUInteger)NSNotFound);
     // a stage chosen in the centre: its keywords there instead

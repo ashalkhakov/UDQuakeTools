@@ -47,15 +47,20 @@ static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.materi
 }
 
 - (NSArray<UDEditorPane *> *)inspectorPanes {
-    if (self.panes == nil && self.inspectorView != nil) {
-        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    if (self.panes == nil && self.inspectorView != nil && self.documentInspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Material" letters:@"M" red:0.62 green:0.42 blue:0.68 view:self.documentInspectorView],
+                       [UDEditorPane paneWithTitle:@"Stage" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.inspectorView]];
     }
     return self.panes ?: @[];
 }
 
-/// The inspector: the selected stage's keywords, or the material's.
+/// The Stage pane: the selected stage's keywords, or "No Stage Selected".
 - (void)showInspector {
-    [self.inspectorTabs selectTabViewItemWithIdentifier:[self selectedStage] != NSNotFound ? @"stage" : @"material"];
+    [self.inspectorTabs selectTabViewItemWithIdentifier:[self selectedStage] != NSNotFound ? @"stage" : @"none"];
+}
+
+- (IBAction)showSelectionInspector:(id)sender {
+    if ([self selectedStage] != NSNotFound) [self showInspectorPaneTitled:@"Stage"];
 }
 
 - (void)dealloc {
@@ -370,6 +375,7 @@ static NSArray<NSArray<NSString *> *> *UDMaterialExpressionKeys(void) {
     [self.stagesController setSelectionIndex:row.unsignedIntegerValue];
     [self.stagesTable scrollRowToVisible:row.integerValue];
     [self.view.window makeFirstResponder:self.stagesTable];
+    [self showSelectionInspector:nil];
 }
 
 #pragma mark - The preview

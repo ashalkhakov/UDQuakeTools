@@ -31,6 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace;
 
+/// The inspector's pane of @a title shown, when this editor's are the
+/// window's (a click on a stage shows the Stage pane).
+- (void)showInspectorPaneTitled:(NSString *)title;
+
 @end
 
 /**

@@ -53,17 +53,23 @@ static NSPasteboardType const UDFXActionRowType = @"org.udquaketools.fx-action-r
 }
 
 - (NSArray<UDEditorPane *> *)inspectorPanes {
-    if (self.panes == nil && self.inspectorView != nil) {
-        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    if (self.panes == nil && self.inspectorView != nil && self.documentInspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"FX" letters:@"FX" red:0.62 green:0.42 blue:0.68 view:self.documentInspectorView],
+                       [UDEditorPane paneWithTitle:@"Action" letters:@"A" red:0.40 green:0.52 blue:0.72 view:self.inspectorView]];
     }
     return self.panes ?: @[];
 }
 
-/// The inspector: the selected action's keywords, or the FX's.
+/// The Action pane: the selected action's keywords, or "No Action Selected".
 - (void)showInspector {
     NSUInteger selected = self.actionsController.selectionIndex;
     BOOL action = selected != NSNotFound && selected < self.fx.actions.count;
-    [self.inspectorTabs selectTabViewItemWithIdentifier:action ? @"action" : @"fx"];
+    [self.inspectorTabs selectTabViewItemWithIdentifier:action ? @"action" : @"none"];
+}
+
+- (IBAction)showSelectionInspector:(id)sender {
+    NSUInteger selected = self.actionsController.selectionIndex;
+    if (selected != NSNotFound && selected < self.fx.actions.count) [self showInspectorPaneTitled:@"Action"];
 }
 
 - (void)declDidLoad {
@@ -312,6 +318,7 @@ static NSPasteboardType const UDFXActionRowType = @"org.udquaketools.fx-action-r
     [self.actionsController setSelectionIndex:row.unsignedIntegerValue];
     [self.actionsTable scrollRowToVisible:row.integerValue];
     [self.view.window makeFirstResponder:self.actionsTable];
+    [self showSelectionInspector:nil];
 }
 
 @end

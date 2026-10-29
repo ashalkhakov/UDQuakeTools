@@ -56,18 +56,28 @@ static UDDiagnosticSource const UDAFReferencesSource = @"references";
 }
 
 - (NSArray<UDEditorPane *> *)inspectorPanes {
-    if (self.panes == nil && self.inspectorView != nil) {
-        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    if (self.panes == nil && self.inspectorView != nil && self.documentInspectorView != nil && self.constraintInspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Figure" letters:@"F" red:0.62 green:0.42 blue:0.68 view:self.documentInspectorView],
+                       [UDEditorPane paneWithTitle:@"Body" letters:@"B" red:0.40 green:0.52 blue:0.72 view:self.inspectorView],
+                       [UDEditorPane paneWithTitle:@"Constraint" letters:@"C" red:0.42 green:0.58 blue:0.40 view:self.constraintInspectorView]];
     }
     return self.panes ?: @[];
 }
 
-/// The inspector: the chosen body's keywords, the chosen constraint's, or
-/// the figure's settings.
+/// The Body and Constraint panes: the chosen body's keywords and the chosen
+/// constraint's, or "No Body Selected", "No Constraint Selected".
 - (void)showInspector {
-    NSString *tab = self.bodiesController.selectionIndexes.count > 0 ? @"body"
-                  : self.constraintsController.selectionIndexes.count > 0 ? @"constraint" : @"figure";
-    [self.inspectorTabs selectTabViewItemWithIdentifier:tab];
+    [self.inspectorTabs selectTabViewItemWithIdentifier:self.bodiesController.selectionIndexes.count > 0 ? @"body" : @"none"];
+    [self.constraintInspectorTabs selectTabViewItemWithIdentifier:
+        self.constraintsController.selectionIndexes.count > 0 ? @"constraint" : @"none"];
+}
+
+- (IBAction)showBodyInspector:(id)sender {
+    if (self.bodiesController.selectionIndexes.count > 0) [self showInspectorPaneTitled:@"Body"];
+}
+
+- (IBAction)showConstraintInspector:(id)sender {
+    if (self.constraintsController.selectionIndexes.count > 0) [self showInspectorPaneTitled:@"Constraint"];
 }
 
 - (void)declDidLoad {
@@ -260,6 +270,9 @@ static BOOL UDHasName(NSArray<NSString *> *names, NSString *name) {
         [self.constraintsController setSelectionIndexes:[NSIndexSet indexSet]];
         if ([target[0] isEqualToString:@"bodies"] && [self.bodiesController.arrangedObjects count] > 0) {
             [self.bodiesController setSelectionIndex:0];
+            [self showBodyInspector:nil];
+        } else {
+            [self showInspectorPaneTitled:@"Figure"];
         }
         return;
     }
@@ -271,6 +284,8 @@ static BOOL UDHasName(NSArray<NSString *> *names, NSString *name) {
     [controller setSelectionIndex:row];
     [table scrollRowToVisible:(NSInteger)row];
     [self.view.window makeFirstResponder:table];
+    if (isBody) [self showBodyInspector:nil];
+    else [self showConstraintInspector:nil];
 }
 
 @end

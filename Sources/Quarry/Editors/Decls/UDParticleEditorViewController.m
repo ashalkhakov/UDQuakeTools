@@ -51,17 +51,23 @@ static NSPasteboardType const UDParticleStageRowType = @"org.udquaketools.partic
 }
 
 - (NSArray<UDEditorPane *> *)inspectorPanes {
-    if (self.panes == nil && self.inspectorView != nil) {
-        self.panes = @[[UDEditorPane paneWithTitle:@"Properties" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.inspectorView]];
+    if (self.panes == nil && self.inspectorView != nil && self.documentInspectorView != nil) {
+        self.panes = @[[UDEditorPane paneWithTitle:@"Particle" letters:@"P" red:0.62 green:0.42 blue:0.68 view:self.documentInspectorView],
+                       [UDEditorPane paneWithTitle:@"Stage" letters:@"S" red:0.40 green:0.52 blue:0.72 view:self.inspectorView]];
     }
     return self.panes ?: @[];
 }
 
-/// The inspector: the selected stage's parameters, or the particle's.
+/// The Stage pane: the selected stage's parameters, or "No Stage Selected".
 - (void)showInspector {
     NSUInteger selected = self.stagesController.selectionIndex;
     BOOL stage = selected != NSNotFound && selected < self.particle.stages.count;
-    [self.inspectorTabs selectTabViewItemWithIdentifier:stage ? @"stage" : @"particle"];
+    [self.inspectorTabs selectTabViewItemWithIdentifier:stage ? @"stage" : @"none"];
+}
+
+- (IBAction)showSelectionInspector:(id)sender {
+    NSUInteger selected = self.stagesController.selectionIndex;
+    if (selected != NSNotFound && selected < self.particle.stages.count) [self showInspectorPaneTitled:@"Stage"];
 }
 
 - (void)declDidLoad {
@@ -219,6 +225,7 @@ static NSPasteboardType const UDParticleStageRowType = @"org.udquaketools.partic
     [self.stagesController setSelectionIndex:row.unsignedIntegerValue];
     [self.stagesTable scrollRowToVisible:row.integerValue];
     [self.view.window makeFirstResponder:self.stagesTable];
+    [self showSelectionInspector:nil];
 }
 
 @end

@@ -5,8 +5,12 @@
 //  The app's updates. On macOS, Sparkle: the newest release's appcast
 //  (SUFeedURL in each app's Info.plist, signed with the key SUPublicEDKey names) is
 //  checked once a day if the user allows it, and Check for Updates… checks
-//  now. On GNUstep, nothing: the AppImage carries its update information,
-//  for AppImageUpdate, Gear Lever and the like (gnustep-release-actions' appimage).
+//  now. On Windows, the stack's GSUpdater: WinSparkle, which the installer
+//  carries, checking the newest release's appcast-windows.xml (the installer
+//  writes SUWindowsFeedURL and SUPublicEDKey into each app's
+//  Info-gnustep.plist; one installer carries all three apps). On Linux,
+//  nothing: the AppImage carries its update information, for AppImageUpdate,
+//  Gear Lever and the like (gnustep-release-actions' appimage).
 //
 //  UDUpdater-Apple.m is the macOS one (Xcode), UDUpdater.m the GNUstep one
 //  (GNUmakefile); every app — UDLauncher, Quarry, PakManager — compiles

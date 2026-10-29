@@ -17,6 +17,7 @@
                 <outlet property="transportView" destination="FXE-transport" id="UDF-o-transportView"/>
                 <outlet property="inspectorView" destination="FXE-inspector" id="UDF-o-inspectorView"/>
                 <outlet property="inspectorTabs" destination="FXE-itabs" id="UDF-o-inspectorTabs"/>
+                <outlet property="documentInspectorView" destination="FXE-docinspector" id="UDF-o-docinspector"/>
                 <outlet property="effectScroll" destination="FXE-escroll" id="UDF-o-effectScroll"/>
                 <outlet property="actionScroll" destination="FXE-ascroll" id="UDF-o-actionScroll"/>
             </connections>
@@ -122,6 +123,7 @@
                                         </tableColumn>
                                 </tableColumns>
                                 <connections>
+                                    <action selector="showSelectionInspector:" target="-2" id="FXE-actions-click"/>
                                     <outlet property="dataSource" destination="-2" id="FXE-actions-ds"/>
                                     <binding destination="FXE-aac" name="content" keyPath="arrangedObjects" id="FXE-actions-bc"/>
                                     <binding destination="FXE-aac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="FXE-actions-bc" id="FXE-actions-bs"/>
@@ -158,7 +160,7 @@
                 </segmentedControl>
             </subviews>
         </customView>
-        <customView id="FXE-inspector" userLabel="Inspector">
+        <customView id="FXE-inspector" userLabel="Action Inspector">
             <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -167,69 +169,20 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
-                        <tabViewItem label="FX" identifier="fx" id="FXE-ie">
-                            <view key="view" id="FXE-ie-v">
+                        <tabViewItem label="None" identifier="none" id="FXE-action-n">
+                            <view key="view" id="FXE-action-n-v">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-escroll">
-                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="FXE-escroll-cv" customClass="UDTopClipView">
-                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <view id="FXE-escroll-doc">
-                                            <rect key="frame" x="0.0" y="0.0" width="265" height="81"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                            <subviews>
-                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h4">
-                                                <rect key="frame" x="8" y="51" width="200" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="FX" id="FXE-h4-c">
-                                                    <font key="font" metaFont="systemBold"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l6">
-                                                <rect key="frame" x="4" y="28" width="88" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bind To:" id="FXE-l6-c">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField toolTip="bindTo: the joint of the entity the whole effect is bound to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f5">
-                                                <rect key="frame" x="96" y="25" width="160" height="21"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f5-c">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                                <connections>
-                                                    <binding destination="FXE-oc" name="value" keyPath="selection.bindTo" id="FXE-f5-b">
-                                                        <dictionary key="options">
-                                                            <bool key="NSValidatesImmediately" value="YES"/>
-                                                        </dictionary>
-                                                    </binding>
-                                                </connections>
-                                            </textField>
-                                                                        </subviews>
-                                        </view>
-                                    </subviews>
-                                </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-escroll-hs">
-                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-escroll-vs">
-                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                            </scrollView>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-action-n-t">
+                                        <rect key="frame" x="12" y="289" width="256" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" alignment="center" title="No Action Selected" id="FXE-action-n-c">
+                                            <font key="font" metaFont="system" size="15"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                 </subviews>
                             </view>
                         </tabViewItem>
@@ -931,6 +884,70 @@
                         </tabViewItem>
                     </tabViewItems>
                 </tabView>
+            </subviews>
+        </customView>
+        <customView id="FXE-docinspector" userLabel="FX Inspector">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-escroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="FXE-escroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="FXE-escroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="81"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-h4">
+                                                <rect key="frame" x="8" y="51" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="FX" id="FXE-h4-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-l6">
+                                                <rect key="frame" x="4" y="28" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Bind To:" id="FXE-l6-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="bindTo: the joint of the entity the whole effect is bound to." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FXE-f5">
+                                                <rect key="frame" x="96" y="25" width="160" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="FXE-f5-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="FXE-oc" name="value" keyPath="selection.bindTo" id="FXE-f5-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="FXE-escroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="FXE-escroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
             </subviews>
         </customView>
     </objects>

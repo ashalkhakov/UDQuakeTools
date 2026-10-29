@@ -8,8 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
  * A material's editor, in the window's three panes (as the Core Data model
  * editor has an entity): in the centre the material lit, its time, and its
  * stages (chosen, added, taken off, dragged into another order); in the
- * inspector, the selected stage's keywords and its image as the renderer
- * would load it, or, no stage selected, the material's. Edits put a keyword
+ * inspector, a pane of the material's keywords and one of the selected
+ * stage's, with its image as the renderer would load it. Edits put a keyword
  * in, change it or take it out; the rest of the text stays as it was. What
  * idMaterial::Parse says of the material is in the Issues tab, and an image
  * it would not find, as the image manager says it. Laid out in
@@ -32,8 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSView *transportView;
 @property (nonatomic, strong, readonly, nullable) UDTransportController *transport;
 @property (nonatomic, strong, readonly, nullable) UDParticlePreview *materialPreview;
-/// The inspector's Properties: a tab of the material's keywords and one of
-/// the selected stage's (inspectorTabs, tabless), each scrolled.
+/// The inspector's panes, as Xcode's have a file's own and its selection's:
+/// Material, the material's keywords (documentInspectorView), and Stage, the selected stage's
+/// (inspectorView: inspectorTabs' "stage" page, or "none"), each scrolled.
+@property (strong) IBOutlet NSView *documentInspectorView;
 @property (strong) IBOutlet NSView *inspectorView;
 @property (weak) IBOutlet NSTabView *inspectorTabs;
 @property (weak) IBOutlet NSScrollView *materialScroll;
@@ -53,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// after the selection.
 - (IBAction)copy:(nullable id)sender;
 - (IBAction)paste:(nullable id)sender;
+
+/// The Stage pane shown (a click in the list).
+- (IBAction)showSelectionInspector:(nullable id)sender;
 
 @end
 

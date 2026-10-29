@@ -42,6 +42,8 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
       extra-packages: sqlite3 zlib
+    # A tag's run signs the installer's appcast with the Mac's Sparkle key.
+    secrets: inherit
 
   macos:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1

@@ -8,8 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
  * A particle decl's editor, DialogParticleEditor's, in the window's three
  * panes: in the centre the system playing and its stages in a list
  * (chosen, added, taken off, dragged into another order); in the
- * inspector, the selected stage's every parameter (with the dialog's
- * sliders), edited in place, and the particle's depth hack. What a stage
+ * inspector, a pane of the particle's own keywords (its depth hack) and
+ * one of the selected stage's every parameter (with the dialog's sliders),
+ * edited in place. What a stage
  * names that is not there is in the Issues tab: a material the engine makes
  * a default of, a table no decl defines. Laid out in
  * UDParticleEditorView.xib.
@@ -28,8 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSView *transportView;
 @property (nonatomic, strong, readonly, nullable) UDTransportController *transport;
 
-/// The inspector's Properties: a tab of the particle's keywords and one of
-/// the selected stage's (inspectorTabs, tabless), each scrolled.
+/// The inspector's panes, as Xcode's have a file's own and its selection's:
+/// Particle, the particle's keywords (documentInspectorView), and Stage, the selected stage's
+/// (inspectorView: inspectorTabs' "stage" page, or "none"), each scrolled.
+@property (strong) IBOutlet NSView *documentInspectorView;
 @property (strong) IBOutlet NSView *inspectorView;
 @property (weak) IBOutlet NSTabView *inspectorTabs;
 @property (weak) IBOutlet NSScrollView *particleScroll;
@@ -43,6 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// the selected one with Option, as AddStage's Ctrl had it); - takes the
 /// selected one off.
 - (IBAction)addOrRemoveStage:(nullable id)sender;
+
+/// The Stage pane shown (a click in the list).
+- (IBAction)showSelectionInspector:(nullable id)sender;
 
 @end
 

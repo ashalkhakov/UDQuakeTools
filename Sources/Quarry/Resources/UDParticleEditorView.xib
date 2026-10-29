@@ -16,6 +16,7 @@
                 <outlet property="transportView" destination="PTE-transport" id="UDP-o-transportView"/>
                 <outlet property="inspectorView" destination="PTE-inspector" id="UDP-o-inspectorView"/>
                 <outlet property="inspectorTabs" destination="PTE-itabs" id="UDP-o-inspectorTabs"/>
+                <outlet property="documentInspectorView" destination="PTE-docinspector" id="UDP-o-docinspector"/>
                 <outlet property="particleScroll" destination="PTE-pscroll" id="UDP-o-particleScroll"/>
                 <outlet property="stageScroll" destination="PTE-sscroll" id="UDP-o-stageScroll"/>
             </connections>
@@ -91,6 +92,7 @@
                                         </tableColumn>
                                 </tableColumns>
                                 <connections>
+                                    <action selector="showSelectionInspector:" target="-2" id="PTE-stages-click"/>
                                     <outlet property="dataSource" destination="-2" id="PTE-stages-ds"/>
                                     <binding destination="PTE-sac" name="content" keyPath="arrangedObjects" id="PTE-stages-bc"/>
                                     <binding destination="PTE-sac" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="PTE-stages-bc" id="PTE-stages-bs"/>
@@ -127,7 +129,7 @@
                 </segmentedControl>
             </subviews>
         </customView>
-        <customView id="PTE-inspector" userLabel="Inspector">
+        <customView id="PTE-inspector" userLabel="Stage Inspector">
             <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -136,69 +138,20 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
-                        <tabViewItem label="Particle" identifier="particle" id="PTE-ip">
-                            <view key="view" id="PTE-ip-v">
+                        <tabViewItem label="None" identifier="none" id="PTE-stage-n">
+                            <view key="view" id="PTE-stage-n-v">
                                 <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-pscroll">
-                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <clipView key="contentView" drawsBackground="NO" id="PTE-pscroll-cv" customClass="UDTopClipView">
-                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <view id="PTE-pscroll-doc">
-                                            <rect key="frame" x="0.0" y="0.0" width="265" height="600"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                            <subviews>
-                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h7">
-                                                <rect key="frame" x="8" y="570" width="200" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Particle" id="PTE-h7-c">
-                                                    <font key="font" metaFont="systemBold"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l9">
-                                                <rect key="frame" x="4" y="547" width="88" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Depth Hack:" id="PTE-l9-c">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f8">
-                                                <rect key="frame" x="96" y="544" width="60" height="21"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f8-c">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                                <connections>
-                                                    <binding destination="PTE-oc" name="value" keyPath="selection.depthHack" id="PTE-f8-b">
-                                                        <dictionary key="options">
-                                                            <bool key="NSValidatesImmediately" value="YES"/>
-                                                        </dictionary>
-                                                    </binding>
-                                                </connections>
-                                            </textField>
-                                                                        </subviews>
-                                        </view>
-                                    </subviews>
-                                </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PTE-pscroll-hs">
-                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PTE-pscroll-vs">
-                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                            </scrollView>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-stage-n-t">
+                                        <rect key="frame" x="12" y="289" width="256" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" alignment="center" title="No Stage Selected" id="PTE-stage-n-c">
+                                            <font key="font" metaFont="system" size="15"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                 </subviews>
                             </view>
                         </tabViewItem>
@@ -1543,6 +1496,70 @@
                         </tabViewItem>
                     </tabViewItems>
                 </tabView>
+            </subviews>
+        </customView>
+        <customView id="PTE-docinspector" userLabel="Particle Inspector">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-pscroll">
+                                <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="PTE-pscroll-cv" customClass="UDTopClipView">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="600"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view id="PTE-pscroll-doc">
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="600"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <subviews>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-h7">
+                                                <rect key="frame" x="8" y="570" width="200" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Particle" id="PTE-h7-c">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-l9">
+                                                <rect key="frame" x="4" y="547" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Depth Hack:" id="PTE-l9-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField toolTip="depthHack: the particles are drawn this much nearer the viewer than they are, so they show over surfaces close to them (a weapon's smoke)." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PTE-f8">
+                                                <rect key="frame" x="96" y="544" width="60" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="PTE-f8-c">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <connections>
+                                                    <binding destination="PTE-oc" name="value" keyPath="selection.depthHack" id="PTE-f8-b">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                                                        </subviews>
+                                        </view>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PTE-pscroll-hs">
+                                    <rect key="frame" x="-100" y="-100" width="100" height="15"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="PTE-pscroll-vs">
+                                    <rect key="frame" x="265" y="0.0" width="15" height="600"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
             </subviews>
         </customView>
     </objects>

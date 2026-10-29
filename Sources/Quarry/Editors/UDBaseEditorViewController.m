@@ -22,6 +22,11 @@
 
 @implementation UDBaseEditorViewController
 
+- (void)showInspectorPaneTitled:(NSString *)title {
+    id controller = self.view.window.windowController;
+    if ([controller respondsToSelector:@selector(showInspectorPaneTitled:)]) [controller showInspectorPaneTitled:title];
+}
+
 - (UDBaseDocument *)editorDocument {
     // Subclasses each declare their own typed `document` property; pick it
     // up generically via KVC so the base class needs no storage of its own.

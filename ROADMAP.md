@@ -46,10 +46,10 @@ These shape everything after them; each has a recommendation.
    later, wxWidgets, Windows/macOS/Linux; edits Doom 3 and Quake 4 maps) and
    compiled by an existing dmap (dhewm3's, or RBDOOM's `rbdmap`); this
    toolkit launches them on the workspace's paths and shows their results.
-5. **Windows comes from gnustep-release-actions,** which is taking on the
-   Windows build (MSYS2's GNUstep: clang64, gnustep-2.0 runtime, cairo back
-   end). This repository stays portable and adopts it when it lands; little
-   work here.
+5. **Windows comes from gnustep-release-actions,** whose Windows build
+   (MSYS2's GNUstep: clang64, gnustep-2.0 runtime) and installer this
+   repository adopted in 0.6.0; what differs here is in each system's folder
+   (`posix/`, `windows/`).
 6. **A workspace becomes a mod project.** It knows its mod folder
    (`fs_game`, `fs_game_base`), writes into it, and carries a manifest
    (name, version, author, target engines). Publishing builds from that.
@@ -239,8 +239,8 @@ In order of value against cost; LOC is the MFC original's size.
       or sound, a light or model to use no earlier action names).
 - [x] **AF editor** — idDeclAF's parser and writer ported (every retail
       figure parses and writes the same twice): settings, bodies and
-      constraints in three tabs, each list with the selected one's every
-      keyword; + and − are NewBody/DeleteBody/NewConstraint/DeleteConstraint,
+      constraints, each with an inspector pane of its own (the selected
+      body's or constraint's every keyword); + and − are NewBody/DeleteBody/NewConstraint/DeleteConstraint,
       and a body renamed renames it in its constraints. Joints come from the
       model's `.md5mesh`, found through its modelDef as idDeclModelDef::Parse
       finds it; in the Issues tab, what idAF::Load refuses (no body on the
@@ -456,11 +456,12 @@ wrong stack base; a call's frame shows the line after the call.
 
 ## 7. Windows
 
-- [ ] Adopt gnustep-release-actions' Windows build when it lands (the
-      workflow and packaging live there).
-- [ ] Keep this code portable meanwhile: Windows paths in idFileSystem
-      (`c:` handling, `idFileSystem.m:1125`), no POSIX-only calls outside
-      the ports' existing `#ifdef`s.
+- [x] Adopt gnustep-release-actions' Windows build (#24): built and tested
+      in MSYS2's CLANG64 on every push; released as an MSI and a portable zip.
+- [x] Keep this code portable: what each system does its own way (the
+      debugger's socket, the crash reporter, the language tools' standard
+      streams) in `posix/` and `windows/`, chosen by `Libraries.make`.
+- [ ] Automatic updates on Windows (WinSparkle, as Sparkle on the Mac).
 
 ## 8. Quake 4 and openQ4
 

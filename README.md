@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml/badge.svg)](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml)
 
-The tools to make a Doom 3 mod, for **macOS and Linux**. Quarry opens a game
+The tools to make a Doom 3 mod, for **macOS, Linux and Windows**. Quarry opens a game
 install or a mod, finds every declaration in it, loose or inside its paks,
 and edits them in editors of their own: materials lit as the game lights
 them, particles and FX playing as the game plays them, GUIs that run and
@@ -33,6 +33,8 @@ Download from [Releases](https://github.com/ashalkhakov/UDQuakeTools/releases/la
 | macOS | `UDLauncher-macOS-*.zip` | The launcher, which opens the other apps; updates itself (UDLauncher > Check for Updates…) |
 | macOS | `DeclBrowser-macOS-*.zip`, `PakManager-macOS-*.zip` | Quarry and Pak Manager on their own |
 | Linux x86_64 | `UDQuakeTools-*-x86_64.AppImage` | The launcher, Quarry, Pak Manager and the command-line tools in one file; updated by Gear Lever, AppImageUpdate or AppImagePool |
+| Windows x64 | `UDQuakeTools-*-win64.msi` | The launcher, Quarry and Pak Manager, installed for you alone (no administrator needed), with a Start menu shortcut to the launcher; a newer installer replaces the version before it |
+| Windows x64 | `UDQuakeTools-*-win64-portable.zip` | The same, without installing: unzip it anywhere and run `UDQuakeTools.exe` |
 
 The macOS apps aren't notarized yet. If macOS says an app is damaged, clear
 its quarantine once after unzipping:
@@ -45,6 +47,10 @@ The AppImage is built on Ubuntu 22.04, so it needs glibc 2.35 or later and a
 desktop's usual libraries (fontconfig, X11, OpenGL). CI tests it on Ubuntu,
 and it also runs on Fedora 42, which Bazzite is built on. Where there's no
 FUSE, `./UDQuakeTools-*.AppImage --appimage-extract-and-run` runs it anyway.
+
+The Windows installer isn't signed yet. If SmartScreen says it
+protected your PC, choose **More info**, then **Run anyway**. There are no
+automatic updates on Windows yet: install the newer release over the old one.
 
 Every push also uploads builds to its [Actions run](https://github.com/ashalkhakov/UDQuakeTools/actions).
 To build from source, see [Building](docs/building.md).
@@ -121,10 +127,9 @@ To build from source, see [Building](docs/building.md).
   mod authoring, kept up to date with dhewm3. Stock dhewm3 1.5.5 can be
   debugged too, but without stopping at script errors, other threads'
   variables, entities' spawn args, setting variables or jumping.
-- **On Linux** the apps run on GNUstep, patched by
+- **On Linux and Windows** the apps run on GNUstep, patched by
   [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches) until the
-  fixes are upstream; the AppImage carries it.
-- **No Windows build yet.**
+  fixes are upstream; the AppImage and the installer carry it.
 
 The plan, editor by editor: [ROADMAP.md](ROADMAP.md).
 
@@ -139,14 +144,15 @@ The plan, editor by editor: [ROADMAP.md](ROADMAP.md).
 | `tree-sitter-iddecl/`, `tree-sitter-idscript/` | The grammars Quarry's editors highlight with |
 | `Tests/` | Each library's unit tests; `Tests/Quarry` drives Quarry through its own windows |
 | `docs/` | Building, testing, debugging scripts |
+| `.github/release/` | What the AppImage and the Windows installer carry |
 
 Quarry's text editor, its tabs and its debugger views come from
 [UDCodeKit](https://github.com/ashalkhakov/UDCodeKit).
 
 ## Documentation
 
-- [Building](docs/building.md): Xcode, make on GNUstep, the tests, the
-  AppImage
+- [Building](docs/building.md): Xcode, make on GNUstep (Linux, and Windows in
+  MSYS2), the tests, the AppImage and the Windows installer
 - [Debugging scripts](docs/debugging.md): setting up a game to debug, what
   works with stock dhewm3 and with our fork
 - [Roadmap](ROADMAP.md): every editor, done and to do

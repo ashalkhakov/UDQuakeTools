@@ -1,9 +1,10 @@
 # Building UDQuakeTools
 
-UDQuakeTools builds with Xcode on macOS and with GNUstep's make on Linux, and
-CI does both on every push (`.github/workflows/build.yml`, with
+UDQuakeTools builds with Xcode on macOS and with GNUstep's make on Linux and
+on Windows (in MSYS2's CLANG64 environment), and CI builds and tests all
+three on every push (`.github/workflows/build.yml`, with
 [gnustep-release-actions](https://github.com/ashalkhakov/gnustep-release-actions)'
-workflows). Archives need nothing beyond zlib on either system: the minizip
+workflows). Archives need nothing beyond zlib on any of them: the minizip
 reader that came with the Doom 3 file system reads them, and `UDZipWriter`
 writes them.
 
@@ -11,15 +12,18 @@ What a build takes from elsewhere is pinned in `.github/pins.env`:
 
 - [UDCodeKit](https://github.com/ashalkhakov/UDCodeKit): Quarry's text
   editor, its tabs and the debugger's views, with its grammar bundles. It's
-  unpacked into the GNUstep prefix on Linux and into `.deps/` on macOS.
+  unpacked into the GNUstep prefix on Linux and Windows, and into `.deps/` on
+  macOS.
 - The patched GNUstep stack from
-  [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches), on Linux.
+  [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches), on Linux
+  and Windows.
 - [FreeCoreData](https://github.com/ashalkhakov/FreeCoreData), the Core Data
-  that Quarry's decl layer is built on, on Linux.
+  that Quarry's decl layer is built on, on Linux and Windows.
 - Sparkle, on macOS.
 
 gnustep-release-actions' `scripts/deps.sh` fetches the pinned releases:
-`deps.sh apple` for `.deps/`, `deps.sh linux` for the GNUstep prefix.
+`deps.sh apple` for `.deps/`, `deps.sh linux` for the GNUstep prefix
+(`/opt/gnustep`), `deps.sh windows` for Windows' (`C:\GNUstep`).
 
 ## macOS
 
@@ -59,9 +63,28 @@ cd FreeCoreData
 make && sudo -E make install
 ```
 
+## Windows (MSYS2)
+
+The same make, in an MSYS2 CLANG64 shell, on the stack's Windows archive,
+which unpacks into `C:\GNUstep` with FreeCoreData and UDCodeKit beside it.
+The stack lists the MSYS2 packages building on it takes in
+`C:\GNUstep\share\gnustep-patches\packages-msys2.txt` (CLANG64's, installed
+with pacman); UDQuakeTools adds `sqlite3` and `zlib`. Then:
+
+```sh
+. /c/GNUstep/System/Library/Makefiles/GNUstep.sh
+export PATH=/c/GNUstep/bin:$PATH     # the stack's DLLs, for the apps and the tests
+make && make check
+```
+
+What differs between the systems is in a folder of each beside the shared
+sources (`posix/`, `windows/`), which `Libraries.make`'s `UD_SYSTEM_DIR`
+chooses: the debugger's socket, the crash reporter, the language tools'
+standard streams.
+
 ## Tests
 
-XCTest bundles, the same on both systems:
+XCTest bundles, the same on every system:
 
 - `Tests/<library>`: each library's unit tests. They cover:
   - the archive codecs, and `UDZipWriter` against the Doom 3 reader;
@@ -106,6 +129,18 @@ and the GNUstep runtime. What is UDQuakeTools' own:
 CI makes and smoke-tests the image on every push, and a `v*` tag releases it
 with update information, for Gear Lever, AppImageUpdate and AppImagePool.
 
+## The Windows installer
+
+`UDQuakeTools-<version>-win64.msi` is made by gnustep-release-actions' `msi`
+step, the same as every app's installer: the apps as `make install` put
+them, on the GNUstep runtime they run on, in Windows' own look
+(WinUXTheme). It installs for the user alone, with no administrator needed,
+with a Start menu shortcut to the launcher, and a newer installer replaces
+the version before it. What is UDQuakeTools' own is
+`.github/release/windows.conf`: the apps it carries, the one the shortcut
+starts, its icon (`Scripts/windows/UDQuakeTools.png`), and its smoke test,
+the launcher still running 25 seconds after it starts.
+
 ## Screenshots
 
 The README's screenshots are taken by `Tests/Quarry/UDScreenshotTests.m`, of
@@ -133,5 +168,5 @@ dhewm3 the debugger scene runs; without it, that scene is skipped.
 
 ## Releases
 
-A `v*` tag releases everything: the AppImage, and the macOS apps zipped, with
-the Sparkle appcasts the apps update from.
+A `v*` tag releases everything: the AppImage, the Windows installer, and the
+macOS apps zipped, with the Sparkle appcasts the Mac apps update from.

@@ -282,5 +282,23 @@
 	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast-PakManager.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>9cBO16YcwJZy7uzpT8tSbD/UnYF9HNTekubfnW8WlUE=</string>
+	<!-- GNUstep's About panel (GSInfoPanel) reads these; Cocoa ignores them.
+	     The release's build stamps ApplicationRelease and FullVersionID. -->
+	<key>ApplicationDescription</key>
+	<string>Quake, Quake II, Quake III, Daikatana and Doom 3 archives: opened, browsed and edited</string>
+	<key>ApplicationRelease</key>
+	<string>1.0</string>
+	<key>FullVersionID</key>
+	<string>1.0</string>
+	<key>Authors</key>
+	<array>
+		<string>Artyom Shalkhakov</string>
+	</array>
+	<key>Copyright</key>
+	<string>Copyright (C) 2026 Artyom Shalkhakov</string>
+	<key>CopyrightDescription</key>
+	<string>Released under the GNU GPL, version 3 or later</string>
+	<key>URL</key>
+	<string>https://github.com/ashalkhakov/UDQuakeTools</string>
 </dict>
 </plist>

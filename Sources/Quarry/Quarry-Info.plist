@@ -68,5 +68,25 @@
 	<string>https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/appcast-DeclBrowser.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>9cBO16YcwJZy7uzpT8tSbD/UnYF9HNTekubfnW8WlUE=</string>
+	<!-- GNUstep's About panel (GSInfoPanel) reads these; Cocoa ignores them.
+	     The release's build stamps ApplicationRelease and FullVersionID. -->
+	<key>ApplicationName</key>
+	<string>Quarry</string>
+	<key>ApplicationDescription</key>
+	<string>Doom 3's decls, scripts and GUIs: browsed, edited and debugged</string>
+	<key>ApplicationRelease</key>
+	<string>1.0</string>
+	<key>FullVersionID</key>
+	<string>1.0</string>
+	<key>Authors</key>
+	<array>
+		<string>Artyom Shalkhakov</string>
+	</array>
+	<key>Copyright</key>
+	<string>Copyright (C) 2026 Artyom Shalkhakov</string>
+	<key>CopyrightDescription</key>
+	<string>Released under the GNU GPL, version 3 or later</string>
+	<key>URL</key>
+	<string>https://github.com/ashalkhakov/UDQuakeTools</string>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 #import "UDScriptServer.h"
 #import "UDWorkspace.h"
 #import <LSPKit/LSPKit.h>
+#import <UDCodeKit/UDPaths.h>
 
 @implementation UDScriptServer
 
@@ -18,6 +19,8 @@ static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
     NSString *tool = NSProcessInfo.processInfo.environment[@"UD_SCRIPT_LSP"]
         ?: [[NSBundle mainBundle] pathForAuxiliaryExecutable:@"udscript-lsp"];
     if (tool == nil) return nil;
+    // the program as the system has it (on Windows udscript-lsp.exe)
+    tool = UDExecutableAtPath(tool) ?: tool;
     NSData *settings = [NSJSONSerialization dataWithJSONObject:workspace.dictionaryRepresentation options:0 error:NULL];
     if (settings == nil) return nil;
     client = [[LSPClient alloc] initWithPath:tool

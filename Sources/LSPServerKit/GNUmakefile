@@ -13,16 +13,22 @@ GS_WITH_ARC = 1
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+# Libraries.make's switch between the systems (UD_SYSTEM_DIR)
+UDLIBS_DIR = ../Libraries
+include $(UDLIBS_DIR)/Libraries.make
+
 LSPServerKit_OBJC_FILES = \
     UDDAPConnection.m \
     UDJSONRPCConnection.m \
-    UDLanguageServer.m
+    UDLanguageServer.m \
+    $(UD_SYSTEM_DIR)/UDStandardStreams.m
 
 LSPServerKit_HEADER_FILES_DIR = .
 LSPServerKit_HEADER_FILES = \
     UDDAPConnection.h \
     UDJSONRPCConnection.h \
-    UDLanguageServer.h
+    UDLanguageServer.h \
+    UDStandardStreams.h
 
 # UDDAPConnection answers on a dispatch queue.
 LSPServerKit_LIBRARIES_DEPEND_UPON += -ldispatch

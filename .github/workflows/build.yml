@@ -37,6 +37,12 @@ jobs:
       tag: ${{ inputs.tag }}
       extra-packages: libsqlite3-dev zlib1g-dev
 
+  windows:
+    uses: ashalkhakov/gnustep-release-actions/.github/workflows/windows.yml@v1
+    with:
+      tag: ${{ inputs.tag }}
+      extra-packages: sqlite3 zlib
+
   macos:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1
     with:

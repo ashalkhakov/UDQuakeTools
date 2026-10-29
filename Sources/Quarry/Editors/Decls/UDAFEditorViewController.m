@@ -237,15 +237,15 @@ static BOOL UDHasName(NSArray<NSString *> *names, NSString *name) {
     NSArray<UDAFConstraint *> *constraints = figure.constraints ?: @[];
     for (NSUInteger row = 0; row < constraints.count; row++) {
         UDAFConstraint *constraint = constraints[row];
-        NSString *near = [NSString stringWithFormat:@"\"%@\"", constraint.name];
+        NSString *quoted = [NSString stringWithFormat:@"\"%@\"", constraint.name];
         // GetBody gives NULL for a name no body has: no body 1, the world for body 2.
         if (!UDHasName(names, constraint.body1 ?: @"")) {
             [self _addProblem:[NSString stringWithFormat:@"Constraint '%@' has no body 1: no body '%@'", constraint.name, constraint.body1]
-                     severity:UDDiagnosticSeverityError near:near target:@[@"constraints", @(row)] to:items];
+                     severity:UDDiagnosticSeverityError near:quoted target:@[@"constraints", @(row)] to:items];
         }
         if (!UDHasName(names, constraint.body2 ?: @"") && [constraint.body2 caseInsensitiveCompare:@"world"] != NSOrderedSame) {
             [self _addProblem:[NSString stringWithFormat:@"Constraint '%@' binds to the world: no body '%@'", constraint.name, constraint.body2]
-                     severity:UDDiagnosticSeverityWarning near:near target:@[@"constraints", @(row)] to:items];
+                     severity:UDDiagnosticSeverityWarning near:quoted target:@[@"constraints", @(row)] to:items];
         }
     }
     [self.diagnosticStore setDiagnostics:items forSource:UDAFReferencesSource];

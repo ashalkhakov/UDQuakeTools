@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
-#import "UDProject.h"
+#import "UDWorkspaceProject.h"
 #import "UDFileItem.h"
 #import "UDDeclItem.h"
 
 @interface UDPathTree : NSObject
 
-@property (strong) UDProject *root;
+@property (strong) UDWorkspaceProject *root;
 
 - (void)deleteAllItems;
 - (void)addFileToTree:(NSString *)path;

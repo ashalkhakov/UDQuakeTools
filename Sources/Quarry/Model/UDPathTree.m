@@ -6,7 +6,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _root = [[UDProject alloc] initWithName:@"" path:nil];
+        _root = [[UDWorkspaceProject alloc] initWithName:@"" path:nil];
     }
     return self;
 }

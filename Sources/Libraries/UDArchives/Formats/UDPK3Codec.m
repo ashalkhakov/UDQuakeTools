@@ -110,7 +110,7 @@ static NSDate *UDDateFromZIPDate(tm_unz date) {
 }
 
 - (nullable UDArchive *)readArchiveFromURL:(NSURL *)url error:(NSError **)error {
-    unzFile uf = unzOpen(url.path.fileSystemRepresentation);
+    unzFile uf = unzOpen(url.path.UTF8String);
     unz_global_info globalInfo;
     if (!uf || unzGetGlobalInfo(uf, &globalInfo) != UNZ_OK) {
         if (uf) {

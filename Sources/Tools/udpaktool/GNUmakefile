@@ -20,6 +20,6 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # the libraries from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS)
+udpaktool_TOOL_LIBS += $(UDLIBS_LIBS)
 
 include $(GNUSTEP_MAKEFILES)/tool.make

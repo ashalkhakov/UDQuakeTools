@@ -5,15 +5,9 @@
 
 #import "UDScriptDebuggerConnection.h"
 #import "UDBitMsg.h"
+#import "UDDatagramSocket.h"
 
-#include <arpa/inet.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 @implementation UDScriptStackFrame
 
@@ -72,9 +66,8 @@
     uint16_t _port;
     uint16_t _localPort;
     dispatch_queue_t _queue;
-    int _socket;
-    struct sockaddr_storage _address;
-    socklen_t _addressLength;
+    UDDatagramSocket _socket;
+    NSData *_address;
     dispatch_source_t _source;
 }
 
@@ -87,7 +80,7 @@
 #if !OS_OBJECT_USE_OBJC
     dispatch_retain(queue);         // no object ARC keeps, where dispatch's are no Objective-C objects
 #endif
-    _socket = -1;
+    _socket = UDDatagramNone;
     return self;
 }
 
@@ -98,45 +91,17 @@
 #endif
 }
 
-static NSError *UDSocketError(NSString *what) {
-    return [NSError errorWithDomain:NSPOSIXErrorDomain code:errno
-                           userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@: %s", what, strerror(errno)]}];
-}
-
 - (BOOL)open:(NSError **)error {
-    if (_socket >= 0) return YES;
+    if (_socket != UDDatagramNone) return YES;
     // the game's address (Sys_StringToNetAdr's lookup)
-    struct addrinfo hints = {0}, *found = NULL;
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
-    char port[8];
-    snprintf(port, sizeof port, "%u", _port);
-    if (getaddrinfo(_host.UTF8String, port, &hints, &found) != 0 || found == NULL) {
+    _address = UDDatagramAddress(_host, _port);
+    if (!_address) {
         if (error) *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:EADDRNOTAVAIL
                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"no such host: %@", _host]}];
         return NO;
     }
-    memcpy(&_address, found->ai_addr, found->ai_addrlen);
-    _addressLength = found->ai_addrlen;
-    freeaddrinfo(found);
-
-    int s = socket(AF_INET, SOCK_DGRAM, 0);
-    if (s < 0) {
-        if (error) *error = UDSocketError(@"socket");
-        return NO;
-    }
-    int yes = 1;
-    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
-    struct sockaddr_in local = {0};
-    local.sin_family = AF_INET;
-    local.sin_addr.s_addr = htonl(INADDR_ANY);
-    local.sin_port = htons(_localPort);
-    if (bind(s, (struct sockaddr *)&local, sizeof local) != 0) {
-        if (error) *error = UDSocketError([NSString stringWithFormat:@"UDP port %u", _localPort]);
-        close(s);
-        return NO;
-    }
-    fcntl(s, F_SETFL, fcntl(s, F_GETFL) | O_NONBLOCK);
+    UDDatagramSocket s = UDDatagramOpen(_localPort, error);
+    if (s == UDDatagramNone) return NO;
     _socket = s;
 
     _source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)s, 0, _queue);
@@ -145,7 +110,7 @@ static NSError *UDSocketError(NSString *what) {
         [weakSelf _readPackets];
     });
     dispatch_source_set_cancel_handler(_source, ^{
-        close(s);
+        UDDatagramClose(s);
     });
     dispatch_resume(_source);
     return YES;
@@ -158,18 +123,18 @@ static NSError *UDSocketError(NSString *what) {
         dispatch_release(_source);
 #endif
         _source = nil;
-    } else if (_socket >= 0) {
-        close(_socket);
+    } else if (_socket != UDDatagramNone) {
+        UDDatagramClose(_socket);
     }
-    _socket = -1;
+    _socket = UDDatagramNone;
     _connected = NO;
 }
 
 #pragma mark - Sending (rvDebuggerClient::SendMessage, SendPacket)
 
 - (void)_send:(UDBitMsg *)message {
-    if (_socket < 0) return;
-    sendto(_socket, message.data.bytes, message.data.length, 0, (struct sockaddr *)&_address, _addressLength);
+    if (_socket == UDDatagramNone) return;
+    UDDatagramSend(_socket, _address, message.data);
 }
 
 + (UDBitMsg *)_message:(UDScriptDebuggerMessage)type {
@@ -298,11 +263,9 @@ static NSArray<UDScriptVariableInfo *> *UDReadVariables(UDBitMsg *message) {
 #pragma mark - Receiving (rvDebuggerClient::ProcessMessages)
 
 - (void)_readPackets {
-    uint8_t buffer[65536];
-    for (;;) {
-        ssize_t length = recv(_socket, buffer, sizeof buffer, 0);
-        if (length <= 0) return;
-        [self _handle:[UDBitMsg.alloc initWithData:[NSMutableData dataWithBytes:buffer length:(NSUInteger)length]]];
+    NSData *packet;
+    while ((packet = UDDatagramReceive(_socket))) {
+        [self _handle:[UDBitMsg.alloc initWithData:[packet mutableCopy]]];
     }
 }
 

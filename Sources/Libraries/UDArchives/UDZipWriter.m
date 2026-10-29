@@ -34,16 +34,17 @@ static NSError *UDZipError(NSString *description) {
 
 /* MS-DOS date and time, in local time like every other ZIP tool. */
 static void UDZipDOSDateTime(NSDate *date, uint16_t *dosDate, uint16_t *dosTime) {
-    time_t seconds = (time_t)(date ?: [NSDate date]).timeIntervalSince1970;
-    struct tm local;
-    localtime_r(&seconds, &local);
-    if (local.tm_year < 80) {
+    NSDateComponents *local = [[NSCalendar currentCalendar]
+        components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour
+                   | NSCalendarUnitMinute | NSCalendarUnitSecond
+          fromDate:date ?: [NSDate date]];
+    if (local.year < 1980) {
         *dosDate = (1 << 5) | 1; /* 1980-01-01 */
         *dosTime = 0;
         return;
     }
-    *dosDate = (uint16_t)(((local.tm_year - 80) << 9) | ((local.tm_mon + 1) << 5) | local.tm_mday);
-    *dosTime = (uint16_t)((local.tm_hour << 11) | (local.tm_min << 5) | (local.tm_sec / 2));
+    *dosDate = (uint16_t)(((local.year - 1980) << 9) | (local.month << 5) | local.day);
+    *dosTime = (uint16_t)((local.hour << 11) | (local.minute << 5) | (local.second / 2));
 }
 
 /* Raw deflate (no zlib header), as ZIP method 8 requires. */

@@ -79,11 +79,6 @@ typedef enum {
 } fsMode_t;
 
 typedef enum {
-    FILE_EXEC,
-    FILE_OPEN
-} dlMime_t;
-
-typedef enum {
     FIND_NO,
     FIND_YES,
     FIND_ADDON

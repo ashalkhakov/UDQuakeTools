@@ -4,7 +4,33 @@
 # anything that links them, which adds $(UDLIBS_INCLUDE_DIRS) to its
 # include directories, $(UDLIBS_LIB_DIRS) to its library directories and
 # $(UDLIBS_LIBS) to what it links (and, to run from the tree,
-# $(UDLIBS_LD_PATH) to LD_LIBRARY_PATH).
+# $(UDLIBS_LD_PATH) to LD_LIBRARY_PATH, and on Windows, where a DLL is
+# found on it, to PATH).
+# What each links of the system's, Linux's or Windows': libdispatch, the
+# blocks runtime (on Windows libobjc's own: the stack's libBlocksRuntime.dll
+# is libdispatch's, whose blocks the Objective-C runtime does not know),
+# zlib and gnustep-corebase. On Windows a library's or bundle's import
+# libraries go in its own list (_LIBRARIES_DEPEND_UPON, _BUNDLE_LIBS,
+# _GUI_LIBS, _TOOL_LIBS): ADDITIONAL_LDFLAGS is linked whole there, and two
+# import libraries' __NULL_IMPORT_DESCRIPTOR collide. -rdynamic, which
+# exports a program's symbols for its crash backtraces, is ELF's.
+#
+# What differs between the systems is in a folder of each one's, beside the
+# shared sources: posix/ (Linux, and macOS through Xcode) and windows/.
+# UD_SYSTEM_DIR is this system's; UD_SOCKET_LIBS what a socket links.
+ifeq ($(OS),Windows_NT)
+UD_BLOCKS_LIBS =
+UD_EXPORT_SYMBOLS =
+UD_SYSTEM_DIR = windows
+UD_SOCKET_LIBS = -lws2_32
+else
+UD_BLOCKS_LIBS = -lBlocksRuntime
+UD_EXPORT_SYMBOLS = -rdynamic
+UD_SYSTEM_DIR = posix
+UD_SOCKET_LIBS =
+endif
+UD_SYSTEM_LIBS = -ldispatch $(UD_BLOCKS_LIBS) -lz -lgnustep-corebase
+
 UDLIBS = UDIdLib UDCommon UDArchives UDImages UDDecls UDRenderer UDUI UDGUIEditor UDScripts UDWorkspace
 UDIdLib_UDDEPS = 
 UDCommon_UDDEPS = UDIdLib

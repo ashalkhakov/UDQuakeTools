@@ -39,8 +39,10 @@
 }
 
 + (NSString *)adapterPath {
-    return NSProcessInfo.processInfo.environment[@"UD_SCRIPT_DAP"]
+    NSString *adapter = NSProcessInfo.processInfo.environment[@"UD_SCRIPT_DAP"]
         ?: [[NSBundle mainBundle] pathForAuxiliaryExecutable:@"udscript-dap"];
+    // the program as the system has it (on Windows udscript-dap.exe)
+    return adapter ? UDExecutableAtPath(adapter) ?: adapter : nil;
 }
 
 + (NSArray<NSString *> *)argumentsOfCommandLine:(NSString *)line {

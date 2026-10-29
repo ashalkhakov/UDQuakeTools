@@ -67,6 +67,24 @@
     XCTAssertEqualObjects(self.notified, @[ @"hi" ]);
 }
 
+/// A file to read @a bytes from, and one to write to: a temporary file's,
+/// as every system has them (fmemopen and open_memstream are POSIX's).
+static FILE *UDFileHolding(NSData *bytes, NSString *mode) {
+    NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    [bytes writeToFile:path atomically:NO];
+    return fopen(path.UTF8String, mode.UTF8String);
+}
+
+/// What was written to @a file (UDFileHolding's, "w+b").
+static NSData *UDContentsOfFile(FILE *file) {
+    fflush(file);
+    long length = ftell(file);
+    NSMutableData *contents = [NSMutableData dataWithLength:length > 0 ? (NSUInteger)length : 0];
+    rewind(file);
+    if (contents.length) fread(contents.mutableBytes, 1, contents.length, file);
+    return contents;
+}
+
 static NSString *UDFramed(NSString *body) {
     return [NSString stringWithFormat:@"Content-Length: %lu\r\n\r\n%@", (unsigned long)[body lengthOfBytesUsingEncoding:NSUTF8StringEncoding], body];
 }
@@ -76,19 +94,16 @@ static NSString *UDFramed(NSString *body) {
                           UDFramed(@"{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"sum\",\"params\":{\"a\":1,\"b\":1}}"),
                           UDFramed(@"{oops") ] componentsJoinedByString:@""];
     NSData *bytes = [input dataUsingEncoding:NSUTF8StringEncoding];
-    FILE *in = fmemopen((void *)bytes.bytes, bytes.length, "r");
-    char *written = NULL;
-    size_t writtenLength = 0;
-    FILE *out = open_memstream(&written, &writtenLength);
+    FILE *in = UDFileHolding(bytes, @"rb");
+    FILE *out = UDFileHolding([NSData data], @"w+b");
 
     [self.connection runWithInput:in output:out];
+    NSData *output = UDContentsOfFile(out);
     fclose(in);
     fclose(out);
 
     XCTAssertEqualObjects(self.notified, @[ @"été" ]);
-    NSData *output = [NSData dataWithBytes:written length:writtenLength];
-    free(written);
-    in = fmemopen((void *)output.bytes, output.length, "r");
+    in = UDFileHolding(output, @"rb");
     NSDictionary *first = [NSJSONSerialization JSONObjectWithData:[UDJSONRPCConnection readMessageFromFile:in] options:0 error:NULL];
     NSDictionary *second = [NSJSONSerialization JSONObjectWithData:[UDJSONRPCConnection readMessageFromFile:in] options:0 error:NULL];
     XCTAssertNil([UDJSONRPCConnection readMessageFromFile:in]);

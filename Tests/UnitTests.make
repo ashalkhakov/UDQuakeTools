@@ -14,7 +14,7 @@ ADDITIONAL_NATIVE_LIBS += CoreData
 
 # The libraries from the tree, built first (the root GNUmakefile).
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS) $(TESTS_LIB_DIRS)
-ADDITIONAL_LDFLAGS += $(UDLIBS_LIBS) $(TESTS_LIBS) -lXCTest -lBlocksRuntime
+$(BUNDLE_NAME)_BUNDLE_LIBS += $(UDLIBS_LIBS) $(TESTS_LIBS) -lXCTest $(UD_BLOCKS_LIBS)
 
 XCTEST ?= xctest
 
@@ -23,6 +23,7 @@ run-tests: all $(BUNDLE_NAME).bundle
 	@echo "Running XCTest bundle: $(BUNDLE_NAME)"
 	. $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
 	LD_LIBRARY_PATH="$(UDLIBS_LD_PATH)$(TESTS_LD_PATH)$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+	PATH="$(UDLIBS_LD_PATH)$(TESTS_LD_PATH):$$PATH" \
 	$(XCTEST) "$(BUNDLE_NAME).bundle"
 
 # Compiles the data model with momc and bundles the .momd (FreeCoreData's);

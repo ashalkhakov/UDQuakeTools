@@ -8,7 +8,7 @@
 #import "UDScriptExpression.h"
 #import "UDWorkspace.h"
 #import "idFileSystem.h"
-#include <signal.h>
+#import "UDKillTask.h"
 
 /// A breakpoint as the client set it, and as the game has it.
 @interface UDScriptBreakpoint : NSObject
@@ -460,7 +460,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 /// @a request answered when @a task has exited, looked at every tenth of a
 /// second; after @a tries, killed.
 - (void)_respond:(UDDAPRequest *)request whenGone:(NSTask *)task tries:(int)tries {
-    if ([task isRunning] && tries == 0) kill(task.processIdentifier, SIGKILL);
+    if ([task isRunning] && tries == 0) UDKillTask(task);
     if (![task isRunning] || tries == 0) {
         [request respondWithBody:nil];
         return;

@@ -89,6 +89,8 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.udquake.pakmanager</string>
 	<key>CFBundleIconFile</key>

@@ -11,8 +11,9 @@ UDLauncher_OBJC_FILES = \
     UDLauncherAppDelegate.m \
     ../UDUpdater/UDUpdater.m
 
-# The app's updates (none on GNUstep: UDUpdater.h).
+# The app's updates: the stack's GSUpdater, WinSparkle on Windows (UDUpdater.h).
 UDLauncher_INCLUDE_DIRS = -I../UDUpdater
+UDLauncher_GUI_LIBS += -lGSUpdater
 
 UDLauncher_RESOURCE_FILES = \
     MainMenu.xib \

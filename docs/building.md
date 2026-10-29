@@ -141,6 +141,13 @@ the version before it. What is UDQuakeTools' own is
 starts, its icon (`Scripts/windows/UDQuakeTools.png`), and its smoke test,
 the launcher still running 25 seconds after it starts.
 
+The apps update themselves through the stack's `GSUpdater`, which is
+WinSparkle on Windows (and nothing on Linux, where the AppImage is updated
+from outside): `Sources/UDUpdater` wraps it as it wraps Sparkle on the Mac. A
+tag's run writes `appcast-windows.xml`, signed with the Mac's Sparkle key
+(the Windows job inherits the repository's secrets), and the installer writes
+its address and the public key into each app's `Info-gnustep.plist`.
+
 ## Screenshots
 
 The README's screenshots are taken by `Tests/Quarry/UDScreenshotTests.m`, of

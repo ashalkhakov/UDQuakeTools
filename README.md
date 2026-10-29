@@ -33,7 +33,7 @@ Download from [Releases](https://github.com/ashalkhakov/UDQuakeTools/releases/la
 | macOS | `UDLauncher-macOS-*.zip` | The launcher, which opens the other apps; updates itself (UDLauncher > Check for Updates…) |
 | macOS | `DeclBrowser-macOS-*.zip`, `PakManager-macOS-*.zip` | Quarry and Pak Manager on their own |
 | Linux x86_64 | `UDQuakeTools-*-x86_64.AppImage` | The launcher, Quarry, Pak Manager and the command-line tools in one file; updated by Gear Lever, AppImageUpdate or AppImagePool |
-| Windows x64 | `UDQuakeTools-*-win64.msi` | The launcher, Quarry and Pak Manager, installed for you alone (no administrator needed), with a Start menu shortcut to the launcher; a newer installer replaces the version before it |
+| Windows x64 | `UDQuakeTools-*-win64.msi` | The launcher, Quarry and Pak Manager, installed for you alone (no administrator needed), with a Start menu shortcut to the launcher; updates itself (Check for Updates…) |
 | Windows x64 | `UDQuakeTools-*-win64-portable.zip` | The same, without installing: unzip it anywhere and run `UDQuakeTools.exe` |
 
 The macOS apps aren't notarized yet. If macOS says an app is damaged, clear
@@ -49,8 +49,10 @@ and it also runs on Fedora 42, which Bazzite is built on. Where there's no
 FUSE, `./UDQuakeTools-*.AppImage --appimage-extract-and-run` runs it anyway.
 
 The Windows installer isn't signed yet. If SmartScreen says it
-protected your PC, choose **More info**, then **Run anyway**. There are no
-automatic updates on Windows yet: install the newer release over the old one.
+protected your PC, choose **More info**, then **Run anyway**. From the release
+after 0.6.0, the apps update themselves on Windows as on the Mac (Check for
+Updates…, and a check once a day if you allow it); before that, install the
+newer release over the old one.
 
 Every push also uploads builds to its [Actions run](https://github.com/ashalkhakov/UDQuakeTools/actions).
 To build from source, see [Building](docs/building.md).

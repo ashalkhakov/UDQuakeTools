@@ -2,26 +2,33 @@
 //  UDUpdater.m
 //  UDQuakeTools
 //
-//  GNUstep: the AppImage is updated from outside it (UDUpdater.h).
+//  GNUstep: the stack's GSUpdater, which is WinSparkle on Windows and
+//  nothing on Linux, where the AppImage is updated from outside it
+//  (UDUpdater.h).
 //
 
 #import "UDUpdater.h"
+#import <GSUpdater/GSUpdater.h>
 
-@implementation UDUpdater
+@implementation UDUpdater {
+    GSUpdater *_updater;
+}
 
 - (instancetype)initStarting:(BOOL)start {
-    return [super init];
+    if ((self = [super init])) _updater = [[GSUpdater alloc] initStarting:start];
+    return self;
 }
 
 - (BOOL)available {
-    return NO;
+    return [_updater available];
 }
 
 - (BOOL)canCheckForUpdates {
-    return NO;
+    return [_updater canCheckForUpdates];
 }
 
 - (IBAction)checkForUpdates:(id)sender {
+    [_updater checkForUpdates:sender];
 }
 
 @end

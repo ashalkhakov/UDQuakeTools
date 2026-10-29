@@ -461,7 +461,9 @@ wrong stack base; a call's frame shows the line after the call.
 - [x] Keep this code portable: what each system does its own way (the
       debugger's socket, the crash reporter, the language tools' standard
       streams) in `posix/` and `windows/`, chosen by `Libraries.make`.
-- [ ] Automatic updates on Windows (WinSparkle, as Sparkle on the Mac).
+- [x] Automatic updates on Windows: the stack's GSUpdater (WinSparkle) in
+      `UDUpdater`, as Sparkle on the Mac; the release's signed
+      `appcast-windows.xml`.
 
 ## 8. Quake 4 and openQ4
 

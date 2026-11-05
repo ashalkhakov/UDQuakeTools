@@ -304,9 +304,12 @@ static NSString *const UDFixtureSkin =
     [NSApp sendAction:control.action to:control.target from:control];
 }
 
+/// The text view's text replaced as typed, and the event over, as the
+/// typing's is before the next thing the user does.
 - (void)retype:(NSString *)text in:(NSTextView *)textView {
     [textView setSelectedRange:NSMakeRange(0, textView.string.length)];
     [textView insertText:text];
+    [self finishEvent];
 }
 
 - (void)testTheSourceShowsTheDeclWithItsUnsavedEdits {

@@ -178,6 +178,23 @@ static NSString *const UDDanglingPDA =
     XCTAssertTrue([text containsString:@"udtest_pda_email_1"], @"the untouched email must survive:\n%@", text);
     XCTAssertTrue([text containsString:@"Shift Report"], @"the untouched audio log must survive:\n%@", text);
 
+    // The save is no edit: what there is to undo after it is the two edits.
+    NSUndoManager *undo = editor.editorDocument.undoManager;
+    NSUInteger steps = 0;
+    while (undo.canUndo && steps < 10) {
+        [undo undo];
+        [self finishEvent];
+        steps++;
+    }
+    XCTAssertEqual(steps, 2U, @"two fields typed, two things to undo; the save is none");
+    XCTAssertEqualObjects(editor.pda.fullName, @"Ian A. McCormick", @"both undone");
+    XCTAssertNotEqualObjects(editor.pda.post, @"EnPro Plant");
+    while (undo.canRedo) {
+        [undo redo];
+        [self finishEvent];
+    }
+    [self save:controller];
+
     // A freshly opened workspace reads the edit back.
     [self closeWorkspace:controller];
     UDWorkspaceWindowController *reopened = [self openFixtureWorkspace];

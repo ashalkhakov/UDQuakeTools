@@ -72,32 +72,6 @@
     }
 }
 
-- (void)_reclearChangeCountIfSaved {
-    if (self.editingContext != nil && !self.editingContext.hasChanges) {
-        [self updateChangeCount:NSChangeCleared];
-    }
-}
-
-- (void)_scheduleDeferredChangeClear {
-    // GNUstep's NSDocument marks itself dirty whenever an undo group closes
-    // (it observes NSUndoManagerWillCloseUndoGroupNotification). Saving
-    // flushes the context's pending changes, which registers undo actions
-    // *during* -save:, auto-opening an undo group that only closes at the
-    // end of the current event via a runloop performer at
-    // NSUndoCloseGroupingRunLoopOrdering (350000). That close fires after
-    // writeToURL:'s NSChangeCleared, so the document ends the event dirty
-    // again and needs a second Save. Schedule a re-clear at a later runloop
-    // ordering so it runs after the group closes, and only clear when the
-    // context truly has nothing left to save.
-    [[NSRunLoop currentRunLoop] performSelector:@selector(_reclearChangeCountIfSaved)
-                                         target:self
-                                       argument:nil
-                                          order:500000
-                                          modes:@[NSDefaultRunLoopMode,
-                                                  NSModalPanelRunLoopMode,
-                                                  NSEventTrackingRunLoopMode]];
-}
-
 - (void)_textViewTextDidChange:(NSNotification *)notification {
     // Raw text edits never touch the managed object until save, so the
     // context can't report them — mark the document edited directly.
@@ -124,34 +98,50 @@
     return YES;
 }
 
+/// The decl object saved, with the text view's text when there is one.
+- (BOOL)saveDeclObjectWithText:(NSString *)content error:(NSError **)error {
+    // Text-based editing: push the text view's current contents into the
+    // decl object. Structured editors (e.g. the PDA editor) edit the
+    // managed object's attributes directly through bindings, so there is
+    // nothing to transfer for them — the context already has their
+    // changes and the store re-derives the source text on save.
+    if (self.textView != nil) {
+        self.textContent = content;
+        self.declObject.sourceText = [[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding];
+    }
+
+    if (![self.editingContext save:error]) {
+        return NO;
+    }
+
+    // Re-fault only after raw text edits, where attributes must re-parse
+    // from the new text. For attribute-driven saves (e.g. the PDA
+    // editor) the in-memory values are already authoritative, and
+    // re-faulting an object under live bindings can blank the UI.
+    if (self.textView != nil) {
+        [self.editingContext refreshObject:self.declObject mergeChanges:NO];
+    }
+    return YES;
+}
+
 - (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
     NSString *content = self.textView ? self.textView.string : self.textContent ?: @"";
 
     if (self.declObject != nil) {
-        // Text-based editing: push the text view's current contents into the
-        // decl object. Structured editors (e.g. the PDA editor) edit the
-        // managed object's attributes directly through bindings, so there is
-        // nothing to transfer for them — the context already has their
-        // changes and the store re-derives the source text on save.
-        if (self.textView != nil) {
-            self.textContent = content;
-            self.declObject.sourceText = [[self fileTextFromEditorText:content] dataUsingEncoding:NSUTF8StringEncoding];
-        }
-
-        if (![self.editingContext save:error]) {
+        // The edits made so far are undoable as they are; the save itself is
+        // no edit, so it registers no undo (as NSPersistentDocument saves):
+        // an action registered now would close its group after the save,
+        // marking the document edited again with a save to undo.
+        NSUndoManager *undo = self.editingContext.undoManager;
+        [self.editingContext processPendingChanges];
+        [undo disableUndoRegistration];
+        BOOL saved = [self saveDeclObjectWithText:content error:error];
+        [self.editingContext processPendingChanges];
+        [undo enableUndoRegistration];
+        if (!saved) {
             return NO;
         }
-
-        // Re-fault only after raw text edits, where attributes must re-parse
-        // from the new text. For attribute-driven saves (e.g. the PDA
-        // editor) the in-memory values are already authoritative, and
-        // re-faulting an object under live bindings can blank the UI.
-        if (self.textView != nil) {
-            [self.editingContext refreshObject:self.declObject mergeChanges:NO];
-        }
-
         [self updateChangeCount:NSChangeCleared];
-        [self _scheduleDeferredChangeClear];
         return YES;
     }
 

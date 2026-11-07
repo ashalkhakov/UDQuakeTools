@@ -10,6 +10,7 @@
 #import "UQPakDocument.h"
 #import "UDArchiveBrowserController.h"
 #import "UQCommands.h"
+#import "UQRunning.h"
 #import "UDGuiEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 #import "UDDeclEditorViewController.h"
@@ -47,6 +48,15 @@ const TSLanguage *tree_sitter_iddecl(void);
     NSString *tool = NSProcessInfo.processInfo.environment[@"UD_SCRIPT_LSP"]
         ?: [_bundle pathForAuxiliaryExecutable:@"udscript-lsp"];
     return tool ? @[ tool ] : nil;
+}
+
+/// A Quarry project's: its game run, its scripts debugged (UQRunning.h).
+- (NSArray<Class> *)buildSystemClasses {
+    return @[ [UQBuildSystem class] ];
+}
+
+- (NSArray<Class> *)debuggerClasses {
+    return @[ [UQScriptDebugger class] ];
 }
 
 // ---------------------------------------------------------------------------

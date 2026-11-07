@@ -32,6 +32,7 @@
 #import "UDArchiveBrowserController.h"
 #import "UDZipWriter.h"
 #import "UQCommands.h"
+#import "UQRunning.h"
 
 /// A window's side, as the extension asks it: its folder (its project's), what it shows.
 @interface UQTestProject : NSObject
@@ -527,6 +528,34 @@ static NSString *const UQMaterial =
     XCTAssertTrue([host respondsToSelector:@selector(toggleGrid:)]);
     XCTAssertFalse([host respondsToSelector:@selector(newDecl:)]);
     XCTAssertEqual([host forwardingTargetForSelector:@selector(zoomIn:)], host.editor);
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - Run and debug
+// ---------------------------------------------------------------------------
+
+- (void)testItsGameRunsUnderTheScriptsDebugger {
+    UQExtension *extension = [[UQExtension alloc] init];
+    XCTAssertEqualObjects([extension buildSystemClasses], @[ [UQBuildSystem class] ]);
+    XCTAssertEqualObjects([extension debuggerClasses], @[ [UQScriptDebugger class] ]);
+    NSMutableDictionary *settings = [[UQBuildSystem workspaceSettingsInFolder:_project] mutableCopy];
+    XCTAssertNotNil(settings);
+    XCTAssertNil([UQBuildSystem workspaceSettingsInFolder:_root]);
+    settings[@"gameExecutable"] = @"/games/doom3/doom3.x86";
+    settings[@"gameArguments"] = @"+set developer 1";
+    settings[@"tools"] = @{ @"Debugger": @{ @"port": @27980 } };
+    [[NSJSONSerialization dataWithJSONObject:settings options:0 error:NULL]
+        writeToFile:[_project stringByAppendingPathComponent:@"mod.qworkspace"] atomically:YES];
+
+    XCTAssertEqualObjects([UQScriptDebugger name], @"udscript");
+    XCTAssertTrue([UQScriptDebugger isAdapterCommand:@[ @"/x/udscript-dap" ]]);
+    XCTAssertFalse([UQScriptDebugger isAdapterCommand:@[ @"/usr/bin/lldb-dap" ]]);
+    NSDictionary *launch = [UQScriptDebugger launchArgumentsForProgram:@"/games/doom3/doom3.x86" arguments:@[ @"+set", @"developer", @"1" ]
+                                                             directory:_project environment:@{}];
+    XCTAssertEqualObjects(launch[@"program"], @"/games/doom3/doom3.x86");
+    XCTAssertEqualObjects(launch[@"args"], (@[ @"+set", @"developer", @"1" ]));
+    XCTAssertEqualObjects(launch[@"settings"][@"fs_game"], @"base", @"the game's paths, for the adapter's game paths");
+    XCTAssertEqualObjects(launch[@"port"], @27980, @"the workspace's Debugger settings");
 }
 
 @end

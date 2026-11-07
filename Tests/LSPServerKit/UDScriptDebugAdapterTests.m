@@ -748,4 +748,11 @@ static NSString *const UDLampScript =
     XCTAssertEqualObjects(parts[2], @" {b}");
 }
 
+/// UDCode's name of a game file (its UDQuakeTools extension's): a breakpoint
+/// set in a script read out of a pak is the game's script of that path.
+- (void)testAQuarryFileURLIsItsGamePath {
+    XCTAssertEqualObjects([_adapter gamePathOf:@"quarry:/file/script/lamp.script"], @"script/lamp.script");
+    XCTAssertEqualObjects([_adapter gamePathOf:@"quarry:/file/script/my%20lamp.script"], @"script/my lamp.script");
+}
+
 @end

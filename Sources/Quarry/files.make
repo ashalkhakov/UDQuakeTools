@@ -10,6 +10,7 @@ QUARRY_OBJC_FILES = \
     Extension/UQGuiDocument.m \
     Extension/UQPakDocument.m \
     Extension/UQCommands.m \
+    Extension/UQRunning.m \
     Window/UDNewDeclWindowController.m \
     ../PakManager/UDArchiveDocument.m \
     ../PakManager/UDArchiveBrowserController.m \

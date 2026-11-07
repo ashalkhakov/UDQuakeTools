@@ -59,3 +59,12 @@ UDQuakeTools_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
 include $(GNUSTEP_MAKEFILES)/coredata-model.make
 
 include $(GNUSTEP_MAKEFILES)/bundle.make
+
+# The tools it starts beside its binary, where -pathForAuxiliaryExecutable:
+# finds them: the scripts' language server and debug adapter; and the
+# command-line pak tool.
+UQ_TOOLS = ../Tools/udscript-lsp/$(GNUSTEP_OBJ_DIR_NAME)/udscript-lsp$(EXEEXT) \
+    ../Tools/udscript-dap/$(GNUSTEP_OBJ_DIR_NAME)/udscript-dap$(EXEEXT) \
+    ../Tools/udpaktool/$(GNUSTEP_OBJ_DIR_NAME)/udpaktool$(EXEEXT)
+after-all::
+	@for t in $(UQ_TOOLS); do [ -f $$t ] && cp $$t $(GNUSTEP_BUILD_DIR)/$(BUNDLE_NAME)$(BUNDLE_EXTENSION)/ || true; done

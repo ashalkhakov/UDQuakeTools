@@ -204,6 +204,14 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 }
 
 - (NSString *)gamePathOf:(NSString *)path {
+    // UDCode's name of a game file (its UDQuakeTools extension's): quarry:/file/<path>
+    if ([path hasPrefix:@"quarry:/file/"]) {
+        NSString *relative = [[NSURL URLWithString:path].path substringFromIndex:@"/file/".length];
+        for (NSString *loaded in _loadedScripts) {
+            if ([loaded caseInsensitiveCompare:relative] == NSOrderedSame) return loaded;
+        }
+        return relative;
+    }
     NSString *standard = path.stringByStandardizingPath;
     if (!standard.isAbsolutePath) return standard;
     for (NSString *root in _roots) {
@@ -231,7 +239,8 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 }
 
 /// DAP's Source for a game path: the file on disk, or (in a pak) one the
-/// client asks the adapter for by reference.
+/// client asks the adapter for by reference, its path UDCode's name of it
+/// (quarry:/file/<path>, a document it reads through the game).
 - (NSDictionary *)_sourceOf:(NSString *)gamePath {
     NSString *disk = [self diskPathOf:gamePath];
     if (disk != nil) return @{ @"name": gamePath.lastPathComponent, @"path": disk };
@@ -242,14 +251,8 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
     }
     NSMutableDictionary *source = [@{ @"name": gamePath.lastPathComponent, @"sourceReference": @(index + 1),
                                       @"origin": gamePath } mutableCopy];
-    // where it would be in the mod's folder: what a client names it by (its
-    // text the source request's, as DAP has it for a path with a reference)
-    for (NSString *root in _roots) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:root]) {
-            source[@"path"] = [root stringByAppendingPathComponent:gamePath];
-            break;
-        }
-    }
+    NSString *escaped = [gamePath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+    source[@"path"] = [@"quarry:/file/" stringByAppendingString:escaped];
     return source;
 }
 

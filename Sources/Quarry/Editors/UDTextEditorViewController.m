@@ -5,7 +5,6 @@
 #import "UDDeclDocument.h"
 #import "UDWorkspace.h"
 #import "UDScriptServer.h"
-#import "UDWorkspaceWindowController.h"
 #import "UDDeclTextChecker.h"
 #import "UDDeclManagedObjects.h"
 #import <UDCodeKit/UDCodeKit.h>
@@ -210,12 +209,13 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
     }
     NSString *path = [UDScriptServer pathForURL:[NSURL URLWithString:location[@"uri"] ?: @""]];
     NSDictionary *start = location[@"range"][@"start"], *end = location[@"range"][@"end"];
-    UDWorkspaceWindowController *windowController = self.view.window.windowController;
-    if (path == nil || ![windowController isKindOfClass:[UDWorkspaceWindowController class]]) {
+    // its host's, or its window controller's: what shows a game file
+    id<UDEditorHosting> shower = self.host ?: (id<UDEditorHosting>)self.view.window.windowController;
+    if (path == nil || ![shower respondsToSelector:@selector(openFileAtPath:line:character:length:)]) {
         NSBeep();
         return;
     }
-    [windowController openFileAtPath:path
+    [shower openFileAtPath:path
                                 line:[start[@"line"] integerValue]
                            character:[start[@"character"] integerValue]
                               length:[end[@"character"] integerValue] - [start[@"character"] integerValue]];

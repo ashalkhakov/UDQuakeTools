@@ -16,6 +16,12 @@
 #import "UQProject.h"
 #import "UDWorkspace.h"
 #import "UDWorkspaceItem.h"
+#import "UQDeclDocument.h"
+#import "UQEditorHost.h"
+#import "UDDeclDocument.h"
+#import "UDDeclTable.h"
+#import "UDMaterialEditorViewController.h"
+#import "UDTableEditorViewController.h"
 
 @interface UQExtensionTests : XCTestCase
 @end
@@ -28,7 +34,8 @@
 
 static NSString *const UQMaterial =
     @"textures/test/wall\n{\n\tqer_editorimage textures/test/wall.tga\n\tdiffusemap textures/test/wall.tga\n}\n\n"
-    @"textures/test/floor\n{\n\tdiffusemap textures/test/floor.tga\n}\n";
+    @"textures/test/floor\n{\n\tdiffusemap textures/test/floor.tga\n}\n\n"
+    @"table testtable { { 0, 0.5, 1 } }\n";
 
 - (void)write:(NSString *)text to:(NSString *)relative {
     NSString *path = [_root stringByAppendingPathComponent:relative];
@@ -223,6 +230,92 @@ static NSString *const UQMaterial =
         if ([mode[@"identifier"] isEqualToString:@"idscript"]) script = mode;
     }
     XCTAssertEqualObjects(script[@"languageServerSchemes"], (@[ @"file", @"quarry" ]), @"a script in a pak has its server");
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - A decl as a custom document (its model Core Data's)
+// ---------------------------------------------------------------------------
+
+/// The main queue's work done, an event's undo group closed with it.
+- (void)spin {
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+}
+
+- (void)testADeclWithAnEditorIsACustomDocumentOfItsObjects {
+    UQProject *project = [self startedProject];
+    XCTAssertTrue([UQDeclDocument isStructuredDeclType:@"table" inWorkspace:project.workspace]);
+    XCTAssertTrue([UQDeclDocument isStructuredDeclType:@"material" inWorkspace:project.workspace]);
+    XCTAssertFalse([UQDeclDocument isStructuredDeclType:@"email" inWorkspace:project.workspace], @"no editor of its own: text");
+    XCTAssertFalse([UQDeclDocument isStructuredDeclType:@"nonsense" inWorkspace:project.workspace]);
+    NSError *error = nil;
+    UQDeclDocument *table = [[UQDeclDocument alloc] initWithDeclType:@"table" name:@"testtable" inWorkspace:project.workspace error:&error];
+    XCTAssertNotNil(table, @"%@", error);
+    UDDeclTable *object = table.declDocument.declObject;
+    XCTAssertTrue([object isKindOfClass:[UDDeclTable class]]);
+    XCTAssertEqual(object.values.count, 3u);
+    XCTAssertTrue([[table textOfDocument] containsString:@"testtable"]);
+    XCTAssertFalse(table.isEdited);
+
+    // an edit of its objects: the document edited, its text the edit's, its undo the context's
+    UDCodeDocument *document = [[UDCodeDocument alloc] initWithCustomDocument:table URL:[UQProject URLOfDeclType:@"table" name:@"testtable"]
+                                                           fileSystemProvider:project languageMode:nil];
+    object.clamp = YES;
+    [self spin];
+    XCTAssertTrue(table.isEdited);
+    XCTAssertTrue(document.isModified);
+    XCTAssertTrue([[document.textModel getValue] containsString:@"clamp"], @"%@", [document.textModel getValue]);
+    XCTAssertEqual(table.undoManager, table.declDocument.editingContext.undoManager);
+    [table.undoManager undo];
+    [self spin];
+    XCTAssertFalse(object.clamp);
+    XCTAssertFalse([[document.textModel getValue] containsString:@"clamp"]);
+
+    // its text, typed: one edit of its objects
+    NSString *text = [document.textModel getValue];
+    NSRange brace = [text rangeOfString:@"{"];
+    text = [text stringByReplacingCharactersInRange:brace withString:@"{ snap"];
+    XCTAssertTrue([table applyText:text error:&error], @"%@", error);
+    XCTAssertTrue(object.snap);
+
+    // saved: through the decl manager, into the savepath
+    XCTAssertTrue([table saveCustomDocument:&error], @"%@", error);
+    XCTAssertFalse(table.isEdited);
+    NSString *saved = [self contentsOf:@"save/base/materials/test.mtr"];
+    XCTAssertTrue([saved containsString:@"snap"], @"%@", saved);
+    XCTAssertEqualObjects([self contentsOf:@"game/base/materials/test.mtr"], UQMaterial);
+
+    // reverted: as saved
+    object.clamp = YES;
+    [self spin];
+    XCTAssertTrue([table revertCustomDocument:&error], @"%@", error);
+    XCTAssertFalse(table.isEdited);
+    XCTAssertFalse(object.clamp);
+}
+
+- (void)testTheExtensionOpensItAndHostsItsEditorWithItsPanes {
+    UQProject *project = [self startedProject];
+    NSError *error = nil;
+    UQDeclDocument *material = [[UQDeclDocument alloc] initWithDeclType:@"material" name:@"textures/test/wall"
+                                                            inWorkspace:project.workspace error:&error];
+    XCTAssertNotNil(material, @"%@", error);
+    UDCodeDocument *document = [[UDCodeDocument alloc] initWithCustomDocument:material
+                                                                          URL:[UQProject URLOfDeclType:@"material" name:@"textures/test/wall"]
+                                                           fileSystemProvider:project languageMode:nil];
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    UQEditorHost *host = (UQEditorHost *)[extension workbench:(id)nil editorForDocument:document];
+    XCTAssertTrue([host isKindOfClass:[UQEditorHost class]]);
+    XCTAssertTrue([host.editor isKindOfClass:[UDMaterialEditorViewController class]]);
+    XCTAssertNotNil(host.view);
+    XCTAssertEqual(host.view, host.editor.view, @"the editor's own view in the tab");
+    XCTAssertEqual([(UDDeclEditorViewController *)host.editor document], material.declDocument, @"the custom document's model");
+    NSArray *titles = [host.inspectorViewControllers valueForKey:@"title"];
+    XCTAssertEqualObjects(titles, (@[ @"Material", @"Stage" ]), @"its panes, the inspector's tabs");
+    for (NSViewController *pane in host.inspectorViewControllers) XCTAssertNotNil([host imageForInspectorViewController:pane]);
+
+    // a text decl, or a plain UDCode document: not the extension's
+    UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"x" fileURL:nil];
+    XCTAssertNil([extension workbench:(id)nil editorForDocument:text]);
 }
 
 @end

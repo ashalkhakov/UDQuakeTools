@@ -5,7 +5,6 @@
 #import "UDGuiPlayer.h"
 #import "UDGuiView.h"
 #import "UDTransportController.h"
-#import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceItem.h"
 #import "idUserInterface.h"
 #import "idDict.h"
@@ -508,10 +507,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 }
 
 - (IBAction)showProperties:(id)sender {
-    id controller = self.view.window.windowController;
-    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
-        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Properties"];
-    }
+    [self showInspectorPaneTitled:@"Properties"];
 }
 
 #pragma mark - Scripts (UDGuiScriptsController)
@@ -799,10 +795,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 }
 
 - (IBAction)showScripts:(id)sender {
-    id controller = self.view.window.windowController;
-    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
-        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Scripts"];
-    }
+    [self showInspectorPaneTitled:@"Scripts"];
 }
 
 #pragma mark - Editor | Source

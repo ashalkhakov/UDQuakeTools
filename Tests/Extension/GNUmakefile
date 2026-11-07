@@ -33,6 +33,14 @@ ADDITIONAL_CFLAGS += -w
 ADDITIONAL_LIB_DIRS += $(UDLIBS_LIB_DIRS)
 UQExtensionTests_BUNDLE_LIBS += $(UDLIBS_LIBS) -lCoreData -lUDCodeKit -lUDPieceTable -lLSPKit -lXCTest -ldispatch $(UD_BLOCKS_LIBS)
 
+# The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
+# GLX and GL's headers are here (libgl-dev); without them it draws in
+# software.
+ifneq ($(wildcard /usr/include/GL/glx.h),)
+ADDITIONAL_CPPFLAGS += -DUD_HAVE_GL
+ADDITIONAL_LDFLAGS += -lGL
+endif
+
 XCTEST ?= xctest
 TEST_TIMEOUT ?= 900
 

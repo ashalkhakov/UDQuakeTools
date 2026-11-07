@@ -46,6 +46,14 @@ else
 UDQuakeTools_BUNDLE_LIBS += -lUDCodeKit -lUDPieceTable -lLSPKit -lgnustep-gui -lgnustep-base -lobjc
 endif
 
+# The GUI viewer draws with GL (UDGuiGLView) where the stack's backend has
+# GLX and GL's headers are here (libgl-dev); without them it draws in
+# software.
+ifneq ($(wildcard /usr/include/GL/glx.h),)
+ADDITIONAL_CPPFLAGS += -DUD_HAVE_GL
+ADDITIONAL_LDFLAGS += -lGL
+endif
+
 # Compiles DeclModel.xcdatamodeld with momc into the bundle's resources.
 UDQuakeTools_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
 include $(GNUSTEP_MAKEFILES)/coredata-model.make

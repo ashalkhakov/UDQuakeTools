@@ -7,6 +7,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UDBaseDocument;
 
+/// What shows an editor and its panes, and the files it asks for: Quarry's
+/// workspace window, or UDCode's through the UDQuakeTools extension.
+@protocol UDEditorHosting <NSObject>
+@optional
+- (void)showInspectorPaneTitled:(NSString *)title;
+/// A game file's tab (@a path the game's), its line's range selected.
+- (void)openFileAtPath:(NSString *)path line:(NSInteger)line character:(NSInteger)character length:(NSInteger)length;
+@end
+
 /**
  * Protocol / base class all editor view controllers must conform to.
  * The workspace window controller embeds -view into an NSTabViewItem.
@@ -32,8 +41,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace;
 
 /// The inspector's pane of @a title shown, when this editor's are the
-/// window's (a click on a stage shows the Stage pane).
+/// window's (a click on a stage shows the Stage pane): its host's, when it
+/// has one, else its window controller's.
 - (void)showInspectorPaneTitled:(NSString *)title;
+
+/// What shows it and its panes, when not its window controller (UDCode's
+/// window, through the UDQuakeTools extension's UQEditorHost): asked to
+/// -showInspectorPaneTitled:.
+@property (nonatomic, weak, nullable) id<UDEditorHosting> host;
 
 @end
 

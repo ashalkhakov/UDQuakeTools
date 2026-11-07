@@ -59,21 +59,24 @@ static NSString *UDDiagnosticKey(UDDiagnosticItem *diagnostic) {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    if (self.item == nil || self.item.kind != UDWorkspaceItemKindDecl) {
-        return;
-    }
-
-    UDDeclItem *declItem = (UDDeclItem *)self.item;
-    NSError *error = nil;
-
-    self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
+    // a document it was given (UDCode's custom document's), else its item's
     if (self.document == nil) {
-        NSLog(@"%@: failed to open decl of type %@ name %@: %@", [self class], [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
-        return;
-    }
+        if (self.item == nil || self.item.kind != UDWorkspaceItemKindDecl) {
+            return;
+        }
 
-    if (![self.document readFromURL:[NSURL URLWithString:@"http://localhost/unused.txt"] ofType:@"" error:&error]) {
-        NSLog(@"%@: failed to read decl of type %@ name %@: %@", [self class], [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
+        UDDeclItem *declItem = (UDDeclItem *)self.item;
+        NSError *error = nil;
+
+        self.document = [[UDDeclDocument alloc] initWithType:declItem.type name:declItem.declName inWorkspace:self.workspace error:&error];
+        if (self.document == nil) {
+            NSLog(@"%@: failed to open decl of type %@ name %@: %@", [self class], [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
+            return;
+        }
+
+        if (![self.document readFromURL:[NSURL URLWithString:@"http://localhost/unused.txt"] ofType:@"" error:&error]) {
+            NSLog(@"%@: failed to read decl of type %@ name %@: %@", [self class], [self.workspace.declManager declTypeName:declItem.type], declItem.declName, error);
+        }
     }
 
     self.objectController.content = self.declObject;

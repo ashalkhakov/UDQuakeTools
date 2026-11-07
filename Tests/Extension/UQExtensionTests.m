@@ -22,6 +22,9 @@
 #import "UDDeclTable.h"
 #import "UDMaterialEditorViewController.h"
 #import "UDTableEditorViewController.h"
+#import "UQGuiDocument.h"
+#import "UDGuiEditorViewController.h"
+#import "UDTextFileDocument.h"
 
 @interface UQExtensionTests : XCTestCase
 @end
@@ -316,6 +319,59 @@ static NSString *const UQMaterial =
     // a text decl, or a plain UDCode document: not the extension's
     UDCodeDocument *text = [[UDCodeDocument alloc] initWithText:@"x" fileURL:nil];
     XCTAssertNil([extension workbench:(id)nil editorForDocument:text]);
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - A GUI as a custom document, its Windows on the left
+// ---------------------------------------------------------------------------
+
+- (void)testAGuiIsACustomDocumentInQuarrysGuiEditorItsWindowsOnTheLeft {
+    UQProject *project = [self startedProject];
+    NSError *error = nil;
+    XCTAssertTrue([UQGuiDocument isGuiPath:@"guis/test.gui"]);
+    XCTAssertFalse([UQGuiDocument isGuiPath:@"script/doors.script"]);
+    UQGuiDocument *gui = [[UQGuiDocument alloc] initWithPath:@"guis/test.gui" inWorkspace:project.workspace error:&error];
+    XCTAssertNotNil(gui, @"%@", error);
+    XCTAssertTrue([[gui textOfDocument] containsString:@"windowDef Desktop"]);
+    UDCodeDocument *document = [[UDCodeDocument alloc] initWithCustomDocument:gui URL:[UQProject URLOfGamePath:@"guis/test.gui"]
+                                                           fileSystemProvider:project languageMode:nil];
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    UQEditorHost *host = (UQEditorHost *)[extension workbench:(id)nil editorForDocument:document];
+    XCTAssertTrue([host.editor isKindOfClass:[UDGuiEditorViewController class]]);
+    XCTAssertEqual(gui.editor, host.editor);
+    NSWindow *window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 1000, 700) styleMask:NSWindowStyleMaskTitled
+                                                     backing:NSBackingStoreBuffered defer:NO];
+    window.releasedWhenClosed = NO;
+    window.contentView = host.view;
+
+    // its Windows pane on the left of its view, in the host's split (its XIB's, connected)
+    XCTAssertNotNil(host.splitView);
+    XCTAssertEqual(host.splitView.subviews.count, 2u);
+    XCTAssertEqual(host.splitView.subviews.firstObject, (NSView *)host.navigatorTabs);
+    XCTAssertEqualObjects([host.navigatorTabs.tabViewItems valueForKey:@"label"], @[ @"Windows" ]);
+    XCTAssertEqual(host.editor.view.superview, host.editorHost);
+    XCTAssertFalse([[host.inspectorViewControllers valueForKey:@"title"] containsObject:@"Windows"], @"not an inspector's tab");
+    XCTAssertTrue([[host.inspectorViewControllers valueForKey:@"title"] containsObject:@"Properties"]);
+
+    // typed in its text: one Edit Source of the GUI, undone as one
+    NSString *before = [gui textOfDocument];
+    NSString *typed = [before stringByReplacingOccurrencesOfString:@"640, 480" withString:@"320, 240"];
+    XCTAssertTrue([gui applyText:typed error:&error]);
+    XCTAssertTrue([[(UDGuiEditorViewController *)host.editor currentText] containsString:@"320, 240"]);
+    [self spin];
+    XCTAssertTrue(gui.isEdited);
+    [gui.undoManager undo];
+    XCTAssertTrue([[gui textOfDocument] containsString:@"640, 480"], @"%@", [gui textOfDocument]);
+
+    // saved into the savepath
+    XCTAssertTrue([gui applyText:typed error:&error]);
+    [self spin];
+    XCTAssertTrue([gui saveCustomDocument:&error], @"%@", error);
+    XCTAssertTrue([[self contentsOf:@"save/base/guis/test.gui"] containsString:@"320, 240"], @"%@", [self contentsOf:@"save/base/guis/test.gui"]);
+    XCTAssertTrue([[self contentsOf:@"game/base/guis/test.gui"] containsString:@"640, 480"]);
+    XCTAssertFalse(gui.isEdited);
+    [window close];
 }
 
 @end

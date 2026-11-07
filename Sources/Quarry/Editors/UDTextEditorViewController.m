@@ -70,8 +70,10 @@
             languageURL = [NSURL fileURLWithPath:fileItem.path];
             
             NSError *error = nil;
-            
-            // Open or create the backing document.
+
+            // Open or create the backing document: one it was given (UDCode's
+            // custom document's), else the file's.
+            if (self.document != nil) break;
             self.document = [[UDTextFileDocument alloc] initWithPath:fileItem.path inWorkspace:self.workspace error:&error];
             if (error) {
                 NSLog(@"UDTextEditorViewController: failed to open %@: %@", fileItem.path, error);

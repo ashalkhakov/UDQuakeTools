@@ -26,6 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// the design's (the design's edits since are made in the run as it is).
 @property (nonatomic, copy, readonly, nullable) NSString *runningText;
 @property (nonatomic, strong, readonly, nullable) rvGEWorkspace *designWorkspace;
+/// The GUI's text as it is now: the canvas's, when it is ahead of the source.
+@property (nonatomic, readonly) NSString *currentText;
+/// @a text, typed elsewhere (UDCode's Open as Text), the GUI's: one edit,
+/// Edit Source, undone as one.
+- (void)replaceTextUndoably:(NSString *)text;
+/// @a text the GUI's, read again (a revert): no edit.
+- (void)reloadText:(NSString *)text;
+
 @property (weak) IBOutlet NSSegmentedControl *modeControl;
 - (IBAction)changeMode:(nullable id)sender;
 

@@ -158,6 +158,34 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     return self.editorTextView.string ?: @"";
 }
 
+- (NSString *)currentText {
+    return [self _currentText];
+}
+
+- (void)replaceTextUndoably:(NSString *)text {
+    if ([text isEqualToString:[self _currentText]]) return;
+    // a copy: the text view's string is its storage's, which the edit changes
+    NSString *before = [[self _currentText] copy];
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    [self forgetTextEdits];
+    [undoManager registerUndoWithTarget:self selector:@selector(_restoreSourceText:) object:before];
+    [undoManager setActionName:@"Edit Source"];
+    [self _takeText:text];
+}
+
+- (void)reloadText:(NSString *)text {
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    [self _takeText:text];
+}
+
 /// UDTextFileDocument's text source: the canvas's text, when it is ahead.
 - (NSString *)documentTextFor:(id)document {
     return self.designDirty ? [self _currentText] : nil;

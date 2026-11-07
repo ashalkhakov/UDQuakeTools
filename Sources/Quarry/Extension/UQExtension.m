@@ -6,6 +6,8 @@
 #import "UQProject.h"
 #import "UQDeclDocument.h"
 #import "UQEditorHost.h"
+#import "UQGuiDocument.h"
+#import "UDGuiEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 #import "UDDeclEditorViewController.h"
 
@@ -76,15 +78,28 @@ const TSLanguage *tree_sitter_iddecl(void);
 /// objects the model (a custom document); any other quarry: URL is text.
 - (id<UDCustomDocument>)workbench:(id<UDWorkbench>)workbench openCustomDocumentAtURL:(NSURL *)url
                fileSystemProvider:(id<UDFileSystemProvider>)provider error:(NSError **)error {
-    NSString *typeName, *name;
-    if (![UQProject parseURL:url typeName:&typeName name:&name path:NULL] || !typeName) return nil;
-    UQProject *project = [self projectOfWorkbench:workbench];
-    UDWorkspace *workspace = project.workspace;
-    if (!workspace || ![UQDeclDocument isStructuredDeclType:typeName inWorkspace:workspace]) return nil;
+    NSString *typeName, *name, *path;
+    if (![UQProject parseURL:url typeName:&typeName name:&name path:&path]) return nil;
+    UDWorkspace *workspace = [self projectOfWorkbench:workbench].workspace;
+    if (!workspace) return nil;
+    // a GUI: its source and canvas, Quarry's GUI editor's
+    if (path) {
+        return [UQGuiDocument isGuiPath:path] ? [[UQGuiDocument alloc] initWithPath:path inWorkspace:workspace error:error] : nil;
+    }
+    if (![UQDeclDocument isStructuredDeclType:typeName inWorkspace:workspace]) return nil;
     return [[UQDeclDocument alloc] initWithDeclType:typeName name:name inWorkspace:workspace error:error];
 }
 
 - (NSViewController *)workbench:(id<UDWorkbench>)workbench editorForDocument:(UDCodeDocument *)document {
+    if ([document.customDocument isKindOfClass:[UQGuiDocument class]]) {
+        UQGuiDocument *gui = (UQGuiDocument *)document.customDocument;
+        UDGuiEditorViewController *editor = [[UDGuiEditorViewController alloc] init];
+        editor.item = gui.item;
+        editor.workspace = gui.workspace;
+        editor.document = gui.textDocument;
+        gui.editor = editor;
+        return [[UQEditorHost alloc] initWithEditor:editor document:document workbench:workbench];
+    }
     if (![document.customDocument isKindOfClass:[UQDeclDocument class]]) return nil;
     UQDeclDocument *decl = (UQDeclDocument *)document.customDocument;
     UDBaseEditorViewController *editor = [UDBaseEditorViewController editorViewControllerForWorkspaceItem:decl.item

@@ -16,6 +16,9 @@
 @end
 
 @interface UQEditorHost () <UDEditorHosting>
+@property (nonatomic, weak) IBOutlet NSSplitView *splitView;
+@property (nonatomic, weak) IBOutlet NSTabView *navigatorTabs;
+@property (nonatomic, weak) IBOutlet NSView *editorHost;
 @end
 
 @implementation UQEditorHost {
@@ -37,8 +40,28 @@
 }
 
 - (void)loadView {
-    // the editor's own view, as the tab shows it
-    self.view = _editor.view;
+    // its view first: its panes are its XIB's
+    NSView *editorView = _editor.view;
+    NSArray<UDEditorPane *> *panes = [_editor conformsToProtocol:@protocol(UDNavigating)]
+        ? [(id<UDNavigating>)_editor navigatorPanes] : @[];
+    if (!panes.count) {
+        // the editor's own view, as the tab shows it
+        self.view = editorView;
+    } else {
+        // its navigator panes on its left (UQEditorHost.xib)
+        NSNib *nib = [[NSNib alloc] initWithNibNamed:@"UQEditorHost" bundle:[NSBundle bundleForClass:[UQEditorHost class]]];
+        [nib instantiateWithOwner:self topLevelObjects:NULL];
+        editorView.frame = _editorHost.bounds;
+        editorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        [_editorHost addSubview:editorView];
+        for (UDEditorPane *pane in panes) {
+            NSTabViewItem *tab = [[NSTabViewItem alloc] initWithIdentifier:pane.title];
+            tab.label = pane.title;
+            tab.view = pane.view;
+            [_navigatorTabs addTabViewItem:tab];
+        }
+        if (panes.count > 1) _navigatorTabs.tabViewType = NSTopTabsBezelBorder;
+    }
     if ([_editor isKindOfClass:[UDDeclEditorViewController class]]) {
         UDDiagnosticStore *store = [(UDDeclEditorViewController *)_editor diagnosticStore];
         if (store) {

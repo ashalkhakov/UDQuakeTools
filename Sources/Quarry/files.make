@@ -7,6 +7,7 @@ QUARRY_OBJC_FILES = \
     Extension/UQProject.m \
     Extension/UQDeclDocument.m \
     Extension/UQEditorHost.m \
+    Extension/UQGuiDocument.m \
     Model/UDDeclItem.m \
     Model/UDFileItem.m \
     Model/UDFolder.m \
@@ -57,6 +58,7 @@ QUARRY_C_FILES = \
     ../../tree-sitter-iddecl/src/parser.c
 
 QUARRY_RESOURCE_FILES = \
+    Resources/UQEditorHost.xib \
     Resources/UDPDAEditorView.xib \
     Resources/UDTableEditorView.xib \
     Resources/UDSkinEditorView.xib \

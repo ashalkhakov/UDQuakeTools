@@ -699,7 +699,8 @@
 		AA01000300000000000000AA /* UDArchiveBrowserController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010300000000000000AA /* UDArchiveBrowserController.m */; };
 		AA01002000000000000000AA /* UDTextPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00012000000000000000AA /* UDTextPreviewController.m */; };
 		AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA00030100000000000000AA /* UDArchiveDocument.xib */; };
-		AA01002200000000000000AA /* PakManager.png in Resources */ = {isa = PBXBuildFile; fileRef = AA00030300000000000000AA /* PakManager.png */; };
+		AA01002200000000000000AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00030300000000000000AA /* Assets.xcassets */; };
+		FF01000900000000000000AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF00010900000000000000AA /* Assets.xcassets */; };
 		AA01003000000000000000AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060000000000000000AA /* Cocoa.framework */; };
 		AA02000000000000000000AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00040000000000000000AA /* main.m */; };
 		AA02001000000000000000AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA00060100000000000000AA /* Foundation.framework */; };
@@ -2934,7 +2935,8 @@
 		AA00022000000000000000AA /* UDTextPreviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDTextPreviewController.h; sourceTree = "<group>"; };
 		AA00030100000000000000AA /* UDArchiveDocument.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UDArchiveDocument.xib; sourceTree = "<group>"; };
 		AA00030200000000000000AA /* PakManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PakManager-Info.plist"; sourceTree = "<group>"; };
-		AA00030300000000000000AA /* PakManager.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PakManager.png; sourceTree = "<group>"; };
+		AA00030300000000000000AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF00010900000000000000AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA00040000000000000000AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AA00050000000000000000AA /* PakManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PakManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00050100000000000000AA /* udpaktool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = udpaktool; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3741,7 +3743,7 @@
 				AA00010000000000000000AA /* main.m */,
 				AA00030100000000000000AA /* UDArchiveDocument.xib */,
 				AA00030200000000000000AA /* PakManager-Info.plist */,
-				AA00030300000000000000AA /* PakManager.png */,
+				AA00030300000000000000AA /* Assets.xcassets */,
 				CE11515E2FEE4E2B005C6DA3 /* MainMenu.xib */,
 			);
 			name = PakManager;
@@ -3948,6 +3950,7 @@
 				FF00010000000000000000AA /* main.m */,
 				FF00010300000000000000AA /* MainMenu.xib */,
 				FF00010400000000000000AA /* UDLauncher-Info.plist */,
+				FF00010900000000000000AA /* Assets.xcassets */,
 			);
 			name = UDLauncher;
 			path = Sources/UDLauncher;
@@ -5284,7 +5287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA01002100000000000000AA /* UDArchiveDocument.xib in Resources */,
-				AA01002200000000000000AA /* PakManager.png in Resources */,
+				AA01002200000000000000AA /* Assets.xcassets in Resources */,
 				CE11515F2FEE4E2B005C6DA3 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5326,6 +5329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF01000200000000000000AA /* MainMenu.xib in Resources */,
+				FF01000900000000000000AA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6794,6 +6798,7 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -6842,6 +6847,7 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/PakManager/PakManager-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pak Manager";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -6932,6 +6938,7 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/Quarry/Quarry-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Quarry";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -6969,6 +6976,7 @@
 					"$(SRCROOT)/Sources/UDUpdater",
 					"$(SRCROOT)/Sources/Libraries/**",
 									);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/Quarry/Quarry-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Quarry";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -7014,6 +7022,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -7054,6 +7063,7 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Sources/UDLauncher/UDLauncher-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = UDLauncher;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";

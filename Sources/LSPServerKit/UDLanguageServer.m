@@ -59,6 +59,7 @@
 #pragma mark Lifecycle
 
 - (id)initialize:(NSDictionary *)params {
+    _initializeParams = [params isKindOfClass:[NSDictionary class]] ? [params copy] : nil;
     [self serverWillInitialize];
     NSMutableDictionary *capabilities = [[self capabilities] mutableCopy];
     capabilities[@"textDocumentSync"] = @1;                   // the full text on each change

@@ -44,19 +44,16 @@ static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
                       params:@{ @"changes": @[ @{ @"uri": [self URLForPath:path].absoluteString, @"type": @2 } ] }];
 }
 
-// udfs:///<path>, as udscript-lsp names a file in the file system.
+// quarry:/file/<path>, as udscript-lsp (and UDCode's UDQuakeTools
+// extension) names a file in the file system.
 + (NSURL *)URLForPath:(NSString *)path {
-    NSURLComponents *components = [[NSURLComponents alloc] init];
-    components.scheme = @"udfs";
-    components.host = @"";
-    components.path = [@"/" stringByAppendingString:path];
-    return components.URL;
+    NSString *escaped = [path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+    return [NSURL URLWithString:[@"quarry:/file/" stringByAppendingString:escaped]];
 }
 
 + (NSString *)pathForURL:(NSURL *)url {
-    if (![url.scheme isEqualToString:@"udfs"]) return nil;
-    NSString *path = url.path;
-    while ([path hasPrefix:@"/"]) path = [path substringFromIndex:1];
+    if (![url.scheme.lowercaseString isEqualToString:@"quarry"] || ![url.path hasPrefix:@"/file/"]) return nil;
+    NSString *path = [url.path substringFromIndex:@"/file/".length];
     return path.length > 0 ? path : nil;
 }
 

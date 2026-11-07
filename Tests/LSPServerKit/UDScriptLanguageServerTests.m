@@ -78,7 +78,7 @@ static NSString *const UDLanternText =
     // "swing" in "lantern::swing( 1 )": the method's definition, then its declaration.
     NSArray *locations = [self request:@"textDocument/definition" params:[self at:@"script/lantern.script" line:9 character:16]];
     XCTAssertEqual(locations.count, 2u);
-    XCTAssertEqualObjects(locations[0][@"uri"], @"udfs:///script/lantern.script");
+    XCTAssertEqualObjects(locations[0][@"uri"], @"quarry:/file/script/lantern.script");
     XCTAssertEqualObjects(locations[0][@"range"][@"start"], (@{ @"line": @4, @"character": @14 }));
     XCTAssertEqualObjects(locations[0][@"range"][@"end"], (@{ @"line": @4, @"character": @19 }));
     XCTAssertEqualObjects(locations[1][@"range"][@"start"], (@{ @"line": @1, @"character": @9 }));
@@ -90,7 +90,7 @@ static NSString *const UDLanternText =
 
     // "wait": the event, in another script.
     locations = [self request:@"textDocument/definition" params:[self at:@"script/lantern.script" line:5 character:8]];
-    XCTAssertEqualObjects(locations[0][@"uri"], @"udfs:///script/doom_events.script");
+    XCTAssertEqualObjects(locations[0][@"uri"], @"quarry:/file/script/doom_events.script");
     XCTAssertEqualObjects(locations[0][@"range"][@"start"], (@{ @"line": @1, @"character": @17 }));
 
     // Nothing at a blank line.
@@ -179,7 +179,7 @@ static NSString *const UDLanternText =
     [self open:@"script/main.script" text:@"lightAll\n"];
     NSArray *locations = [self request:@"textDocument/definition" params:[self at:@"script/main.script" line:0 character:0]];
     XCTAssertEqual(locations.count, 1u);
-    XCTAssertEqualObjects(locations[0][@"uri"], @"udfs:///script/lantern.script");
+    XCTAssertEqualObjects(locations[0][@"uri"], @"quarry:/file/script/lantern.script");
     XCTAssertEqualObjects(locations[0][@"range"][@"start"], (@{ @"line": @8, @"character": @5 }));
 
     NSDictionary *hover = [self request:@"textDocument/hover" params:[self at:@"script/lantern.script" line:5 character:5]];
@@ -205,10 +205,24 @@ static NSString *const UDLanternText =
     XCTAssertEqualObjects(reply[@"error"][@"code"], @(-32601));
 }
 
-- (void)testAPathIsAUDFSURI {
-    XCTAssertEqualObjects([UDScriptLanguageServer URIForPath:@"script/my lamp.script"], @"udfs:///script/my%20lamp.script");
-    XCTAssertEqualObjects([UDScriptLanguageServer pathForURI:@"udfs:///script/my%20lamp.script"], @"script/my lamp.script");
+- (void)testAPathIsAQuarryFileURI {
+    XCTAssertEqualObjects([UDScriptLanguageServer URIForPath:@"script/my lamp.script"], @"quarry:/file/script/my%20lamp.script");
+    XCTAssertEqualObjects([UDScriptLanguageServer pathForURI:@"quarry:/file/script/my%20lamp.script"], @"script/my lamp.script");
     XCTAssertNil([UDScriptLanguageServer pathForURI:@"file:///tmp/x.script"]);
+    XCTAssertNil([UDScriptLanguageServer pathForURI:@"quarry:/material/textures/a"], @"a decl's");
+}
+
+/// Without a file system of its own: the project's, whose folder initialize names.
+- (void)testItAsksForTheFileSystemOfTheFolderInitializeNames {
+    self.server = [[UDScriptLanguageServer alloc] initWithFileSystem:nil];
+    __block NSString *asked = nil;
+    self.server.fileSystemOfFolder = ^idFileSystem *(NSString *folder) {
+        asked = folder;
+        return nil;
+    };
+    [self request:@"initialize" params:@{ @"rootUri": [NSURL fileURLWithPath:@"/tmp/mod"].absoluteString }];
+    XCTAssertEqualObjects(asked, @"/tmp/mod");
+    XCTAssertEqualObjects(self.server.initializeParams[@"rootUri"], [NSURL fileURLWithPath:@"/tmp/mod"].absoluteString);
 }
 
 @end

@@ -6,7 +6,8 @@
  *
  * --settings is a workspace's settings, as its file holds them (fs_basepath,
  * fs_game, ...): the scripts are that workspace's file system's. Without it,
- * only the open documents'. Messages come on stdin and responses go to
+ * the workspace of the .qworkspace in the folder "initialize" names (UDCode's
+ * project's), or, with none, only the open documents'. Messages come on stdin and responses go to
  * stdout, as LSP's base protocol frames them; what goes wrong goes to stderr.
  * See UDScriptLanguageServer.
  */
@@ -42,8 +43,28 @@ int main(int argc, const char *argv[]) {
         }
 
         UDScriptLanguageServer *server = [[UDScriptLanguageServer alloc] initWithFileSystem:workspace.fileSystem];
+        __block UDWorkspace *projects = nil;
+        server.fileSystemOfFolder = ^idFileSystem *(NSString *folder) {
+            NSArray *names = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:folder error:NULL]
+                                 sortedArrayUsingSelector:@selector(compare:)];
+            for (NSString *name in names) {
+                if (![name.pathExtension isEqualToString:@"qworkspace"]) continue;
+                NSData *json = [NSData dataWithContentsOfFile:[folder stringByAppendingPathComponent:name]];
+                NSDictionary *settings = json ? [NSJSONSerialization JSONObjectWithData:json options:0 error:NULL] : nil;
+                if (![settings isKindOfClass:[NSDictionary class]]) break;
+                projects = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
+                NSError *failure = nil;
+                if (![projects startup:&failure]) {
+                    fprintf(stderr, "udscript-lsp: %s does not start: %s\n", name.UTF8String, failure.localizedDescription.UTF8String ?: "");
+                    projects = nil;
+                }
+                break;
+            }
+            return projects.fileSystem;
+        };
         [server.connection runWithInput:stdin output:stdout];
         [workspace shutdown];
+        [projects shutdown];
         return server.shutDown ? 0 : 1;
     }
 }

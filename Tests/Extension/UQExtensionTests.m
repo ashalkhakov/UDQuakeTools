@@ -25,6 +25,12 @@
 #import "UQGuiDocument.h"
 #import "UDGuiEditorViewController.h"
 #import "UDTextFileDocument.h"
+#import "UQPakDocument.h"
+#import "UDArchiveDocument.h"
+#import "UDArchiveEditor.h"
+#import "UDArchiveEntry.h"
+#import "UDArchiveBrowserController.h"
+#import "UDZipWriter.h"
 
 @interface UQExtensionTests : XCTestCase
 @end
@@ -227,7 +233,7 @@ static NSString *const UQMaterial =
     XCTAssertEqual([extension languageFuncForIdentifier:@"json"], NULL);
     NSString *plist = [[NSBundle bundleForClass:[UQExtension class]] pathForResource:@"LanguageInfo" ofType:@"plist"];
     NSDictionary *info = [NSDictionary dictionaryWithContentsOfFile:plist];
-    XCTAssertEqualObjects(info[@"activationEvents"], @[ @"workspaceContains:*.qworkspace" ]);
+    XCTAssertEqualObjects(info[@"activationEvents"], @[ @"*" ], @"everywhere: paks; a Quarry project where a .qworkspace is");
     NSDictionary *script = nil;
     for (NSDictionary *mode in info[@"languageModes"]) {
         if ([mode[@"identifier"] isEqualToString:@"idscript"]) script = mode;
@@ -372,6 +378,66 @@ static NSString *const UQMaterial =
     XCTAssertTrue([[self contentsOf:@"game/base/guis/test.gui"] containsString:@"640, 480"]);
     XCTAssertFalse(gui.isEdited);
     [window close];
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - A pak in Pak Manager's browser
+// ---------------------------------------------------------------------------
+
+- (NSURL *)writePak:(NSString *)name entries:(NSDictionary<NSString *, NSString *> *)entries {
+    UDZipWriter *writer = [[UDZipWriter alloc] init];
+    for (NSString *path in [entries.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+        XCTAssertTrue([writer addEntryWithPath:path data:[entries[path] dataUsingEncoding:NSUTF8StringEncoding]
+                                        method:UDZipCompressionMethodAutomatic modificationDate:nil error:NULL]);
+    }
+    NSURL *url = [NSURL fileURLWithPath:[_root stringByAppendingPathComponent:name]];
+    XCTAssertTrue([writer writeToURL:url error:NULL]);
+    return url;
+}
+
+- (NSArray<NSString *> *)pathsOf:(UQPakDocument *)pak {
+    return [[pak.archiveDocument.editor.currentEntries valueForKey:@"path"] sortedArrayUsingSelector:@selector(compare:)];
+}
+
+- (void)testAPakIsACustomDocumentInPakManagersBrowser {
+    NSURL *url = [self writePak:@"pak009.pk4" entries:@{ @"materials/a.mtr": @"a { }\n", @"script/b.script": @"void b() {}\n" }];
+    XCTAssertTrue([UQPakDocument isPakURL:url]);
+    XCTAssertFalse([UQPakDocument isPakURL:[NSURL fileURLWithPath:@"/tmp/a.mtr"]]);
+    NSError *error = nil;
+    UQPakDocument *pak = [[UQPakDocument alloc] initWithURL:url error:&error];
+    XCTAssertNotNil(pak, @"%@", error);
+    XCTAssertEqualObjects([self pathsOf:pak], (@[ @"materials/a.mtr", @"script/b.script" ]));
+    XCTAssertFalse(pak.isEdited);
+    XCTAssertFalse([pak respondsToSelector:@selector(textOfDocument)], @"no text: not shown as text");
+
+    // the extension's, in any window; its editor Pak Manager's browser (its XIB's, connected)
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    id<UDCustomDocument> opened = [extension workbench:(id)nil openCustomDocumentAtURL:url fileSystemProvider:nil error:&error];
+    XCTAssertTrue([opened isKindOfClass:[UQPakDocument class]], @"%@", error);
+    UDCodeDocument *document = [[UDCodeDocument alloc] initWithCustomDocument:pak URL:url fileSystemProvider:nil languageMode:nil];
+    UDArchiveBrowserController *browser = (UDArchiveBrowserController *)[extension workbench:(id)nil editorForDocument:document];
+    XCTAssertTrue([browser isKindOfClass:[UDArchiveBrowserController class]]);
+    XCTAssertNotNil(browser.view);
+    XCTAssertNotNil(browser.browser);
+    XCTAssertNotNil(browser.addButton);
+    XCTAssertNotNil(browser.statusLabel);
+
+    // an entry removed: edited, undone, removed again and saved over the file
+    XCTAssertTrue([pak.archiveDocument.editor removeNodeAtPath:@"script/b.script" error:&error], @"%@", error);
+    XCTAssertTrue(pak.isEdited);
+    XCTAssertTrue(document.isModified, @"its tab's dot");
+    XCTAssertEqual(pak.undoManager, pak.archiveDocument.editor.undoManager);
+    [self spin];
+    if (pak.undoManager.canUndo) {
+        [pak.undoManager undo];
+        XCTAssertEqualObjects([self pathsOf:pak], (@[ @"materials/a.mtr", @"script/b.script" ]));
+        XCTAssertTrue([pak.archiveDocument.editor removeNodeAtPath:@"script/b.script" error:&error]);
+    }
+    XCTAssertTrue([pak saveCustomDocument:&error], @"%@", error);
+    XCTAssertFalse(pak.isEdited);
+    UQPakDocument *again = [[UQPakDocument alloc] initWithURL:url error:&error];
+    XCTAssertEqualObjects([self pathsOf:again], @[ @"materials/a.mtr" ], @"saved over the file");
 }
 
 @end

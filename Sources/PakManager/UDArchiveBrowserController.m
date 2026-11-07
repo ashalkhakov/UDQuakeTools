@@ -60,7 +60,7 @@
 #pragma mark - Init
 
 - (instancetype)initWithDocument:(UDArchiveDocument *)document {
-    self = [super initWithWindowNibName:@"UDArchiveDocument"];
+    self = [super initWithNibName:@"UDArchiveBrowser" bundle:[NSBundle bundleForClass:[UDArchiveBrowserController class]]];
     if (!self) {
         return nil;
     }
@@ -79,10 +79,10 @@
 }
 
 /* ------------------------------------------------------------------ */
-#pragma mark - Window lifecycle
+#pragma mark - View lifecycle
 
-- (void)windowDidLoad {
-    [super windowDidLoad];
+- (void)viewDidLoad {
+    [super viewDidLoad];
 
     /* Wire up target/action for double-click programmatically. */
     [_browser setTarget:self];
@@ -706,7 +706,7 @@ willDisplayCell:(id)cell
 
     _activeTextPreview = [_fileActionService openFileAtPath:tempPath
                                                   withData:data
-                                              parentWindow:[self window]
+                                              parentWindow:self.view.window
                                              modalDelegate:self
                                             didEndSelector:@selector(textPreviewSheetDidEnd:returnCode:contextInfo:)];
 }

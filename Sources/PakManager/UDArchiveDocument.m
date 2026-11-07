@@ -137,12 +137,6 @@ static NSURL *UDWritableFileURLFromURL(NSURL *url) {
 /* ------------------------------------------------------------------ */
 #pragma mark - NSDocument overrides
 
-- (void)makeWindowControllers {
-    UDArchiveBrowserController *wc =
-        [[UDArchiveBrowserController alloc] initWithDocument:self];
-    [self addWindowController:wc];
-}
-
 - (NSUndoManager *)undoManager {
     if (self.editor) {
         return self.editor.undoManager;

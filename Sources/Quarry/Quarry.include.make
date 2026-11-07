@@ -3,4 +3,4 @@
 # own directory), includes this, and adds $(QUARRY_INCLUDE_DIRS) to its
 # include directories.
 QUARRY_SUBDIRS = Compat Extension App Model Documents Window Editors Editors/Decls Preview GUIEditor Scripts ThirdParty/DMTabBar
-QUARRY_INCLUDE_DIRS = -I$(QUARRY_DIR) $(addprefix -I$(QUARRY_DIR)/,$(QUARRY_SUBDIRS))
+QUARRY_INCLUDE_DIRS = -I$(QUARRY_DIR) $(addprefix -I$(QUARRY_DIR)/,$(QUARRY_SUBDIRS)) -I$(QUARRY_DIR)/../PakManager

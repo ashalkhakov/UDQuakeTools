@@ -7,6 +7,8 @@
 #import "UQDeclDocument.h"
 #import "UQEditorHost.h"
 #import "UQGuiDocument.h"
+#import "UQPakDocument.h"
+#import "UDArchiveBrowserController.h"
 #import "UDGuiEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 #import "UDDeclEditorViewController.h"
@@ -52,6 +54,10 @@ const TSLanguage *tree_sitter_iddecl(void);
     UQProject *project = [_projects objectForKey:workbench];
     NSURL *folder = workbench.project.folderURL;
     if (project || !folder) return project;
+    // a Quarry project: a folder with a .qworkspace (the extension is active
+    // everywhere, for Pak Manager's paks)
+    NSArray *names = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:folder.path error:NULL];
+    if (![[names valueForKey:@"pathExtension"] containsObject:@"qworkspace"]) return nil;
     project = [[UQProject alloc] initWithFolder:folder workbench:workbench];
     [_projects setObject:project forKey:workbench];
     return project;
@@ -78,6 +84,8 @@ const TSLanguage *tree_sitter_iddecl(void);
 /// objects the model (a custom document); any other quarry: URL is text.
 - (id<UDCustomDocument>)workbench:(id<UDWorkbench>)workbench openCustomDocumentAtURL:(NSURL *)url
                fileSystemProvider:(id<UDFileSystemProvider>)provider error:(NSError **)error {
+    // a pak, Pak Manager's, wherever it is
+    if ([UQPakDocument isPakURL:url]) return [[UQPakDocument alloc] initWithURL:url error:error];
     NSString *typeName, *name, *path;
     if (![UQProject parseURL:url typeName:&typeName name:&name path:&path]) return nil;
     UDWorkspace *workspace = [self projectOfWorkbench:workbench].workspace;
@@ -91,6 +99,9 @@ const TSLanguage *tree_sitter_iddecl(void);
 }
 
 - (NSViewController *)workbench:(id<UDWorkbench>)workbench editorForDocument:(UDCodeDocument *)document {
+    if ([document.customDocument isKindOfClass:[UQPakDocument class]]) {
+        return [[UDArchiveBrowserController alloc] initWithDocument:[(UQPakDocument *)document.customDocument archiveDocument]];
+    }
     if ([document.customDocument isKindOfClass:[UQGuiDocument class]]) {
         UQGuiDocument *gui = (UQGuiDocument *)document.customDocument;
         UDGuiEditorViewController *editor = [[UDGuiEditorViewController alloc] init];

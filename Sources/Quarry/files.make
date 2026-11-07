@@ -8,6 +8,11 @@ QUARRY_OBJC_FILES = \
     Extension/UQDeclDocument.m \
     Extension/UQEditorHost.m \
     Extension/UQGuiDocument.m \
+    Extension/UQPakDocument.m \
+    ../PakManager/UDArchiveDocument.m \
+    ../PakManager/UDArchiveBrowserController.m \
+    ../PakManager/UDFileActionService.m \
+    ../PakManager/UDTextPreviewController.m \
     Model/UDDeclItem.m \
     Model/UDFileItem.m \
     Model/UDFolder.m \
@@ -59,6 +64,7 @@ QUARRY_C_FILES = \
 
 QUARRY_RESOURCE_FILES = \
     Resources/UQEditorHost.xib \
+    ../PakManager/UDArchiveBrowser.xib \
     Resources/UDPDAEditorView.xib \
     Resources/UDTableEditorView.xib \
     Resources/UDSkinEditorView.xib \

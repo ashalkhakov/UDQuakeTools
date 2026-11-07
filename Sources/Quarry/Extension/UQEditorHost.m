@@ -109,6 +109,24 @@
     }
 }
 
+// ---------------------------------------------------------------------------
+// MARK: - The editor's commands (the GUI editor's zoom, grid): its
+// ---------------------------------------------------------------------------
+
+/// The window sends the front tab's view controller what it answers: what
+/// the editor answers, then.
+- (BOOL)respondsToSelector:(SEL)selector {
+    return [super respondsToSelector:selector] || [_editor respondsToSelector:selector];
+}
+
+- (id)forwardingTargetForSelector:(SEL)selector {
+    return [_editor respondsToSelector:selector] ? _editor : [super forwardingTargetForSelector:selector];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item {
+    return [_editor respondsToSelector:@selector(validateMenuItem:)] ? [(id)_editor validateMenuItem:item] : YES;
+}
+
 - (void)showInspectorPaneTitled:(NSString *)title {
     for (NSViewController *controller in [self inspectorViewControllers]) {
         if ([controller.title isEqualToString:title]) [_workbench showEditorInspector:controller];

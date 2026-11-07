@@ -9,6 +9,7 @@
 #import "UQGuiDocument.h"
 #import "UQPakDocument.h"
 #import "UDArchiveBrowserController.h"
+#import "UQCommands.h"
 #import "UDGuiEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 #import "UDDeclEditorViewController.h"
@@ -20,11 +21,13 @@ const TSLanguage *tree_sitter_iddecl(void);
 @implementation UQExtension {
     NSBundle *_bundle;
     NSMapTable<id<UDWorkbench>, UQProject *> *_projects;
+    NSMapTable<id<UDWorkbench>, UQCommands *> *_commands;
 }
 
 - (void)extensionDidLoad:(NSBundle *)bundle {
     _bundle = bundle;
     _projects = [NSMapTable weakToStrongObjectsMapTable];
+    _commands = [NSMapTable weakToStrongObjectsMapTable];
 }
 
 - (void)extensionWillUnload:(NSBundle *)bundle {
@@ -70,6 +73,19 @@ const TSLanguage *tree_sitter_iddecl(void);
     UDTreeViewController *tree = [[UDTreeViewController alloc] initWithDataProvider:project workbench:workbench title:@"Decls"];
     project.treeView = tree;
     return tree;
+}
+
+/// The project's commands (UQEditorMenus.xib): New Declaration…, Test
+/// Declaration, the GUI editor's; none in a window that is no Quarry project.
+- (NSArray<NSMenuItem *> *)editorMenuItemsForWorkbench:(id<UDWorkbench>)workbench {
+    UQProject *project = [self projectOfWorkbench:workbench];
+    if (!project) return @[];
+    UQCommands *commands = [_commands objectForKey:workbench];
+    if (!commands) {
+        commands = [[UQCommands alloc] initWithProject:project];
+        [_commands setObject:commands forKey:workbench];
+    }
+    return commands.menuItems;
 }
 
 - (id<UDFileSystemProvider>)workbench:(id<UDWorkbench>)workbench fileSystemProviderForScheme:(NSString *)scheme {

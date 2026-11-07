@@ -31,6 +31,24 @@
 #import "UDArchiveEntry.h"
 #import "UDArchiveBrowserController.h"
 #import "UDZipWriter.h"
+#import "UQCommands.h"
+
+/// A window's side, as the extension asks it: its folder (its project's), what it shows.
+@interface UQTestProject : NSObject
+@property (nonatomic, copy) NSURL *folderURL;
+@end
+@implementation UQTestProject
+@end
+
+@interface UQTestWorkbench : NSObject
+@property (nonatomic, strong) UQTestProject *project;
+@property (nonatomic, strong) NSMutableArray<NSURL *> *shown;
+@property (nonatomic, strong, nullable) UDCodeDocument *selectedDocument;
+@end
+@implementation UQTestWorkbench
+- (instancetype)init { if ((self = [super init])) _shown = [NSMutableArray array]; return self; }
+- (void)showURL:(NSURL *)url { [_shown addObject:url]; }
+@end
 
 @interface UQExtensionTests : XCTestCase
 @end
@@ -438,6 +456,77 @@ static NSString *const UQMaterial =
     XCTAssertFalse(pak.isEdited);
     UQPakDocument *again = [[UQPakDocument alloc] initWithURL:url error:&error];
     XCTAssertEqualObjects([self pathsOf:again], @[ @"materials/a.mtr" ], @"saved over the file");
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - The Editor menu's commands
+// ---------------------------------------------------------------------------
+
+- (void)testTheEditorMenuIsTheProjectsCommandsFromTheirXIB {
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    UQTestWorkbench *workbench = [[UQTestWorkbench alloc] init];
+    workbench.project = [[UQTestProject alloc] init];
+    workbench.project.folderURL = [NSURL fileURLWithPath:_project];
+    NSArray<NSMenuItem *> *items = [extension editorMenuItemsForWorkbench:(id)workbench];
+    NSArray *titles = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"isSeparatorItem == NO"]] valueForKey:@"title"];
+    for (NSString *title in @[ @"New Declaration…", @"New PDA…", @"New Skin…", @"Test Declaration", @"Zoom In", @"Show Grid" ]) {
+        XCTAssertTrue([titles containsObject:title], @"%@ in %@", title, titles);
+    }
+    for (NSMenuItem *item in items) {
+        if (item.isSeparatorItem) continue;
+        XCTAssertNotEqual(item.action, (SEL)0, @"%@ connected", item.title);
+        BOOL gui = [@[ @"zoomIn:", @"zoomOut:", @"zoomToFit:", @"toggleGrid:", @"toggleGridSnap:", @"toggleStatusBar:", @"showGuiEditorOptions:" ]
+                       containsObject:NSStringFromSelector(item.action)];
+        if (gui) XCTAssertNil(item.target, @"%@: the front editor's", item.title);
+        else XCTAssertTrue([item.target isKindOfClass:[UQCommands class]], @"%@: the project's", item.title);
+    }
+    // the same window again: the same commands; a folder without a .qworkspace: none
+    XCTAssertEqual([extension editorMenuItemsForWorkbench:(id)workbench].firstObject.target, items.firstObject.target);
+    UQTestWorkbench *other = [[UQTestWorkbench alloc] init];
+    other.project = [[UQTestProject alloc] init];
+    other.project.folderURL = [NSURL fileURLWithPath:_root];
+    XCTAssertEqual([extension editorMenuItemsForWorkbench:(id)other].count, 0u);
+    XCTAssertNil([extension navigatorViewControllerForWorkbench:(id)other], @"no Decls where there is no Quarry project");
+}
+
+- (void)testANewDeclIsMadeOpenedAndTestedAsTheEngineReadsIt {
+    UQProject *project = [self startedProject];
+    UQCommands *commands = [[UQCommands alloc] initWithProject:project];
+    NSError *error = nil;
+    XCTAssertTrue([commands createDeclOfTypeName:@"skin" named:@"skins/test_new" fileName:nil error:&error], @"%@", error);
+    [project reloadTree];
+    id skin = [self child:@"skin" under:nil of:project];
+    XCTAssertNotNil(skin, @"%@", [self labelsUnder:nil of:project]);
+    XCTAssertNotNil([project contentsOfURL:[UQProject URLOfDeclType:@"skin" name:@"skins/test_new"] error:&error], @"%@", error);
+
+    // Test Declaration: its braces, then its type's parser, as the document's issues
+    NSURL *url = [UQProject URLOfDeclType:@"material" name:@"textures/test/wall"];
+    UDCodeDocument *broken = [[UDCodeDocument alloc] initWithText:@"textures/test/wall\n{\n\tdiffusemap textures/test/wall.tga\n"
+                                                              URL:url fileSystemProvider:project languageMode:nil];
+    NSArray<UDDiagnosticItem *> *problems = [commands problemsOfDeclDocument:broken];
+    XCTAssertGreaterThan(problems.count, 0u, @"an unclosed brace");
+    XCTAssertEqual(problems.firstObject.severity, UDDiagnosticSeverityError);
+    UDCodeDocument *good = [[UDCodeDocument alloc] initWithText:@"textures/test/wall\n{\n\tdiffusemap textures/test/wall.tga\n}\n"
+                                                            URL:url fileSystemProvider:project languageMode:nil];
+    NSArray *none = [[commands problemsOfDeclDocument:good] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"severity == %d", UDDiagnosticSeverityError]];
+    XCTAssertEqual(none.count, 0u, @"%@", [none valueForKey:@"message"]);
+}
+
+- (void)testAHostAnswersItsEditorsCommands {
+    UQProject *project = [self startedProject];
+    NSError *error = nil;
+    UQGuiDocument *gui = [[UQGuiDocument alloc] initWithPath:@"guis/test.gui" inWorkspace:project.workspace error:&error];
+    UDCodeDocument *document = [[UDCodeDocument alloc] initWithCustomDocument:gui URL:[UQProject URLOfGamePath:@"guis/test.gui"]
+                                                           fileSystemProvider:project languageMode:nil];
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    UQEditorHost *host = (UQEditorHost *)[extension workbench:(id)nil editorForDocument:document];
+    (void)host.view;
+    XCTAssertTrue([host respondsToSelector:@selector(zoomIn:)], @"the GUI editor's");
+    XCTAssertTrue([host respondsToSelector:@selector(toggleGrid:)]);
+    XCTAssertFalse([host respondsToSelector:@selector(newDecl:)]);
+    XCTAssertEqual([host forwardingTargetForSelector:@selector(zoomIn:)], host.editor);
 }
 
 @end

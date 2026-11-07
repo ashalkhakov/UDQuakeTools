@@ -370,12 +370,85 @@ static NSArray<UDSourceToken *> *UDTokensSettingKey(UDMaterialKey *key, id value
     return [self.material ud_textOfStage:self.index];
 }
 
+/// ParseBlend's combinations, each by the two factors it stands for.
+static NSDictionary<NSString *, NSArray<NSString *> *> *UDBlendCombinations(void) {
+    return @{@"blend": @[@"gl_src_alpha", @"gl_one_minus_src_alpha"], @"add": @[@"gl_one", @"gl_one"],
+             @"filter": @[@"gl_dst_color", @"gl_zero"], @"modulate": @[@"gl_dst_color", @"gl_zero"],
+             @"none": @[@"gl_zero", @"gl_one"]};
+}
+
+/// ParseBlend's lighting stages, which have no factors.
+static BOOL UDBlendIsLighting(NSString *blend) {
+    return [@[@"bumpmap", @"diffusemap", @"specularmap"] containsObject:blend];
+}
+
+/// The stage's blend, in lowercase as ParseBlend compares it; nil for none.
+- (NSString *)ud_blend {
+    NSString *blend = [[self valueForKey:@"blend"] lowercaseString];
+    return blend.length > 0 ? blend : nil;
+}
+
+/// The factors the stage draws with: without a blend, the engine's default;
+/// nil for a lighting stage. A custom blend missing its second has one.
+- (NSArray<NSString *> *)ud_blendFactors {
+    NSString *blend = [self ud_blend];
+    if (blend == nil) return @[@"gl_one", @"gl_zero"];
+    if (UDBlendIsLighting(blend)) return nil;
+    NSArray<NSString *> *combination = UDBlendCombinations()[blend];
+    if (combination != nil) return combination;
+    NSMutableArray<NSString *> *factors = [NSMutableArray array];
+    for (NSString *factor in [blend componentsSeparatedByString:@","]) {
+        [factors addObject:[factor stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+    }
+    return factors;
+}
+
+- (NSString *)ud_blendMode {
+    NSString *blend = [self ud_blend];
+    if (blend == nil || UDBlendIsLighting(blend) || UDBlendCombinations()[blend] != nil) return blend;
+    return @"custom";
+}
+
+/// Custom writes out the factors the stage draws with now, so it looks the
+/// same until one is changed.
+- (void)ud_setBlendMode:(NSString *)mode {
+    if (![mode isEqualToString:@"custom"]) {
+        [self setValue:mode forKey:@"blend"];
+        return;
+    }
+    if ([[self ud_blendMode] isEqualToString:@"custom"]) return;
+    NSArray<NSString *> *factors = [self ud_blendFactors] ?: @[@"gl_one", @"gl_zero"];
+    [self setValue:[factors componentsJoinedByString:@", "] forKey:@"blend"];
+}
+
+- (void)ud_setBlendFactor:(NSString *)factor atIndex:(NSUInteger)index {
+    NSMutableArray<NSString *> *factors = [([self ud_blendFactors] ?: @[@"gl_one", @"gl_zero"]) mutableCopy];
+    if (factors.count < 2) [factors addObject:@"gl_zero"];
+    factors[index] = factor;
+    [self setValue:[factors componentsJoinedByString:@", "] forKey:@"blend"];
+}
+
 - (id)valueForKey:(NSString *)key {
     if (UDStageKeys()[key] != nil) return [self.material ud_valueOfStage:self.index forKey:key];
+    if ([key isEqualToString:@"blendMode"]) return [self ud_blendMode];
+    if ([key isEqualToString:@"blendUsesFactors"]) return @([self ud_blendFactors] != nil);
+    if ([key isEqualToString:@"blendSource"] || [key isEqualToString:@"blendDestination"]) {
+        NSArray<NSString *> *factors = [self ud_blendFactors];
+        NSUInteger index = [key isEqualToString:@"blendSource"] ? 0 : 1;
+        return index < factors.count ? factors[index] : nil;
+    }
     return [super valueForKey:key];
 }
 
 - (void)setValue:(id)value forKey:(NSString *)key {
+    if ([key isEqualToString:@"blendMode"]) {
+        if ([value isKindOfClass:[NSString class]]) [self ud_setBlendMode:value];
+        return;
+    }
+    if ([key isEqualToString:@"blendSource"] || [key isEqualToString:@"blendDestination"]) {
+        if ([value isKindOfClass:[NSString class]]) [self ud_setBlendFactor:value atIndex:[key isEqualToString:@"blendSource"] ? 0 : 1];
+        return;
+    }
     if (UDStageKeys()[key] != nil) {
         [self.material ud_setValue:value ofStage:self.index forKey:key];
         return;
@@ -401,16 +474,12 @@ static const void *UDStructureKey = &UDStructureKey;
     return UDStageKeys().allKeys;
 }
 
-// Its tokens set: its stages and every value of it change with them.
-- (void)setTokens:(UDSourceTokens *)tokens {
-    NSArray<NSString *> *keys = UDMaterialKeys().allKeys;
-    for (NSString *key in keys) [self willChangeValueForKey:key];
-    [self willChangeValueForKey:@"stages"];
-    [self willChangeValueForKey:@"tokens"];
-    [self setPrimitiveValue:tokens forKey:@"tokens"];
-    [self didChangeValueForKey:@"tokens"];
-    [self didChangeValueForKey:@"stages"];
-    for (NSString *key in keys.reverseObjectEnumerator) [self didChangeValueForKey:key];
+// Its stages and every value of it change with its tokens, however they are
+// set: an undo sets them without -setTokens:.
++ (NSSet<NSString *> *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
+    NSSet<NSString *> *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+    if ([key isEqualToString:@"stages"] || UDMaterialKeys()[key] != nil) return [keyPaths setByAddingObject:@"tokens"];
+    return keyPaths;
 }
 
 - (void)awakeFromFetch {

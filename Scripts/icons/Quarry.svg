@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<!-- A quarry's terraces, going down; the block cut from it. -->
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#26303f"/><stop offset=".5" stop-color="#2c3a42"/><stop offset="1" stop-color="#23503f"/></linearGradient></defs><rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<path d="M212 300H812V792H212Z" fill="#7f5e36"/>
+<path d="M212 300H356V444H500V588H644V792H212Z" fill="#be9058"/>
+<path d="M212 444H356V588H500V792H212Z" fill="#a27843"/>
+<rect x="596" y="232" width="176" height="176" fill="#f4e8d4"/>
+</svg>

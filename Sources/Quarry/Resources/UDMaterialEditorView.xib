@@ -237,11 +237,11 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view id="MTE-sscroll-doc">
-                                            <rect key="frame" x="0.0" y="0.0" width="265" height="1245"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="265" height="1299"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                             <subviews>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h214">
-                                                <rect key="frame" x="8" y="1215" width="200" height="16"/>
+                                                <rect key="frame" x="8" y="1269" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Stage" id="MTE-h214-c">
                                                     <font key="font" metaFont="systemBold"/>
@@ -250,12 +250,12 @@
                                                 </textFieldCell>
                                             </textField>
                                             <imageView toolTip="stage image" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-preview">
-                                                <rect key="frame" x="12" y="1079" width="128" height="128"/>
+                                                <rect key="frame" x="12" y="1133" width="128" height="128"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="grayBezel" id="MTE-preview-c"/>
                                             </imageView>
                                             <textField toolTip="stage image size" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-previewlabel">
-                                                <rect key="frame" x="148" y="1079" width="112" height="128"/>
+                                                <rect key="frame" x="148" y="1133" width="112" height="128"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" lineBreakMode="charWrapping" title="" id="MTE-previewlabel-c">
                                                     <font key="font" metaFont="smallSystem"/>
@@ -264,7 +264,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l216">
-                                                <rect key="frame" x="4" y="1052" width="88" height="16"/>
+                                                <rect key="frame" x="4" y="1106" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Name:" id="MTE-l216-c">
                                                     <font key="font" metaFont="system"/>
@@ -273,7 +273,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField toolTip="name: the stage's name, as the material editors show it (Nerve's editor added it); the game does not use it." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f215">
-                                                <rect key="frame" x="96" y="1049" width="160" height="21"/>
+                                                <rect key="frame" x="96" y="1103" width="160" height="21"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f215-c">
                                                     <font key="font" metaFont="system"/>
@@ -289,7 +289,7 @@
                                                 </connections>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-l218">
-                                                <rect key="frame" x="4" y="1027" width="88" height="16"/>
+                                                <rect key="frame" x="4" y="1081" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Blend:" id="MTE-l218-c">
                                                     <font key="font" metaFont="system"/>
@@ -297,8 +297,8 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
-                                            <popUpButton toolTip="blend: how the stage is drawn over what is under it: blend, add, filter, modulate, none; or diffusemap, bumpmap, specularmap for the lighting stages; or two GL blend factors." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-p217">
-                                                <rect key="frame" x="96" y="1021" width="96" height="25"/>
+                                            <popUpButton toolTip="blend: how the stage is drawn over what is under it: blend, add, filter, modulate, none; or diffusemap, bumpmap, specularmap for the lighting stages; or custom, two GL blend factors." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-p217">
+                                                <rect key="frame" x="96" y="1075" width="160" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <popUpButtonCell key="cell" type="push" title="blend" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="MTE-p217-i0" id="MTE-p217-c">
                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -313,29 +313,81 @@
                                                             <menuItem title="bumpmap" id="MTE-p217-i5"/>
                                                             <menuItem title="diffusemap" id="MTE-p217-i6"/>
                                                             <menuItem title="specularmap" id="MTE-p217-i7"/>
+                                                            <menuItem title="custom" id="MTE-p217-i8"/>
                                                         </items>
                                                     </menu>
                                                 </popUpButtonCell>
                                                 <connections>
-                                                    <binding destination="MTE-sac" name="selectedValue" keyPath="selection.blend" id="MTE-p217-b"/>
+                                                    <binding destination="MTE-sac" name="selectedValue" keyPath="selection.blendMode" id="MTE-p217-b"/>
                                                 </connections>
                                             </popUpButton>
-                                            <textField toolTip="blend: how the stage is drawn over what is under it: blend, add, filter, modulate, none; or diffusemap, bumpmap, specularmap for the lighting stages; or two GL blend factors." focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-f219">
-                                                <rect key="frame" x="196" y="1024" width="60" height="21"/>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-blendsrc-l">
+                                                <rect key="frame" x="4" y="1054" width="88" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="MTE-f219-c">
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Source:" id="MTE-blendsrc-lc">
                                                     <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
-                                                <connections>
-                                                    <binding destination="MTE-sac" name="value" keyPath="selection.blend" id="MTE-f219-b">
-                                                        <dictionary key="options">
-                                                            <bool key="NSValidatesImmediately" value="YES"/>
-                                                        </dictionary>
-                                                    </binding>
-                                                </connections>
                                             </textField>
+                                            <popUpButton toolTip="blend's first factor: what the stage's color is multiplied by. Choosing one makes the blend custom." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-blendsrc">
+                                                <rect key="frame" x="96" y="1048" width="166" height="22"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="gl_one" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="MTE-blendsrc-i0" id="MTE-blendsrc-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                    <menu key="menu" id="MTE-blendsrc-m">
+                                                        <items>
+                                                            <menuItem title="gl_one" state="on" id="MTE-blendsrc-i0"/>
+                                                            <menuItem title="gl_zero" id="MTE-blendsrc-i1"/>
+                                                            <menuItem title="gl_dst_color" id="MTE-blendsrc-i2"/>
+                                                            <menuItem title="gl_one_minus_dst_color" id="MTE-blendsrc-i3"/>
+                                                            <menuItem title="gl_src_alpha" id="MTE-blendsrc-i4"/>
+                                                            <menuItem title="gl_one_minus_src_alpha" id="MTE-blendsrc-i5"/>
+                                                            <menuItem title="gl_dst_alpha" id="MTE-blendsrc-i6"/>
+                                                            <menuItem title="gl_one_minus_dst_alpha" id="MTE-blendsrc-i7"/>
+                                                            <menuItem title="gl_src_alpha_saturate" id="MTE-blendsrc-i8"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="MTE-sac" name="selectedValue" keyPath="selection.blendSource" id="MTE-blendsrc-b"/>
+                                                    <binding destination="MTE-sac" name="enabled" keyPath="selection.blendUsesFactors" id="MTE-blendsrc-e"/>
+                                                </connections>
+                                            </popUpButton>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-blenddst-l">
+                                                <rect key="frame" x="4" y="1027" width="88" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Destination:" id="MTE-blenddst-lc">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <popUpButton toolTip="blend's second factor: what the color under the stage is multiplied by. Choosing one makes the blend custom." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-blenddst">
+                                                <rect key="frame" x="96" y="1021" width="166" height="22"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <popUpButtonCell key="cell" type="push" title="gl_one" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="MTE-blenddst-i0" id="MTE-blenddst-c">
+                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                    <menu key="menu" id="MTE-blenddst-m">
+                                                        <items>
+                                                            <menuItem title="gl_one" state="on" id="MTE-blenddst-i0"/>
+                                                            <menuItem title="gl_zero" id="MTE-blenddst-i1"/>
+                                                            <menuItem title="gl_src_color" id="MTE-blenddst-i2"/>
+                                                            <menuItem title="gl_one_minus_src_color" id="MTE-blenddst-i3"/>
+                                                            <menuItem title="gl_src_alpha" id="MTE-blenddst-i4"/>
+                                                            <menuItem title="gl_one_minus_src_alpha" id="MTE-blenddst-i5"/>
+                                                            <menuItem title="gl_dst_alpha" id="MTE-blenddst-i6"/>
+                                                            <menuItem title="gl_one_minus_dst_alpha" id="MTE-blenddst-i7"/>
+                                                        </items>
+                                                    </menu>
+                                                </popUpButtonCell>
+                                                <connections>
+                                                    <binding destination="MTE-sac" name="selectedValue" keyPath="selection.blendDestination" id="MTE-blenddst-b"/>
+                                                    <binding destination="MTE-sac" name="enabled" keyPath="selection.blendUsesFactors" id="MTE-blenddst-e"/>
+                                                </connections>
+                                            </popUpButton>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MTE-h220">
                                                 <rect key="frame" x="8" y="987" width="200" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

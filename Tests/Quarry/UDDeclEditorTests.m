@@ -104,6 +104,15 @@ static NSString *const UDFixtureMaterials =
      "\t\tblend\tadd\n"
      "\t\tmap\ttextures/udtest/missing\n"
      "\t}\n"
+     "}\n"
+     "\n"
+     "textures/udtest/decal\n"
+     "{\n"
+     "\t{\n"
+     "\t\tblend\tGL_DST_COLOR, GL_ZERO\n"
+     "\t\tmap\ttextures/udtest/glow.tga\n"
+     "\t}\n"
+     "\tdiffusemap\ttextures/udtest/glow.tga\n"
      "}\n";
 
 static NSString *const UDFixtureSounds =
@@ -1053,6 +1062,11 @@ static NSString *const UDFixtureParticles =
     return [editor isKindOfClass:[UDMaterialEditorViewController class]] ? (UDMaterialEditorViewController *)editor : nil;
 }
 
+/// The selected stage's blend, as its text has it.
+- (NSString *)stageBlendOf:(UDMaterialEditorViewController *)editor {
+    return [editor.stagesController.selectedObjects.firstObject valueForKey:@"blend"];
+}
+
 - (void)testAMaterialOpensWithItsKeywordsStagesAndImages {
     UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
@@ -1087,6 +1101,84 @@ static NSString *const UDFixtureParticles =
     XCTAssertEqualObjects([lost.diagnosticStore.allDiagnostics valueForKey:@"message"], (@[@"Couldn't load image: textures/udtest/missing"]));
     [lost.stagesController setSelectionIndex:0];
     XCTAssertEqualObjects(lost.previewLabel.stringValue, @"Couldn't load image: textures/udtest/missing");
+}
+
+/// The item called @a title of @a popUp chosen, as a click on it does.
+- (void)choose:(NSString *)title inPopUp:(NSPopUpButton *)popUp {
+    NSInteger index = [popUp indexOfItemWithTitle:title];
+    XCTAssertNotEqual(index, -1, @"%@ is offered", title);
+    if (index != -1) [popUp.menu performActionForItemAtIndex:index];
+}
+
+- (void)testAStagesBlendIsAKeywordOrTwoFactors {
+    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/decal" in:controller];
+    if (editor == nil) return;
+    [editor.stagesController setSelectionIndex:0];
+    NSPopUpButton *mode = (NSPopUpButton *)[self viewBoundTo:@"blendMode" inView:editor.inspectorView];
+    NSPopUpButton *source = (NSPopUpButton *)[self viewBoundTo:@"blendSource" inView:editor.inspectorView];
+    NSPopUpButton *destination = (NSPopUpButton *)[self viewBoundTo:@"blendDestination" inView:editor.inspectorView];
+    XCTAssertNotNil(mode);
+    XCTAssertNotNil(source);
+    XCTAssertNotNil(destination);
+    XCTAssertNil([self viewBoundTo:@"blend" inView:editor.inspectorView], @"no second control over the same text");
+    NSUInteger offered = mode.numberOfItems;
+    // Each pop-up's every title whole: a factor cut off is what it can't be.
+    for (NSPopUpButton *popUp in @[mode, source, destination]) {
+        CGFloat room = popUp.bounds.size.width - 34; // its bezel and arrows
+        for (NSMenuItem *item in popUp.itemArray) {
+            CGFloat width = [item.title sizeWithAttributes:@{NSFontAttributeName: popUp.font}].width;
+            XCTAssertLessThanOrEqual(width, room, @"%@ fits", item.title);
+        }
+    }
+
+    // Two factors, as the file has them: each in its own pop-up, whole, the
+    // lists as they were.
+    XCTAssertEqualObjects(mode.titleOfSelectedItem, @"custom");
+    XCTAssertEqualObjects(source.titleOfSelectedItem, @"gl_dst_color");
+    XCTAssertEqualObjects(destination.titleOfSelectedItem, @"gl_zero");
+    XCTAssertEqual(mode.numberOfItems, offered);
+    XCTAssertEqual(source.numberOfItems, 9);
+    XCTAssertEqual(destination.numberOfItems, 8);
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"GL_DST_COLOR, GL_ZERO", @"looking changes nothing");
+
+    // A factor chosen: the other stays.
+    [self choose:@"gl_one_minus_src_color" inPopUp:destination];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"gl_dst_color, gl_one_minus_src_color");
+    XCTAssertEqualObjects(mode.titleOfSelectedItem, @"custom");
+    XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U, @"%@", [editor.diagnosticStore.allDiagnostics valueForKey:@"message"]);
+
+    // A keyword: the factors it stands for shown.
+    [self choose:@"add" inPopUp:mode];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"add");
+    XCTAssertEqualObjects(source.titleOfSelectedItem, @"gl_one");
+    XCTAssertEqualObjects(destination.titleOfSelectedItem, @"gl_one");
+    XCTAssertTrue(source.isEnabled);
+    // ...and undone as an edit (this event's edits are one undo).
+    [editor.editingContext processPendingChanges];
+    [editor.editorDocument.undoManager undo];
+    [editor.editingContext processPendingChanges];
+    [editor.stagesController setSelectionIndex:0];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"GL_DST_COLOR, GL_ZERO");
+    XCTAssertEqualObjects(mode.titleOfSelectedItem, @"custom", @"the pop-up follows the undo");
+    XCTAssertEqualObjects(source.titleOfSelectedItem, @"gl_dst_color");
+    [self choose:@"add" inPopUp:mode];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"add");
+
+    // Custom: the same factors written out, so it looks as it did.
+    [self choose:@"custom" inPopUp:mode];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"gl_one, gl_one");
+    // From a keyword, a factor chosen makes it custom.
+    [self choose:@"blend" inPopUp:mode];
+    [self choose:@"gl_one" inPopUp:source];
+    XCTAssertEqualObjects([self stageBlendOf:editor], @"gl_one, gl_one_minus_src_alpha");
+    XCTAssertEqualObjects(mode.titleOfSelectedItem, @"custom");
+
+    // A lighting stage has no factors.
+    [editor.stagesController setSelectionIndex:1];
+    XCTAssertEqualObjects(mode.titleOfSelectedItem, @"diffusemap");
+    XCTAssertFalse(source.isEnabled);
+    XCTAssertFalse(destination.isEnabled);
 }
 
 - (void)testAStageIsDraggedToAnotherPlace {

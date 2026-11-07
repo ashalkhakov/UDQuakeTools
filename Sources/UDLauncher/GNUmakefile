@@ -15,8 +15,11 @@ UDLauncher_OBJC_FILES = \
 UDLauncher_INCLUDE_DIRS = -I../UDUpdater
 UDLauncher_GUI_LIBS += -lGSUpdater
 
+UDLauncher_APPLICATION_ICON = UDLauncher.png
+
 UDLauncher_RESOURCE_FILES = \
     MainMenu.xib \
+    UDLauncher.png \
     UDLauncher-Info.plist
 
 include $(GNUSTEP_MAKEFILES)/application.make

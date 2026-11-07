@@ -12,7 +12,9 @@
 //
 //  macOS: screencapture, of the window alone, by Scripts/screenshot-watch.sh
 //  (the test runner has no Screen Recording permission; a terminal can).
-//  GNUstep: ImageMagick's import, of the window's part of the (virtual) display.
+//  GNUstep: ImageMagick's import, of the window's part of the (virtual) display;
+//  on Windows, PowerShell's copy of the window's part of the desktop, so it
+//  runs in a logged-on session.
 //
 
 #import <XCTest/XCTest.h>
@@ -65,7 +67,23 @@
     [window displayIfNeeded];
     [self settle:1.0];
     NSTask *task = [[NSTask alloc] init];
-#ifdef GNUSTEP
+#if defined(GNUSTEP) && defined(_WIN32)
+    NSString *path = [self.folder stringByAppendingPathComponent:[NSString stringWithFormat:@"quarry-%@-windows.png", scene]];
+    // The screen's y goes down from its top, as X's does. The frame has
+    // Windows' invisible resize border on three sides and a line on the top:
+    // what is behind shows there.
+    NSRect frame = window.frame;
+    CGFloat top = NSHeight(window.screen.frame) - NSMaxY(frame) + 1;
+    frame.origin.x += 8;
+    frame.size.width -= 16;
+    frame.size.height -= 9;
+    task.launchPath = @"C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
+    task.arguments = @[ @"-NoProfile", @"-Command",
+                        [NSString stringWithFormat:@"Add-Type -AssemblyName System.Drawing; "
+                         "$b = New-Object Drawing.Bitmap %d, %d; "
+                         "[Drawing.Graphics]::FromImage($b).CopyFromScreen(%d, %d, 0, 0, $b.Size); "
+                         "$b.Save('%@')", (int)NSWidth(frame), (int)NSHeight(frame), (int)NSMinX(frame), (int)top, path] ];
+#elif defined(GNUSTEP)
     NSString *path = [self.folder stringByAppendingPathComponent:[NSString stringWithFormat:@"quarry-%@-gnustep.png", scene]];
     // X's y goes down from the display's top; there is no window manager's frame
     NSRect frame = window.frame;

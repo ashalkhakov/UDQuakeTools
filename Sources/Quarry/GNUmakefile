@@ -79,7 +79,10 @@ Quarry_INCLUDE_DIRS = \
 # resources automatically.
 Quarry_XCDATAMODELD_FILES = ../Libraries/UDDecls/DeclModel.xcdatamodeld
 
+Quarry_APPLICATION_ICON = Quarry.png
+
 Quarry_RESOURCE_FILES = \
+    Quarry.png \
     Resources/Base.lproj/MainMenu.xib \
     Resources/Base.lproj/UDWorkspaceWindow.xib \
     Resources/UDPDAEditorView.xib \

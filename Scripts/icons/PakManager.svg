@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<!-- A crate, its lid's band, the flash of what is in it. -->
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#26303f"/><stop offset=".5" stop-color="#2c3a42"/><stop offset="1" stop-color="#23503f"/></linearGradient></defs><rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<rect x="232" y="232" width="560" height="560" fill="#be9058"/>
+<rect x="232" y="392" width="560" height="72" fill="#a27843"/>
+<path d="M378 488H662V560H616V632H466V718H378Z" fill="#f4e8d4"/>
+</svg>

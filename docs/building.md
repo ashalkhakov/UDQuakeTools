@@ -173,6 +173,17 @@ dhewm3 the debugger scene runs; without it, that scene is skipped.
     -scheme QuarryTests -destination 'platform=macOS' test -only-testing:QuarryTests/UDScreenshotTests
   ```
 
+- **Windows:** run the case in a logged-on desktop session, not over SSH, which
+  has no desktop. PowerShell copies each window's part of the screen, so nothing
+  may cover it. The default gives it the look the installer gives the apps:
+
+  ```sh
+  defaults write xctest GSTheme WinUXTheme
+  UD_DOOM3_PATH="C:/Games/DOOM 3" UD_SCREENSHOTS="$(cygpath -m "$PWD/Screenshots")" \
+    xctest -XCTest UDScreenshotTests Tests/Quarry/QuarryTests.bundle
+  defaults delete xctest GSTheme
+  ```
+
 ## Releases
 
 A `v*` tag releases everything: the AppImage, the Windows installer, and the

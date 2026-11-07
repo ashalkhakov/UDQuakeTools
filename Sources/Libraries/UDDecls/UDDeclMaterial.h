@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// ignoreDepth, uncompressed, highquality, forceHighQuality, nopicmip,
 /// screen, screen2, glassWarp, privatePolygonOffset. Setting one is an edit
 /// of its material's tokens.
+///
+/// Its blend, taken apart: blendMode (a keyword of ParseBlend's, or custom for
+/// two factors), blendSource and blendDestination (the factors it draws with,
+/// nil for a lighting stage; setting one writes the two out), blendUsesFactors.
 @interface UDMaterialStage : NSObject
 @property (nonatomic, weak, readonly, nullable) UDDeclMaterial *material;
 @property (nonatomic, readonly) NSUInteger index;

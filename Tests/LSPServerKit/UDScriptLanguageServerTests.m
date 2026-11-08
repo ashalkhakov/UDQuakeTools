@@ -220,9 +220,11 @@ static NSString *const UDLanternText =
         asked = folder;
         return nil;
     };
-    [self request:@"initialize" params:@{ @"rootUri": [NSURL fileURLWithPath:@"/tmp/mod"].absoluteString }];
-    XCTAssertEqualObjects(asked, @"/tmp/mod");
-    XCTAssertEqualObjects(self.server.initializeParams[@"rootUri"], [NSURL fileURLWithPath:@"/tmp/mod"].absoluteString);
+    // the folder's path as its URL has it (on Windows, /tmp/mod is relative to the drive's working folder)
+    NSURL *root = [NSURL fileURLWithPath:@"/tmp/mod"];
+    [self request:@"initialize" params:@{ @"rootUri": root.absoluteString }];
+    XCTAssertEqualObjects(asked, root.path);
+    XCTAssertEqualObjects(self.server.initializeParams[@"rootUri"], root.absoluteString);
 }
 
 @end

@@ -3,7 +3,8 @@
  *
  *  A Quarry project's commands, in UDCode's Editor menu (-[UDExtension
  *  editorMenuItemsForWorkbench:], from UQEditorMenus.xib, this the XIB's
- *  owner): New Declaration…, New PDA…, New Skin… (a decl made through the
+ *  owner): Find in Decls… (Quarry's Find, in the bottom area), New
+ *  Declaration…, New PDA…, New Skin… (a decl made through the
  *  game's decl store, opened in its tab), and Test Declaration (the front
  *  decl's text checked as the engine reads it, its problems the document's
  *  issues). The GUI editor's own items (zoom, the grid, the status bar)
@@ -19,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UQCommands : NSObject
 
-- (instancetype)initWithProject:(UQProject *)project;
+/// @a extension's (its segment in the bottom area, Find's).
+- (instancetype)initWithProject:(UQProject *)project extension:(nullable id<UDExtension>)extension;
 
 @property (nonatomic, weak, readonly) UQProject *project;
 /// The menu's items (UQEditorMenus.xib's), their target this.
@@ -39,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)newPDA:(nullable id)sender;
 - (IBAction)newSkin:(nullable id)sender;
 - (IBAction)testDecl:(nullable id)sender;
+/// Quarry's Find in the bottom area, under the extension's segment.
+- (IBAction)findInDecls:(nullable id)sender;
 
 @end
 

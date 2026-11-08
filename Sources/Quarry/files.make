@@ -11,6 +11,7 @@ QUARRY_OBJC_FILES = \
     Extension/UQPakDocument.m \
     Extension/UQCommands.m \
     Extension/UQRunning.m \
+    Extension/UQFindViewController.m \
     Window/UDNewDeclWindowController.m \
     ../PakManager/UDArchiveDocument.m \
     ../PakManager/UDArchiveBrowserController.m \
@@ -68,6 +69,7 @@ QUARRY_C_FILES = \
 QUARRY_RESOURCE_FILES = \
     Resources/UQEditorHost.xib \
     Resources/UQEditorMenus.xib \
+    Resources/UQFind.xib \
     Resources/UDNewDecl.xib \
     ../PakManager/UDArchiveBrowser.xib \
     Resources/UDPDAEditorView.xib \

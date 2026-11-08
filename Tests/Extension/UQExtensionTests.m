@@ -33,6 +33,7 @@
 #import "UDZipWriter.h"
 #import "UQCommands.h"
 #import "UQRunning.h"
+#import "UQFindViewController.h"
 
 /// A window's side, as the extension asks it: its folder (its project's), what it shows.
 @interface UQTestProject : NSObject
@@ -108,7 +109,11 @@ static NSString *const UQMaterial =
 
 /// The project of the test's folder, its game started.
 - (UQProject *)startedProject {
-    _quarry = [[UQProject alloc] initWithFolder:[NSURL fileURLWithPath:_project] workbench:nil];
+    return [self startedProjectOfWorkbench:nil];
+}
+
+- (UQProject *)startedProjectOfWorkbench:(id)workbench {
+    _quarry = [[UQProject alloc] initWithFolder:[NSURL fileURLWithPath:_project] workbench:workbench];
     __block BOOL started = NO;
     [_quarry whenStarted:^(UDWorkspace *workspace) { started = YES; }];
     NSDate *until = [NSDate dateWithTimeIntervalSinceNow:30];
@@ -493,7 +498,7 @@ static NSString *const UQMaterial =
 
 - (void)testANewDeclIsMadeOpenedAndTestedAsTheEngineReadsIt {
     UQProject *project = [self startedProject];
-    UQCommands *commands = [[UQCommands alloc] initWithProject:project];
+    UQCommands *commands = [[UQCommands alloc] initWithProject:project extension:nil];
     NSError *error = nil;
     XCTAssertTrue([commands createDeclOfTypeName:@"skin" named:@"skins/test_new" fileName:nil error:&error], @"%@", error);
     [project reloadTree];
@@ -556,6 +561,31 @@ static NSString *const UQMaterial =
     XCTAssertEqualObjects(launch[@"args"], (@[ @"+set", @"developer", @"1" ]));
     XCTAssertEqualObjects(launch[@"settings"][@"fs_game"], @"base", @"the game's paths, for the adapter's game paths");
     XCTAssertEqualObjects(launch[@"port"], @27980, @"the workspace's Debugger settings");
+}
+
+- (void)testFindInDeclsFindsTheirTextGroupedAndOpensAMatch {
+    UQTestWorkbench *workbench = [[UQTestWorkbench alloc] init];
+    UQProject *project = [self startedProjectOfWorkbench:workbench];
+    UQFindViewController *find = [[UQFindViewController alloc] initWithProject:project];
+    XCTAssertNotNil(find.view);
+    XCTAssertNotNil(find.searchField);
+    XCTAssertEqual(find.outlineView.dataSource, (id)find, @"its XIB's, connected");
+    XCTAssertEqualObjects(NSStringFromSelector(find.searchField.action), @"search:");
+    XCTAssertEqualObjects(NSStringFromSelector(find.outlineView.doubleAction), @"openMatch:");
+
+    find.searchField.stringValue = @"WALL.TGA";
+    [find search:nil];
+    XCTAssertEqualObjects(find.groupNames, @[ @"material" ], @"any case, by what they are");
+    XCTAssertEqualObjects([find URLsInGroup:@"material"], @[ [UQProject URLOfDeclType:@"material" name:@"textures/test/wall"] ]);
+    XCTAssertEqualObjects(find.statusField.stringValue, @"1 found");
+    find.searchField.stringValue = @"main";
+    [find search:nil];
+    XCTAssertEqualObjects(find.groupNames, @[ @"script" ]);
+
+    // chosen: its tab
+    [find.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:1] byExtendingSelection:NO];
+    [find openMatch:nil];
+    XCTAssertEqualObjects(workbench.shown, @[ [UQProject URLOfGamePath:@"script/doors.script"] ]);
 }
 
 @end

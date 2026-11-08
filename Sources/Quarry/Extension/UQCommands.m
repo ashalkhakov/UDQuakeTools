@@ -10,16 +10,20 @@
 #import "UDNewDeclWindowController.h"
 #import "UDTextPromptPanel.h"
 #import "idDeclManager.h"
+#import "UQFindViewController.h"
 
 static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
 
 @implementation UQCommands {
     NSArray<NSMenuItem *> *_menuItems;
+    __weak id<UDExtension> _extension;
+    UQFindViewController *_find;
 }
 
-- (instancetype)initWithProject:(UQProject *)project {
+- (instancetype)initWithProject:(UQProject *)project extension:(id<UDExtension>)extension {
     if (!(self = [super init])) return nil;
     _project = project;
+    _extension = extension;
     NSNib *nib = [[NSNib alloc] initWithNibNamed:@"UQEditorMenus" bundle:[NSBundle bundleForClass:[UQCommands class]]];
     [nib instantiateWithOwner:self topLevelObjects:NULL];
     _menuItems = [_menu.itemArray copy];
@@ -176,6 +180,12 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
         return;
     }
     [document.diagnosticStore setDiagnostics:[self problemsOfDeclDocument:document] forSource:UQDiagnosticSourceDeclTest];
+}
+
+- (IBAction)findInDecls:(id)sender {
+    if (!_find) _find = [[UQFindViewController alloc] initWithProject:_project];
+    [_project.workbench showBottomAreaViewController:_find title:@"Find in Decls" extension:_extension];
+    [_find.view.window makeFirstResponder:_find.searchField];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {

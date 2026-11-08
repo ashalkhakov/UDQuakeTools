@@ -267,6 +267,24 @@ static NSString *UQEditorText(NSString *text) {
     [self _applyFilter];
 }
 
+- (NSArray<UDWorkspaceItem *> *)itemsContainingText:(NSString *)query {
+    NSMutableArray *found = [NSMutableArray array];
+    if (!_workspace || !query.length) return found;
+    UDWorkspace *workspace = _workspace;
+    [UDDeclTreeWalker walkLeavesInTree:_tree usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
+        if ([node matchesTextSearch:query inWorkspace:workspace]) [found addObject:node];
+    }];
+    return found;
+}
+
+- (NSURL *)URLOfItem:(UDWorkspaceItem *)node {
+    if (node.kind == UDWorkspaceItemKindDecl) {
+        UDDeclItem *decl = (UDDeclItem *)node;
+        return [UQProject URLOfDeclType:[_workspace.declManager declNameFromType:decl.type] name:decl.declName];
+    }
+    return node.kind == UDWorkspaceItemKindFile ? [UQProject URLOfGamePath:node.path] : nil;
+}
+
 - (void)reloadTree {
     if (!_workspace) return;
     [self _readTree];
@@ -310,13 +328,7 @@ static NSString *UQEditorText(NSString *text) {
         item.collapsibleState = _shown ? UDTreeItemCollapsibleStateExpanded : UDTreeItemCollapsibleStateCollapsed;
         return item;
     }
-    if (node.kind == UDWorkspaceItemKindDecl) {
-        UDDeclItem *decl = (UDDeclItem *)node;
-        NSString *typeName = [_workspace.declManager declNameFromType:decl.type];
-        item.resourceURL = [UQProject URLOfDeclType:typeName name:decl.declName];
-    } else {
-        item.resourceURL = [UQProject URLOfGamePath:node.path];
-    }
+    item.resourceURL = [self URLOfItem:node];
     item.toolTip = item.resourceURL.absoluteString;
     item.action = @selector(openResource:);
     return item;

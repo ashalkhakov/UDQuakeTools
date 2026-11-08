@@ -32,6 +32,12 @@
                         <action selector="newSkin:" target="-2" id="UQM-newskin-a"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Find in Decls…" id="UQM-find">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="findInDecls:" target="-2" id="UQM-find-a"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="UQM-sep1"/>
                 <menuItem title="Test Declaration" id="UQM-test">
                     <modifierMask key="keyEquivalentModifierMask"/>

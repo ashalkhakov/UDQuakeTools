@@ -49,6 +49,12 @@ extern NSNotificationName const UQProjectDidStartNotification;
 /// The tree read again from the game (a decl added, a file saved).
 - (void)reloadTree;
 
+/// The decls, scripts and GUIs whose text has @a query (any case), each
+/// with its URL: Quarry's Find.
+- (NSArray<UDWorkspaceItem *> *)itemsContainingText:(NSString *)query;
+/// A tree item's URL: its decl's, its file's; nil for a folder.
+- (nullable NSURL *)URLOfItem:(UDWorkspaceItem *)item;
+
 /// The URL of a decl, of a game file.
 + (NSURL *)URLOfDeclType:(NSString *)typeName name:(NSString *)name;
 + (NSURL *)URLOfGamePath:(NSString *)path;

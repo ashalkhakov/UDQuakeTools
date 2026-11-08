@@ -11,6 +11,7 @@
 #import "UDArchiveBrowserController.h"
 #import "UQCommands.h"
 #import "UQRunning.h"
+#import "UDTabBadge.h"
 #import "UDGuiEditorViewController.h"
 #import "UDBaseEditorViewController.h"
 #import "UDDeclEditorViewController.h"
@@ -92,10 +93,15 @@ const TSLanguage *tree_sitter_iddecl(void);
     if (!project) return @[];
     UQCommands *commands = [_commands objectForKey:workbench];
     if (!commands) {
-        commands = [[UQCommands alloc] initWithProject:project];
+        commands = [[UQCommands alloc] initWithProject:project extension:self];
         [_commands setObject:commands forKey:workbench];
     }
     return commands.menuItems;
+}
+
+/// Its segment in the bottom area (Find in Decls'): Quarry's badge.
+- (NSImage *)bottomAreaImage {
+    return UDTabBadge(@"Q", 0.55, 0.36, 0.16);
 }
 
 - (id<UDFileSystemProvider>)workbench:(id<UDWorkbench>)workbench fileSystemProviderForScheme:(NSString *)scheme {

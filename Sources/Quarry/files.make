@@ -56,7 +56,6 @@ QUARRY_OBJC_FILES = \
     GUIEditor/UDGuiGLView.m \
     GUIEditor/UDGuiEditorViewController.m \
     Scripts/UDScriptServer.m \
-    Scripts/UDScriptDebugger.m \
     Window/UDTabBadge.m \
     Window/UDTextPromptPanel.m \
     ThirdParty/DMTabBar/DMTabBar.m \

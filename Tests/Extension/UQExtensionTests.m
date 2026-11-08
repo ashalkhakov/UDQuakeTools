@@ -288,7 +288,7 @@ static NSString *const UQMaterial =
     UDDeclTable *object = table.declDocument.declObject;
     XCTAssertTrue([object isKindOfClass:[UDDeclTable class]]);
     XCTAssertEqual(object.values.count, 3u);
-    XCTAssertTrue([[table textOfDocument] containsString:@"testtable"]);
+    XCTAssertTrue([[table textOfDocument] containsString:@"testtable"], @"%@", [table textOfDocument]);
     XCTAssertFalse(table.isEdited);
 
     // an edit of its objects: the document edited, its text the edit's, its undo the context's

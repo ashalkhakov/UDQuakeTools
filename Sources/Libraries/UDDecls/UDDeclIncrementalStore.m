@@ -669,10 +669,7 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
 
 - (NSData *)ud_textForDeclObject:(NSManagedObject *)object error:(NSError **)error {
     Class cls = NSClassFromString(object.entity.managedObjectClassName);
-    // Unedited, it is its text as the file has it, comments and all (and
-    // as it is, where its parser gave up and made it a default).
-    if (![cls isSubclassOfClass:[UDDeclBase class]] || ((UDDeclBase *)object).ud_sourceTextEdited ||
-        (!object.hasChanges && !object.isInserted)) {
+    if (![cls isSubclassOfClass:[UDDeclBase class]] || ((UDDeclBase *)object).ud_sourceTextEdited) {
         return [object valueForKey:@"sourceText"];
     }
     // As -_applyChangesForDeclObject:isInserted:error: writes it.
@@ -680,7 +677,27 @@ static NSString * const UDDeclBaseEntityName = @"DeclBase";
     NSDictionary *currentValues = decl != nil ? [self _parsedValuesForEntity:object.entity decl:decl error:NULL] : nil;
     NSDictionary *values = [self _codecValuesForDeclObject:object currentValues:currentValues];
     NSData *text = [cls ud_textByUnparsingName:[object valueForKey:@"name"] values:values error:error];
-    return text ?: [object valueForKey:@"sourceText"];
+    if (text == nil) {
+        return [object valueForKey:@"sourceText"];
+    }
+    // Unedited, it is its text as the file has it, comments and all (and
+    // as it is, where its parser gave up and made it a default): the
+    // decl's own text, its braced body, under the header the unparser
+    // writes ("table <name>", a material's name alone), so that an edit
+    // changes the body and not the shape of the whole.
+    if (!object.hasChanges && !object.isInserted) {
+        NSData *body = [object valueForKey:@"sourceText"];
+        NSRange brace = [text rangeOfData:[NSData dataWithBytes:"{" length:1] options:0 range:NSMakeRange(0, text.length)];
+        NSString *bodyString = [[NSString alloc] initWithData:body ?: [NSData data] encoding:NSUTF8StringEncoding];
+        NSString *trimmed = [bodyString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (![trimmed hasPrefix:@"{"] || brace.location == NSNotFound) {
+            return body;    // a header of its own already, or no braces at all
+        }
+        NSMutableData *whole = [[text subdataWithRange:NSMakeRange(0, brace.location)] mutableCopy];
+        [whole appendData:body];
+        return whole;
+    }
+    return text;
 }
 
 - (BOOL)ud_applyText:(NSData *)text toDeclObject:(NSManagedObject *)object error:(NSError **)error {

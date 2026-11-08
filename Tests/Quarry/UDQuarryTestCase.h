@@ -60,6 +60,8 @@ NSString * _Nullable UDDoom3InstallPath(void);
 /// Every item of the main outline, fully expanded, as slash-separated paths
 /// of display names.
 - (NSArray<NSString *> *)expandedOutlinePathsInController:(UQTestWindow *)controller;
+/// A row's label, as the tree shows it.
+- (NSString *)labelOfItem:(id)item inOutline:(NSOutlineView *)outline;
 
 /// Runs the run loop until condition holds or timeout passes.
 - (BOOL)spinUntil:(BOOL (^)(void))condition timeout:(NSTimeInterval)timeout;

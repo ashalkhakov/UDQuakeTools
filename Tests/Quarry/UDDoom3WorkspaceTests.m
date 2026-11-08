@@ -98,7 +98,7 @@
     NSOutlineView *outline = controller.outlineView;
     NSMutableSet *topLevel = [NSMutableSet set];
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
-        [topLevel addObject:[[outline itemAtRow:row] name]];
+        [topLevel addObject:[self labelOfItem:[outline itemAtRow:row] inOutline:outline]];
     }
     for (NSString *group in @[@"material", @"table", @"skin", @"sound", @"entityDef", @"mapDef", @"model", @"fx", @"particle", @"articulatedFigure", @"pda", @"email", @"audio", @"video", @"script", @"guis"]) {
         XCTAssertTrue([topLevel containsObject:group], @"the outline should have a %@ group; it has %@", group, topLevel);

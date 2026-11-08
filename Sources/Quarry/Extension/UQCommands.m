@@ -12,6 +12,7 @@
 #import "idDeclManager.h"
 #import "UQFindViewController.h"
 #import "UDWorkspaceSettingsWindowController.h"
+#import <objc/runtime.h>
 
 static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
 

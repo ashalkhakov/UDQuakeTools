@@ -1398,6 +1398,7 @@
 		999B39A3FE341CFBB5908261 /* LanguageInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 58C5EC4A8559163055779207 /* LanguageInfo.plist */; };
 		5450248C8BE6DB0FB04142E9 /* highlights-idscript.scm in Resources */ = {isa = PBXBuildFile; fileRef = 01B322296BF5179EF07CB3D7 /* highlights-idscript.scm */; };
 		B85A651CC18135DE4A185325 /* highlights-iddecl.scm in Resources */ = {isa = PBXBuildFile; fileRef = EB3F9A0BB2BDC07FE9E71F72 /* highlights-iddecl.scm */; };
+		8FD2F58BD657273E5333A121 /* udpaktool in Embed udpaktool */ = {isa = PBXBuildFile; fileRef = AA00050100000000000000AA /* udpaktool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2500,6 +2501,13 @@
 			remoteGlobalIDString = ED200000000000000000000E;
 			remoteInfo = LSPServerKit;
 		};
+		52FEE1E626A53FE04CF6A642 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA00000100000000000000AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA04000100000000000000AA;
+			remoteInfo = udpaktool;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -2705,6 +2713,17 @@
 				0EDFC6F43B92F4F89E4065BF /* UDWorkspace.framework in Embed Frameworks */,
 				8FAEB0F7E6C47AAD99A67092 /* LSPServerKit.framework in Embed Frameworks */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		901263CC9EF2C068F23932CD /* Embed udpaktool */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				8FD2F58BD657273E5333A121 /* udpaktool in Embed udpaktool */,
+			);
+			name = "Embed udpaktool";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -3033,7 +3052,6 @@
 		395D2B3D3773407E57B6B678 /* QuarryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuarryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPakInstallTests.m; sourceTree = "<group>"; };
 		2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGuiViewerTests.m; sourceTree = "<group>"; };
-		076D34CA93FD1E1CB9B78D7D /* UDScriptDebuggerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptDebuggerTests.h; sourceTree = "<group>"; };
 		8514F8F5574904DBA607004B /* idDeclFileWriteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = idDeclFileWriteTests.m; sourceTree = "<group>"; };
 		DEDC20CFEF5529929C9C840F /* UDDeclTextChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDDeclTextChecker.h; sourceTree = "<group>"; };
 		5C0E00000000000000000004 /* UDScriptEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDScriptEvents.h; sourceTree = "<group>"; };
@@ -3716,7 +3734,6 @@
 				E81082559B29CFE1F4C85F68 /* UDDoom3WorkspaceTests.m */,
 				5FE0609F8ABD1743AC44F534 /* UDPakInstallTests.m */,
 				2DB6E4A303A1DE010BF392C4 /* UDGuiViewerTests.m */,
-				076D34CA93FD1E1CB9B78D7D /* UDScriptDebuggerTests.h */,
 			);
 			path = Quarry;
 			sourceTree = "<group>";
@@ -4398,6 +4415,7 @@
 				DD09000000000000000000AA /* Embed Frameworks */,
 				EC1E00000000000000000012 /* Embed udscript-lsp */,
 				DA9A00000000000000000012 /* Embed udscript-dap */,
+				901263CC9EF2C068F23932CD /* Embed udpaktool */,
 			);
 			buildRules = (
 			);
@@ -4414,6 +4432,7 @@
 				82F80178ACEBD99D2F9D2F4B /* PBXTargetDependency */,
 				EC1E00000000000000000010 /* PBXTargetDependency */,
 				DA9A00000000000000000010 /* PBXTargetDependency */,
+				1181D4294C5CF74DBDD04156 /* PBXTargetDependency */,
 			);
 			name = UDQuakeTools;
 			productName = UDQuakeTools;
@@ -6209,6 +6228,11 @@
 			isa = PBXTargetDependency;
 			target = ED200000000000000000000E /* LSPServerKit */;
 			targetProxy = 8438C41237BCFACCB990DDDC /* PBXContainerItemProxy */;
+		};
+		1181D4294C5CF74DBDD04156 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA04000100000000000000AA /* udpaktool */;
+			targetProxy = 52FEE1E626A53FE04CF6A642 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

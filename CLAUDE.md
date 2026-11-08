@@ -1,16 +1,20 @@
 # UDQuakeTools
 
 A GNUstep/macOS toolkit for browsing and editing idTech archive and decl
-formats. On Linux it ships as one AppImage (the launcher and Quarry);
-on macOS as UDLauncher. Archives need nothing beyond zlib: the minizip that
+formats, shipped as one UDCode extension (`ashalkhakov.udquaketools`,
+`UDQuakeTools.bundle`, docs/UDCODE.md): Quarry and Pak Manager have no app
+of their own. UDCode (github.com/ashalkhakov/UDCodeKit, `../UDCodeKit-projects`)
+is the window, the tabs, the text editor and the debugger; the extension is
+the project (a folder with a `.qworkspace`), its `quarry:` file system, the
+custom documents (decls as Core Data objects, GUIs, paks) and their editors,
+idScript's language server (`udscript-lsp`) and debug adapter
+(`udscript-dap`). The bundle builds against UDCode's SDK (the release
+`.github/pins.env` names: in the prefix on GNUstep, `.deps/` on macOS) and
+never carries it, nor GNUstep or FreeCoreData (the stack's): one copy of
+each in UDCode's process. Archives need nothing beyond zlib: the minizip that
 came with the Doom 3 file system port reads them, `UDZipWriter` writes them.
-Quarry's text editor and tab bar are UDCodeKit's (`../UDPieceTable`,
-github.com/ashalkhakov/UDCodeKit), with its grammar bundles (idScript for
-`.script`) in the app's PlugIns; the release `.github/pins.env` names is
-unpacked into the prefix on GNUstep and into `.deps/` on macOS.
-Scripts also have a language server, `udscript-lsp` (`Sources/Tools`),
-which Quarry carries beside its executable and starts per workspace;
-its protocol side is `Sources/LSPServerKit`, a framework of its own.
+A release ships each platform's `.udcx` and UDCode with it in
+(gnustep-release-actions, `.github/release/udcode.conf`).
 
 ## Layout
 
@@ -24,13 +28,21 @@ search paths): nothing refers upward. Where a lower layer needs something of
 a higher one, it declares a protocol the higher one adopts (`idFileAccess.h`,
 `UDEngineSettings.h`, `idWindowEditorWrapper.h`), as the engine does. A new
 library goes in `Libraries.make`, `Sources/Libraries/GNUmakefile` and the
-Xcode project (a framework target, embedded in the apps).
+Xcode project (a framework target, embedded in the bundle).
 
-Quarry is in folders by part: `App`, `Model`, `Documents`, `Window`,
-`Editors`, `Editors/Decls`, `Preview`, `GUIEditor`, `Scripts`, `Compat`. A
-new file goes in its part's folder, and in the Xcode group of the same name.
-Imports name the header alone; its GNUmakefiles take its folders from
-`Sources/Quarry/Quarry.include.make`.
+`Sources/Quarry` is the extension. `Extension/` is what UDCode calls
+(`UQExtension`, the principal class; `UQProject`; the `UQ*Document` custom
+documents; `UQEditorHost`, which puts a Quarry editor in a UDCode tab;
+`UQCommands`, the Editor menu; `UQRunning`); Quarry's own parts are in
+folders: `Model`, `Documents`, `Window`, `Editors`, `Editors/Decls`,
+`Preview`, `GUIEditor`, `Scripts`, `Compat`. A new file goes in its part's
+folder, in `Sources/Quarry/files.make` (the GNUmakefiles' lists) and in
+the `UDQuakeTools` and `QuarryTests` targets' phases, which list the same
+files. Imports name the header alone; its GNUmakefiles take its folders from
+`Sources/Quarry/Quarry.include.make`. The UI is in XIBs, loaded from the
+bundle (`[NSBundle bundleForClass:]`), never the main bundle: that is
+UDCode's. A class name must not clash with UDCode's (the runtime aborts on a
+duplicate): Quarry's workspace is `UDGameWorkspace` for that reason.
 
 ## GNUstep patches live elsewhere
 
@@ -48,7 +60,10 @@ XCTest bundles, run on both systems:
   `UDArchivesTests`, ...; `Tests/LSPServerKit` too), sharing
   `Tests/Support` and `Tests/UnitTests.make`. A library's tests go in its
   bundle; a library without tests has none yet.
-- `Tests/Quarry` — the app driven through its own windows. The PDA and
+- `Tests/Extension` — what UDCode calls: the project, the provider, the
+  custom documents, the editors' host.
+- `Tests/Quarry` — the editors driven through the extension in
+  `UQTestWindow` (a window standing in for UDCode's workbench). The PDA and
   pak cases build their own fixtures and run everywhere; the Doom 3 cases
   need a retail install at `$UD_DOOM3_PATH` (default
   `/Volumes/ExtraSSD/games/DOOM 3`) and check nothing without one. Never copy
@@ -58,7 +73,7 @@ GNUstep: `make && make check` from the root, in docker, under `xvfb-run -a`
 (the root `GNUmakefile` adds it when there is no display). Mount the Doom 3
 install read-only and set `UD_DOOM3_PATH` to include those cases. macOS:
 `make -f Makefile.apple check`, or the `Libraries` and `QuarryTests`
-schemes.
+schemes (the `UDQuakeTools` scheme builds the bundle).
 
 Run a change on both systems before calling it done: they differ (bindings
 rewrite placeholders on macOS, directory listing order differs, modal loops

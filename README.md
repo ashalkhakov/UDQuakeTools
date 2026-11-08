@@ -2,7 +2,8 @@
 
 [![Build](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml/badge.svg)](https://github.com/ashalkhakov/UDQuakeTools/actions/workflows/build.yml)
 
-The tools to make a Doom 3 mod, for **macOS, Linux and Windows**. Quarry opens a game
+The tools to make a Doom 3 mod, for **macOS, Linux and Windows**, as an
+extension of [UDCode](https://github.com/ashalkhakov/UDCodeKit). Quarry opens a game
 install or a mod, finds every declaration in it, loose or inside its paks,
 and edits them in editors of their own: materials lit as the game lights
 them, particles and FX playing as the game plays them, GUIs that run and
@@ -26,46 +27,47 @@ particle or GUI looks and runs in the editor as it does in the game.
 
 ## Get it
 
-Download from [Releases](https://github.com/ashalkhakov/UDQuakeTools/releases/latest):
+Download from [Releases](https://github.com/ashalkhakov/UDQuakeTools/releases/latest)
+either UDCode with the tools in it, or the extension alone for the UDCode
+you have:
 
-| Platform | Download | |
+| Platform | UDCode with the tools | The extension alone |
 |---|---|---|
-| macOS | `UDLauncher-macOS-*.zip` | The launcher, which opens the other apps; updates itself (UDLauncher > Check for Updates…) |
-| macOS | `DeclBrowser-macOS-*.zip`, `PakManager-macOS-*.zip` | Quarry and Pak Manager on their own |
-| Linux x86_64 | `UDQuakeTools-*-x86_64.AppImage` | The launcher, Quarry, Pak Manager and the command-line tools in one file; updated by Gear Lever, AppImageUpdate or AppImagePool |
-| Windows x64 | `UDQuakeTools-*-win64.msi` | The launcher, Quarry and Pak Manager, installed for you alone (no administrator needed), with a Start menu shortcut to the launcher; updates itself (Check for Updates…) |
-| Windows x64 | `UDQuakeTools-*-win64-portable.zip` | The same, without installing: unzip it anywhere and run `UDQuakeTools.exe` |
+| macOS | `UDCode-UDQuakeTools-macOS-*.zip` | `udquaketools-*-darwin-arm64.udcx`, `…-darwin-x64.udcx` |
+| Linux x86_64 | `UDCode-UDQuakeTools-*-x86_64.AppImage` | `udquaketools-*-linux-x64.udcx` |
+| Windows x64 | `UDCode-UDQuakeTools-*-win64-portable.zip` | `udquaketools-*-win32-x64.udcx` |
 
-The macOS apps aren't notarized yet. If macOS says an app is damaged, clear
-its quarantine once after unzipping:
+UDCode with the tools is UDCode as its own release has it, the extension
+installed the first time it starts. The extension alone goes into UDCode
+(0.22 or later) with **UDCode > Extensions… > Install from Package…**, and
+loads the next time UDCode starts. Either
+way the extension then updates itself from this repository's releases, and
+UDCode from its own.
 
-```sh
-xattr -dr com.apple.quarantine UDLauncher.app
-```
+Open a folder with a `.qworkspace` in it (or make one: **Editor > New Quarry
+Workspace…** on a folder) and the window is a Quarry workspace: the Decls
+navigator on the left, the decls and GUIs in editors of their own, the
+scripts in UDCode's editor with their language server. A pak (`.pk4`,
+`.pak`, `.pk3`) opens in Pak Manager's browser in a tab of its own.
 
 The AppImage is built on Ubuntu 22.04, so it needs glibc 2.35 or later and a
-desktop's usual libraries (fontconfig, X11, OpenGL). CI tests it on Ubuntu,
-and it also runs on Fedora 42, which Bazzite is built on. Where there's no
-FUSE, `./UDQuakeTools-*.AppImage --appimage-extract-and-run` runs it anyway.
-
-The Windows installer isn't signed yet. If SmartScreen says it
-protected your PC, choose **More info**, then **Run anyway**. From the release
-after 0.6.0, the apps update themselves on Windows as on the Mac (Check for
-Updates…, and a check once a day if you allow it); before that, install the
-newer release over the old one.
+desktop's usual libraries (fontconfig, X11, OpenGL). Where there's no FUSE,
+`./UDCode-UDQuakeTools-*.AppImage --appimage-extract-and-run` runs it anyway.
+The Windows zip isn't signed yet: if SmartScreen says it protected your PC,
+choose **More info**, then **Run anyway**.
 
 Every push also uploads builds to its [Actions run](https://github.com/ashalkhakov/UDQuakeTools/actions).
-To build from source, see [Building](docs/building.md).
+To build from source, see [Building](docs/building.md); how the extension
+sits in UDCode, [UDCode](docs/UDCODE.md).
 
 ## What's in it
 
-| App | What it's for |
+| | What it's for |
 |---|---|
 | **Quarry** | Browse, search and edit a game's or mod's declarations, GUIs and scripts, and debug the scripts |
-| **Pak Manager** | Open, extract and make archives: Quake's PAK, Daikatana's PAK, PAK2, PK3 and PK4 |
-| **UDLauncher** | Opens the others |
+| **Pak Manager** | Open, extract and make archives: Quake's PAK, Daikatana's PAK, PAK2, PK3 and PK4, each in a tab of its own |
 | `udpaktool` | Lists and extracts archives from the command line |
-| `udscript-lsp`, `udscript-dap` | idScript's language server and debug adapter, which Quarry starts for itself |
+| `udscript-lsp`, `udscript-dap` | idScript's language server and debug adapter, which the extension starts for itself |
 
 | Pak Manager on macOS | Pak Manager on Linux (GNUstep) | Pak Manager on Windows |
 |---|---|---|
@@ -129,9 +131,9 @@ To build from source, see [Building](docs/building.md).
   mod authoring, kept up to date with dhewm3. Stock dhewm3 1.5.5 can be
   debugged too, but without stopping at script errors, other threads'
   variables, entities' spawn args, setting variables or jumping.
-- **On Linux and Windows** the apps run on GNUstep, patched by
+- **On Linux and Windows** UDCode runs on GNUstep, patched by
   [gnustep-patches](https://github.com/ashalkhakov/gnustep-patches) until the
-  fixes are upstream; the AppImage and the installer carry it.
+  fixes are upstream; UDCode's AppImage and Windows packages carry it.
 
 The plan, editor by editor: [ROADMAP.md](ROADMAP.md).
 
@@ -140,21 +142,23 @@ The plan, editor by editor: [ROADMAP.md](ROADMAP.md).
 | Path | What |
 |---|---|
 | `Sources/Libraries/` | The libraries, bottom up: `UDIdLib` (idLib, ported), `UDCommon` (the engine's file system and decl manager, ported), `UDArchives`, `UDImages`, `UDDecls`, `UDRenderer`, `UDUI` (the GUI code, ported), `UDGUIEditor`, `UDScripts`, `UDWorkspace` |
-| `Sources/Quarry/` | Quarry, in folders by part: `App`, `Model`, `Documents`, `Window`, `Editors`, `Preview`, `GUIEditor`, `Scripts` |
-| `Sources/PakManager/`, `Sources/UDLauncher/` | Pak Manager and the launcher |
+| `Sources/Quarry/` | The extension, `UDQuakeTools.bundle`: `Extension` (what UDCode calls: the project, the custom documents, the editors' host, the Editor menu, running and debugging), and Quarry's parts in folders: `Model`, `Documents`, `Window`, `Editors`, `Preview`, `GUIEditor`, `Scripts` |
+| `Sources/PakManager/` | Pak Manager's archive browser, the extension's editor of a pak |
 | `Sources/LSPServerKit/`, `Sources/Tools/` | The language-server framework; `udpaktool`, `udscript-lsp`, `udscript-dap` |
-| `tree-sitter-iddecl/`, `tree-sitter-idscript/` | The grammars Quarry's editors highlight with |
-| `Tests/` | Each library's unit tests; `Tests/Quarry` drives Quarry through its own windows |
-| `docs/` | Building, testing, debugging scripts |
-| `.github/release/` | What the AppImage and the Windows installer carry |
+| `UDCodeExtension/` | The extension's manifest (`package.json`), its modes and highlights |
+| `tree-sitter-iddecl/`, `tree-sitter-idscript/` | The grammars the extension's modes highlight with |
+| `Tests/` | Each library's unit tests; `Tests/Extension` the extension's; `Tests/Quarry` drives the editors through the extension, in a window standing in for UDCode's |
+| `docs/` | Building, UDCode, debugging scripts |
+| `.github/release/udcode.conf` | How the extension is packaged, and UDCode with it |
 
-Quarry's text editor, its tabs and its debugger views come from
-[UDCodeKit](https://github.com/ashalkhakov/UDCodeKit).
+The text editor, the tabs, the debugger views and the window are
+[UDCode](https://github.com/ashalkhakov/UDCodeKit)'s.
 
 ## Documentation
 
 - [Building](docs/building.md): Xcode, make on GNUstep (Linux, and Windows in
-  MSYS2), the tests, the AppImage and the Windows installer
+  MSYS2), the tests, the packages
+- [UDCode](docs/UDCODE.md): what the extension gives UDCode, and how
 - [Debugging scripts](docs/debugging.md): setting up a game to debug, what
   works with stock dhewm3 and with our fork
 - [Roadmap](ROADMAP.md): every editor, done and to do

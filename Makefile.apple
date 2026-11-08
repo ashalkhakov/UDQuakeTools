@@ -44,7 +44,7 @@ installcheck:
 	@b=$(DESTDIR)/$(BUNDLE); \
 	  test "$$(/usr/libexec/PlistBuddy -c 'Print :NSPrincipalClass' $$b/Contents/Info.plist)" = UQExtension \
 	    || { echo "$(BUNDLE): its principal class is not UQExtension"; exit 1; }; \
-	  for tool in udscript-lsp udscript-dap; do \
+	  for tool in udscript-lsp udscript-dap udpaktool; do \
 	    test -x $$b/Contents/MacOS/$$tool || { echo "$(BUNDLE) has no $$tool"; exit 1; }; \
 	  done; \
 	  for fw in UDDecls UDWorkspace LSPServerKit; do \

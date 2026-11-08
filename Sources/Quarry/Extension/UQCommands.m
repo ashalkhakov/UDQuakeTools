@@ -11,6 +11,7 @@
 #import "UDTextPromptPanel.h"
 #import "idDeclManager.h"
 #import "UQFindViewController.h"
+#import "UDWorkspaceSettingsWindowController.h"
 
 static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
 
@@ -18,6 +19,7 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
     NSArray<NSMenuItem *> *_menuItems;
     __weak id<UDExtension> _extension;
     UQFindViewController *_find;
+    UDWorkspaceSettingsWindowController *_settings;
 }
 
 - (instancetype)initWithProject:(UQProject *)project extension:(id<UDExtension>)extension {
@@ -180,6 +182,30 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
         return;
     }
     [document.diagnosticStore setDiagnostics:[self problemsOfDeclDocument:document] forSource:UQDiagnosticSourceDeclTest];
+}
+
+- (IBAction)showWorkspaceSettings:(id)sender {
+    if (_settings) {
+        [_settings showWindow:nil];
+        return;
+    }
+    NSBundle *bundle = [NSBundle bundleForClass:[UQCommands class]];
+    // its XIB from this bundle, it the XIB's owner
+    UDWorkspaceSettingsWindowController *settings = [UDWorkspaceSettingsWindowController alloc];
+    _settings = [settings initWithWindowNibPath:[bundle pathForResource:@"UDWorkspaceSettings" ofType:@"nib"]
+                                                    ?: [bundle pathForResource:@"UDWorkspaceSettings" ofType:@"xib"]
+                                          owner:settings];
+    _settings.workspace = self._workspace;
+    _settings.target = self;
+    _settings.action = @selector(_settingsDidFinish:);
+    [_settings showWindow:nil];
+}
+
+- (void)_settingsDidFinish:(UDWorkspaceSettingsWindowController *)settings {
+    _settings = nil;
+    if (settings.result != NSModalResponseOK) return;
+    NSError *error = nil;
+    if (![_project applySettings:settings.scratchWorkspace.dictionaryRepresentation error:&error]) [self _present:error];
 }
 
 - (IBAction)findInDecls:(id)sender {

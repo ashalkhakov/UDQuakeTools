@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)newPDA:(nullable id)sender;
 - (IBAction)newSkin:(nullable id)sender;
 - (IBAction)testDecl:(nullable id)sender;
+/// The project's .qworkspace edited in Quarry's settings window: on OK
+/// written, the game started again with it.
+- (IBAction)showWorkspaceSettings:(nullable id)sender;
 /// Quarry's Find in the bottom area, under the extension's segment.
 - (IBAction)findInDecls:(nullable id)sender;
 

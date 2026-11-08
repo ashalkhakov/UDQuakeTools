@@ -34,6 +34,8 @@
 #import "UQCommands.h"
 #import "UQRunning.h"
 #import "UQFindViewController.h"
+#import "UDWorkspaceSettingsWindowController.h"
+#import "UDNewDeclWindowController.h"
 
 /// A window's side, as the extension asks it: its folder (its project's), what it shows.
 @interface UQTestProject : NSObject
@@ -476,7 +478,8 @@ static NSString *const UQMaterial =
     workbench.project.folderURL = [NSURL fileURLWithPath:_project];
     NSArray<NSMenuItem *> *items = [extension editorMenuItemsForWorkbench:(id)workbench];
     NSArray *titles = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"isSeparatorItem == NO"]] valueForKey:@"title"];
-    for (NSString *title in @[ @"New Declaration…", @"New PDA…", @"New Skin…", @"Test Declaration", @"Zoom In", @"Show Grid" ]) {
+    for (NSString *title in @[ @"Find in Decls…", @"New Declaration…", @"New PDA…", @"New Skin…", @"Test Declaration",
+                               @"Workspace Settings…", @"Zoom In", @"Show Grid" ]) {
         XCTAssertTrue([titles containsObject:title], @"%@ in %@", title, titles);
     }
     for (NSMenuItem *item in items) {
@@ -586,6 +589,36 @@ static NSString *const UQMaterial =
     [find.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:1] byExtendingSelection:NO];
     [find openMatch:nil];
     XCTAssertEqualObjects(workbench.shown, @[ [UQProject URLOfGamePath:@"script/doors.script"] ]);
+}
+
+- (void)testWorkspaceSettingsAreWrittenAndTheGameStartedAgain {
+    UQProject *project = [self startedProject];
+    NSMutableDictionary *settings = [project.workspace.dictionaryRepresentation mutableCopy];
+    settings[@"gameArguments"] = @"+set developer 1";
+    NSError *error = nil;
+    XCTAssertTrue([project applySettings:settings error:&error], @"%@", error);
+    XCTAssertNil(project.workspace, @"starting again");
+    NSDate *until = [NSDate dateWithTimeIntervalSinceNow:30];
+    while (!project.workspace && !project.startupError && [until timeIntervalSinceNow] > 0) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    }
+    XCTAssertEqualObjects(project.workspace.gameArguments, @"+set developer 1");
+    NSData *written = [NSData dataWithContentsOfFile:[_project stringByAppendingPathComponent:@"mod.qworkspace"]];
+    XCTAssertEqualObjects([NSJSONSerialization JSONObjectWithData:written options:0 error:NULL][@"gameArguments"], @"+set developer 1");
+    XCTAssertTrue([[self labelsUnder:nil of:project] containsObject:@"material"], @"its tree read again");
+
+    // the dialogs' XIBs are the extension's bundle's
+    NSBundle *bundle = [NSBundle bundleForClass:[UQExtension class]];
+    UDWorkspaceSettingsWindowController *dialog = [UDWorkspaceSettingsWindowController alloc];
+    dialog = [dialog initWithWindowNibPath:[bundle pathForResource:@"UDWorkspaceSettings" ofType:@"xib"]
+                                              ?: [bundle pathForResource:@"UDWorkspaceSettings" ofType:@"nib"] owner:dialog];
+    dialog.workspace = project.workspace;
+    XCTAssertNotNil(dialog.window);
+    XCTAssertEqualObjects([dialog.scratchWorkspace gameArguments], @"+set developer 1", @"a copy of its settings");
+    [dialog.window close];
+    UDNewDeclWindowController *newDecl = [[UDNewDeclWindowController alloc] initWithDeclManager:project.workspace.declManager typeName:@"skin"];
+    XCTAssertNotNil(newDecl.window);
+    [newDecl.window close];
 }
 
 @end

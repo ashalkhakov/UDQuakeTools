@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong) IBOutlet NSObjectController *objectController;
 
+/** The workspace whose settings it edits a copy of; set before or after the
+ *  window loads. */
+@property (nonatomic, strong, nullable) UDWorkspace *workspace;
+
 /** The scratch copy being edited. Valid after the window has loaded. */
 @property (nonatomic, strong, readonly, nullable) UDWorkspace *scratchWorkspace;
 

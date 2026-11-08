@@ -1,5 +1,4 @@
 #import "UDWorkspaceSettingsWindowController.h"
-#import "UDWorkspaceDocument.h"
 #import "UDWorkspace.h"
 
 @interface UDWorkspaceSettingsWindowController ()
@@ -10,16 +9,14 @@
 
 #pragma mark - Scratch workspace
 
-// The document may be set before OR after the window loads (both call sites
-// exist), so the scratch is (re)built from whichever event comes last.
+// The workspace may be set before OR after the window loads, so the scratch
+// is (re)built from whichever event comes last.
 - (void)_rebuildScratchWorkspace {
     if (self.objectController == nil) {
         return; // window not loaded yet; windowDidLoad will call again
     }
 
-    UDWorkspace *source = [self.document isKindOfClass:[UDWorkspaceDocument class]]
-        ? ((UDWorkspaceDocument *)self.document).workspace
-        : nil;
+    UDWorkspace *source = self.workspace;
 
     NSDictionary *settings = source != nil ? source.dictionaryRepresentation : @{};
     NSString *rootDir = source.rootDirectory ?: @"";
@@ -33,9 +30,8 @@
     [self _rebuildScratchWorkspace];
 }
 
-- (void)setDocument:(id)document {
-    [super setDocument:document];
-    [self _keepWindowWhenClosed];
+- (void)setWorkspace:(UDWorkspace *)workspace {
+    _workspace = workspace;
     [self _rebuildScratchWorkspace];
 }
 

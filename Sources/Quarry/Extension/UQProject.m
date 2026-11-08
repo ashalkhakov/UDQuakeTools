@@ -104,6 +104,29 @@ static NSMutableArray<UQProject *> *UQStarting;
     for (void (^block)(UDWorkspace *) in waiting) block(nil);
 }
 
+- (BOOL)applySettings:(NSDictionary *)settings error:(NSError **)error {
+    NSData *data = [NSJSONSerialization dataWithJSONObject:settings options:NSJSONWritingPrettyPrinted error:error];
+    if (!data || !_workspaceFileURL || ![data writeToURL:_workspaceFileURL options:NSDataWritingAtomic error:error]) {
+        if (error && !*error) *error = UQError(@"The folder has no .qworkspace to write.");
+        return NO;
+    }
+    // still starting: once it has, again
+    if (!_started) {
+        __weak UQProject *weakSelf = self;
+        [self whenStarted:^(UDWorkspace *workspace) { [weakSelf applySettings:settings error:NULL]; }];
+        return YES;
+    }
+    if (_workspace) [[UDWorkspaceManager sharedManager] closeWorkspace:_workspace];
+    _workspace = nil;
+    _startupError = nil;
+    _started = NO;
+    [_tree deleteAllItems];
+    _shown = nil;
+    [_treeView refresh];
+    [self _start];
+    return YES;
+}
+
 - (void)whenStarted:(void (^)(UDWorkspace *))block {
     if (_started) block(_workspace);
     else [_waiting addObject:[block copy]];

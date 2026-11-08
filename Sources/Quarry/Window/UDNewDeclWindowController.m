@@ -7,7 +7,10 @@
 }
 
 - (instancetype)initWithDeclManager:(idDeclManager *)declManager typeName:(NSString *)typeName {
-    self = [super initWithWindowNibName:@"UDNewDecl"];
+    // its XIB from the bundle it is in (UDCode's UDQuakeTools extension's), not the app's
+    NSBundle *bundle = [NSBundle bundleForClass:[UDNewDeclWindowController class]];
+    self = [super initWithWindowNibPath:[bundle pathForResource:@"UDNewDecl" ofType:@"nib"] ?: [bundle pathForResource:@"UDNewDecl" ofType:@"xib"]
+                                  owner:self];
     if (self) {
         _declManager = declManager;
         NSMutableArray<NSString *> *names = [NSMutableArray array];

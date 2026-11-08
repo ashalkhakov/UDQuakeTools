@@ -46,6 +46,13 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="UQM-sep2"/>
+                <menuItem title="Workspace Settings…" id="UQM-settings">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showWorkspaceSettings:" target="-2" id="UQM-settings-a"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="UQM-sep3"/>
                 <menuItem title="Zoom In" id="UQM-zin">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>

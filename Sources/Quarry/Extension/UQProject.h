@@ -44,6 +44,11 @@ extern NSNotificationName const UQProjectDidStartNotification;
 /// at once with the error when it can't be).
 - (void)whenStarted:(void (^)(UDWorkspace *_Nullable workspace))block;
 
+/// @a settings (a .qworkspace's) written into its .qworkspace, and its game
+/// started again with them (its tree "Opening…" meanwhile). Open tabs keep
+/// what they have of the game it had until they close.
+- (BOOL)applySettings:(NSDictionary *)settings error:(NSError *_Nullable *_Nullable)error;
+
 /// The tree's view, once the navigator is made.
 @property (nonatomic, weak, nullable) UDTreeViewController *treeView;
 /// The tree read again from the game (a decl added, a file saved).

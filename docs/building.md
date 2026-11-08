@@ -141,11 +141,21 @@ time they start:
 
 ## Screenshots
 
-The README's screenshots are of the editors in UDCode, on a retail Doom 3
-install, taken by hand: on GNUstep under a virtual display
-(`xvfb-run -a -s "-screen 0 1600x1000x24"`, then `import -window root`),
-on macOS of UDCode's window alone (`screencapture -l <window id>`), on
-Windows in a logged-on desktop session.
+The README's screenshots are of UDCode with the extension, opened on a retail
+Doom 3 install's folder (one with a `.qworkspace`). The extension sets each
+scene up when the environment asks, once the game has started:
+
+| Variable | What it does |
+|---|---|
+| `UQ_OPEN` | URLs separated by spaces, each opened in a tab, the last in front: `quarry:/material/textures/base_wall/lfwall27d`, `quarry:/particle/flamejet`, `quarry:/file/guis/mainmenu.gui`, a pak's `file:` URL (`DOOM%203`, not `DOOM 3`). The Decls navigator is shown, and the front editor's first inspector |
+| `UQ_INSPECTOR` | That inspector instead, by its title (`Stage` for the particle) |
+| `UQ_GUI_DESIGN` | A named event: the GUI editor in Design, the event sent (`NoIntro`: the menu, not its intro's black), two seconds into its time |
+
+Then the window alone is captured: on macOS `screencapture -o -l <window id>`;
+on GNUstep under a virtual display (`xvfb-run -a -s "-screen 0 1600x1000x24"`,
+then `import -window <id>`); on Windows in a logged-on desktop session (a
+scheduled task with `/IT`, not over SSH, which has no desktop), the window's
+part of the screen.
 
 ## Releases
 

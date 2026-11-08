@@ -6,7 +6,7 @@
   "version": "0.0.0",
   "license": "GPL-3.0-or-later",
   "repository": "https://github.com/ashalkhakov/UDQuakeTools",
-  "engines": { "udcode": "^0.22.0" },
+  "engines": { "udcode": "^0.22.1" },
   "main": "./UDQuakeTools.bundle",
   "updates": "https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/ashalkhakov.udquaketools-{platform}.json"
 }

@@ -18,6 +18,7 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
 @implementation UQCommands {
     NSArray<NSMenuItem *> *_menuItems;
     __weak id<UDExtension> _extension;
+    NSURL *_folder;
     UQFindViewController *_find;
     UDWorkspaceSettingsWindowController *_settings;
 }
@@ -26,11 +27,24 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
     if (!(self = [super init])) return nil;
     _project = project;
     _extension = extension;
+    [self _loadMenu];
+    return self;
+}
+
+- (instancetype)initWithFolder:(NSURL *)folder {
+    if (!(self = [super init])) return nil;
+    _folder = [folder copy];
+    [self _loadMenu];
+    return self;
+}
+
+/// Its items (UQEditorMenus.xib's): a project's, or a folder's.
+- (void)_loadMenu {
     NSNib *nib = [[NSNib alloc] initWithNibNamed:@"UQEditorMenus" bundle:[NSBundle bundleForClass:[UQCommands class]]];
     [nib instantiateWithOwner:self topLevelObjects:NULL];
-    _menuItems = [_menu.itemArray copy];
-    [_menu removeAllItems];
-    return self;
+    NSMenu *menu = _project ? _menu : _folderMenu;
+    _menuItems = [menu.itemArray copy];
+    [menu removeAllItems];
 }
 
 - (NSArray<NSMenuItem *> *)menuItems {
@@ -182,6 +196,20 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
         return;
     }
     [document.diagnosticStore setDiagnostics:[self problemsOfDeclDocument:document] forSource:UQDiagnosticSourceDeclTest];
+    // until its next edit, which takes what it found away
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center removeObserver:self name:UDCodeDocumentTextDidChangeNotification object:document];
+    [center addObserver:self selector:@selector(_testedDocumentDidChange:) name:UDCodeDocumentTextDidChangeNotification object:document];
+}
+
+- (void)_testedDocumentDidChange:(NSNotification *)note {
+    UDCodeDocument *document = note.object;
+    [document.diagnosticStore clearSource:UQDiagnosticSourceDeclTest];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UDCodeDocumentTextDidChangeNotification object:document];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (IBAction)showWorkspaceSettings:(id)sender {
@@ -208,6 +236,52 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
     if (![_project applySettings:settings.scratchWorkspace.dictionaryRepresentation error:&error]) [self _present:error];
 }
 
+// ---------------------------------------------------------------------------
+// MARK: - New Quarry Workspace (a folder's)
+// ---------------------------------------------------------------------------
+
+- (BOOL)writeNewWorkspaceWithSettings:(NSDictionary *)settings error:(NSError **)error {
+    NSArray *names = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_folder.path error:NULL];
+    if ([[names valueForKey:@"pathExtension"] containsObject:@"qworkspace"]) {
+        if (error) *error = [NSError errorWithDomain:@"UQCommandsErrorDomain" code:2 userInfo:@{
+            NSLocalizedDescriptionKey: @"The folder has a Quarry workspace already." }];
+        return NO;
+    }
+    NSData *data = [NSJSONSerialization dataWithJSONObject:settings options:NSJSONWritingPrettyPrinted error:error];
+    NSURL *file = [_folder URLByAppendingPathComponent:[_folder.lastPathComponent stringByAppendingPathExtension:@"qworkspace"]];
+    return data && [data writeToURL:file options:NSDataWritingAtomic error:error];
+}
+
+- (IBAction)newWorkspace:(id)sender {
+    if (_settings) {
+        [_settings showWindow:nil];
+        return;
+    }
+    NSBundle *bundle = [NSBundle bundleForClass:[UQCommands class]];
+    UDWorkspaceSettingsWindowController *settings = [UDWorkspaceSettingsWindowController alloc];
+    _settings = [settings initWithWindowNibPath:[bundle pathForResource:@"UDWorkspaceSettings" ofType:@"nib"]
+                                                    ?: [bundle pathForResource:@"UDWorkspaceSettings" ofType:@"xib"]
+                                          owner:settings];
+    _settings.target = self;
+    _settings.action = @selector(_newWorkspaceDidFinish:);
+    [_settings showWindow:nil];
+}
+
+- (void)_newWorkspaceDidFinish:(UDWorkspaceSettingsWindowController *)settings {
+    _settings = nil;
+    if (settings.result != NSModalResponseOK) return;
+    NSError *error = nil;
+    if (![self writeNewWorkspaceWithSettings:settings.scratchWorkspace.dictionaryRepresentation error:&error]) {
+        [self _present:error];
+        return;
+    }
+    // its navigator and its game come with the window, as a project's do
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"The folder is a Quarry workspace now.";
+    alert.informativeText = @"Open the folder again (File > Open Folder…) to browse its decls.";
+    [alert runModal];
+}
+
 - (IBAction)findInDecls:(id)sender {
     if (!_find) _find = [[UQFindViewController alloc] initWithProject:_project];
     [_project.workbench showBottomAreaViewController:_find title:@"Find in Decls" extension:_extension];
@@ -216,6 +290,7 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
     SEL action = item.action;
+    if (sel_isEqual(action, @selector(newWorkspace:))) return _folder != nil;
     if (sel_isEqual(action, @selector(testDecl:))) return [self _declDocument:NULL name:NULL] != nil;
     return self._workspace != nil;
 }

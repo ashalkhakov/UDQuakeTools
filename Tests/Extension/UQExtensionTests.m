@@ -495,7 +495,7 @@ static NSString *const UQMaterial =
     UQTestWorkbench *other = [[UQTestWorkbench alloc] init];
     other.project = [[UQTestProject alloc] init];
     other.project.folderURL = [NSURL fileURLWithPath:_root];
-    XCTAssertEqual([extension editorMenuItemsForWorkbench:(id)other].count, 0u);
+    XCTAssertEqualObjects([[extension editorMenuItemsForWorkbench:(id)other] valueForKey:@"title"], @[ @"New Quarry Workspace…" ], @"a folder without one: making one");
     XCTAssertNil([extension navigatorViewControllerForWorkbench:(id)other], @"no Decls where there is no Quarry project");
 }
 

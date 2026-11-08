@@ -87,13 +87,16 @@ const TSLanguage *tree_sitter_iddecl(void);
 }
 
 /// The project's commands (UQEditorMenus.xib): New Declaration…, Test
-/// Declaration, the GUI editor's; none in a window that is no Quarry project.
+/// Declaration, the GUI editor's; in a folder that is no Quarry project, New
+/// Quarry Workspace….
 - (NSArray<NSMenuItem *> *)editorMenuItemsForWorkbench:(id<UDWorkbench>)workbench {
     UQProject *project = [self projectOfWorkbench:workbench];
-    if (!project) return @[];
+    NSURL *folder = workbench.project.folderURL;
+    if (!project && !folder) return @[];
     UQCommands *commands = [_commands objectForKey:workbench];
     if (!commands) {
-        commands = [[UQCommands alloc] initWithProject:project extension:self];
+        // a folder that is no Quarry project: New Quarry Workspace… alone
+        commands = project ? [[UQCommands alloc] initWithProject:project extension:self] : [[UQCommands alloc] initWithFolder:folder];
         [_commands setObject:commands forKey:workbench];
     }
     return commands.menuItems;

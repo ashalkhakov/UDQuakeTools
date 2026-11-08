@@ -3,11 +3,9 @@
 #import "UDGameWorkspace.h"
 
 #import "UDDeclManagedObjects.h"
-#import "UDWorkspaceWindowController.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
 #import <UDCodeKit/UDErrorsViewController.h>
 #import "UDDeclDocument.h"
-#import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDReferencePicker.h"
 
@@ -85,12 +83,12 @@ static NSString *const UDDanglingPDA =
                                                                                 atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
-- (UDWorkspaceWindowController *)openFixtureWorkspace {
+- (UQTestWindow *)openFixtureWorkspace {
     return [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.basePath
                                                                       savePath:self.savePath]];
 }
 
-- (UDPDAEditorViewController *)openFixturePDAIn:(UDWorkspaceWindowController *)controller {
+- (UDPDAEditorViewController *)openFixturePDAIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"pda/udtest_pda" inController:controller];
     if (![editor isKindOfClass:[UDPDAEditorViewController class]]) {
         XCTFail(@"a pda decl should open in the PDA editor, not %@", editor);
@@ -129,7 +127,7 @@ static NSString *const UDDanglingPDA =
     return [text substringWithRange:NSMakeRange(start.location, stop - start.location)];
 }
 
-- (void)save:(UDWorkspaceWindowController *)controller {
+- (void)save:(UQTestWindow *)controller {
     [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
     [self spinUntil:^BOOL{ return NO; } timeout:0.1];
 }
@@ -137,7 +135,7 @@ static NSString *const UDDanglingPDA =
 #pragma mark -
 
 - (void)testThePDAOpensFromTheOutlineWithItsFieldsFilledIn {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -157,7 +155,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testEditingAFieldDirtiesTheTabAndSaveWritesTheDeclFile {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -197,7 +195,7 @@ static NSString *const UDDanglingPDA =
 
     // A freshly opened workspace reads the edit back.
     [self closeWorkspace:controller];
-    UDWorkspaceWindowController *reopened = [self openFixtureWorkspace];
+    UQTestWindow *reopened = [self openFixtureWorkspace];
     UDPDAEditorViewController *again = [self openFixturePDAIn:reopened];
     XCTAssertEqualObjects([self textFieldBoundTo:@"fullName" inView:again.view].stringValue, @"Ian B. McCormick");
     XCTAssertEqualObjects(again.pda.post, @"EnPro Plant");
@@ -205,7 +203,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testUndoRevertsAFieldEdit {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -224,7 +222,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testRandButtonGeneratesAnIDNumber {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -241,7 +239,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testAddingAnEmailThroughItsEditorSavesItWithThePDA {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -295,7 +293,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testCancellingTheEmailEditorAddsNothing {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -317,7 +315,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testRemovingAnEmailDetachesItFromThePDA {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -381,7 +379,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testAddingAVideoThroughItsEditorSavesItWithThePDA {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -418,7 +416,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testCancellingTheVideoEditorAddsNothing {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -436,7 +434,7 @@ static NSString *const UDDanglingPDA =
 #pragma mark - Editing what is there
 
 - (void)testDoubleClickingAnEmailEditsIt {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -460,7 +458,7 @@ static NSString *const UDDanglingPDA =
 }
 
 - (void)testCancellingAnAudioLogsEditorKeepsItAsItWas {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -484,7 +482,7 @@ static NSString *const UDDanglingPDA =
 /// The audio log's sound, picked: a sheet over its editor (a modal
 /// window inside its modal session on GNUstep).
 - (void)testAnAudioLogsSoundIsPicked {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
 
@@ -537,7 +535,7 @@ static NSString *const UDDanglingPDA =
 /// tab before anything is saved; a click there shows the row; taking the
 /// email off the PDA takes its error away.
 - (void)testMissingReferencesAreIssues {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDBaseEditorViewController *opened = [self openOutlinePath:@"pda/udtest_dangling" inController:controller];
     XCTAssertTrue([opened isKindOfClass:[UDPDAEditorViewController class]]);
     UDPDAEditorViewController *editor = (UDPDAEditorViewController *)opened;
@@ -552,9 +550,10 @@ static NSString *const UDDanglingPDA =
     }
     XCTAssertEqual(video.line, 5, @"on the line of the PDA that names it");
 
-    UDErrorsViewController *issues = [controller valueForKey:@"issuesNavigator"];
-    XCTAssertEqual([[issues valueForKey:@"entries"] count], 1U, @"the PDA is in the Issues tab");
-    [controller errorsViewController:issues didSelectDiagnostic:video inStore:editor.diagnosticStore];
+    // UDCode's Issues navigator lists the document's
+    XCTAssertTrue([[controller.selectedDocument.diagnosticStore.allDiagnostics valueForKey:@"message"] containsObject:video.message],
+                  @"the PDA's issues are its document's");
+    [controller errorsViewController:nil didSelectDiagnostic:video inStore:controller.selectedDocument.diagnosticStore];
     XCTAssertEqualObjects(editor.tabView.selectedTabViewItem.identifier, @"videos", @"a click shows the videos");
     XCTAssertEqualObjects([editor.videoArrayController.selectedObjects valueForKey:@"name"], @[@"udtest_no_such_video"]);
 
@@ -572,7 +571,7 @@ static NSString *const UDDanglingPDA =
 /// The fixture PDA's references all resolve, and an email added here is one
 /// even before it is saved.
 - (void)testAPDAWhoseReferencesResolveHasNoIssues {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
     XCTAssertEqual(editor.diagnosticStore.allDiagnostics.count, 0U);
@@ -590,7 +589,7 @@ static NSString *const UDDanglingPDA =
 #pragma mark - New PDA
 
 - (void)testANewPDAGetsAFileOfItsOwn {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
 
     __block BOOL asked = NO;
@@ -623,7 +622,7 @@ static NSString *const UDDanglingPDA =
     XCTAssertTrue([text containsString:@"Jonathan Ishii"], @"%@", text);
 
     [self closeWorkspace:controller];
-    UDWorkspaceWindowController *reopened = [self openFixtureWorkspace];
+    UQTestWindow *reopened = [self openFixtureWorkspace];
     UDBaseEditorViewController *again = [self openOutlinePath:@"pda/udtest_newcomer" inController:reopened];
     XCTAssertEqualObjects([(UDPDAEditorViewController *)again pda].fullName, @"Jonathan Ishii", @"and read back");
 }
@@ -631,28 +630,27 @@ static NSString *const UDDanglingPDA =
 #pragma mark - The source
 
 - (void)testAPDAsSourceTakesItsChildrenOffAndOn {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDPDAEditorViewController *editor = [self openFixturePDAIn:controller];
     if (editor == nil) return;
     XCTAssertEqual([editor.audioArrayController.arrangedObjects count], 1U);
 
-    NSSegmentedControl *control = controller.representationControl;
-    [control setSelectedSegment:1];
-    [NSApp sendAction:control.action to:control.target from:control];
-    NSTextView *textView = editor.sourceTextView;
-    NSString *text = textView.string;
+    // Open as Text: its document's text, typed in
+    UDCodeDocument *document = controller.selectedDocument;
+    NSString *text = [document.textModel getValue];
     XCTAssertTrue([text containsString:@"udtest_pda_audio_1"], @"%@", text);
 
     NSMutableArray<NSString *> *lines = [NSMutableArray array];
     for (NSString *line in [text componentsSeparatedByString:@"\n"]) {
         if (![line containsString:@"pda_audio"]) [lines addObject:line];
     }
-    [textView setSelectedRange:NSMakeRange(0, text.length)];
-    [textView insertText:[[lines componentsJoinedByString:@"\n"] stringByReplacingOccurrencesOfString:@"Technician" withString:@"Engineer"]];
-    [control setSelectedSegment:0];
-    [NSApp sendAction:control.action to:control.target from:control];
+    NSString *typed = [[lines componentsJoinedByString:@"\n"] stringByReplacingOccurrencesOfString:@"Technician" withString:@"Engineer"];
+    [document.customDocument.undoManager beginUndoGrouping];
+    UDPosition end = [document.textModel getPositionAt:(NSInteger)text.length];
+    [document.textModel applyEdits:@[ [[UDTextModelEdit alloc] initWithRange:PTRangeMake(1, 1, end.line, end.column) text:typed] ]];
+    [document.customDocument.undoManager endUndoGrouping];
+    [self finishEvent];
 
-    XCTAssertFalse(editor.showsSource);
     XCTAssertEqualObjects(editor.pda.title, @"Engineer");
     XCTAssertEqual([editor.audioArrayController.arrangedObjects count], 0U, @"the audio log it no longer names is off its list");
     XCTAssertEqual([editor.emailArrayController.arrangedObjects count], 1U);

@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="UQCommands">
             <connections>
                 <outlet property="menu" destination="UQM-menu" id="UQM-o-menu"/>
+                <outlet property="folderMenu" destination="UQM-new-menu" id="UQM-o-new-menu"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -93,6 +94,16 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="showGuiEditorOptions:" target="-1" id="UQM-opts-a"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
+        <menu title="Quarry" id="UQM-new-menu" userLabel="A Folder's Editor Menu Items">
+            <items>
+                <menuItem title="New Quarry Workspace…" id="UQM-newws">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="newWorkspace:" target="-2" id="UQM-newws-a"/>
                     </connections>
                 </menuItem>
             </items>

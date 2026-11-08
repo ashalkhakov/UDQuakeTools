@@ -32,6 +32,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     UDPathTree *_tree;          // every decl, script and GUI
     UDPathTree *_shown;         // what the filter leaves of it; nil: all of it
     NSString *_filter;
+    NSMutableSet<NSString *> *_crlfPaths;   // the game files read with \r\n: written back with it
 }
 
 - (instancetype)initWithFolder:(NSURL *)folder workbench:(id<UDWorkbench>)workbench {
@@ -41,6 +42,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     _waiting = [NSMutableArray array];
     _tree = [[UDPathTree alloc] init];
     _filter = @"";
+    _crlfPaths = [NSMutableSet set];
     NSArray *names = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:folder.path error:NULL]
                          sortedArrayUsingSelector:@selector(compare:)];
     for (NSString *name in names) {
@@ -83,6 +85,8 @@ static NSMutableArray<UQProject *> *UQStarting;
     _workspace = workspace;
     _starting = nil;
     [[UDWorkspaceManager sharedManager] registerWorkspace:workspace];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toolSettingsDidChange:)
+                                                 name:UDWorkspaceToolSettingsDidChangeNotification object:workspace];
     [self _readTree];
     _started = YES;
     [_treeView refresh];
@@ -90,6 +94,17 @@ static NSMutableArray<UQProject *> *UQStarting;
     NSArray *waiting = [_waiting copy];
     [_waiting removeAllObjects];
     for (void (^block)(UDGameWorkspace *) in waiting) block(workspace);
+}
+
+/// A tool's settings (the GUI editor's grid, the debugger's port): kept in
+/// its .qworkspace at once, as Quarry's workspace document saved them.
+- (void)_toolSettingsDidChange:(NSNotification *)note {
+    NSData *data = _workspaceFileURL ? [NSData dataWithContentsOfURL:_workspaceFileURL] : nil;
+    NSMutableDictionary *settings = [(data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL] : nil) mutableCopy];
+    if (![settings isKindOfClass:[NSMutableDictionary class]]) return;
+    settings[@"tools"] = _workspace.dictionaryRepresentation[@"tools"] ?: @{};
+    [[NSJSONSerialization dataWithJSONObject:settings options:NSJSONWritingPrettyPrinted error:NULL]
+        writeToURL:_workspaceFileURL atomically:YES];
 }
 
 - (void)_didFail:(NSError *)error {
@@ -116,7 +131,10 @@ static NSMutableArray<UQProject *> *UQStarting;
         [self whenStarted:^(UDGameWorkspace *workspace) { [weakSelf applySettings:settings error:NULL]; }];
         return YES;
     }
-    if (_workspace) [[UDWorkspaceManager sharedManager] closeWorkspace:_workspace];
+    if (_workspace) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UDWorkspaceToolSettingsDidChangeNotification object:_workspace];
+        [[UDWorkspaceManager sharedManager] closeWorkspace:_workspace];
+    }
     _workspace = nil;
     _startupError = nil;
     _started = NO;
@@ -133,6 +151,7 @@ static NSMutableArray<UQProject *> *UQStarting;
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     if (_workspace) {
         [[UDWorkspaceManager sharedManager] closeWorkspace:_workspace];
     }
@@ -214,6 +233,9 @@ static NSString *UQEditorText(NSString *text) {
         }
         NSString *text = length ? [[NSString alloc] initWithBytes:buffer length:(NSUInteger)length encoding:NSUTF8StringEncoding] : @"";
         if (buffer) [_workspace.fileSystem freeFile:buffer error:nil];
+        // one line ending in the editor; the file's own (Doom 3's \r\n) when it is saved
+        if ([text rangeOfString:@"\r\n"].location != NSNotFound) [_crlfPaths addObject:path.lowercaseString];
+        else [_crlfPaths removeObject:path.lowercaseString];
         return [UQEditorText(text ?: @"") dataUsingEncoding:NSUTF8StringEncoding];
     }
     idDeclBase *decl = [self _declOfType:typeName name:name error:error];
@@ -221,6 +243,9 @@ static NSString *UQEditorText(NSString *text) {
     NSMutableData *text = [NSMutableData data];
     [decl text:text];
     NSString *string = [[NSString alloc] initWithData:text encoding:NSUTF8StringEncoding] ?: @"";
+    NSString *key = [url.path lowercaseString];
+    if ([string rangeOfString:@"\r\n"].location != NSNotFound) [_crlfPaths addObject:key];
+    else [_crlfPaths removeObject:key];
     return [UQEditorText(string) dataUsingEncoding:NSUTF8StringEncoding];
 }
 
@@ -231,12 +256,20 @@ static NSString *UQEditorText(NSString *text) {
         return NO;
     }
     if (path) {
-        // into the savepath, the mod's folder (the paks are never written)
+        // into the savepath, the mod's folder (the paks are never written), with its own line ending
+        if ([_crlfPaths containsObject:path.lowercaseString]) {
+            NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
+            data = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding];
+        }
         if ([_workspace.fileSystem writeFile:path buffer:data.bytes size:(int)data.length basePath:nil error:error] < 0) return NO;
         return YES;
     }
     idDeclBase *decl = [self _declOfType:typeName name:name error:error];
     if (!decl) return NO;
+    if ([_crlfPaths containsObject:[url.path lowercaseString]]) {
+        NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
+        data = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding];
+    }
     [decl setText:[data mutableCopy]];
     if (![decl replaceSourceFileText:error]) return NO;
     [decl invalidate];

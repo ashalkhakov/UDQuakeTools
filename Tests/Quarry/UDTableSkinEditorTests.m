@@ -5,10 +5,8 @@
 #import <UDCodeKit/UDErrorsViewController.h>
 #import "UDDeclManagedObjects.h"
 #import "UDDeclDocument.h"
-#import "UDEditorTabManager.h"
 #import "UDTableEditorViewController.h"
 #import "UDSkinEditorViewController.h"
-#import "UDWorkspaceWindowController.h"
 
 static NSString *const UDFixtureMaterials =
     @"table udtest_ramp { snap { 0, 0.5, 1 } }\n"
@@ -57,7 +55,7 @@ static NSString *const UDFixtureSkin =
           atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
-- (UDWorkspaceWindowController *)openFixtureWorkspace {
+- (UQTestWindow *)openFixtureWorkspace {
     return [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.basePath savePath:self.savePath]];
 }
 
@@ -71,7 +69,7 @@ static NSString *const UDFixtureSkin =
     return @"";
 }
 
-- (void)save:(UDWorkspaceWindowController *)controller {
+- (void)save:(UQTestWindow *)controller {
     [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
     [self spinUntil:^BOOL{ return NO; } timeout:0.1];
 }
@@ -102,7 +100,7 @@ static NSString *const UDFixtureSkin =
 
 #pragma mark - Tables
 
-- (UDTableEditorViewController *)openTableIn:(UDWorkspaceWindowController *)controller {
+- (UDTableEditorViewController *)openTableIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"table/udtest_ramp" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDTableEditorViewController class]], @"a table opens in the table editor, not %@", editor);
     return (UDTableEditorViewController *)editor;
@@ -122,7 +120,7 @@ static NSString *const UDFixtureSkin =
 }
 
 - (void)testEditingATablesValuesSavesThemAndUndoes {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
 
@@ -180,7 +178,7 @@ static NSString *const UDFixtureSkin =
 
 #pragma mark - Skins
 
-- (UDSkinEditorViewController *)openSkinIn:(UDWorkspaceWindowController *)controller {
+- (UDSkinEditorViewController *)openSkinIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"skin/udtest_skin" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDSkinEditorViewController class]], @"a skin opens in the skin editor, not %@", editor);
     return (UDSkinEditorViewController *)editor;
@@ -200,7 +198,7 @@ static NSString *const UDFixtureSkin =
 }
 
 - (void)testEditingASkinSavesIt {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSkinEditorViewController *editor = [self openSkinIn:controller];
     if (![editor isKindOfClass:[UDSkinEditorViewController class]]) return;
 
@@ -232,7 +230,7 @@ static NSString *const UDFixtureSkin =
 /// A material the skin maps to that is neither a decl nor an image, and a
 /// model not found: in the Issues tab, before saving; a click shows the row.
 - (void)testWhatASkinNamesThatIsNotThereIsAnIssue {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSkinEditorViewController *editor = [self openSkinIn:controller];
     if (![editor isKindOfClass:[UDSkinEditorViewController class]]) return;
 
@@ -252,9 +250,10 @@ static NSString *const UDFixtureSkin =
     XCTAssertEqualObjects(model.message, @"Model “models/” is not found", @"+ on the models: one to name");
     XCTAssertEqual(model.severity, UDDiagnosticSeverityError);
 
-    UDErrorsViewController *issuesTab = [controller valueForKey:@"issuesNavigator"];
+    // UDCode's Issues navigator lists the document's
+    XCTAssertTrue([[controller.selectedDocument.diagnosticStore.allDiagnostics valueForKey:@"message"] containsObject:model.message]);
     [editor.modelsController setSelectionIndexes:[NSIndexSet indexSet]];
-    [controller errorsViewController:issuesTab didSelectDiagnostic:model inStore:editor.diagnosticStore];
+    [controller errorsViewController:nil didSelectDiagnostic:model inStore:controller.selectedDocument.diagnosticStore];
     XCTAssertEqual(editor.modelsController.selectionIndex, 1U, @"a click shows the row");
 
     [self set:@"models/udtest/crate.lwo" row:1 key:@"path" of:editor.modelsController];
@@ -263,7 +262,7 @@ static NSString *const UDFixtureSkin =
 }
 
 - (void)testANewSkinGetsAFileOfItsOwn {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
     __block BOOL asked = NO;
     [self whenModalWindowAppears:^(NSWindow *window) {
@@ -294,54 +293,46 @@ static NSString *const UDFixtureSkin =
     XCTAssertTrue([text containsString:@"* _default"], @"%@", text);
 }
 
-#pragma mark - The source (Editor | Source)
+#pragma mark - The source (UDCode's Open as Text)
 
-/// The window's Editor | Source switch, clicked.
-- (void)show:(NSInteger)segment in:(UDWorkspaceWindowController *)controller {
-    NSSegmentedControl *control = controller.representationControl;
-    XCTAssertTrue(control.isEnabled, @"a structured editor has its source");
-    [control setSelectedSegment:segment];
-    [NSApp sendAction:control.action to:control.target from:control];
+/// The decl's text, as Open as Text shows it: its document's.
+- (NSString *)textIn:(UQTestWindow *)controller {
+    return [controller.selectedDocument.textModel getValue];
 }
 
-/// The text view's text replaced as typed, and the event over, as the
-/// typing's is before the next thing the user does.
-- (void)retype:(NSString *)text in:(NSTextView *)textView {
-    [textView setSelectedRange:NSMakeRange(0, textView.string.length)];
-    [textView insertText:text];
+/// The text replaced as typed in Open as Text: one event's edit.
+- (void)retype:(NSString *)text in:(UQTestWindow *)controller {
+    UDCodeDocument *document = controller.selectedDocument;
+    UDTextModel *model = document.textModel;
+    NSUndoManager *undo = document.customDocument.undoManager;
+    [undo beginUndoGrouping];
+    UDPosition end = [model getPositionAt:(NSInteger)[model getValue].length];
+    [model applyEdits:@[ [[UDTextModelEdit alloc] initWithRange:PTRangeMake(1, 1, end.line, end.column) text:text] ]];
+    [undo endUndoGrouping];
     [self finishEvent];
 }
 
 - (void)testTheSourceShowsTheDeclWithItsUnsavedEdits {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
     [[self buttonTitled:@"Clamp" inView:editor.view] performClick:nil];
+    [self finishEvent];
 
-    [self show:1 in:controller];
-    XCTAssertTrue(editor.showsSource);
-    NSString *text = editor.sourceTextView.string;
+    NSString *text = [self textIn:controller];
     XCTAssertTrue([text containsString:@"clamp"], @"the edit not yet saved: %@", text);
     XCTAssertTrue([text containsString:@"0.5"], @"%@", text);
-    XCTAssertEqual(controller.representationControl.selectedSegment, 1);
-
-    [self show:0 in:controller];
-    XCTAssertFalse(editor.showsSource);
-    XCTAssertNil(editor.sourceTextView);
-    XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOn, @"unedited: as it was");
+    XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOn, @"the editor as it was");
 }
 
 - (void)testTheSourceEditedIsReadBackAsOneEdit {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
 
-    [self show:1 in:controller];
-    [self retype:@"table udtest_ramp { clamp { 0, 2 } }\n" in:editor.sourceTextView];
+    [self retype:@"table udtest_ramp { clamp { 0, 2 } }\n" in:controller];
     XCTAssertTrue(editor.editorDocument.isDocumentEdited, @"one dirty state for both");
-    [self show:0 in:controller];
-
-    XCTAssertFalse(editor.showsSource);
+    XCTAssertTrue(controller.selectedDocument.isModified);
     XCTAssertEqualObjects(editor.values, (@[@0, @2]), @"the editor shows the text's values");
     XCTAssertEqual([self buttonTitled:@"Clamp" inView:editor.view].state, NSControlStateValueOn);
     XCTAssertEqual([self buttonTitled:@"Snap" inView:editor.view].state, NSControlStateValueOff);
@@ -351,46 +342,36 @@ static NSString *const UDFixtureSkin =
     XCTAssertEqual([self buttonTitled:@"Snap" inView:editor.view].state, NSControlStateValueOn);
 }
 
-- (void)testSourceThatDoesNotParseStaysUp {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+- (void)testSourceThatDoesNotParseStaysAsTyped {
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
 
-    [self show:1 in:controller];
-    [self retype:@"table udtest_ramp snap\n" in:editor.sourceTextView];
-    __block BOOL told = NO;
-    [self whenModalWindowAppears:^(NSWindow *window) {
-        told = YES;
-        [window orderOut:nil];
-        [NSApp stopModalWithCode:NSModalResponseOK];
-    }];
-    [self show:0 in:controller];
-    XCTAssertTrue(told, @"the parser's error is shown");
-    XCTAssertTrue(editor.showsSource, @"and the source stays up");
-    XCTAssertEqual(controller.representationControl.selectedSegment, 1);
+    [self retype:@"table udtest_ramp snap\n" in:controller];
+    XCTAssertEqualObjects([self textIn:controller], @"table udtest_ramp snap\n", @"kept as typed");
+    XCTAssertTrue(controller.selectedDocument.isModified, @"its text not the decl's: edited");
     XCTAssertEqualObjects(editor.values, (@[@0, @0.5, @1]), @"nothing changed");
+    NSError *error = nil;
+    XCTAssertFalse([controller.selectedDocument saveToURL:controller.selectedDocument.URL error:&error], @"not saved so");
 }
 
 - (void)testSavingInTheSourceSavesItsText {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDTableEditorViewController *editor = [self openTableIn:controller];
     if (![editor isKindOfClass:[UDTableEditorViewController class]]) return;
 
-    [self show:1 in:controller];
-    [self retype:@"table udtest_ramp { { 0, 0.75, 1 } }\n" in:editor.sourceTextView];
+    [self retype:@"table udtest_ramp { { 0, 0.75, 1 } }\n" in:controller];
     [self save:controller];
     XCTAssertFalse(editor.editorDocument.isDocumentEdited);
     XCTAssertTrue([[self savedText:@"materials/udtest.mtr"] containsString:@"0.75"], @"%@", [self savedText:@"materials/udtest.mtr"]);
-
-    [self show:0 in:controller];
     XCTAssertEqualObjects(editor.values, (@[@0, @0.75, @1]));
-    XCTAssertFalse(editor.editorDocument.isDocumentEdited, @"what was saved is no edit");
+    XCTAssertFalse(controller.selectedDocument.isModified, @"what was saved is no edit");
 }
 
 #pragma mark - Pickers
 
 - (void)testASkinsMaterialsAndModelsArePicked {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSkinEditorViewController *editor = [self openSkinIn:controller];
     if (editor == nil) return;
     NSUInteger star = [[editor.mappingsController.arrangedObjects valueForKey:@"from"] indexOfObject:@"*"];

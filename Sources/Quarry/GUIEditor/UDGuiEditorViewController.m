@@ -1,7 +1,7 @@
 #import "UDGuiEditorViewController.h"
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
 #import "idFileSystem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDGuiPlayer.h"
 #import "UDGuiView.h"
 #import "UDTransportController.h"

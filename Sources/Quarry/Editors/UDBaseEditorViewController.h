@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 @class UDWorkspaceItem;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** The file item being edited/viewed. Set before the view is loaded. */
 @property (nonatomic, strong, nullable) UDWorkspaceItem *item;
-@property (nonatomic, weak) UDWorkspace *workspace;
+@property (nonatomic, weak) UDGameWorkspace *workspace;
 
 /**
  * The backing document of this editor, if it has one. Subclasses that
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Factory: returns the right editor view controller subclass for the given file item,
  * using the fileUTI to dispatch.
  */
-+ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace;
++ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDGameWorkspace *)workspace;
 
 /// The inspector's pane of @a title shown, when this editor's are the
 /// window's (a click on a stage shows the Stage pane): its host's, when it

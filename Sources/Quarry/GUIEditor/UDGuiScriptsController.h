@@ -15,7 +15,7 @@
 #import <Cocoa/Cocoa.h>
 #import "UDExpressionEditor.h"
 
-@class rvGEWorkspace, idWindow, UDWorkspace, UDReferencePicker, UDExpressionEditor;
+@class rvGEWorkspace, idWindow, UDGameWorkspace, UDReferencePicker, UDExpressionEditor;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// The design the scripts are of, and the workspace (where the pickers'
 /// names come from).
 @property (nonatomic, weak, nullable) rvGEWorkspace *design;
-@property (nonatomic, weak, nullable) UDWorkspace *workspace;
+@property (nonatomic, weak, nullable) UDGameWorkspace *workspace;
 @property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
 /// Told to show an event in the navigator (one added, one opened from the
 /// events, one renamed): the sender is the controller, its window and its

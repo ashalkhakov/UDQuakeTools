@@ -1,8 +1,8 @@
 #import "UDWorkspaceSettingsWindowController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 @interface UDWorkspaceSettingsWindowController ()
-@property (nonatomic, strong, readwrite) UDWorkspace *scratchWorkspace;
+@property (nonatomic, strong, readwrite) UDGameWorkspace *scratchWorkspace;
 @end
 
 @implementation UDWorkspaceSettingsWindowController
@@ -16,11 +16,11 @@
         return; // window not loaded yet; windowDidLoad will call again
     }
 
-    UDWorkspace *source = self.workspace;
+    UDGameWorkspace *source = self.workspace;
 
     NSDictionary *settings = source != nil ? source.dictionaryRepresentation : @{};
     NSString *rootDir = source.rootDirectory ?: @"";
-    self.scratchWorkspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:rootDir];
+    self.scratchWorkspace = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:rootDir];
     self.objectController.content = self.scratchWorkspace;
 }
 
@@ -30,7 +30,7 @@
     [self _rebuildScratchWorkspace];
 }
 
-- (void)setWorkspace:(UDWorkspace *)workspace {
+- (void)setWorkspace:(UDGameWorkspace *)workspace {
     _workspace = workspace;
     [self _rebuildScratchWorkspace];
 }
@@ -86,7 +86,7 @@
 }
 
 - (BOOL)_validateScratch {
-    UDWorkspace *scratch = self.scratchWorkspace;
+    UDGameWorkspace *scratch = self.scratchWorkspace;
     NSString *basepath = scratch.fs_basepath;
     NSString *game = scratch.fs_game;
 

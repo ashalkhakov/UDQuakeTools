@@ -5,7 +5,7 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 @interface UDWorkspaceToolSettingsTests : XCTestCase
 @property (nonatomic) NSInteger posted;
@@ -20,7 +20,7 @@
 }
 
 - (void)testAToolsSettingsAreSavedWithTheWorkspace {
-    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:@{ @"fs_basepath": @"/games/doom3" } rootDirectory:@"/games/doom3"];
+    UDGameWorkspace *workspace = [[UDGameWorkspace alloc] initWithDictionary:@{ @"fs_basepath": @"/games/doom3" } rootDirectory:@"/games/doom3"];
     XCTAssertNil([workspace settingsForTool:@"GUIEditor"]);
     XCTAssertNil(workspace.dictionaryRepresentation[@"tools"], @"none saved while there are none");
 
@@ -36,12 +36,12 @@
     XCTAssertEqualObjects(saved[@"tools"], (@{ @"GUIEditor": @{ @"gridVisible": @YES } }));
     XCTAssertTrue([NSJSONSerialization isValidJSONObject:saved], @"the document is JSON");
 
-    UDWorkspace *reopened = [[UDWorkspace alloc] initWithDictionary:saved rootDirectory:@"/games/doom3"];
+    UDGameWorkspace *reopened = [[UDGameWorkspace alloc] initWithDictionary:saved rootDirectory:@"/games/doom3"];
     XCTAssertEqualObjects([reopened settingsForTool:@"GUIEditor"], (@{ @"gridVisible": @YES }));
 }
 
 - (void)testTheSettingsSheetLeavesTheToolsSettings {
-    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
+    UDGameWorkspace *workspace = [[UDGameWorkspace alloc] initWithDictionary:@{} rootDirectory:@""];
     // the sheet's scratch copy, made before the tool's settings changed
     NSDictionary *scratch = workspace.dictionaryRepresentation;
     [workspace setSettings:@{ @"gridSnap": @YES } forTool:@"GUIEditor"];

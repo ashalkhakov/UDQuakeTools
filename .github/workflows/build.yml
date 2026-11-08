@@ -2,13 +2,12 @@ name: Build
 
 # UDQuakeTools, built, tested and installed the familiar way (make, make
 # check, make install; Makefile.apple on macOS) by gnustep-release-actions'
-# workflows, the same as every repository's: every push is built, tested (the
-# tests; the apps started on a clean Ubuntu) and uploaded as artifacts, the
-# AppImage (the launcher, Quarry and Pak Manager) and the same three
-# apps for macOS; a v* tag (or a run started by hand with one) is also
-# released: the AppImage with its update information, the Mac apps signed
-# and notarized, each with its Sparkle appcast (appcast-<App>.xml), attached
-# to the tag's release (a pre-release when the tag has a '-'). What it builds on is in .github/pins.env.
+# workflows, the same as every repository's: every push is built, tested and
+# uploaded as artifacts, UDCode's UDQuakeTools extension packaged for each
+# platform (.udcx, .github/release/udcode.conf); a v* tag (or a run started by
+# hand with one) is also released: the packages and the feeds UDCode updates
+# the extension from, attached to the tag's release (a pre-release when the
+# tag has a '-'). What it builds on is in .github/pins.env.
 on:
   push:
     branches-ignore: ['copilot/**']
@@ -35,21 +34,18 @@ jobs:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/linux.yml@v1
     with:
       tag: ${{ inputs.tag }}
-      extra-packages: libsqlite3-dev zlib1g-dev
+      extra-packages: libsqlite3-dev zlib1g-dev patchelf zip
 
   windows:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/windows.yml@v1
     with:
       tag: ${{ inputs.tag }}
       extra-packages: sqlite3 zlib
-    # A tag's run signs the installer's appcast with the Mac's Sparkle key.
     secrets: inherit
 
   macos:
     uses: ashalkhakov/gnustep-release-actions/.github/workflows/macos.yml@v1
     with:
       tag: ${{ inputs.tag }}
-      # Quarry's release name is Decl Browser's, as it was: its appcast
-      # (appcast-DeclBrowser.xml) is the feed installed copies read.
-      apps: UDLauncher=UDLauncher DeclBrowser=Quarry PakManager=PakManager
+    # A tag's run signs and notarizes the extension's packages.
     secrets: inherit

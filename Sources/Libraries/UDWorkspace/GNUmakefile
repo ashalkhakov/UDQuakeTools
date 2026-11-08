@@ -11,7 +11,7 @@ include $(UDLIBS_DIR)/Libraries.make
 
 UDWorkspace_OBJC_FILES = \
     UDGameDetectionService.m \
-    UDWorkspace.m \
+    UDGameWorkspace.m \
     UDWorkspaceManager.m \
     $(UD_SYSTEM_DIR)/UDCrashReporter.m
 
@@ -20,7 +20,7 @@ UDWorkspace_INCLUDE_DIRS = $(call ud_own_includes,UDWorkspace)
 UDWorkspace_HEADER_FILES_DIR = .
 UDWorkspace_HEADER_FILES = \
     UDGameDetectionService.h \
-    UDWorkspace.h \
+    UDGameWorkspace.h \
     UDWorkspaceManager.h \
     UDCrashReporter.h
 

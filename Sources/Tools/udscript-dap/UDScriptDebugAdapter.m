@@ -6,7 +6,7 @@
 #import "UDScriptDebugAdapter.h"
 #import "UDScriptIndex.h"
 #import "UDScriptExpression.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idFileSystem.h"
 #import "UDKillTask.h"
 
@@ -78,7 +78,7 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 @implementation UDScriptDebugAdapter {
     dispatch_queue_t _queue;
     UDScriptDebuggerConnection *_game;
-    UDWorkspace *_workspace;
+    UDGameWorkspace *_workspace;
     NSArray<NSString *> *_roots;                 // the folders scripts' paths are relative to
     NSTask *_task;                               // a launched game
 
@@ -189,10 +189,10 @@ static const int64_t UDGameAnswerTimeout = 2 * NSEC_PER_SEC;
 #pragma mark - Paths
 
 /// The workspace the settings say: its game folders, what a script's game
-/// path is relative to (UDWorkspace's gameFolders, as Quarry's editors name
+/// path is relative to (UDGameWorkspace's gameFolders, as Quarry's editors name
 /// scripts), and its file system, where a script in a pak is read from.
 - (void)_useSettings:(NSDictionary *)settings {
-    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
+    UDGameWorkspace *workspace = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
     _roots = workspace.gameFolders;
     if (settings[@"fs_basepath"] == nil) return;
     NSError *error = nil;

@@ -6,7 +6,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclItem.h"
 #import "UDDeclManagedObjects.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 
 /// The types Quarry has a structured editor for (UDBaseEditorViewController's).
@@ -22,14 +22,14 @@ static BOOL UQHasStructuredEditor(declType_t type) {
 
 @implementation UQDeclDocument
 
-+ (BOOL)isStructuredDeclType:(NSString *)typeName inWorkspace:(UDWorkspace *)workspace {
++ (BOOL)isStructuredDeclType:(NSString *)typeName inWorkspace:(UDGameWorkspace *)workspace {
     declType_t type = [workspace.declManager declTypeFromName:typeName];
     if ((int)type < 0 || (int)type >= [workspace.declManager numDeclTypes] || !UQHasStructuredEditor(type)) return NO;
     NSPersistentStoreCoordinator *coordinator = workspace.declStoreCoordinator;
     return coordinator && [UDDeclBase ud_entityNameForDeclTypeName:typeName inModel:coordinator.managedObjectModel] != nil;
 }
 
-- (instancetype)initWithDeclType:(NSString *)typeName name:(NSString *)name inWorkspace:(UDWorkspace *)workspace error:(NSError **)error {
+- (instancetype)initWithDeclType:(NSString *)typeName name:(NSString *)name inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error {
     if (!(self = [super init])) return nil;
     declType_t type = [workspace.declManager declTypeFromName:typeName];
     _workspace = workspace;

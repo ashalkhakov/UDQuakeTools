@@ -1,11 +1,11 @@
 //
-//  UDWorkspace.m
+//  UDGameWorkspace.m
 //  PakManager
 //
 //  Created by artyom on 7/20/26.
 //
 
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 #import <CoreData/CoreData.h>
 
@@ -15,7 +15,7 @@
 
 NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWorkspaceToolSettingsDidChangeNotification";
 
-@implementation UDWorkspace {
+@implementation UDGameWorkspace {
     NSDictionary *_toolSettings;
     NSPersistentStoreCoordinator *_declStoreCoordinator;
     id _startupTarget;             // while a background startup runs
@@ -121,7 +121,7 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
 
 - (BOOL)startup:(NSError **)error {
     // Call this ONCE when you first load a workspace into your app.
-    // They will live in memory until this UDWorkspace is destroyed.
+    // They will live in memory until this UDGameWorkspace is destroyed.
     if (!self.fileSystem) {
         self.fileSystem = [[idFileSystem alloc] initWithSettings:self];
     }
@@ -152,7 +152,7 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
     @autoreleasepool {
         NSError *error = nil;
         if (![self startup:&error]) {
-            _startupError = error ?: [NSError errorWithDomain:@"UDWorkspace" code:1
+            _startupError = error ?: [NSError errorWithDomain:@"UDGameWorkspace" code:1
                                                      userInfo:@{ NSLocalizedDescriptionKey: @"The workspace did not start." }];
         }
         [self performSelectorOnMainThread:@selector(_startupDidFinish) withObject:nil waitUntilDone:NO];
@@ -165,7 +165,7 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
     _startupTarget = nil;
     _startupAction = NULL;
     if (target != nil && action != NULL) {
-        ((void (*)(id, SEL, UDWorkspace *))[target methodForSelector:action])(target, action, self);
+        ((void (*)(id, SEL, UDGameWorkspace *))[target methodForSelector:action])(target, action, self);
     }
 }
 
@@ -185,14 +185,14 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
     }
 
     if (self.declManager == nil) {
-        NSLog(@"UDWorkspace: workspace has no declManager; no decl store coordinator");
+        NSLog(@"UDGameWorkspace: workspace has no declManager; no decl store coordinator");
         return nil;
     }
 
     NSError *error = nil;
     _declStoreCoordinator = [UDDeclIncrementalStore newStoreCoordinatorForDeclManager:self.declManager error:&error];
     if (_declStoreCoordinator == nil) {
-        NSLog(@"UDWorkspace: could not build decl store coordinator: %@", error);
+        NSLog(@"UDGameWorkspace: could not build decl store coordinator: %@", error);
     }
     return _declStoreCoordinator;
 }
@@ -201,7 +201,7 @@ NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification = @"UDWork
     NSPersistentStoreCoordinator *coordinator = self.declStoreCoordinator;
     if (coordinator == nil) {
         if (error != NULL) {
-            *error = [NSError errorWithDomain:@"UDWorkspace"
+            *error = [NSError errorWithDomain:@"UDGameWorkspace"
                                           code:1
                                       userInfo:@{NSLocalizedDescriptionKey: @"Could not build the decl editing stack"}];
         }

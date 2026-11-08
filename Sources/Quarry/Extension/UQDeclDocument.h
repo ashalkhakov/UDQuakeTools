@@ -14,7 +14,7 @@
 #import <Foundation/Foundation.h>
 #import <UDCodeKit/UDCodeKit.h>
 
-@class UDWorkspace, UDDeclDocument, UDDeclItem;
+@class UDGameWorkspace, UDDeclDocument, UDDeclItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,13 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Whether decls of @a typeName are edited so (they have an entity in the
 /// decl model and a structured editor); the others are text documents.
-+ (BOOL)isStructuredDeclType:(NSString *)typeName inWorkspace:(UDWorkspace *)workspace;
++ (BOOL)isStructuredDeclType:(NSString *)typeName inWorkspace:(UDGameWorkspace *)workspace;
 
 /// The decl @a name of type @a typeName, read; nil and why when it can't be.
 - (nullable instancetype)initWithDeclType:(NSString *)typeName name:(NSString *)name
-                              inWorkspace:(UDWorkspace *)workspace error:(NSError *_Nullable *_Nullable)error;
+                              inWorkspace:(UDGameWorkspace *)workspace error:(NSError *_Nullable *_Nullable)error;
 
-@property (nonatomic, readonly) UDWorkspace *workspace;
+@property (nonatomic, readonly) UDGameWorkspace *workspace;
 /// Quarry's document of it, which its editor edits.
 @property (nonatomic, readonly) UDDeclDocument *declDocument;
 /// What its editor is made for (UDBaseEditorViewController's factory).

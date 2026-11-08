@@ -4,7 +4,7 @@
 
 #import "UQCommands.h"
 #import "UQProject.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclTextChecker.h"
 #import "UDNewDeclWindowController.h"
@@ -37,7 +37,7 @@ static UDDiagnosticSource const UQDiagnosticSourceDeclTest = @"test";
     return _menuItems;
 }
 
-- (UDWorkspace *)_workspace {
+- (UDGameWorkspace *)_workspace {
     return _project.workspace;
 }
 

@@ -1,6 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "UDZipFixture.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idFileSystem.h"
 #import "idFile.h"
 #import "UDWorkspaceManager.h"
@@ -8,7 +8,7 @@
 @interface idFileSystemTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
 @property (nonatomic, strong) NSString *gameDir;
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, copy) NSString *testFilePath;
 /// testFilePath as the file system takes it: relative to the game's folder.
@@ -61,7 +61,7 @@
     NSString *pakPath = [fullGameDirPath stringByAppendingPathComponent:@"test_archive.pk4"];
     [pakData writeToFile:pakPath atomically:YES];
     
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
+    self.workspace = [[UDGameWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
     [self.workspace startup:nil];
     self.fileSystem = self.workspace.fileSystem;
 

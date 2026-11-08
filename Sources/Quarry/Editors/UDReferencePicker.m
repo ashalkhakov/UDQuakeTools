@@ -4,7 +4,7 @@
  */
 
 #import "UDReferencePicker.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 
@@ -50,7 +50,7 @@
     }
 }
 
-+ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDWorkspace *)workspace
++ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDGameWorkspace *)workspace
                           details:(NSMutableArray<NSString *> *)details {
     NSMutableArray<NSString *> *names = [NSMutableArray array];
     NSMutableSet<NSString *> *seen = [NSMutableSet set];

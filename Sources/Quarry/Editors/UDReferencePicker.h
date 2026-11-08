@@ -9,7 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, UDReferenceKind) {
 
 /// What a picker for @a field offers in @a workspace: names, sorted, and
 /// what each is in @a details (a decl's file, "image", …).
-+ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDWorkspace *)workspace
++ (NSArray<NSString *> *)namesFor:(UDReferenceField *)field workspace:(UDGameWorkspace *)workspace
                           details:(NSMutableArray<NSString *> *)details;
 /// The filter as typed; the names shown (its rows).
 @property (nonatomic, copy, readonly) NSArray<NSString *> *shownNames;

@@ -22,7 +22,7 @@
 #import "UDQuarryTestCase.h"
 #import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceDocument.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDScriptDebugger.h"
 #import "UDMaterialEditorViewController.h"
 #import "UDParticleEditorViewController.h"
@@ -158,7 +158,7 @@
     if (game.length == 0) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     workspace.gameExecutable = game;
     workspace.gameArguments = @"+set r_fullscreen 0 +set r_mode 3 +set s_noSound 1 +map game/mars_city1";
     [controller openFileAtPath:@"script/ai_character.script" line:356 character:0 length:0];

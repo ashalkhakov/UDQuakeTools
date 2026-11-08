@@ -1,5 +1,5 @@
 #import "UDWorkspaceItem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 @interface UDWorkspaceItem ()
 @property (nonatomic, strong) NSMutableArray<UDWorkspaceItem *> *mutableChildren;
@@ -31,7 +31,7 @@
     [self.mutableChildren removeObject:child];
 }
 
-- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace {
+- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDGameWorkspace *)workspace {
     return NO;
 }
 

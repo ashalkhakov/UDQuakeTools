@@ -1,5 +1,5 @@
 #import "UDTransportController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDQuarryTestCase.h"
 
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)

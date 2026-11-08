@@ -5,13 +5,13 @@
 
 #import <XCTest/XCTest.h>
 #import "UDScriptLanguageServer.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 @interface UDScriptLanguageServerTests : XCTestCase
 @property (nonatomic, strong) UDScriptLanguageServer *server;
 @property (nonatomic, assign) NSInteger nextID;
 @property (nonatomic, copy) NSString *rootDir;
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 @end
 
 static NSString *const UDEventsText =
@@ -169,7 +169,7 @@ static NSString *const UDLanternText =
     [UDEventsText writeToFile:[scripts stringByAppendingPathComponent:@"doom_events.script"] atomically:YES encoding:NSUTF8StringEncoding error:NULL];
     [UDLanternText writeToFile:[scripts stringByAppendingPathComponent:@"lantern.script"] atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:@{ @"fs_basepath": self.rootDir, @"fs_savepath": self.rootDir,
+    self.workspace = [[UDGameWorkspace alloc] initWithDictionary:@{ @"fs_basepath": self.rootDir, @"fs_savepath": self.rootDir,
                                                                 @"fs_cdpath": self.rootDir, @"fs_game": @"base" }
                                                rootDirectory:self.rootDir];
     XCTAssertTrue([self.workspace startup:NULL]);

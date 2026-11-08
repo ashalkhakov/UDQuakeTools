@@ -3,7 +3,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 #import "UQProject.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDWorkspaceManager.h"
 #import "UDPathTree.h"
 #import "UDDeclItem.h"
@@ -26,9 +26,9 @@ static NSError *UQError(NSString *message) {
 static NSMutableArray<UQProject *> *UQStarting;
 
 @implementation UQProject {
-    NSMutableArray<void (^)(UDWorkspace *)> *_waiting;
+    NSMutableArray<void (^)(UDGameWorkspace *)> *_waiting;
     BOOL _started;
-    UDWorkspace *_starting;
+    UDGameWorkspace *_starting;
     UDPathTree *_tree;          // every decl, script and GUI
     UDPathTree *_shown;         // what the filter leaves of it; nil: all of it
     NSString *_filter;
@@ -66,13 +66,13 @@ static NSMutableArray<UQProject *> *UQStarting;
                                                           : @"The folder has no .qworkspace.")];
         return;
     }
-    _starting = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"]];
+    _starting = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"]];
     if (!UQStarting) UQStarting = [NSMutableArray array];
     [UQStarting addObject:self];
     if (UQStarting.count == 1) [_starting startupInBackgroundWithTarget:self action:@selector(_didStart:)];
 }
 
-- (void)_didStart:(UDWorkspace *)workspace {
+- (void)_didStart:(UDGameWorkspace *)workspace {
     [UQStarting removeObject:self];
     UQProject *next = UQStarting.firstObject;
     if (next) [next->_starting startupInBackgroundWithTarget:next action:@selector(_didStart:)];
@@ -89,7 +89,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     [[NSNotificationCenter defaultCenter] postNotificationName:UQProjectDidStartNotification object:self];
     NSArray *waiting = [_waiting copy];
     [_waiting removeAllObjects];
-    for (void (^block)(UDWorkspace *) in waiting) block(workspace);
+    for (void (^block)(UDGameWorkspace *) in waiting) block(workspace);
 }
 
 - (void)_didFail:(NSError *)error {
@@ -101,7 +101,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     [[NSNotificationCenter defaultCenter] postNotificationName:UQProjectDidStartNotification object:self];
     NSArray *waiting = [_waiting copy];
     [_waiting removeAllObjects];
-    for (void (^block)(UDWorkspace *) in waiting) block(nil);
+    for (void (^block)(UDGameWorkspace *) in waiting) block(nil);
 }
 
 - (BOOL)applySettings:(NSDictionary *)settings error:(NSError **)error {
@@ -113,7 +113,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     // still starting: once it has, again
     if (!_started) {
         __weak UQProject *weakSelf = self;
-        [self whenStarted:^(UDWorkspace *workspace) { [weakSelf applySettings:settings error:NULL]; }];
+        [self whenStarted:^(UDGameWorkspace *workspace) { [weakSelf applySettings:settings error:NULL]; }];
         return YES;
     }
     if (_workspace) [[UDWorkspaceManager sharedManager] closeWorkspace:_workspace];
@@ -127,7 +127,7 @@ static NSMutableArray<UQProject *> *UQStarting;
     return YES;
 }
 
-- (void)whenStarted:(void (^)(UDWorkspace *))block {
+- (void)whenStarted:(void (^)(UDGameWorkspace *))block {
     if (_started) block(_workspace);
     else [_waiting addObject:[block copy]];
 }
@@ -293,7 +293,7 @@ static NSString *UQEditorText(NSString *text) {
 - (NSArray<UDWorkspaceItem *> *)itemsContainingText:(NSString *)query {
     NSMutableArray *found = [NSMutableArray array];
     if (!_workspace || !query.length) return found;
-    UDWorkspace *workspace = _workspace;
+    UDGameWorkspace *workspace = _workspace;
     [UDDeclTreeWalker walkLeavesInTree:_tree usingBlock:^(UDWorkspaceItem *node, BOOL *stop) {
         if ([node matchesTextSearch:query inWorkspace:workspace]) [found addObject:node];
     }];

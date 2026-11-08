@@ -15,13 +15,13 @@
 #import <Foundation/Foundation.h>
 
 #import "UDScriptLanguageServer.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDStandardStreams.h"
 
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
         UDStandardStreamsForMessages();
-        UDWorkspace *workspace = nil;
+        UDGameWorkspace *workspace = nil;
         for (int i = 1; i < argc; i++) {
             if (strcmp(argv[i], "--settings") == 0 && i + 1 < argc) {
                 NSData *json = [@(argv[++i]) dataUsingEncoding:NSUTF8StringEncoding];
@@ -30,7 +30,7 @@ int main(int argc, const char *argv[]) {
                     fprintf(stderr, "udscript-lsp: --settings is no JSON object\n");
                     return 2;
                 }
-                workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
+                workspace = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
             } else {
                 fprintf(stderr, "Usage: udscript-lsp [--settings <json>]\n");
                 return 2;
@@ -43,7 +43,7 @@ int main(int argc, const char *argv[]) {
         }
 
         UDScriptLanguageServer *server = [[UDScriptLanguageServer alloc] initWithFileSystem:workspace.fileSystem];
-        __block UDWorkspace *projects = nil;
+        __block UDGameWorkspace *projects = nil;
         server.fileSystemOfFolder = ^idFileSystem *(NSString *folder) {
             NSArray *names = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:folder error:NULL]
                                  sortedArrayUsingSelector:@selector(compare:)];
@@ -52,7 +52,7 @@ int main(int argc, const char *argv[]) {
                 NSData *json = [NSData dataWithContentsOfFile:[folder stringByAppendingPathComponent:name]];
                 NSDictionary *settings = json ? [NSJSONSerialization JSONObjectWithData:json options:0 error:NULL] : nil;
                 if (![settings isKindOfClass:[NSDictionary class]]) break;
-                projects = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
+                projects = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:settings[@"fs_basepath"] ?: @""];
                 NSError *failure = nil;
                 if (![projects startup:&failure]) {
                     fprintf(stderr, "udscript-lsp: %s does not start: %s\n", name.UTF8String, failure.localizedDescription.UTF8String ?: "");

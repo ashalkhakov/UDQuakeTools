@@ -1,6 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "idFileSystem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "UDWorkspaceManager.h"
 
@@ -33,7 +33,7 @@ static NSString *const UDWallsFile =
 @interface idDeclFileWriteTests : XCTestCase
 @property (nonatomic, copy) NSString *root;
 @property (nonatomic, copy) NSString *savePath;
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 @end
 
 @implementation idDeclFileWriteTests
@@ -59,7 +59,7 @@ static NSString *const UDWallsFile =
         @"fs_caseSensitiveOS": @YES,
     };
     [self.workspace shutdown];
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:install];
+    self.workspace = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:install];
     NSError *error = nil;
     XCTAssertTrue([self.workspace startup:&error], @"%@", error);
 }

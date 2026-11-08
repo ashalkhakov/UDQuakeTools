@@ -6,7 +6,7 @@
 #import "UDWorkspaceDocument.h"
 #import "UDEditorTabManager.h"
 #import "UDWorkspaceItem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDBaseDocument.h"
 
 NSString *UDDoom3InstallPath(void) {

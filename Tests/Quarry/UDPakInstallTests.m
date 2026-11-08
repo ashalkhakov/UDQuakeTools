@@ -6,7 +6,7 @@
 #import "UDTextEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
 #import "UDSourceTokens.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDWorkspaceDocument.h"
 #import "UDWorkspaceSettingsWindowController.h"
 #import "UDBaseDocument.h"

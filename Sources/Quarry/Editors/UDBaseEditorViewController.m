@@ -39,7 +39,7 @@
     return nil;
 }
 
-+ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace {
++ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDGameWorkspace *)workspace {
     
     if (item.kind == UDWorkspaceItemKindGroup) {
         return nil;

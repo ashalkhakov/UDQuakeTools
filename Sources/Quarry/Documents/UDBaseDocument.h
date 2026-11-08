@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +13,7 @@ extern NSString * const UDBaseDocumentEditedStateDidChangeNotification;
 
 @interface UDBaseDocument : NSDocument
 
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 
 /** Wire the document's text storage into the given NSTextView. */
 - (void)setTextView:(NSTextView *)textView;

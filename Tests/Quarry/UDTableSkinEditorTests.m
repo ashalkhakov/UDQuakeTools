@@ -1,6 +1,6 @@
 #import "UDQuarryTestCase.h"
 #import "UDReferencePicker.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 #import <UDCodeKit/UDErrorsViewController.h>
 #import "UDDeclManagedObjects.h"

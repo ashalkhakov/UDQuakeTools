@@ -67,6 +67,7 @@ QUARRY_C_FILES = \
     ../../tree-sitter-iddecl/src/parser.c
 
 QUARRY_RESOURCE_FILES = \
+    Quarry.png \
     Resources/UQEditorHost.xib \
     Resources/UQEditorMenus.xib \
     Resources/UQFind.xib \

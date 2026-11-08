@@ -19,7 +19,7 @@
 #import <AppKit/AppKit.h>
 #import <UDCodeKit/UDCodeKit.h>
 
-@class UDWorkspace, UDWorkspaceItem;
+@class UDGameWorkspace, UDWorkspaceItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,11 +38,11 @@ extern NSNotificationName const UQProjectDidStartNotification;
 /// Its .qworkspace; nil: the folder has none.
 @property (nonatomic, readonly, copy, nullable) NSURL *workspaceFileURL;
 /// The game, once started (nil before, or when it couldn't be).
-@property (nonatomic, readonly, nullable) UDWorkspace *workspace;
+@property (nonatomic, readonly, nullable) UDGameWorkspace *workspace;
 @property (nonatomic, readonly, nullable) NSError *startupError;
 /// Its game started and its tree read, on the main queue (now when it is;
 /// at once with the error when it can't be).
-- (void)whenStarted:(void (^)(UDWorkspace *_Nullable workspace))block;
+- (void)whenStarted:(void (^)(UDGameWorkspace *_Nullable workspace))block;
 
 /// @a settings (a .qworkspace's) written into its .qworkspace, and its game
 /// started again with them (its tree "Opening…" meanwhile). Open tabs keep

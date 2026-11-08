@@ -4,7 +4,7 @@
 #import "UDDeclTextChecker.h"
 #import "UDImageProgram.h"
 #import "UDMaterialParser.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDParticlePreview.h"
 #import "UDTransportController.h"
 

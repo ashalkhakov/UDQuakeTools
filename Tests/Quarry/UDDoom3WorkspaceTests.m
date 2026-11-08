@@ -12,7 +12,7 @@
 #import "UDEntityDefEditorViewController.h"
 #import "UDTextEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDWorkspaceDocument.h"
 #import "UDBaseDocument.h"
 #import "idDeclManager.h"
@@ -128,7 +128,7 @@
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     NSDictionary<NSNumber *, NSString *> *expected = @{
         @(UDReferenceImages): @"textures/base_wall/lfwall27d.tga",
         @(UDReferenceMaterials): @"textures/base_wall/lfwall27d",
@@ -356,7 +356,7 @@
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
 
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     idDeclManager *declManager = workspace.declManager;
     NSUInteger materials = 0;
     NSMutableArray<NSString *> *defaulted = [NSMutableArray array];
@@ -451,7 +451,7 @@
     // Where the figure's model and its .md5mesh are there (retail lacks some
     // of both: env_hellcage_long's mesh, char_npc's modelDef), its bodies
     // are on the mesh's joints.
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     NSUInteger checked = 0;
     NSMutableArray<NSString *> *missing = [NSMutableArray array];
     for (idDeclBase *decl in [workspace.declManager declsOfType:DECL_AF forceParse:NO]) {
@@ -485,7 +485,7 @@
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
 
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
@@ -537,7 +537,7 @@ static BOOL UDSameTriangles(UDTriangleList *a, UDTriangleList *b, NSString **why
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     UDGuiPlayer *skipping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
     UDGuiPlayer *stepping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
     for (UDGuiPlayer *player in @[skipping, stepping]) {
@@ -647,7 +647,7 @@ static BOOL UDHasStrayStateKeys(idWindow *window) {
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];
@@ -725,7 +725,7 @@ static void UDCollectScripts(idWindow *window, NSString *gui, NSMutableArray<NSS
     if (self.installPath == nil) return;
     UDWorkspaceWindowController *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];

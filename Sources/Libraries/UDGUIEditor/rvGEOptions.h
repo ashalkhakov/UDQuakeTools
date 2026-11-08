@@ -5,7 +5,7 @@
  * workspace draws with, the status bar shown. The engine kept them in the
  * registry (Software\id Software\DOOM3\Tools\GUIEditor); here, a
  * dictionary by the registry's names, which the workspace they are used in
- * keeps (UDWorkspace's toolSettings).
+ * keeps (UDGameWorkspace's toolSettings).
  */
 
 #import <Foundation/Foundation.h>

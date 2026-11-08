@@ -1,6 +1,6 @@
 #import "UDFXEditorViewController.h"
 #import "UDDeclManagedObjects.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 #import "UDFXTimelineView.h"

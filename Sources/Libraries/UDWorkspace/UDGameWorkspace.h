@@ -1,5 +1,5 @@
 //
-//  UDWorkspace.h
+//  UDGameWorkspace.h
 //  PakManager
 //
 //  Created by artyom on 7/20/26.
@@ -18,7 +18,7 @@
 /// user info's "tool": the tool's name).
 extern NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification;
 
-@interface UDWorkspace : NSObject <UDEngineSettings>
+@interface UDGameWorkspace : NSObject <UDEngineSettings>
 
 // The root folder on the user's drive (e.g., "/Users/bob/Games/Doom3/d3xp")
 @property (nonatomic, copy) NSString *rootDirectory;
@@ -99,7 +99,7 @@ extern NSNotificationName const UDWorkspaceToolSettingsDidChangeNotification;
 
 // Re-applies a settings dictionary (same keys as dictionaryRepresentation)
 // onto this workspace, filling in the usual defaults for missing keys. Used
-// by the settings window: edits happen on a scratch UDWorkspace copy, and on
+// by the settings window: edits happen on a scratch UDGameWorkspace copy, and on
 // OK its dictionaryRepresentation is applied back here. Changing paths/game
 // settings on a RUNNING workspace requires a -shutdown / -startup: cycle
 // afterwards to take effect.

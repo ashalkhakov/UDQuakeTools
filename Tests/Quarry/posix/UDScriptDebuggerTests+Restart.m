@@ -12,7 +12,7 @@
 #import "UDScriptDebugger.h"
 #import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceDocument.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 #include <signal.h>
 
@@ -43,7 +43,7 @@
 
     UDWorkspaceWindowController *controller = [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:base savePath:save]];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
     [workspace setSettings:@{ @"port": @([UDFakeScriptDebugger gamePort]), @"localPort": @([UDFakeScriptDebugger debuggerPort]) }
                    forTool:@"Debugger"];
     workspace.gameExecutable = game;

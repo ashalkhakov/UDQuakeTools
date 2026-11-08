@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
  * from File > Workspace Settings… on an open one), a plain window.
  *
  * All controls are BOUND (through the objectController) to a scratch
- * UDWorkspace built from the source workspace's dictionaryRepresentation, so
+ * UDGameWorkspace built from the source workspace's dictionaryRepresentation, so
  * this controller carries no per-setting code at all — adding a setting means
  * adding a control to the xib and binding it to selection.<property>.
  *
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  * the scratch and ends the dialog, sending its action to its target, with
  * -result saying which button ended it. The CALLER applies
  * `scratchWorkspace.dictionaryRepresentation` via
- * -[UDWorkspace applySettingsFromDictionary:] (and restarts the workspace if
+ * -[UDGameWorkspace applySettingsFromDictionary:] (and restarts the workspace if
  * it was already running).
  */
 @interface UDWorkspaceSettingsWindowController : NSWindowController
@@ -26,10 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** The workspace whose settings it edits a copy of; set before or after the
  *  window loads. */
-@property (nonatomic, strong, nullable) UDWorkspace *workspace;
+@property (nonatomic, strong, nullable) UDGameWorkspace *workspace;
 
 /** The scratch copy being edited. Valid after the window has loaded. */
-@property (nonatomic, strong, readonly, nullable) UDWorkspace *scratchWorkspace;
+@property (nonatomic, strong, readonly, nullable) UDGameWorkspace *scratchWorkspace;
 
 /** OK, Cancel and closing the window send @a action to @a target (with
  *  this controller). */

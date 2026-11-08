@@ -14,7 +14,7 @@
 #import <UDCodeKit/UDCodeKit.h>
 #import "UQExtension.h"
 #import "UQProject.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDWorkspaceItem.h"
 #import "UQDeclDocument.h"
 #import "UQEditorHost.h"
@@ -117,7 +117,7 @@ static NSString *const UQMaterial =
 - (UQProject *)startedProjectOfWorkbench:(id)workbench {
     _quarry = [[UQProject alloc] initWithFolder:[NSURL fileURLWithPath:_project] workbench:workbench];
     __block BOOL started = NO;
-    [_quarry whenStarted:^(UDWorkspace *workspace) { started = YES; }];
+    [_quarry whenStarted:^(UDGameWorkspace *workspace) { started = YES; }];
     NSDate *until = [NSDate dateWithTimeIntervalSinceNow:30];
     while (!started && [until timeIntervalSinceNow] > 0) {
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];

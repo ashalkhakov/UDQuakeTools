@@ -1,6 +1,6 @@
 #import "UDParticleEditorViewController.h"
 #import "UDDeclManagedObjects.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDParticlePreview.h"
 #import "UDTransportController.h"
 #import "idDeclManager.h"

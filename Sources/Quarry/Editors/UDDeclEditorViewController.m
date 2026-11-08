@@ -3,7 +3,7 @@
 #import "UDDeclDocument.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclTextChecker.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "idFileSystem.h"
 #import <UDCodeKit/UDCodeKit.h>

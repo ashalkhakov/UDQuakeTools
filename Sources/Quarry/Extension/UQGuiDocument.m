@@ -17,7 +17,7 @@ static NSURL *UQUnusedURL(void) {
     return [path.pathExtension caseInsensitiveCompare:@"gui"] == NSOrderedSame;
 }
 
-- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDWorkspace *)workspace error:(NSError **)error {
+- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error {
     if (!(self = [super init])) return nil;
     _workspace = workspace;
     _textDocument = [[UDTextFileDocument alloc] initWithPath:path inWorkspace:workspace error:error];

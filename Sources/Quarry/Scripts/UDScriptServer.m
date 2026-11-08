@@ -1,17 +1,17 @@
 #import "UDScriptServer.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import <LSPKit/LSPKit.h>
 #import <UDCodeKit/UDPaths.h>
 
 @implementation UDScriptServer
 
-static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
+static NSMapTable<UDGameWorkspace *, LSPClient *> *UDClients(void) {
     static NSMapTable *clients = nil;
     if (clients == nil) clients = [NSMapTable strongToStrongObjectsMapTable];
     return clients;
 }
 
-+ (LSPClient *)clientForWorkspace:(UDWorkspace *)workspace {
++ (LSPClient *)clientForWorkspace:(UDGameWorkspace *)workspace {
     LSPClient *client = [UDClients() objectForKey:workspace];
     if (client != nil) return client;
 
@@ -31,13 +31,13 @@ static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
     return client;
 }
 
-+ (void)stopForWorkspace:(UDWorkspace *)workspace {
++ (void)stopForWorkspace:(UDGameWorkspace *)workspace {
     LSPClient *client = [UDClients() objectForKey:workspace];
     [UDClients() removeObjectForKey:workspace];
     [client terminate];
 }
 
-+ (void)workspace:(UDWorkspace *)workspace didWriteFileAtPath:(NSString *)path {
++ (void)workspace:(UDGameWorkspace *)workspace didWriteFileAtPath:(NSString *)path {
     LSPClient *client = [UDClients() objectForKey:workspace];
     if (client == nil) return;
     [client sendNotification:@"workspace/didChangeWatchedFiles"

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@class UDWorkspace, LSPClient;
+@class UDGameWorkspace, LSPClient;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The server for @a workspace, started on first use; nil without udscript-lsp
 /// (or $UD_SCRIPT_LSP, which names it instead).
-+ (nullable LSPClient *)clientForWorkspace:(UDWorkspace *)workspace;
++ (nullable LSPClient *)clientForWorkspace:(UDGameWorkspace *)workspace;
 
 /// Stops @a workspace's server: it closes, or restarts with other settings.
-+ (void)stopForWorkspace:(UDWorkspace *)workspace;
++ (void)stopForWorkspace:(UDGameWorkspace *)workspace;
 
 /// Tells @a workspace's server, if it has one, that the file at @a path was written.
-+ (void)workspace:(UDWorkspace *)workspace didWriteFileAtPath:(NSString *)path;
++ (void)workspace:(UDGameWorkspace *)workspace didWriteFileAtPath:(NSString *)path;
 
 /// A file's udfs: URL, and back.
 + (NSURL *)URLForPath:(NSString *)path;

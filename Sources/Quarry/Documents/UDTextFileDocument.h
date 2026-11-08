@@ -1,7 +1,7 @@
 #import <AppKit/AppKit.h>
 #import "UDBaseDocument.h"
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UDTextFileDocument : UDBaseDocument
 
-- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDWorkspace *)workspace error:(NSError **)error;
+- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error;
 
 @property (nonatomic, strong) NSString *path; // qpath, aka workspace-relative path
 

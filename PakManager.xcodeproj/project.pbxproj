@@ -763,8 +763,8 @@
 		CE3FA380300B93A40048F206 /* idFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA370300543F90048F206 /* idFileSystem.m */; };
 		CE3FA382300C683E0048F206 /* sys.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA381300C683C0048F206 /* sys.h */; };
 		CE3FA384300C68550048F206 /* compat.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA383300C68540048F206 /* compat.m */; };
-		CE3FA386300E43810048F206 /* UDWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA385300E43810048F206 /* UDWorkspace.h */; };
-		CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA387300E438D0048F206 /* UDWorkspace.m */; };
+		CE3FA386300E43810048F206 /* UDGameWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA385300E43810048F206 /* UDGameWorkspace.h */; };
+		CE3FA388300E438D0048F206 /* UDGameWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA387300E438D0048F206 /* UDGameWorkspace.m */; };
 		CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */; };
 		CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */; };
 		CE3FA392300E59920048F206 /* idDeclManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3FA391300E598B0048F206 /* idDeclManager.h */; };
@@ -3000,8 +3000,8 @@
 		CE3FA37E3007F33F0048F206 /* ioapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		CE3FA381300C683C0048F206 /* sys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sys.h; sourceTree = "<group>"; };
 		CE3FA383300C68540048F206 /* compat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = compat.m; sourceTree = "<group>"; };
-		CE3FA385300E43810048F206 /* UDWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspace.h; sourceTree = "<group>"; };
-		CE3FA387300E438D0048F206 /* UDWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspace.m; sourceTree = "<group>"; };
+		CE3FA385300E43810048F206 /* UDGameWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDGameWorkspace.h; sourceTree = "<group>"; };
+		CE3FA387300E438D0048F206 /* UDGameWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDGameWorkspace.m; sourceTree = "<group>"; };
 		CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDWorkspaceManager.h; sourceTree = "<group>"; };
 		CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDWorkspaceManager.m; sourceTree = "<group>"; };
 		CE3FA391300E598B0048F206 /* idDeclManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = idDeclManager.h; sourceTree = "<group>"; };
@@ -4200,8 +4200,8 @@
 			children = (
 				CE1151652FEE7777005C6DA3 /* UDGameDetectionService.h */,
 				CE1151662FEE7777005C6DA3 /* UDGameDetectionService.m */,
-				CE3FA385300E43810048F206 /* UDWorkspace.h */,
-				CE3FA387300E438D0048F206 /* UDWorkspace.m */,
+				CE3FA385300E43810048F206 /* UDGameWorkspace.h */,
+				CE3FA387300E438D0048F206 /* UDGameWorkspace.m */,
 				CE3FA389300E442C0048F206 /* UDWorkspaceManager.h */,
 				CE3FA38B300E44470048F206 /* UDWorkspaceManager.m */,
 			);
@@ -4617,7 +4617,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC02000F00000000000000AA /* UDGameDetectionService.h in Headers */,
-				CE3FA386300E43810048F206 /* UDWorkspace.h in Headers */,
+				CE3FA386300E43810048F206 /* UDGameWorkspace.h in Headers */,
 				CE3FA38A300E442C0048F206 /* UDWorkspaceManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5701,7 +5701,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC01001000000000000000AA /* UDGameDetectionService.m in Sources */,
-				CE3FA388300E438D0048F206 /* UDWorkspace.m in Sources */,
+				CE3FA388300E438D0048F206 /* UDGameWorkspace.m in Sources */,
 				CE3FA38C300E44470048F206 /* UDWorkspaceManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

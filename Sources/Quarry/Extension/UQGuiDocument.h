@@ -13,7 +13,7 @@
 #import <Foundation/Foundation.h>
 #import <UDCodeKit/UDCodeKit.h>
 
-@class UDWorkspace, UDTextFileDocument, UDFileItem, UDGuiEditorViewController;
+@class UDGameWorkspace, UDTextFileDocument, UDFileItem, UDGuiEditorViewController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,10 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isGuiPath:(NSString *)path;
 
 /// The GUI at @a path in @a workspace's game, read; nil and why.
-- (nullable instancetype)initWithPath:(NSString *)path inWorkspace:(UDWorkspace *)workspace
+- (nullable instancetype)initWithPath:(NSString *)path inWorkspace:(UDGameWorkspace *)workspace
                                 error:(NSError *_Nullable *_Nullable)error;
 
-@property (nonatomic, readonly) UDWorkspace *workspace;
+@property (nonatomic, readonly) UDGameWorkspace *workspace;
 @property (nonatomic, readonly) UDTextFileDocument *textDocument;
 @property (nonatomic, readonly) UDFileItem *item;
 /// Its editor, once it has one: what its text is now.

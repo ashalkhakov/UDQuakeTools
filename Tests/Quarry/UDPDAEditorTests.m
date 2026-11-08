@@ -1,6 +1,6 @@
 #import <objc/runtime.h>
 #import "UDQuarryTestCase.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 #import "UDDeclManagedObjects.h"
 #import "UDWorkspaceWindowController.h"

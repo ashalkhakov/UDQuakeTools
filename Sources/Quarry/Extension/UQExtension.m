@@ -99,6 +99,13 @@ const TSLanguage *tree_sitter_iddecl(void);
     return commands.menuItems;
 }
 
+/// The Decls navigator's segment: Quarry's icon.
+- (NSImage *)navigatorImage {
+    NSImage *icon = [[NSImage alloc] initWithContentsOfFile:[_bundle pathForResource:@"Quarry" ofType:@"png"] ?: @""];
+    icon.size = NSMakeSize(16, 16);
+    return icon.isValid ? icon : nil;
+}
+
 /// Its segment in the bottom area (Find in Decls'): Quarry's badge.
 - (NSImage *)bottomAreaImage {
     return UDTabBadge(@"Q", 0.55, 0.36, 0.16);
@@ -120,7 +127,7 @@ const TSLanguage *tree_sitter_iddecl(void);
     if ([UQPakDocument isPakURL:url]) return [[UQPakDocument alloc] initWithURL:url error:error];
     NSString *typeName, *name, *path;
     if (![UQProject parseURL:url typeName:&typeName name:&name path:&path]) return nil;
-    UDWorkspace *workspace = [self projectOfWorkbench:workbench].workspace;
+    UDGameWorkspace *workspace = [self projectOfWorkbench:workbench].workspace;
     if (!workspace) return nil;
     // a GUI: its source and canvas, Quarry's GUI editor's
     if (path) {

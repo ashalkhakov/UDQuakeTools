@@ -1,0 +1,12 @@
+{
+  "name": "udquaketools",
+  "publisher": "ashalkhakov",
+  "displayName": "UDQuakeTools",
+  "description": "Doom 3 mods in UDCode: Quarry (a .qworkspace's decls, scripts and GUIs, each in an editor of its own: materials lit as the game lights them, particles and FX playing, GUIs that run and are laid out on a canvas; the scripts' language server and debugger) and Pak Manager (paks browsed and edited)",
+  "version": "0.0.0",
+  "license": "GPL-3.0-or-later",
+  "repository": "https://github.com/ashalkhakov/UDQuakeTools",
+  "engines": { "udcode": "^0.22.0" },
+  "main": "./UDQuakeTools.bundle",
+  "updates": "https://github.com/ashalkhakov/UDQuakeTools/releases/latest/download/ashalkhakov.udquaketools-{platform}.json"
+}

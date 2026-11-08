@@ -1,5 +1,5 @@
 #import "UDTransportController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDQuarryTestCase.h"
 
 #import "UDDeclDocument.h"

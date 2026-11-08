@@ -6,12 +6,12 @@
 //
 
 #import "UDWorkspaceManager.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotification";
 
 @implementation UDWorkspaceManager {
-    NSMutableDictionary<NSString *, UDWorkspace *> *_workspaces; // Keyed by rootDirectory
+    NSMutableDictionary<NSString *, UDGameWorkspace *> *_workspaces; // Keyed by rootDirectory
 }
 
 + (instancetype)sharedManager {
@@ -32,18 +32,18 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
 }
 
 // Registers an already-created workspace into the active session
-- (void)registerWorkspace:(UDWorkspace *)workspace {
+- (void)registerWorkspace:(UDGameWorkspace *)workspace {
     if (workspace.rootDirectory) {
         _workspaces[workspace.rootDirectory] = workspace;
     }
 }
 
-- (UDWorkspace *)workspaceForDirectory:(NSString *)directoryPath {
+- (UDGameWorkspace *)workspaceForDirectory:(NSString *)directoryPath {
     return _workspaces[directoryPath];
 }
 
-- (UDWorkspace *)workspaceOwningFilePath:(NSString *)filePath {
-    UDWorkspace *bestMatch = nil;
+- (UDGameWorkspace *)workspaceOwningFilePath:(NSString *)filePath {
+    UDGameWorkspace *bestMatch = nil;
     NSUInteger longestMatchLength = 0;
     
     for (NSString *rootDir in _workspaces) {
@@ -56,7 +56,7 @@ NSString * const UDWorkspaceDidCloseNotification = @"UDWorkspaceDidCloseNotifica
     return bestMatch;
 }
 
-- (void)closeWorkspace:(UDWorkspace *)workspace {
+- (void)closeWorkspace:(UDGameWorkspace *)workspace {
     if (!workspace || !workspace.rootDirectory) return;
     [_workspaces removeObjectForKey:workspace.rootDirectory];
     [[NSNotificationCenter defaultCenter] postNotificationName:UDWorkspaceDidCloseNotification

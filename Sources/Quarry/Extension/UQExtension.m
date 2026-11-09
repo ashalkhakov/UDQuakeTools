@@ -21,6 +21,11 @@ typedef struct TSLanguage TSLanguage;
 const TSLanguage *tree_sitter_idscript(void);
 const TSLanguage *tree_sitter_iddecl(void);
 
+/// The README's screenshots asked for ($UQ_OPEN): editors are remembered for it.
+static BOOL UQScreenshotScene(void) {
+    return NSProcessInfo.processInfo.environment[@"UQ_OPEN"].length > 0;
+}
+
 @implementation UQExtension {
     NSBundle *_bundle;
     NSMapTable<id<UDWorkbench>, UQProject *> *_projects;
@@ -79,9 +84,10 @@ const TSLanguage *tree_sitter_iddecl(void);
     // $UQ_OPEN, URLs separated by spaces (the README's screenshots,
     // docs/building.md): once the game has started, the Decls navigator
     // shown, each URL in a tab, the last one in front with its editor's
-    // first inspector ($UQ_INSPECTOR: the one of that title); $UQ_GUI_DESIGN, a named event: that GUI editor in
-    // Design, the event sent (NoIntro: the menu, not its intro's black), two
-    // seconds into its time
+    // first inspector ($UQ_INSPECTOR: the one of that title); $UQ_GUI_DESIGN,
+    // a named event: that GUI editor in Design, the event sent (NoIntro: the
+    // menu, not its intro's black), two seconds into its time; $UQ_DEBUG:
+    // then debugging started, as Product > Debug
     NSString *open = NSProcessInfo.processInfo.environment[@"UQ_OPEN"];
     if (open.length) {
         __weak id<UDWorkbench> weakWorkbench = workbench;
@@ -100,6 +106,10 @@ const TSLanguage *tree_sitter_iddecl(void);
                 NSString *event = NSProcessInfo.processInfo.environment[@"UQ_GUI_DESIGN"];
                 UDGuiEditorViewController *gui = (UDGuiEditorViewController *)self->_lastHost.editor;
                 if (event.length && [gui isKindOfClass:[UDGuiEditorViewController class]]) [self _design:gui event:event tries:50];
+                id controller = weakWorkbench.window.windowController;
+                if (NSProcessInfo.processInfo.environment[@"UQ_DEBUG"].length && [controller respondsToSelector:@selector(startDebugging:)]) {
+                    [NSApp sendAction:@selector(startDebugging:) to:controller from:nil];
+                }
             });
         }];
     }
@@ -199,7 +209,7 @@ const TSLanguage *tree_sitter_iddecl(void);
         editor.document = gui.textDocument;
         gui.editor = editor;
         UQEditorHost *host = [[UQEditorHost alloc] initWithEditor:editor document:document workbench:workbench];
-        _lastHost = host;
+        if (UQScreenshotScene()) _lastHost = host;
         return host;
     }
     if (![document.customDocument isKindOfClass:[UQDeclDocument class]]) return nil;
@@ -210,7 +220,7 @@ const TSLanguage *tree_sitter_iddecl(void);
     // the custom document's model, the one its editor edits
     [(UDDeclEditorViewController *)editor setDocument:decl.declDocument];
     UQEditorHost *host = [[UQEditorHost alloc] initWithEditor:editor document:document workbench:workbench];
-    _lastHost = host;
+    if (UQScreenshotScene()) _lastHost = host;
     return host;
 }
 

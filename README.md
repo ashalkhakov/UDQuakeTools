@@ -22,8 +22,8 @@ particle or GUI looks and runs in the editor as it does in the game.
 | A material, lit as the game lights it | ![The material editor on macOS](Screenshots/quarry-material-macos.png) | ![The material editor on GNUstep](Screenshots/quarry-material-gnustep.png) | ![The material editor on Windows](Screenshots/quarry-material-windows.png) |
 | A particle system playing | ![The particle editor on macOS](Screenshots/quarry-particle-macos.png) | ![The particle editor on GNUstep](Screenshots/quarry-particle-gnustep.png) | ![The particle editor on Windows](Screenshots/quarry-particle-windows.png) |
 
-![The script debugger, stopped in Mars City](Screenshots/quarry-debugger-gnustep.png)
-*The script debugger, stopped at a breakpoint as Mars City starts, `self` opened (Linux).*
+![The script debugger, stopped in Mars City](Screenshots/quarry-debugger-macos.png)
+*The script debugger, stopped at a breakpoint as Mars City starts (macOS).*
 
 ## Get it
 

@@ -150,6 +150,7 @@ scene up when the environment asks, once the game has started:
 | `UQ_OPEN` | URLs separated by spaces, each opened in a tab, the last in front: `quarry:/material/textures/base_wall/lfwall27d`, `quarry:/particle/flamejet`, `quarry:/file/guis/mainmenu.gui`, a pak's `file:` URL (`DOOM%203`, not `DOOM 3`). The Decls navigator is shown, and the front editor's first inspector |
 | `UQ_INSPECTOR` | That inspector instead, by its title (`Stage` for the particle) |
 | `UQ_GUI_DESIGN` | A named event: the GUI editor in Design, the event sent (`NoIntro`: the menu, not its intro's black), two seconds into its time |
+| `UQ_DEBUG` | Any value: debugging started then, as Product > Debug. The debugger scene's breakpoint (`quarry:/file/script/ai_character.script`, line 357) is in UDCode's defaults, under `UDCode Debugger <folder>`, and its `.qworkspace` names a script-debugging dhewm3 with `+set r_fullscreen 0 +set s_noSound 1 +map game/mars_city1` |
 
 Then the window alone is captured: on macOS `screencapture -o -l <window id>`;
 on GNUstep under a virtual display (`xvfb-run -a -s "-screen 0 1600x1000x24"`,

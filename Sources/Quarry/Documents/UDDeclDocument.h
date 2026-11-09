@@ -1,6 +1,6 @@
 #import <AppKit/AppKit.h>
 #import <CoreData/CoreData.h>
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "UDBaseDocument.h"
 #import "UDDeclManagedObjects.h"
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UDDeclDocument : UDBaseDocument
 
-- (nullable instancetype)initWithType:(declType_t)type name:(NSString *)name inWorkspace:(UDWorkspace *)workspace error:(NSError **)error;
+- (nullable instancetype)initWithType:(declType_t)type name:(NSString *)name inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error;
 
 /** The decl type this document was opened for. */
 @property (nonatomic, readonly) declType_t declType;

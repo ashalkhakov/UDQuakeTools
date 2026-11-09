@@ -1,11 +1,10 @@
 #import "UDGuiEditorViewController.h"
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
 #import "idFileSystem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDGuiPlayer.h"
 #import "UDGuiView.h"
 #import "UDTransportController.h"
-#import "UDWorkspaceWindowController.h"
 #import "UDWorkspaceItem.h"
 #import "idUserInterface.h"
 #import "idDict.h"
@@ -157,6 +156,34 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
         return [self.designWorkspace.text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
     }
     return self.editorTextView.string ?: @"";
+}
+
+- (NSString *)currentText {
+    return [self _currentText];
+}
+
+- (void)replaceTextUndoably:(NSString *)text {
+    if ([text isEqualToString:[self _currentText]]) return;
+    // a copy: the text view's string is its storage's, which the edit changes
+    NSString *before = [[self _currentText] copy];
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    [self forgetTextEdits];
+    [undoManager registerUndoWithTarget:self selector:@selector(_restoreSourceText:) object:before];
+    [undoManager setActionName:@"Edit Source"];
+    [self _takeText:text];
+}
+
+- (void)reloadText:(NSString *)text {
+    NSTextView *textView = self.editorTextView;
+    NSUndoManager *undoManager = self.document.undoManager;
+    [undoManager disableUndoRegistration];
+    [textView.textStorage replaceCharactersInRange:NSMakeRange(0, textView.textStorage.length) withString:text];
+    [undoManager enableUndoRegistration];
+    [self _takeText:text];
 }
 
 /// UDTextFileDocument's text source: the canvas's text, when it is ahead.
@@ -508,10 +535,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 }
 
 - (IBAction)showProperties:(id)sender {
-    id controller = self.view.window.windowController;
-    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
-        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Properties"];
-    }
+    [self showInspectorPaneTitled:@"Properties"];
 }
 
 #pragma mark - Scripts (UDGuiScriptsController)
@@ -799,10 +823,7 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
 }
 
 - (IBAction)showScripts:(id)sender {
-    id controller = self.view.window.windowController;
-    if ([controller isKindOfClass:[UDWorkspaceWindowController class]]) {
-        [(UDWorkspaceWindowController *)controller showInspectorPaneTitled:@"Scripts"];
-    }
+    [self showInspectorPaneTitled:@"Scripts"];
 }
 
 #pragma mark - Editor | Source

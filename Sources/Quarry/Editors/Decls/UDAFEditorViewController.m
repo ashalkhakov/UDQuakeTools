@@ -1,7 +1,7 @@
 #import "UDAFEditorViewController.h"
 #import "UDDeclManagedObjects.h"
 #import "UDMD5Mesh.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 
 static UDDiagnosticSource const UDAFReferencesSource = @"references";
@@ -159,7 +159,7 @@ static NSInteger UDSegment(id sender) {
         }
         case 3: {
             // the model's joints (idAnimator's)
-            UDWorkspace *workspace = self.workspace;
+            UDGameWorkspace *workspace = self.workspace;
             UDReferenceField *field = [UDReferenceField fieldTitled:@"A joint of the model" key:@"jointName"
                                                          controller:self.bodiesController kind:UDReferenceNames];
             field.names = [UDMD5Mesh jointNamesOfModelDef:figure.model ?: @"" declManager:workspace.declManager
@@ -209,7 +209,7 @@ static BOOL UDHasName(NSArray<NSString *> *names, NSString *name) {
     if (figure == nil || self.diagnosticStore == nil) return;
     NSMutableArray<UDDiagnosticItem *> *items = [NSMutableArray array];
     [self removeDiagnosticTargets];
-    UDWorkspace *workspace = self.workspace;
+    UDGameWorkspace *workspace = self.workspace;
 
     NSArray<UDAFBody *> *bodies = figure.bodies ?: @[];
     if (bodies.count == 0 || ![bodies[0].jointName isEqualToString:@"origin"]) {

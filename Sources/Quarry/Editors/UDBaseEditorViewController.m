@@ -23,7 +23,7 @@
 @implementation UDBaseEditorViewController
 
 - (void)showInspectorPaneTitled:(NSString *)title {
-    id controller = self.view.window.windowController;
+    id<UDEditorHosting> controller = self.host ?: (id<UDEditorHosting>)self.view.window.windowController;
     if ([controller respondsToSelector:@selector(showInspectorPaneTitled:)]) [controller showInspectorPaneTitled:title];
 }
 
@@ -39,7 +39,7 @@
     return nil;
 }
 
-+ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDWorkspace *)workspace {
++ (instancetype)editorViewControllerForWorkspaceItem:(UDWorkspaceItem *)item inWorkspace:(UDGameWorkspace *)workspace {
     
     if (item.kind == UDWorkspaceItemKindGroup) {
         return nil;

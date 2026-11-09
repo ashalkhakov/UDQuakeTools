@@ -1,13 +1,14 @@
 #import "UDTransportController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDQuarryTestCase.h"
+#import "UQProject.h"
+#import "UQEditorHost.h"
 
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
 #import "idFileSystem.h"
 #import "UDBaseDocument.h"
 #import "UDSoftwareRenderer.h"
 
-#import "UDEditorTabManager.h"
 #import "UDGuiEditorViewController.h"
 #import "UDGuiGLView.h"
 #import "UDGuiPlayer.h"
@@ -96,13 +97,13 @@ static NSString *const UDViewerScript =
                      atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
-- (UDWorkspaceWindowController *)openFixture {
-    UDWorkspaceWindowController *controller = [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.basePath savePath:self.savePath]];
+- (UQTestWindow *)openFixture {
+    UQTestWindow *controller = [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.basePath savePath:self.savePath]];
     [controller.window orderFront:nil];   // NSTabView sizes its views only in a window that is shown
     return controller;
 }
 
-- (UDGuiEditorViewController *)openGuiIn:(UDWorkspaceWindowController *)controller {
+- (UDGuiEditorViewController *)openGuiIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"guis/udtest_menu.gui" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDGuiEditorViewController class]], @"a GUI opens in the GUI viewer, not %@", editor);
     return (UDGuiEditorViewController *)editor;
@@ -127,7 +128,7 @@ static NSString *const UDViewerScript =
 #pragma mark - Running
 
 - (void)testAGuiOpensRunning {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     XCTAssertNotNil(editor.player.gui, @"the GUI should be loaded");
@@ -141,7 +142,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testAClickRunsTheButtonsAction {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     UDGuiView *view = editor.guiView;
@@ -154,7 +155,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testANamedEventFromThePullDown {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     NSMenuItem *item = [editor.namedEventPopUp itemWithTitle:@"udtestRename"];
@@ -164,7 +165,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheStateIsEditedAsTheGameSetsIt {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     [controller showInspectorPaneTitled:@"State"];
@@ -191,7 +192,7 @@ static NSString *const UDViewerScript =
 #pragma mark - The source
 
 - (void)testAnEditedSourceRunsWhenTheEditorComesBack {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     editor.showsSource = YES;
@@ -205,7 +206,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testABrokenSourceIsAnIssue {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     editor.showsSource = YES;
@@ -220,59 +221,19 @@ static NSString *const UDViewerScript =
 #pragma mark - The window
 
 - (void)testTheInspectorFollowsTheSelectedTab {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     [self openOutlinePath:@"script/udtest.script" inController:controller];
-    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 0u, @"a script has no inspector");
-    XCTAssertFalse([controller.inspectorPlaceholder isHidden], @"and the pane says so");
+    XCTAssertEqual(controller.inspectors.count, 0u, @"a script has no inspector of the extension's");
 
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertEqual(controller.inspectorTabBar.tabBarItems.count, 5u, @"a GUI has its properties, its layout, its scripts, its state and its log");
-    XCTAssertTrue([controller.inspectorPlaceholder isHidden]);
+    XCTAssertEqualObjects([controller.inspectors valueForKey:@"title"], (@[ @"Properties", @"Layout", @"Scripts", @"State", @"Log" ]),
+                          @"a GUI has its properties, its layout, its scripts, its state and its log");
     XCTAssertEqual(editor.propertiesView.superview, controller.inspectorHost, @"the properties are shown first");
 
-    controller.inspectorTabBar.selectedIndex = 4;
-    [NSApp sendAction:@selector(inspectorTabChanged:) to:controller from:controller.inspectorTabBar];
+    [controller showEditorInspector:controller.inspectors[4]];
     XCTAssertEqual(editor.logView.superview, controller.inspectorHost, @"the log, when it is chosen");
     XCTAssertNil(editor.propertiesView.superview);
-}
-
-- (void)testTheSidePanesKeepTheirWidths {
-    UDWorkspaceWindowController *controller = [self openFixture];
-    if (controller == nil) return;
-    NSArray<NSView *> *panes = controller.split.subviews;
-    XCTAssertEqual(panes.count, 3u, @"navigator, editors, inspector");
-    // a window that fits any screen it is tested on with room to grow
-    // (Windows CI's is 1024 wide, xvfb's 1280), then wider; a screen
-    // narrower than that keeps it on the screen, and the editors take what
-    // growth there is. On GNUstep the window server says when it has its
-    // new size.
-    NSWindow *window = controller.window;
-    NSRect frame = window.frame;
-    frame.size.width = 900;
-    [window setFrame:frame display:YES];
-    [self spinUntil:^BOOL{ return NSWidth(window.frame) < 901; } timeout:3.0];
-    CGFloat left = NSWidth(panes[0].frame), right = NSWidth(panes[2].frame), centre = NSWidth(panes[1].frame);
-    CGFloat narrow = NSWidth(window.frame);
-    XCTAssertGreaterThanOrEqual(left, 160);
-    XCTAssertGreaterThanOrEqual(right, 160);
-    frame.size.width = 1200;
-    [window setFrame:frame display:YES];
-    [self spinUntil:^BOOL{ return NSWidth(panes[1].frame) > centre + 40; } timeout:3.0];
-    CGFloat grown = NSWidth(window.frame) - narrow;
-    XCTAssertGreaterThan(grown, 40, @"the window is wider");
-    XCTAssertEqualWithAccuracy(NSWidth(panes[0].frame), left, 1, @"the navigator keeps its width");
-    XCTAssertEqualWithAccuracy(NSWidth(panes[2].frame), right, 1, @"the inspector keeps its width");
-    XCTAssertEqualWithAccuracy(NSWidth(panes[1].frame), centre + grown, 1, @"the editors take the growth");
-}
-
-- (void)testTheNavigatorsBarSwitchesItsTabs {
-    UDWorkspaceWindowController *controller = [self openFixture];
-    if (controller == nil) return;
-    XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, (NSUInteger)controller.navigatorTabView.numberOfTabViewItems);
-    controller.navigatorTabBar.selectedIndex = 2;
-    [NSApp sendAction:@selector(navigatorTabChanged:) to:controller from:controller.navigatorTabBar];
-    XCTAssertEqual([controller.navigatorTabView indexOfTabViewItem:controller.navigatorTabView.selectedTabViewItem], 2);
 }
 
 #pragma mark - Design
@@ -299,7 +260,7 @@ static NSString *const UDViewerScript =
     [self mouse:NSEventTypeLeftMouseUp at:to time:1.2 in:view];
 }
 
-- (UDGuiEditorViewController *)openDesignIn:(UDWorkspaceWindowController *)controller {
+- (UDGuiEditorViewController *)openDesignIn:(UQTestWindow *)controller {
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     editor.modeControl.selectedSegment = 1;
     [editor changeMode:editor.modeControl];
@@ -314,7 +275,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testADragInTheDesignMovesTheWindowWithUndo {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     [self dragFrom:NSMakePoint(480, 330) to:NSMakePoint(520, 350) in:editor.guiView];
@@ -334,7 +295,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheDesignsEditsAreSavedShownAndRun {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     [self dragFrom:NSMakePoint(480, 330) to:NSMakePoint(520, 350) in:editor.guiView];
@@ -358,7 +319,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testAnEditedSourceIsOneUndo {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     editor.showsSource = YES;
@@ -378,7 +339,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheSelectionIsDrawnOverTheDesign {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
@@ -397,7 +358,7 @@ static NSString *const UDViewerScript =
 /// view's X window taken down while it is hidden, put up as it draws again
 /// (the stack's NSOpenGLView, gnustep-patches' opengl-view-hidden).
 - (void)testTheSourceIsNotUnderTheCanvas {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     UDGuiGLView *gl = (UDGuiGLView *)editor.guiView.glView;
@@ -441,7 +402,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheSliderSeeksTheRunTheNamedEventsSentAgain {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     [editor.transport togglePlaying:nil];
@@ -463,7 +424,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheDesignIsAtTheSlidersTime {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     XCTAssertFalse([editor.transport.playButton isEnabled], @"a design does not play");
@@ -526,7 +487,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testEveryEditIsMadeInTheRunAsItIs {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     rvGEWorkspace *design = editor.designWorkspace;
@@ -605,14 +566,14 @@ static NSString *const UDViewerScript =
 #pragma mark - The navigator
 
 - (void)testTheWindowsAreANavigatorOfTheGuisTab {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
-    NSUInteger own = controller.navigatorTabBar.tabBarItems.count;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
-    XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own + 1, @"a GUI's tab adds its windows to the navigators");
-    XCTAssertEqual((NSUInteger)controller.navigatorTabView.numberOfTabViewItems, own + 1);
-    [controller showNavigatorPaneTitled:@"Windows"];
-    XCTAssertEqual(editor.windowsView.superview != nil, YES, @"shown in the left pane");
+    // on the left of the GUI's tab, in its host's split
+    UQEditorHost *host = controller.selectedHost;
+    XCTAssertEqualObjects([host.navigatorTabs.tabViewItems valueForKey:@"label"], @[ @"Windows" ]);
+    XCTAssertTrue([editor.windowsView isDescendantOf:host.navigatorTabs], @"shown left of the GUI");
+    XCTAssertTrue([editor.view isDescendantOf:host.editorHost]);
 
     NSOutlineView *outline = editor.windowsOutline;
     NSMutableArray<NSString *> *rows = [NSMutableArray array];
@@ -623,11 +584,11 @@ static NSString *const UDViewerScript =
                                    @"Panel", @"Label", @"Go", @"Lamp"]), @"the desktop open, its events and its windows in it");
 
     [self openOutlinePath:@"script/udtest.script" inController:controller];
-    XCTAssertEqual(controller.navigatorTabBar.tabBarItems.count, own, @"a script's tab has no windows");
+    XCTAssertNil(controller.selectedHost, @"a script's tab has no windows");
 }
 
 - (void)testChoosingAWindowInTheNavigatorDesignsIt {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     NSOutlineView *outline = editor.windowsOutline;
@@ -643,7 +604,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheDesignsSelectionIsTheNavigators {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     [self mouse:NSEventTypeLeftMouseDown at:NSMakePoint(480, 330) time:1.0 in:editor.guiView];
@@ -654,7 +615,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheEyeHidesAWindowInTheDesignOnly {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     NSOutlineView *outline = editor.windowsOutline;
@@ -678,7 +639,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testALockedWindowIsNotChosenOnTheCanvas {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     NSOutlineView *outline = editor.windowsOutline;
@@ -714,7 +675,7 @@ static NSString *const UDViewerScript =
 #pragma mark - Item properties (GEItemPropsDlg) and Layout (GETransformer)
 
 - (void)testTheItemPropertiesPagesShowAndEditTheChosenWindow {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     XCTAssertTrue([editor.propertiesScroll isHidden], @"no window chosen yet");
@@ -767,7 +728,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheLayoutMovesAndSizesTheSelection {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     XCTAssertFalse([editor.layoutPlaceholder isHidden], @"nothing chosen");
@@ -821,7 +782,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testAWindowsScriptsAreEditedAsStatements {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     UDGuiScriptsController *scripts = editor.scriptsController;
@@ -914,7 +875,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testAStatementsWindowsAndVariablesArePicked {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     UDGuiScriptsController *scripts = editor.scriptsController;
@@ -942,7 +903,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testAConditionIsEditedAsAnExpression {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     UDGuiScriptsController *scripts = editor.scriptsController;
@@ -990,7 +951,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheDesignsMenuOffersTheEditorsCommands {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     UDGuiView *view = editor.guiView;
@@ -1011,7 +972,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheKeysDeleteNudgeAndArrange {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     UDGuiView *view = editor.guiView;
@@ -1034,7 +995,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testCopyAndPasteFromTheEditMenu {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     UDGuiView *view = editor.guiView;
@@ -1049,7 +1010,7 @@ static NSString *const UDViewerScript =
 
 #pragma mark - The options (GEOptions, GEOptionsDlg)
 
-- (BOOL)validate:(SEL)action in:(UDWorkspaceWindowController *)controller state:(NSControlStateValue *)state {
+- (BOOL)validate:(SEL)action in:(UQTestWindow *)controller state:(NSControlStateValue *)state {
     NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"" action:action keyEquivalent:@""];
     BOOL enabled = [controller validateMenuItem:item];
     if (state != NULL) *state = item.state;
@@ -1057,7 +1018,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheGridCommandsAreKeptInTheWorkspace {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     rvGEOptions *options = editor.designWorkspace.options;
@@ -1074,7 +1035,9 @@ static NSString *const UDViewerScript =
 
     XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"gridVisible"], @YES, @"saved in the workspace");
     XCTAssertEqualObjects([editor.workspace settingsForTool:@"GUIEditor"][@"gridSnap"], @YES);
-    XCTAssertTrue([controller.document isDocumentEdited], @"which is saved with it");
+    NSData *written = [NSData dataWithContentsOfURL:controller.quarry.workspaceFileURL];
+    NSDictionary *saved = written ? [NSJSONSerialization JSONObjectWithData:written options:0 error:NULL] : nil;
+    XCTAssertEqualObjects(saved[@"tools"][@"GUIEditor"][@"gridVisible"], @YES, @"kept in its .qworkspace");
 
     // set elsewhere (another GUI's tab): this one's follow
     NSMutableDictionary *registry = [options.registry mutableCopy];
@@ -1086,7 +1049,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheOptionsSheetSetsTheOptions {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     rvGEOptions *options = editor.designWorkspace.options;
@@ -1123,7 +1086,7 @@ static NSString *const UDViewerScript =
 #pragma mark - Zoom and the status bar (GEWorkspace, GEStatusBar)
 
 - (void)testTheZoomGoesByTheEnginesLevels {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     UDGuiView *view = editor.guiView;
@@ -1159,7 +1122,7 @@ static NSString *const UDViewerScript =
 }
 
 - (void)testTheStatusBarIsShownAsTheOptionsHaveIt {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openDesignIn:controller];
     NSTextField *status = editor.statusField;
@@ -1183,7 +1146,7 @@ static NSString *const UDViewerScript =
 #pragma mark - GL
 
 - (void)testGLDrawsWhatTheSoftwareRendererDraws {
-    UDWorkspaceWindowController *controller = [self openFixture];
+    UQTestWindow *controller = [self openFixture];
     if (controller == nil) return;
     UDGuiEditorViewController *editor = [self openGuiIn:controller];
     UDGuiGLView *gl = (UDGuiGLView *)editor.guiView.glView;

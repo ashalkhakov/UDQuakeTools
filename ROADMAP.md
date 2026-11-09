@@ -5,7 +5,8 @@ script (maps through external tools), with the editors Doom 3 shipped (the MFC t
 `neo/tools` in dhewm3) recreated in Objective-C/AppKit — on macOS, Linux and
 Windows, and publish the result without leaving it.
 
-What exists today (October 2026): Quarry, a workspace over a game install
+What exists today (November 2026), as one UDCode extension (Quarry and Pak
+Manager in UDCode's window, docs/UDCODE.md): Quarry, a workspace over a game install
 or mod (an outline, filter and search of every registered decl type, tabs,
 undo, saving into `fs_savepath`), with a structured editor for each decl type
 (PDA, material with its lit preview, particle and FX with theirs, AF,
@@ -14,7 +15,7 @@ GUI editor (the GUI run on the game's clock, designed on a canvas), the script
 editor over `udscript-lsp`, and the script debugger over `udscript-dap`; Pak
 Manager (PAK/PAK2/Daikatana/PK3/PK4); the ported Doom 3 file system, decl
 manager and GUI code with a Core Data layer over the decls; and XCTest suites
-driving the apps on macOS and GNUstep in CI.
+driving the editors through the extension on macOS and GNUstep in CI.
 
 Reference material for every editor below: the MFC originals in dhewm3's
 `neo/tools/<tool>` (layouts in `neo/sys/win32/rc/*.rc`) and the Dear ImGui

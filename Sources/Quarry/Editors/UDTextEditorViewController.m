@@ -3,9 +3,8 @@
 #import "UDDeclItem.h"
 #import "UDTextFileDocument.h"
 #import "UDDeclDocument.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDScriptServer.h"
-#import "UDWorkspaceWindowController.h"
 #import "UDDeclTextChecker.h"
 #import "UDDeclManagedObjects.h"
 #import <UDCodeKit/UDCodeKit.h>
@@ -71,8 +70,10 @@
             languageURL = [NSURL fileURLWithPath:fileItem.path];
             
             NSError *error = nil;
-            
-            // Open or create the backing document.
+
+            // Open or create the backing document: one it was given (UDCode's
+            // custom document's), else the file's.
+            if (self.document != nil) break;
             self.document = [[UDTextFileDocument alloc] initWithPath:fileItem.path inWorkspace:self.workspace error:&error];
             if (error) {
                 NSLog(@"UDTextEditorViewController: failed to open %@: %@", fileItem.path, error);
@@ -210,12 +211,13 @@ static UDDiagnosticSource const UDDiagnosticSourceDeclTest = @"test";
     }
     NSString *path = [UDScriptServer pathForURL:[NSURL URLWithString:location[@"uri"] ?: @""]];
     NSDictionary *start = location[@"range"][@"start"], *end = location[@"range"][@"end"];
-    UDWorkspaceWindowController *windowController = self.view.window.windowController;
-    if (path == nil || ![windowController isKindOfClass:[UDWorkspaceWindowController class]]) {
+    // its host's, or its window controller's: what shows a game file
+    id<UDEditorHosting> shower = self.host ?: (id<UDEditorHosting>)self.view.window.windowController;
+    if (path == nil || ![shower respondsToSelector:@selector(openFileAtPath:line:character:length:)]) {
         NSBeep();
         return;
     }
-    [windowController openFileAtPath:path
+    [shower openFileAtPath:path
                                 line:[start[@"line"] integerValue]
                            character:[start[@"character"] integerValue]
                               length:[end[@"character"] integerValue] - [start[@"character"] integerValue]];

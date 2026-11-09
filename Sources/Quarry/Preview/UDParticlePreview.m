@@ -4,7 +4,7 @@
 #import "UDFXModel.h"
 #import "UDParticleModel.h"
 #import "UDSoftwareRenderer.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 
 /// The timer's target: the preview, not held (the preview holds the timer).
 @interface UDParticlePreviewTicker : NSObject
@@ -14,7 +14,7 @@
 
 @interface UDParticlePreview ()
 @property (nonatomic, weak) NSImageView *imageView;
-@property (nonatomic, weak) UDWorkspace *workspace;
+@property (nonatomic, weak) UDGameWorkspace *workspace;
 @property (nonatomic, strong, nullable) UDParticleModel *model;
 @property (nonatomic, strong, nullable) UDFXModel *fxModel;
 @property (nonatomic, strong, nullable) NSTimer *timer;
@@ -41,7 +41,7 @@
 
 @implementation UDParticlePreview
 
-- (instancetype)initWithImageView:(NSImageView *)imageView workspace:(UDWorkspace *)workspace {
+- (instancetype)initWithImageView:(NSImageView *)imageView workspace:(UDGameWorkspace *)workspace {
     self = [super init];
     if (self) {
         _imageView = imageView;

@@ -1,60 +1,60 @@
 # UDQuakeTools on macOS, the familiar way (gnustep-release-actions' macos.yml
 # runs the same):
 #
-#   make -f Makefile.apple            the apps, universal (Release): UDLauncher,
-#                                     Quarry, Pak Manager
-#   make -f Makefile.apple check      their Debug builds, and the tests: the libraries'
-#                                     and Quarry's (which drive the app's
-#                                     own windows)
-#   make -f Makefile.apple install DESTDIR=<dir>       the three .apps
-#   make -f Makefile.apple installcheck DESTDIR=<dir>  their signatures hold, and
-#                                     each starts and stays up, in a fresh home
+#   make -f Makefile.apple            UDCode's UDQuakeTools extension
+#                                     (UDQuakeTools.bundle, universal, Release:
+#                                     Quarry and Pak Manager, which
+#                                     Scripts/udcx.sh packages)
+#   make -f Makefile.apple check      the tests: the libraries' and the
+#                                     extension's (Tests/Quarry, Tests/Extension)
+#   make -f Makefile.apple install DESTDIR=<dir>       the bundle
+#   make -f Makefile.apple installcheck DESTDIR=<dir>  it has its principal
+#                                     class, its tools and its libraries, and
+#                                     leaves out what UDCode has itself
 #
-# The libraries and the apps need nothing beyond the system's zlib (archives are
-# read by the minizip that came with the Doom 3 file system and written by
-# UDZipWriter). Each app embeds Sparkle and has its own appcast
-# (appcast-<App>.xml): its XCFramework is in .deps/, by the version
-# .github/pins.env names (gnustep-release-actions' scripts/deps.sh apple).
+# The libraries need nothing beyond the system's zlib (archives are read by
+# the minizip that came with the Doom 3 file system and written by
+# UDZipWriter). UDCode's SDK (UDCodeKit, UDPieceTable, LSPKit) is in .deps/,
+# by the versions .github/pins.env names (gnustep-release-actions'
+# scripts/deps.sh apple); the bundle links it and the running UDCode's is used.
 
 BUILD = build
 DERIVED = $(BUILD)/DerivedData
 RELEASE = $(DERIVED)/Build/Products/Release
 XCODEBUILD = xcodebuild -project PakManager.xcodeproj -derivedDataPath $(DERIVED)
+BUNDLE = UDQuakeTools.bundle
 
-# The apps by bundle name (what .github/workflows/build.yml's apps: names);
-# their Xcode schemes are UDLauncher, "Quarry" and "Pak Manager".
 all:
-	@test -d .deps/Sparkle.xcframework \
-	  || { echo "no Sparkle in .deps: gnustep-release-actions' scripts/deps.sh apple fetches what .github/pins.env names"; exit 1; }
-	$(XCODEBUILD) -scheme UDLauncher -configuration Release -destination 'generic/platform=macOS' build
-	$(XCODEBUILD) -scheme "Quarry" -configuration Release -destination 'generic/platform=macOS' build
-	$(XCODEBUILD) -scheme "Pak Manager" -configuration Release -destination 'generic/platform=macOS' build
+	@test -d .deps/UDCodeKit.xcframework \
+	  || { echo "no UDCodeKit in .deps: gnustep-release-actions' scripts/deps.sh apple fetches what .github/pins.env names"; exit 1; }
+	$(XCODEBUILD) -scheme UDQuakeTools -configuration Release -destination 'generic/platform=macOS' build
 
 # The test bundles are not signed: nothing ships from them.
 check:
-	$(XCODEBUILD) -scheme UDLauncher -configuration Debug -destination 'platform=macOS' build
-	$(XCODEBUILD) -scheme "Quarry" -configuration Debug -destination 'platform=macOS' build
-	$(XCODEBUILD) -scheme "Pak Manager" -configuration Debug -destination 'platform=macOS' build
 	$(XCODEBUILD) -scheme Libraries -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 	$(XCODEBUILD) -scheme QuarryTests -configuration Debug -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
 
 install: all
 	@test -n "$(DESTDIR)" || { echo "install: give DESTDIR"; exit 1; }
 	mkdir -p $(DESTDIR)
-	for app in UDLauncher Quarry PakManager; do \
-	  rm -rf $(DESTDIR)/$$app.app; \
-	  ditto $(RELEASE)/$$app.app $(DESTDIR)/$$app.app || exit 1; \
-	done
+	rm -rf $(DESTDIR)/$(BUNDLE)
+	ditto $(RELEASE)/$(BUNDLE) $(DESTDIR)/$(BUNDLE)
 
 installcheck:
-	for app in UDLauncher Quarry PakManager; do \
-	  codesign --verify --deep --strict $(DESTDIR)/$$app.app || exit 1; \
-	  home=$$(mktemp -d); log=$$(mktemp); \
-	  HOME=$$home CFFIXED_USER_HOME=$$home $(DESTDIR)/$$app.app/Contents/MacOS/$$app > $$log 2>&1 & pid=$$!; \
-	  sleep 10; \
-	  if kill -0 $$pid 2>/dev/null; then kill $$pid; echo "$$app: up after 10s"; \
-	  else cat $$log; echo "$$app exited on its own"; exit 1; fi; \
-	done
+	@b=$(DESTDIR)/$(BUNDLE); \
+	  test "$$(/usr/libexec/PlistBuddy -c 'Print :NSPrincipalClass' $$b/Contents/Info.plist)" = UQExtension \
+	    || { echo "$(BUNDLE): its principal class is not UQExtension"; exit 1; }; \
+	  for tool in udscript-lsp udscript-dap udpaktool; do \
+	    test -x $$b/Contents/MacOS/$$tool || { echo "$(BUNDLE) has no $$tool"; exit 1; }; \
+	  done; \
+	  for fw in UDDecls UDWorkspace LSPServerKit; do \
+	    test -d $$b/Contents/Frameworks/$$fw.framework || { echo "$(BUNDLE) does not carry $$fw.framework"; exit 1; }; \
+	  done; \
+	  for fw in UDCodeKit UDPieceTable LSPKit; do \
+	    if test -e $$b/Contents/Frameworks/$$fw.framework; then echo "$(BUNDLE) carries UDCode's own $$fw.framework"; exit 1; fi; \
+	  done; \
+	  codesign --verify --deep --strict $$b; \
+	  echo "$(BUNDLE): UQExtension, its tools and libraries, nothing of UDCode's"
 
 clean:
 	rm -rf $(BUILD)

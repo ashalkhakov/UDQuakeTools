@@ -1,6 +1,6 @@
 #import "UDWorkspaceItem.h"
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPath:(NSString *)path NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithName:(NSString *)name path:(nullable NSString *)path NS_UNAVAILABLE;
-- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace;
+- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDGameWorkspace *)workspace;
 
 @end
 

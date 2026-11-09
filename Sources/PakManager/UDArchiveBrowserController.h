@@ -1,8 +1,9 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
- * UDArchiveBrowserController — NSWindowController + NSBrowserDelegate.
+ * UDArchiveBrowserController — NSViewController + NSBrowserDelegate.
  *
- * Manages the archive browser window. Uses the editor's live UDDirectoryNode
+ * The archive browser, the editor of a pak in a UDCode tab
+ * (UDArchiveBrowser.xib; the UDQuakeTools extension's UQPakDocument). Uses the editor's live UDDirectoryNode
  * tree and feeds it to an NSBrowser for navigation.
  * Handles Add / Delete / Extract / Open file operations.
  */
@@ -18,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UDArchiveBrowserController : NSWindowController <NSBrowserDelegate> {
+@interface UDArchiveBrowserController : NSViewController <NSBrowserDelegate> {
     __weak IBOutlet NSBrowser    *_browser;
     __weak IBOutlet NSTextField  *_statusLabel;
     __weak IBOutlet NSButton     *_addButton;

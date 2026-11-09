@@ -36,18 +36,14 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
 #pragma mark - URIs
 
 + (NSString *)URIForPath:(NSString *)path {
-    NSURLComponents *components = [[NSURLComponents alloc] init];
-    components.scheme = @"udfs";
-    components.host = @"";
-    components.path = [@"/" stringByAppendingString:path];
-    return components.string;
+    NSString *escaped = [path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+    return [@"quarry:/file/" stringByAppendingString:escaped];
 }
 
 + (NSString *)pathForURI:(NSString *)uri {
-    NSURLComponents *components = [NSURLComponents componentsWithString:uri];
-    if (![components.scheme isEqualToString:@"udfs"]) return nil;
-    NSString *path = components.path;
-    while ([path hasPrefix:@"/"]) path = [path substringFromIndex:1];
+    NSURL *url = [NSURL URLWithString:uri];
+    if (![url.scheme.lowercaseString isEqualToString:@"quarry"] || ![url.path hasPrefix:@"/file/"]) return nil;
+    NSString *path = [url.path substringFromIndex:@"/file/".length];
     return path.length > 0 ? path : nil;
 }
 
@@ -101,6 +97,12 @@ enum { UDCompletionMethod = 2, UDCompletionFunction = 3, UDCompletionField = 5, 
 
 /// Every script under script/ and maps/.
 - (void)serverWillInitialize {
+    // the project's, when it was not given one
+    NSString *root = self.initializeParams[@"rootUri"];
+    if (_fileSystem == nil && _fileSystemOfFolder && [root isKindOfClass:[NSString class]]) {
+        NSURL *folder = [NSURL URLWithString:root];
+        if (folder.isFileURL) _fileSystem = _fileSystemOfFolder(folder.path);
+    }
     if (_fileSystem == nil) return;
     for (NSString *directory in @[ @"script", @"maps" ]) {
         idFileList *files = [_fileSystem listFilesTree:directory extension:@".script" sorted:YES inGameDir:@"" error:NULL];

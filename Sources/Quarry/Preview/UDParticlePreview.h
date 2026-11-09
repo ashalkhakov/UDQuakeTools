@@ -1,7 +1,7 @@
 #import <AppKit/AppKit.h>
 #import "UDTransportController.h"
 
-@class UDFXAction, UDFXActionState, UDParticleStage, UDWorkspace;
+@class UDFXAction, UDFXActionState, UDParticleStage, UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UDParticlePreview : NSObject <UDTransportPlayable>
 
-- (instancetype)initWithImageView:(NSImageView *)imageView workspace:(nullable UDWorkspace *)workspace;
+- (instancetype)initWithImageView:(NSImageView *)imageView workspace:(nullable UDGameWorkspace *)workspace;
 
 /// The particle system's stages to play (set again after an edit: the time
 /// goes on).

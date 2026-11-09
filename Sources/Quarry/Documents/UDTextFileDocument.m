@@ -1,5 +1,5 @@
 #import "UDTextFileDocument.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idFileSystem.h"
 #import "UDScriptServer.h"
 
@@ -9,7 +9,7 @@
 
 @implementation UDTextFileDocument
 
-- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDWorkspace *)workspace error:(NSError **)error {
+- (instancetype)initWithPath:(NSString *)path inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error {
     self = [super initWithType:@"public.plain-text" error:error];
     if (self) {
         self.workspace = workspace;

@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)forgetTextEdits;
 
 /** The window's breakpoints, which a script's tab shows in its gutter (and
-    sets there), its script named as the debugger names it (UDWorkspace's
+    sets there), its script named as the debugger names it (UDGameWorkspace's
     diskPathOfGamePath:). */
 @property (nonatomic, strong, nullable) UDBreakpointStore *breakpointStore;
 /** Debug > Toggle Breakpoint (⌘\): the code editor's, at the caret (a

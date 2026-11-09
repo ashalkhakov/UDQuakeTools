@@ -8,7 +8,7 @@
 
 @implementation UDDeclDocument
 
-- (instancetype)initWithType:(declType_t)type name:(NSString *)name inWorkspace:(UDWorkspace *)workspace error:(NSError **)error {
+- (instancetype)initWithType:(declType_t)type name:(NSString *)name inWorkspace:(UDGameWorkspace *)workspace error:(NSError **)error {
     self = [super initWithType:@"public.plain-text" error:error];
     if (self) {
         self.workspace = workspace;

@@ -3,10 +3,10 @@
 #import "UDDeclEditorViewController.h"
 #import "UDReferencePicker.h"
 
-#import "UDWorkspaceDocument.h"
-#import "UDEditorTabManager.h"
+#import "UQExtension.h"
+#import "UQProject.h"
 #import "UDWorkspaceItem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDBaseDocument.h"
 
 NSString *UDDoom3InstallPath(void) {
@@ -20,7 +20,7 @@ NSString *UDDoom3InstallPath(void) {
 
 @interface UDQuarryTestCase ()
 @property (nonatomic, copy, readwrite) NSString *scratchDirectory;
-@property (nonatomic, strong) NSMutableArray<UDWorkspaceDocument *> *openDocuments;
+@property (nonatomic, strong) NSMutableArray<UQTestWindow *> *openWindows;
 @end
 
 /// Runs a block once a modal window is up, then sees the modal through.
@@ -85,12 +85,12 @@ NSString *UDDoom3InstallPath(void) {
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:NULL];
-    self.openDocuments = [NSMutableArray array];
+    self.openWindows = [NSMutableArray array];
 }
 
 - (void)tearDown {
-    for (UDWorkspaceDocument *document in [self.openDocuments copy]) {
-        [self closeDocument:document];
+    for (UQTestWindow *window in [self.openWindows copy]) {
+        [self closeWorkspace:window];
     }
     [[NSFileManager defaultManager] removeItemAtPath:self.scratchDirectory error:NULL];
     [super tearDown];
@@ -119,86 +119,57 @@ NSString *UDDoom3InstallPath(void) {
     };
 }
 
-- (UDWorkspaceWindowController *)openWorkspaceWithSettings:(NSDictionary *)settings {
+- (UQTestWindow *)openWorkspaceWithSettings:(NSDictionary *)settings {
+    // a project's folder, its .qworkspace those settings
+    NSString *folder = [self.scratchDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"project-%lu",
+                                                                              (unsigned long)self.openWindows.count]];
+    [[NSFileManager defaultManager] createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:NULL];
     NSError *error = nil;
     NSData *json = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error];
-    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
-    if (![document readFromData:json ofType:@"com.udquake.qworkspace" error:&error]) {
-        XCTFail(@"the workspace settings did not read: %@", error);
+    if (![json writeToFile:[folder stringByAppendingPathComponent:@"mod.qworkspace"] atomically:YES]) {
+        XCTFail(@"the workspace settings were not written: %@", error);
         return nil;
     }
-
-    // The workspace starts in the background; its window comes once it has.
-    [document makeWindowControllers];
-    [self.openDocuments addObject:document];
-    [self spinUntil:^BOOL{ return [self workspaceWindowControllerOf:document] != nil; } timeout:60.0];
-    UDWorkspaceWindowController *controller = [self workspaceWindowControllerOf:document];
-    if (controller == nil) {
-        XCTFail(@"the workspace for %@ did not start, so no workspace window was made",
-                settings[@"fs_basepath"]);
-        [self.openDocuments removeObject:document];
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    UQTestWindow *window = [UQTestWindow windowOfFolder:folder extension:extension timeout:60 error:&error];
+    if (window == nil) {
+        XCTFail(@"the game of %@ did not start: %@", settings[@"fs_basepath"], error);
         return nil;
     }
-
-    if (controller.window == nil) {
-        XCTFail(@"%@", @"the workspace window did not load from UDWorkspaceWindow.xib");
-        return nil;
-    }
-    [document showWindows];
-    [controller.window setFrame:NSMakeRect(0, 0, 1280, 800) display:YES];
+    [self.openWindows addObject:window];
+    [window.window setFrame:NSMakeRect(0, 0, 1280, 800) display:YES];
     [self spinUntil:^BOOL{ return NO; } timeout:0.05];
+    return window;
+}
+
+- (void)closeWorkspace:(UQTestWindow *)controller {
+    [controller close];
+    [self.openWindows removeObject:controller];
+}
+
+- (UQTestWindow *)tabManagerOf:(UQTestWindow *)controller {
     return controller;
-}
-
-- (nullable UDWorkspaceWindowController *)workspaceWindowControllerOf:(UDWorkspaceDocument *)document {
-    for (NSWindowController *candidate in document.windowControllers) {
-        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) {
-            return (UDWorkspaceWindowController *)candidate;
-        }
-    }
-    return nil;
-}
-
-- (void)closeDocument:(UDWorkspaceDocument *)document {
-    for (UDBaseEditorViewController *editor in [[self tabManagerOfDocument:document] allEditors]) {
-        [editor.editorDocument close];
-    }
-    [[self tabManagerOfDocument:document] closeAllTabs];
-    [document.workspace shutdown];
-    [document close];
-    [self.openDocuments removeObject:document];
-}
-
-- (UDEditorTabManager *)tabManagerOfDocument:(UDWorkspaceDocument *)document {
-    for (NSWindowController *candidate in document.windowControllers) {
-        if ([candidate isKindOfClass:[UDWorkspaceWindowController class]]) {
-            return [self tabManagerOf:(UDWorkspaceWindowController *)candidate];
-        }
-    }
-    return nil;
-}
-
-- (void)closeWorkspace:(UDWorkspaceWindowController *)controller {
-    [self closeDocument:controller.document];
-}
-
-- (UDEditorTabManager *)tabManagerOf:(UDWorkspaceWindowController *)controller {
-    return [controller valueForKey:@"tabManager"];
 }
 
 #pragma mark - Outline
 
+/// A row's label, as the tree shows it.
+- (NSString *)labelOfItem:(id)item inOutline:(NSOutlineView *)outline {
+    return [outline.dataSource outlineView:outline objectValueForTableColumn:outline.tableColumns.firstObject byItem:item];
+}
+
 - (NSInteger)rowOfItemNamed:(NSString *)name parent:(id)parent inOutline:(NSOutlineView *)outline {
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
-        UDWorkspaceItem *item = [outline itemAtRow:row];
-        if ([outline parentForItem:item] == parent && [item.name isEqualToString:name]) {
+        id item = [outline itemAtRow:row];
+        if ([outline parentForItem:item] == parent && [[self labelOfItem:item inOutline:outline] isEqualToString:name]) {
             return row;
         }
     }
     return -1;
 }
 
-- (NSInteger)revealOutlinePath:(NSString *)path inController:(UDWorkspaceWindowController *)controller {
+- (NSInteger)revealOutlinePath:(NSString *)path inController:(UQTestWindow *)controller {
     NSOutlineView *outline = controller.outlineView;
     id parent = nil;
     NSInteger row = -1;
@@ -217,7 +188,8 @@ NSString *UDDoom3InstallPath(void) {
     return row;
 }
 
-- (UDBaseEditorViewController *)openOutlinePath:(NSString *)path inController:(UDWorkspaceWindowController *)controller {
+/// Chosen in the tree: its command (open the item's URL) opens its tab.
+- (UDBaseEditorViewController *)openOutlinePath:(NSString *)path inController:(UQTestWindow *)controller {
     NSInteger row = [self revealOutlinePath:path inController:controller];
     if (row < 0) {
         return nil;
@@ -227,11 +199,17 @@ NSString *UDDoom3InstallPath(void) {
                         byExtendingSelection:NO];
     [self spinUntil:^BOOL{ return NO; } timeout:0.05];
 
-    UDBaseEditorViewController *editor = [[self tabManagerOf:controller] selectedEditor];
-    if (editor == nil) {
-        XCTFail(@"selecting %@ in the outline opened no editor tab", path);
-    } else if (![editor.item.path isEqualToString:path]) {
-        XCTFail(@"selecting %@ opened a tab for %@ instead", path, editor.item.path);
+    // its tab: a Quarry editor's (a structured decl's, a GUI's), or a text
+    // document's (a script's, a decl's of no editor of its own: UDCode's editor)
+    UDBaseEditorViewController *editor = controller.selectedEditor;
+    NSURL *url = controller.selectedDocument.URL;
+    NSString *typeName = nil, *name = nil, *gamePath = nil;
+    [UQProject parseURL:url typeName:&typeName name:&name path:&gamePath];
+    NSString *opened = gamePath ?: (typeName ? [NSString stringWithFormat:@"%@/%@", typeName, name] : nil);
+    if (opened == nil) {
+        XCTFail(@"choosing %@ in the outline opened no tab", path);
+    } else if (![opened isEqualToString:path]) {
+        XCTFail(@"choosing %@ opened a tab for %@ instead", path, opened);
     }
     return editor;
 }
@@ -241,14 +219,15 @@ NSString *UDDoom3InstallPath(void) {
     id<NSOutlineViewDataSource> source = outline.dataSource;
     NSInteger count = [source outlineView:outline numberOfChildrenOfItem:item];
     for (NSInteger i = 0; i < count; i++) {
-        UDWorkspaceItem *child = [source outlineView:outline child:i ofItem:item];
-        NSString *path = prefix.length ? [prefix stringByAppendingFormat:@"/%@", child.name] : child.name;
+        id child = [source outlineView:outline child:i ofItem:item];
+        NSString *label = [self labelOfItem:child inOutline:outline];
+        NSString *path = prefix.length ? [prefix stringByAppendingFormat:@"/%@", label] : label;
         [paths addObject:path];
         [self collectPathsUnder:child prefix:path outline:outline into:paths];
     }
 }
 
-- (NSArray<NSString *> *)expandedOutlinePathsInController:(UDWorkspaceWindowController *)controller {
+- (NSArray<NSString *> *)expandedOutlinePathsInController:(UQTestWindow *)controller {
     NSMutableArray *paths = [NSMutableArray array];
     [self collectPathsUnder:nil prefix:@"" outline:controller.outlineView into:paths];
     return paths;

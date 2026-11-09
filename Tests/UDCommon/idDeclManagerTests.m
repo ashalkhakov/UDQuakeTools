@@ -1,6 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "idFileSystem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "UDWorkspaceManager.h"
 
@@ -8,7 +8,7 @@
 @property (nonatomic, strong) NSString *rootDir;
 @property (nonatomic, strong) NSString *gameDir;
 @property (nonatomic, strong) NSString *fullGameDirPath;
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 @property (nonatomic, strong) idFileSystem *fileSystem;
 @property (nonatomic, strong) idDeclManager *declManager;
 @end
@@ -57,7 +57,7 @@
     [testDeclContent writeToFile:testDeclPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     // 3. Boot the subsystems
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
+    self.workspace = [[UDGameWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
     [self.workspace startup:nil];
     
     self.fileSystem = self.workspace.fileSystem;
@@ -339,10 +339,10 @@
     [contents writeToFile:fullPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 }
 
-- (UDWorkspace *)startedWorkspaceWithSettings:(NSDictionary *)extra error:(NSError **)error {
+- (UDGameWorkspace *)startedWorkspaceWithSettings:(NSDictionary *)extra error:(NSError **)error {
     NSMutableDictionary *settings = [[self.workspace dictionaryRepresentation] mutableCopy];
     [settings addEntriesFromDictionary:extra];
-    UDWorkspace *workspace = [[UDWorkspace alloc] initWithDictionary:settings rootDirectory:self.rootDir];
+    UDGameWorkspace *workspace = [[UDGameWorkspace alloc] initWithDictionary:settings rootDirectory:self.rootDir];
     return [workspace startup:error] ? workspace : nil;
 }
 
@@ -371,7 +371,7 @@
     [self writeFixture:@"materials/nested/ud_test.mtr" contents:@"textures/ud_test_nested {\n}\n"];
 
     NSError *error = nil;
-    UDWorkspace *workspace = [self startedWorkspaceWithSettings:@{} error:&error];
+    UDGameWorkspace *workspace = [self startedWorkspaceWithSettings:@{} error:&error];
     for (NSString *folder in @[@"def", @"sound", @"fx", @"af", @"materials/nested"]) {
         [[NSFileManager defaultManager] removeItemAtPath:[self.fullGameDirPath stringByAppendingPathComponent:folder] error:nil];
     }
@@ -407,7 +407,7 @@
     XCTAssertEqual(self.workspace.game, UDGameTypeDoom3, @"a workspace that names no game is Doom 3's");
     XCTAssertEqualObjects(self.workspace.dictionaryRepresentation[@"game"], @"doom3");
 
-    UDWorkspace *quake3 = [[UDWorkspace alloc] initWithDictionary:@{@"game": @"quake3"} rootDirectory:self.rootDir];
+    UDGameWorkspace *quake3 = [[UDGameWorkspace alloc] initWithDictionary:@{@"game": @"quake3"} rootDirectory:self.rootDir];
     XCTAssertEqual(quake3.game, UDGameTypeQuake3);
     XCTAssertEqualObjects(quake3.dictionaryRepresentation[@"game"], @"quake3");
 }

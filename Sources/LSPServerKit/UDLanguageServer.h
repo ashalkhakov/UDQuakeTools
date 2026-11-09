@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark For subclasses
 
+/// What "initialize" was sent with (its rootUri, its workspaceFolders), once
+/// it has come.
+@property (nonatomic, readonly, copy, nullable) NSDictionary *initializeParams;
+
 /// The capabilities beyond textDocumentSync (which is full).
 - (NSDictionary *)capabilities;
 /// After "initialize", before its response.

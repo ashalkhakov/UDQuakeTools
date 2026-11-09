@@ -1,17 +1,17 @@
 #import "UDScriptServer.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import <LSPKit/LSPKit.h>
 #import <UDCodeKit/UDPaths.h>
 
 @implementation UDScriptServer
 
-static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
+static NSMapTable<UDGameWorkspace *, LSPClient *> *UDClients(void) {
     static NSMapTable *clients = nil;
     if (clients == nil) clients = [NSMapTable strongToStrongObjectsMapTable];
     return clients;
 }
 
-+ (LSPClient *)clientForWorkspace:(UDWorkspace *)workspace {
++ (LSPClient *)clientForWorkspace:(UDGameWorkspace *)workspace {
     LSPClient *client = [UDClients() objectForKey:workspace];
     if (client != nil) return client;
 
@@ -31,32 +31,29 @@ static NSMapTable<UDWorkspace *, LSPClient *> *UDClients(void) {
     return client;
 }
 
-+ (void)stopForWorkspace:(UDWorkspace *)workspace {
++ (void)stopForWorkspace:(UDGameWorkspace *)workspace {
     LSPClient *client = [UDClients() objectForKey:workspace];
     [UDClients() removeObjectForKey:workspace];
     [client terminate];
 }
 
-+ (void)workspace:(UDWorkspace *)workspace didWriteFileAtPath:(NSString *)path {
++ (void)workspace:(UDGameWorkspace *)workspace didWriteFileAtPath:(NSString *)path {
     LSPClient *client = [UDClients() objectForKey:workspace];
     if (client == nil) return;
     [client sendNotification:@"workspace/didChangeWatchedFiles"
                       params:@{ @"changes": @[ @{ @"uri": [self URLForPath:path].absoluteString, @"type": @2 } ] }];
 }
 
-// udfs:///<path>, as udscript-lsp names a file in the file system.
+// quarry:/file/<path>, as udscript-lsp (and UDCode's UDQuakeTools
+// extension) names a file in the file system.
 + (NSURL *)URLForPath:(NSString *)path {
-    NSURLComponents *components = [[NSURLComponents alloc] init];
-    components.scheme = @"udfs";
-    components.host = @"";
-    components.path = [@"/" stringByAppendingString:path];
-    return components.URL;
+    NSString *escaped = [path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+    return [NSURL URLWithString:[@"quarry:/file/" stringByAppendingString:escaped]];
 }
 
 + (NSString *)pathForURL:(NSURL *)url {
-    if (![url.scheme isEqualToString:@"udfs"]) return nil;
-    NSString *path = url.path;
-    while ([path hasPrefix:@"/"]) path = [path substringFromIndex:1];
+    if (![url.scheme.lowercaseString isEqualToString:@"quarry"] || ![url.path hasPrefix:@"/file/"]) return nil;
+    NSString *path = [url.path substringFromIndex:@"/file/".length];
     return path.length > 0 ? path : nil;
 }
 

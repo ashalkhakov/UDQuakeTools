@@ -1,7 +1,7 @@
 #import <AppKit/AppKit.h>
 #import "UDTransportController.h"
 
-@class UDWorkspace, idUserInterfaceManager, idUserInterfaceLocal, UDTriangleList, UDImage;
+@class UDGameWorkspace, idUserInterfaceManager, idUserInterfaceLocal, UDTriangleList, UDImage;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UDGuiPlayer : NSObject <UDTransportPlayable>
 
-- (instancetype)initWithWorkspace:(nullable UDWorkspace *)workspace;
+- (instancetype)initWithWorkspace:(nullable UDGameWorkspace *)workspace;
 
 @property (nonatomic, strong, readonly) idUserInterfaceManager *manager;
 @property (nonatomic, strong, readonly, nullable) idUserInterfaceLocal *gui;

@@ -10,16 +10,16 @@
 // Define the notification name at the top of the header
 extern NSString * const UDWorkspaceDidCloseNotification;
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 @interface UDWorkspaceManager : NSObject
 
 +(instancetype)sharedManager;
 
 -(instancetype)init;
--(void)registerWorkspace:(UDWorkspace *)workspace;
--(UDWorkspace *)workspaceForDirectory:(NSString *)directoryPath;
--(UDWorkspace *)workspaceOwningFilePath:(NSString *)filePath;
--(void)closeWorkspace:(UDWorkspace *)workspace;
+-(void)registerWorkspace:(UDGameWorkspace *)workspace;
+-(UDGameWorkspace *)workspaceForDirectory:(NSString *)directoryPath;
+-(UDGameWorkspace *)workspaceOwningFilePath:(NSString *)filePath;
+-(void)closeWorkspace:(UDGameWorkspace *)workspace;
 
 @end

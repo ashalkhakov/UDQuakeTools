@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithType:(declType_t)type declName:(NSString *)declName path:(NSString *)path NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithName:(NSString *)name path:(nullable NSString *)path NS_UNAVAILABLE;
 
-- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace;
+- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDGameWorkspace *)workspace;
 
 @end
 

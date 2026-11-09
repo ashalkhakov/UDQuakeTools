@@ -1,7 +1,7 @@
 #import "UDGuiPlayer.h"
 #import <AppKit/AppKit.h>     // before Core Data (GNUstep: NSPredicateEditorRowTemplate.h)
 #import "idFileSystem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idUserInterface.h"
 #import "rvGEWindowWrapper.h"
 #import "idStr.h"
@@ -26,7 +26,7 @@
 @end
 
 @interface UDGuiPlayer ()
-@property (nonatomic, weak) UDWorkspace *workspace;
+@property (nonatomic, weak) UDGameWorkspace *workspace;
 @property (nonatomic, strong, readwrite) idUserInterfaceManager *manager;
 @property (nonatomic, strong, readwrite, nullable) idUserInterfaceLocal *gui;
 @property (nonatomic, copy, readwrite) NSArray<NSDictionary *> *diagnostics;
@@ -65,7 +65,7 @@
 
 @implementation UDGuiPlayer
 
-- (instancetype)initWithWorkspace:(UDWorkspace *)workspace {
+- (instancetype)initWithWorkspace:(UDGameWorkspace *)workspace {
     self = [super init];
     if (self) {
         _workspace = workspace;

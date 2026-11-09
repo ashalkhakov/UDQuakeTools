@@ -2,7 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 /** Workspace item kinds. */
 typedef NS_ENUM(NSInteger, UDWorkspaceItemKind) {
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, UDWorkspaceItemKind) {
 /** Remove a child item. */
 - (void)removeChild:(UDWorkspaceItem *)child;
 
-- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace;
+- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDGameWorkspace *)workspace;
 
 @end
 

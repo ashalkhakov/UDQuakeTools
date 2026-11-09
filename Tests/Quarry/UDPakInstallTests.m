@@ -1,13 +1,16 @@
 #import "UDQuarryTestCase.h"
+#import "UDGuiEditorViewController.h"
+#import "UQProject.h"
+#import "UQFindViewController.h"
+#import "UQExtension.h"
+#import "UQCommands.h"
 
 #import "UDDeclManagedObjects.h"
-#import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDTextEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
 #import "UDSourceTokens.h"
-#import "UDWorkspace.h"
-#import "UDWorkspaceDocument.h"
+#import "UDGameWorkspace.h"
 #import "UDWorkspaceSettingsWindowController.h"
 #import "UDBaseDocument.h"
 #import "UDZipWriter.h"
@@ -240,46 +243,62 @@ static NSString *const UDEventsScript =
     [super tearDown];
 }
 
-- (UDWorkspaceWindowController *)openInstall {
+- (UQTestWindow *)openInstall {
     return [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.installPath
                                                                       savePath:self.savePath]];
 }
 
-#pragma mark - A new workspace
+#pragma mark - A new workspace (Editor > New Quarry Workspace…, a folder's)
 
-/// A new workspace's settings dialog: a plain window, no modal session
-/// holding the menus.
-- (UDWorkspaceSettingsWindowController *)settingsOfNewWorkspace:(UDWorkspaceDocument *)document {
-    [document makeWindowControllers];
-    UDWorkspaceSettingsWindowController *settings = [document valueForKey:@"settingsController"];
-    XCTAssertNotNil(settings, @"a new workspace asks for its settings");
+/// A folder that is no Quarry project, and its commands: New Quarry Workspace… alone.
+- (UQCommands *)commandsOfNewFolder:(NSString **)folder {
+    *folder = [self.scratchDirectory stringByAppendingPathComponent:@"newmod"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:*folder withIntermediateDirectories:YES attributes:nil error:NULL];
+    return [[UQCommands alloc] initWithFolder:[NSURL fileURLWithPath:*folder]];
+}
+
+/// Its settings dialog: a plain window, no modal session holding the menus.
+- (UDWorkspaceSettingsWindowController *)settingsOf:(UQCommands *)commands {
+    UDWorkspaceSettingsWindowController *settings = [commands valueForKey:@"settings"];
+    XCTAssertNotNil(settings, @"it asks for the new workspace's settings");
     XCTAssertTrue(settings.window.isVisible);
     XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
-    XCTAssertFalse(settings.window.isReleasedWhenClosed,
-                   @"its window is its controller's: not released when closed (GNUstep's controllers release a document's)");
+    XCTAssertFalse(settings.window.isReleasedWhenClosed, @"its window is its controller's: not released when closed");
     return settings;
 }
 
 - (void)testANewWorkspaceStartsWithTheSettingsItIsGiven {
-    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
-    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
-    [settings.scratchWorkspace applySettingsFromDictionary:[self workspaceSettingsWithBasePath:self.installPath
-                                                                                      savePath:self.savePath]];
+    NSString *folder = nil;
+    UQCommands *commands = [self commandsOfNewFolder:&folder];
+    XCTAssertEqualObjects([commands.menuItems valueForKey:@"title"], @[ @"New Quarry Workspace\u2026" ]);
+    [commands newWorkspace:nil];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOf:commands];
+    [settings.scratchWorkspace applySettingsFromDictionary:[self workspaceSettingsWithBasePath:self.installPath savePath:self.savePath]];
+    [self whenModalWindowAppears:^(NSWindow *window) {
+        // "Open the folder again"
+        [NSApp stopModalWithCode:NSAlertFirstButtonReturn];
+    }];
     [settings ok:nil];
-
     XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
-    NSWindowController *opening = [document valueForKey:@"openingController"];
-    XCTAssertTrue(opening.window.isVisible, @"the workspace starts in the background, \u201COpening\u2026\u201D up meanwhile");
-    XCTAssertTrue([self spinUntil:^BOOL{ return [self workspaceWindowControllerOf:document] != nil; } timeout:30.0],
-                  @"and the workspace opens");
-    XCTAssertFalse(opening.window.isVisible, @"\u201COpening\u2026\u201D goes when it has");
-    UDWorkspaceWindowController *workspace = [self workspaceWindowControllerOf:document];
-    if (workspace != nil) [self closeWorkspace:workspace];
+    NSString *file = [folder stringByAppendingPathComponent:@"newmod.qworkspace"];
+    NSDictionary *written = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:file] ?: [NSData data] options:0 error:NULL];
+    XCTAssertEqualObjects(written[@"fs_basepath"], self.installPath, @"written into the folder");
+
+    // the folder opened again: a Quarry project of those settings
+    UQExtension *extension = [[UQExtension alloc] init];
+    [extension extensionDidLoad:[NSBundle bundleForClass:[UQExtension class]]];
+    NSError *error = nil;
+    UQTestWindow *window = [UQTestWindow windowOfFolder:folder extension:extension timeout:30 error:&error];
+    XCTAssertNotNil(window.workspace, @"%@", error);
+    XCTAssertTrue([[self expandedOutlinePathsInController:window] containsObject:@"pda/udfix_hollis"]);
+    [window close];
 }
 
 - (void)testANewWorkspaceIsDoom3s {
-    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
-    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
+    NSString *folder = nil;
+    UQCommands *commands = [self commandsOfNewFolder:&folder];
+    [commands newWorkspace:nil];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOf:commands];
     [self selectTabLabeled:@"Game" inView:settings.window.contentView];
     NSPopUpButton *game = [self firstSubviewOfClass:[NSPopUpButton class] inView:settings.window.contentView];
     XCTAssertEqualObjects(game.toolTip, @"game", @"the Game tab starts with the game");
@@ -289,72 +308,72 @@ static NSString *const UDEventsScript =
     [settings cancel:nil];
 }
 
-- (void)testCancellingANewWorkspaceOpensNothing {
-    UDWorkspaceDocument *document = [[UDWorkspaceDocument alloc] init];
-    UDWorkspaceSettingsWindowController *settings = [self settingsOfNewWorkspace:document];
+- (void)testCancellingANewWorkspaceWritesNothing {
+    NSString *folder = nil;
+    UQCommands *commands = [self commandsOfNewFolder:&folder];
+    [commands newWorkspace:nil];
+    UDWorkspaceSettingsWindowController *settings = [self settingsOf:commands];
     [settings cancel:nil];
     XCTAssertFalse(settings.window.isVisible);
-    XCTAssertEqual(document.windowControllers.count, 0U, @"no workspace window");
+    XCTAssertEqual([[NSFileManager defaultManager] contentsOfDirectoryAtPath:folder error:NULL].count, 0U, @"no .qworkspace");
+    // and a folder that has one already gets no other
+    [@"{}" writeToFile:[folder stringByAppendingPathComponent:@"mine.qworkspace"] atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    NSError *error = nil;
+    XCTAssertFalse([commands writeNewWorkspaceWithSettings:@{} error:&error]);
+    XCTAssertNotNil(error);
 }
 
-#pragma mark - An open workspace's settings
+#pragma mark - An open workspace's settings (Editor > Workspace Settings…)
+
+/// The window's commands (the Editor menu's).
+- (UQCommands *)commandsOf:(UQTestWindow *)controller {
+    return [controller.extension editorMenuItemsForWorkbench:(id)controller].firstObject.target;
+}
 
 /// Workspace Settings… on an open workspace: a plain window too.
-- (UDWorkspaceSettingsWindowController *)settingsOfOpenWorkspace:(UDWorkspaceWindowController *)controller {
-    [NSApp sendAction:@selector(showWorkspaceSettings:) to:controller from:nil];
-    UDWorkspaceSettingsWindowController *settings = [controller valueForKey:@"settingsController"];
-    XCTAssertNotNil(settings);
-    XCTAssertTrue(settings.window.isVisible);
-    XCTAssertNil([NSApp modalWindow], @"in a plain window: the menus stay usable");
-    XCTAssertFalse(settings.window.isReleasedWhenClosed,
-                   @"its window is its controller's: not released when closed (GNUstep's controllers release a document's)");
-    return settings;
+- (UDWorkspaceSettingsWindowController *)settingsOfOpenWorkspace:(UQTestWindow *)controller {
+    [[self commandsOf:controller] showWorkspaceSettings:nil];
+    return [self settingsOf:[self commandsOf:controller]];
 }
 
 - (void)testAnOpenWorkspacesSettingsRestartItOnOK {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
-    [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDEditorTabManager *tabs = [self tabManagerOf:controller];
-    XCTAssertEqual([tabs allEditors].count, 1U);
-
+    UQCommands *commands = [self commandsOf:controller];
     UDWorkspaceSettingsWindowController *settings = [self settingsOfOpenWorkspace:controller];
+    XCTAssertEqual([self settingsOfOpenWorkspace:controller], settings, @"asking again shows the same window");
+    settings.scratchWorkspace.gameArguments = @"+set developer 1";
     [settings ok:nil];
     XCTAssertFalse(settings.window.isVisible, @"OK puts the settings away");
-    XCTAssertEqual([tabs allEditors].count, 0U, @"and restarts the workspace: its tabs close");
-    XCTAssertNil([controller valueForKey:@"settingsController"]);
+    XCTAssertNil([commands valueForKey:@"settings"]);
 
-    // It restarts in the background: the window offers nothing meanwhile.
-    NSWindowController *opening = [controller valueForKey:@"openingController"];
-    XCTAssertTrue(opening.window.isVisible, @"\u201COpening\u2026\u201D over the window");
-    XCTAssertEqual(controller.outlineView.numberOfRows, 0, @"no decls to open while it restarts");
-    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Workspace Settings\u2026" action:@selector(showWorkspaceSettings:) keyEquivalent:@""];
-    XCTAssertFalse([(id)controller validateMenuItem:item], @"nor commands");
-    XCTAssertTrue([self spinUntil:^BOOL{ return [controller valueForKey:@"openingController"] == nil; } timeout:30.0]);
-    XCTAssertFalse(opening.window.isVisible);
-    XCTAssertGreaterThan(controller.outlineView.numberOfRows, 0, @"its decls are back");
-    XCTAssertTrue([(id)controller validateMenuItem:item]);
+    // It restarts in the background: the tree and the commands wait meanwhile.
+    XCTAssertNil(controller.workspace);
+    XCTAssertEqual(controller.outlineView.numberOfRows, 1, @"\u201COpening\u2026\u201D in place of its decls");
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"New Declaration\u2026" action:@selector(newDecl:) keyEquivalent:@""];
+    XCTAssertFalse([commands validateMenuItem:item], @"nor commands");
+    XCTAssertTrue([self spinUntil:^BOOL{ return controller.workspace != nil; } timeout:30.0]);
+    XCTAssertGreaterThan(controller.outlineView.numberOfRows, 1, @"its decls are back");
+    XCTAssertTrue([commands validateMenuItem:item]);
+    XCTAssertEqualObjects(controller.workspace.gameArguments, @"+set developer 1", @"with its new settings");
 }
 
 - (void)testCancellingAnOpenWorkspacesSettingsChangesNothing {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
-    [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDEditorTabManager *tabs = [self tabManagerOf:controller];
-
     UDWorkspaceSettingsWindowController *settings = [self settingsOfOpenWorkspace:controller];
-    XCTAssertEqual([self settingsOfOpenWorkspace:controller], settings, @"asking again shows the same window");
+    UDGameWorkspace *running = controller.workspace;
     settings.scratchWorkspace.fs_game = @"elsewhere";
     [settings.window performClose:nil];
     XCTAssertFalse(settings.window.isVisible, @"closing the window is Cancel");
-    XCTAssertEqual([tabs allEditors].count, 1U, @"the workspace goes on as it was");
-    XCTAssertEqualObjects(controller.declBrowser.workspace.fs_game, @"base");
+    XCTAssertEqual(controller.workspace, running, @"the workspace goes on as it was");
+    XCTAssertEqualObjects(controller.workspace.fs_game, @"base");
 }
 
 #pragma mark - Browsing
 
 - (void)testTheOutlineListsTheDeclsInsideThePaks {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     NSArray<NSString *> *paths = [self expandedOutlinePathsInController:controller];
@@ -381,7 +400,7 @@ static NSString *const UDEventsScript =
 }
 
 - (void)testALaterPakOverridesAnEarlierOne {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     UDBaseEditorViewController *editor = [self openOutlinePath:@"material/textures/udfix/panel_a" inController:controller];
@@ -393,7 +412,7 @@ static NSString *const UDEventsScript =
 }
 
 - (void)testTheNameFilterNarrowsTheOutline {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     NSUInteger everything = [self expandedOutlinePathsInController:controller].count;
@@ -419,27 +438,23 @@ static NSString *const UDEventsScript =
 }
 
 - (void)testTheTextSearchFindsDeclsByContent {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
-    controller.textFilterField.stringValue = @"hydroponic bay seven";
-    [controller textContainsFilterChanged:controller.textFilterField];
-
-    NSOutlineView *results = controller.searchOutlineView;
-    [results expandItem:nil expandChildren:YES];
-    NSMutableArray *names = [NSMutableArray array];
-    for (NSInteger row = 0; row < results.numberOfRows; row++) {
-        [names addObject:[results.dataSource outlineView:results
-                               objectValueForTableColumn:results.tableColumns.firstObject
-                                                  byItem:[results itemAtRow:row]]];
-    }
-    XCTAssertTrue([names containsObject:@"email/udfix_hollis_email_1"], @"the email with that text should be found: %@", names);
-    XCTAssertFalse([names containsObject:@"email/udfix_hollis_email_2"], @"the other email does not have it: %@", names);
-    XCTAssertFalse([names containsObject:@"email/udfix_ortega_email_1"], @"%@", names);
+    // Find in Decls, the extension's
+    UQFindViewController *find = [[UQFindViewController alloc] initWithProject:controller.quarry];
+    (void)find.view;
+    find.searchField.stringValue = @"hydroponic bay seven";
+    [find search:find.searchField];
+    NSArray *emails = [find URLsInGroup:@"email"];
+    XCTAssertTrue([emails containsObject:[UQProject URLOfDeclType:@"email" name:@"udfix_hollis_email_1"]],
+                  @"the email with that text should be found: %@", emails);
+    XCTAssertFalse([emails containsObject:[UQProject URLOfDeclType:@"email" name:@"udfix_hollis_email_2"]], @"the other email does not have it");
+    XCTAssertFalse([emails containsObject:[UQProject URLOfDeclType:@"email" name:@"udfix_ortega_email_1"]]);
 }
 
 - (void)testAPDAInsideAPakOpensInThePDAEditor {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     UDPDAEditorViewController *editor = [self openOutlinePath:@"pda/udfix_hollis" inController:controller];
@@ -488,261 +503,61 @@ static NSString *const UDEventsScript =
 }
 
 - (void)testScriptsAndGUIsInsideThePaksOpenAndSave {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     UDBaseEditorViewController *gui = [self openOutlinePath:@"guis/udfix_terminal.gui" inController:controller];
-    XCTAssertTrue([gui isKindOfClass:[UDTextEditorViewController class]], @"a GUI opens in the text editor, not %@", gui);
-    XCTAssertTrue([[[self firstSubviewOfClass:[NSTextView class] inView:gui.view] string] containsString:@"windowDef Desktop"],
-                  @"the GUI's text should be shown");
+    XCTAssertTrue([gui isKindOfClass:[UDGuiEditorViewController class]], @"a GUI opens in the GUI editor, not %@", gui);
+    XCTAssertTrue([[controller.selectedDocument.customDocument textOfDocument] containsString:@"windowDef Desktop"],
+                  @"the GUI's text is its document's");
 
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    XCTAssertTrue([script isKindOfClass:[UDTextEditorViewController class]], @"a script opens in the text editor, not %@", script);
-    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertTrue([textView.string containsString:@"void udfix_main()"], @"the script's text should be shown:\n%@", textView.string);
-    [self finishEvent];
-    XCTAssertFalse(script.editorDocument.isDocumentEdited, @"opening a script is no edit");
+    // a script: a text document, UDCode's own editor's, read out of the pak
+    XCTAssertNil([self openOutlinePath:@"script/udfix_main.script" inController:controller]);
+    UDCodeDocument *script = controller.selectedDocument;
+    XCTAssertNil(script.customDocument);
+    XCTAssertTrue([[script.textModel getValue] containsString:@"void udfix_main()"], @"the script's text:\n%@", [script.textModel getValue]);
+    XCTAssertEqualObjects([controller.quarry languageModeOfURL:script.URL], @"idscript", @"in idScript's mode");
+    XCTAssertFalse(script.isModified, @"opening a script is no edit");
     XCTAssertFalse(gui.editorDocument.isDocumentEdited, @"nor is opening a GUI");
-    XCTAssertEqualObjects([self highlightOf:@"void" inTextView:textView], @"type.builtin",
-                          @"a script is highlighted as idScript");
-    XCTAssertNil([self highlightOf:@"windowDef" inTextView:[self firstSubviewOfClass:[NSTextView class] inView:gui.view]],
-                 @"a GUI's text stays plain");
 
-    [self typeText:@"void udfix_main() {\n\tsys.println( \"edited\" );\n}\n" intoTextView:textView];
-    [self finishEvent];
-    XCTAssertTrue(script.editorDocument.isDocumentEdited, @"typing should dirty the tab");
-    [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
-    [self spinUntil:^BOOL{ return NO; } timeout:0.1];
+    UDPosition end = [script.textModel getPositionAt:(NSInteger)[script.textModel getValue].length];
+    [script.textModel applyEdits:@[ [[UDTextModelEdit alloc] initWithRange:PTRangeMake(1, 1, end.line, end.column)
+                                                                      text:@"void udfix_main() {\n\tsys.println( \"edited\" );\n}\n"] ]];
+    XCTAssertTrue(script.isModified, @"typing dirties the tab");
+    [controller saveDocument:nil];
+    XCTAssertFalse(script.isModified);
 
     NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_main.script"]
                                                 encoding:NSUTF8StringEncoding error:NULL];
-    XCTAssertTrue([saved containsString:@"\"edited\""], @"saving should write the script under fs_savepath: %@", saved);
+    XCTAssertTrue([saved containsString:@"\"edited\""], @"saving writes the script under fs_savepath: %@", saved);
 }
 
 /// A CRLF script is edited with "\n" alone (on GNUstep "\r" and "\n" were
 /// two places, the caret between them), and saved with its CRLF; saving
 /// leaves the keyboard with the editor.
 - (void)testACRLFScriptIsEditedWithOneLineEndingAndSavedWithItsOwn {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_crlf.script" inController:controller];
-    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertEqualObjects(textView.string, @"void udfix_crlf() {\n\tsys.wait( 1 );\n}\n");
+    [self openOutlinePath:@"script/udfix_crlf.script" inController:controller];
+    UDCodeDocument *script = controller.selectedDocument;
+    XCTAssertEqualObjects([script.textModel getValue], @"void udfix_crlf() {\n\tsys.wait( 1 );\n}\n");
 
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@");"].location + 2, 0)];
-    [textView insertText:@" // waited"];
-    [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
-    [self spinUntil:^BOOL{ return NO; } timeout:0.1];
-    XCTAssertEqual(textView.window.firstResponder, textView, @"the keyboard stays with the editor after saving");
+    NSInteger at = (NSInteger)[[script.textModel getValue] rangeOfString:@");"].location + 2;
+    UDPosition where = [script.textModel getPositionAt:at];
+    [script.textModel applyEdits:@[ [[UDTextModelEdit alloc] initWithRange:PTRangeMake(where.line, where.column, where.line, where.column)
+                                                                      text:@" // waited"] ]];
+    [controller saveDocument:nil];
 
     NSString *saved = [NSString stringWithContentsOfFile:[self.savePath stringByAppendingPathComponent:@"base/script/udfix_crlf.script"]
                                                 encoding:NSUTF8StringEncoding error:NULL];
     XCTAssertEqualObjects(saved, @"void udfix_crlf() {\r\n\tsys.wait( 1 ); // waited\r\n}\r\n");
 }
 
-/// The Issues tab lists an open script's errors, by the script's name; a
-/// click on one goes to its line.
-- (void)testTheIssuesTabListsAnOpenScriptsErrors {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    [textView setSelectedRange:NSMakeRange(textView.string.length, 0)];
-    [textView insertText:@"void broken( {\n"];
-
-    UDErrorsViewController *issues = [controller valueForKey:@"issuesNavigator"];
-    XCTAssertNotNil(issues, @"the third tab holds UDCodeKit's issues navigator");
-    UDDiagnosticStore *store = ((UDTextEditorViewController *)script).diagnosticStore;
-    XCTAssertTrue([self spinUntil:^BOOL{ return store.allDiagnostics.count > 0; } timeout:5.0], @"the error is found");
-    NSArray *entries = [issues valueForKey:@"entries"];
-    XCTAssertEqual(entries.count, 1U, @"one open script");
-    XCTAssertEqualObjects([entries.firstObject valueForKey:@"displayName"], @"udfix_main.script");
-    XCTAssertEqual([entries.firstObject valueForKey:@"store"], store);
-
-    UDDiagnosticItem *error = store.allDiagnostics.firstObject;
-    [textView setSelectedRange:NSMakeRange(0, 0)];
-    [controller errorsViewController:issues didSelectDiagnostic:error inStore:store];
-    NSUInteger line = 1;
-    NSString *text = textView.string;
-    for (NSUInteger i = 0; i < textView.selectedRange.location; i++) if ([text characterAtIndex:i] == '\n') line++;
-    XCTAssertEqual((NSInteger)line, error.line, @"a click goes to the error's line");
-}
-
-/// Find, and Jump to Line, in a script, from the menu (its items' selectors
-/// by name, as the XIB has them): UDCodeKit's find bar and line field, as
-/// in UDCode.
-- (void)testFindAndJumpToLineInAScript {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    UDCodeEditorViewController *editor = [script valueForKey:@"editor"];
-
-    NSMenuItem *find = [[NSMenuItem alloc] initWithTitle:@"Find\u2026" action:NSSelectorFromString(@"performFindPanelAction:") keyEquivalent:@"f"];
-    find.tag = 1;
-    XCTAssertTrue([textView validateMenuItem:find], @"Find is on");
-    [textView performFindPanelAction:find];
-    XCTAssertTrue(editor.isFindBarVisible, @"the find bar shows");
-
-    NSMenuItem *jump = [[NSMenuItem alloc] initWithTitle:@"Jump to Line\u2026" action:NSSelectorFromString(@"jumpToLine:") keyEquivalent:@"l"];
-    XCTAssertTrue([textView validateMenuItem:jump], @"Jump to Line is on");
-    [textView jumpToLine:jump];
-    XCTAssertTrue(editor.isJumpToLineVisible, @"its field shows");
-    [editor selectLine:2];
-    XCTAssertEqualObjects([textView.string substringWithRange:textView.selectedRange], @"\tsys.println( \"udfix\" );");
-}
-
-/// A name being typed brings up what it can be, as Xcode does; typing in a
-/// string brings up nothing.
-- (void)testTypingANameOffersWhatItCanBe {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:30.0],
-                  @"the script's language server should start");
-
-    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"}"].location, 0)];
-    [textView insertText:@"\t"];
-    for (NSString *c in @[@"u", @"d", @"f"]) [textView insertText:c];
-    XCTAssertTrue([self spinUntil:^BOOL{ return textView.isShowingCompletions; } timeout:5.0], @"the list comes up");
-    id<UDDiagnosticTextViewDelegate> helpers = (id<UDDiagnosticTextViewDelegate>)textView.delegate;
-    NSRange word = NSMakeRange(textView.selectedRange.location - 3, 3);
-    NSArray *offered = [helpers textView:textView completions:@[] forPartialWordRange:word indexOfSelectedItem:NULL];
-    XCTAssertTrue([offered containsObject:@"udfix_main"], @"%@", offered);
-
-    [textView insertText:@"(\""];
-    XCTAssertFalse(textView.isShowingCompletions, @"leaving the name puts the list away");
-    for (NSString *c in @[@"a", @"b", @"c"]) [textView insertText:c];
-    [self spinUntil:^BOOL{ return textView.isShowingCompletions; } timeout:1.0];
-    XCTAssertFalse(textView.isShowingCompletions, @"nothing is offered in a string");
-}
-
-/// A call filled in as a completion leaves it, its placeholder typed over,
-/// has no errors once it is whole: those of the steps before it go.
-- (void)testAScriptsErrorsGoOnceACallIsTypedWhole {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    UDDiagnosticStore *store = ((UDTextEditorViewController *)script).diagnosticStore;
-
-    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"}"].location, 0)];
-    [textView insertText:@"\tsys.println(<#string text#>)\n"];
-    XCTAssertTrue([self spinUntil:^BOOL{ return store.allDiagnostics.count > 0; } timeout:5.0], @"a placeholder is an error");
-    [textView setSelectedRange:[textView.string rangeOfString:@"<#string text#>"]];
-    NSEvent *quote = [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint modifierFlags:NSEventModifierFlagShift
-                                     timestamp:0 windowNumber:textView.window.windowNumber context:nil
-                                    characters:@"\"" charactersIgnoringModifiers:@"\"" isARepeat:NO keyCode:48];
-    [textView keyDown:quote];
-    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
-    [textView insertText:@"Reload"];
-    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
-    [textView keyDown:quote];
-    [self spinUntil:^BOOL{ return NO; } timeout:0.2];
-    NSRange close = [textView.string rangeOfString:@"\"Reload\")"];
-    [textView setSelectedRange:NSMakeRange(NSMaxRange(close), 0)];
-    [textView insertText:@";"];
-    XCTAssertEqualObjects(textView.string, @"void udfix_main() {\n\tsys.println( \"udfix\" );\n\tsys.println(\"Reload\");\n}\n");
-    [self spinUntil:^BOOL{ return store.allDiagnostics.count == 0; } timeout:5.0];
-    XCTAssertEqual(store.allDiagnostics.count, 0U, @"%@", [store.allDiagnostics valueForKey:@"message"]);
-}
-
-- (void)testAScriptOffersItsEventsAndTheirParameters {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-
-    UDBaseEditorViewController *script = [self openOutlinePath:@"script/udfix_main.script" inController:controller];
-    UDDiagnosticTextView *textView = (UDDiagnosticTextView *)[self firstSubviewOfClass:[NSTextView class] inView:script.view];
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    id<UDDiagnosticTextViewDelegate> helpers = (id<UDDiagnosticTextViewDelegate>)textView.delegate;
-    XCTAssertEqual(helpers, (id)script, @"the script editor helps with the typing");
-
-    // The helpers ask the workspace's script language server: once it is up.
-    UDLSPCoordinator *server = [[script valueForKey:@"session"] lspCoordinator];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [server hoverAtIndex:0 target:nil action:NULL] != 0; } timeout:30.0],
-                  @"the script's language server should start");
-
-    // After "sys.", every event; narrowed by what follows.
-    [textView setSelectedRange:NSMakeRange(textView.string.length, 0)];
-    [textView insertText:@"sys"];
-    [textView insertText:@"."];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [script valueForKey:@"completionList"] != nil; } timeout:5.0]);
-    NSRange none = NSMakeRange(textView.selectedRange.location, 0);
-    NSArray *all = [helpers textView:textView completions:@[] forPartialWordRange:none indexOfSelectedItem:NULL];
-    XCTAssertEqualObjects(all, (@[@"println", @"wait"]));
-    [textView insertText:@"w"];
-    NSRange partial = NSMakeRange(textView.selectedRange.location - 1, 1);
-    XCTAssertEqualObjects([helpers textView:textView completions:@[] forPartialWordRange:partial indexOfSelectedItem:NULL], @[@"wait"]);
-    XCTAssertEqualObjects([(id)helpers textView:textView insertTextForCompletion:@"wait"], @"wait(<#float seconds#>)",
-                          @"accepting it inserts the call, its argument a placeholder");
-
-    // An event's parameters from its '(' to its ')'.
-    [textView insertText:@"ait"];
-    [textView insertText:@"("];
-    // The server answers, then AppKit shows the popover on the run loop, animated.
-    XCTAssertTrue([self spinUntil:^BOOL{ return [[script valueForKey:@"toolTip"] isShown]; } timeout:5.0],
-                  @"the parameters show at the '('");
-    UDHoverViewController *toolTip = [script valueForKey:@"toolTip"];
-    XCTAssertEqualObjects(toolTip.textView.string, @"void wait( float seconds )");
-    [textView insertText:@"1"];
-    XCTAssertTrue(toolTip.isShown, @"and stay while the arguments are typed");
-    [textView insertText:@")"];
-    XCTAssertTrue([self spinUntil:^BOOL{ return !toolTip.isShown; } timeout:2.0], @"and go at the ')'");
-
-    // The ')' not typed on its own (one typed with the '(' and stepped
-    // over): they go once the caret is past it.
-    [textView insertText:@";\n\tsys.wait"];
-    [textView insertText:@"("];
-    XCTAssertTrue([self spinUntil:^BOOL{ return toolTip.isShown; } timeout:5.0]);
-    [textView insertText:@"2, 3"];
-    XCTAssertTrue(toolTip.isShown, @"inside the call they stay");
-    [textView insertText:@");"];
-    XCTAssertTrue([self spinUntil:^BOOL{ return !toolTip.isShown; } timeout:2.0], @"past its ')' they go");
-
-    // Option-click: the event's help.
-    NSUInteger println = [textView.string rangeOfString:@"println"].location;
-    [helpers textView:textView requestTooltipAtIndex:println + 2 point:NSZeroPoint];
-    XCTAssertTrue([self spinUntil:^BOOL{ return [toolTip.textView.string hasPrefix:@"// Prints a line to the console."]; } timeout:5.0],
-                  @"%@", toolTip.textView.string);
-    [toolTip close];
-}
-
-- (void)testJumpToDefinitionOpensTheScriptThatDefinesTheName {
-    UDWorkspaceWindowController *controller = [self openInstall];
-    if (controller == nil) return;
-
-    UDBaseEditorViewController *lights = [self openOutlinePath:@"script/udfix_lights.script" inController:controller];
-    NSTextView *textView = [self firstSubviewOfClass:[NSTextView class] inView:lights.view];
-    XCTAssertTrue([textView.window makeFirstResponder:textView]);
-    [textView setSelectedRange:NSMakeRange([textView.string rangeOfString:@"udfix_main"].location + 3, 0)];
-
-    // The script's language server answers once it has started and read
-    // the paks' scripts; the menu item goes through the window controller.
-    UDEditorTabManager *tabs = [self tabManagerOf:controller];
-    XCTAssertTrue([self spinUntil:^BOOL{
-        if ([tabs selectedEditor] != lights) return YES;
-        [NSApp sendAction:@selector(jumpToDefinition:) to:controller from:nil];
-        return [self spinUntil:^BOOL{ return [tabs selectedEditor] != lights; } timeout:0.5];
-    } timeout:10.0], @"the definition's script should open");
-
-    UDBaseEditorViewController *main = [tabs selectedEditor];
-    XCTAssertEqualObjects(main.item.path, @"script/udfix_main.script");
-    NSTextView *mainView = [self firstSubviewOfClass:[NSTextView class] inView:main.view];
-    XCTAssertEqualObjects(NSStringFromRange(mainView.selectedRange), NSStringFromRange(NSMakeRange(5, 10)),
-                          @"udfix_main, where 'void udfix_main()' names it");
-}
-
 #pragma mark - Editing
 
 - (void)testEditingAPDAInsideAPakSavesAnOverrideOutsideThePaks {
-    UDWorkspaceWindowController *controller = [self openInstall];
+    UQTestWindow *controller = [self openInstall];
     if (controller == nil) return;
 
     UDPDAEditorViewController *editor = [self openOutlinePath:@"pda/udfix_hollis" inController:controller];
@@ -779,7 +594,7 @@ static NSString *const UDEventsScript =
     // A fresh workspace over the same install and save path sees the edit,
     // and still reads the untouched PDA from the pak.
     [self closeWorkspace:controller];
-    UDWorkspaceWindowController *reopened = [self openInstall];
+    UQTestWindow *reopened = [self openInstall];
     UDPDAEditorViewController *again = [self openOutlinePath:@"pda/udfix_hollis" inController:reopened];
     XCTAssertEqualObjects([self textFieldBoundTo:@"fullName" inView:again.view].stringValue, @"Mara K. Hollis");
     XCTAssertEqualObjects([self textFieldBoundTo:@"security" inView:again.view].stringValue, @"Blue");

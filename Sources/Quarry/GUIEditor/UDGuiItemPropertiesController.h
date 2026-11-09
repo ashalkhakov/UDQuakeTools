@@ -11,7 +11,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class rvGEWorkspace, idFileSystem, UDWorkspace, UDReferencePicker;
+@class rvGEWorkspace, idFileSystem, UDGameWorkspace, UDReferencePicker;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Where the fonts are listed from (rvGEItemPropsTextPage::Init).
 @property (nonatomic, weak, nullable) idFileSystem *fileSystem;
 /// Where the pickers' names come from; the picker up, if one is.
-@property (nonatomic, weak, nullable) UDWorkspace *resourceWorkspace;
+@property (nonatomic, weak, nullable) UDGameWorkspace *resourceWorkspace;
 @property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
 /// A "…": the background's (1) or the border's (2) material, picked.
 - (IBAction)pickReference:(nullable id)sender;

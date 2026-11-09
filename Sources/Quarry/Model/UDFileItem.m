@@ -1,5 +1,5 @@
 #import "UDFileItem.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idFileSystem.h"
 #ifdef GNUSTEP
 #import "UniformTypeIdentifiersGNUstep/UniformTypeIdentifiers.h"
@@ -37,7 +37,7 @@
     return UDWorkspaceItemKindFile;
 }
 
-- (NSString *)text:(UDWorkspace *)workspace {
+- (NSString *)text:(UDGameWorkspace *)workspace {
     void *buffer = NULL;
     NSError *error = nil;
     int bufferLen = [workspace.fileSystem readFile:self.path buffer:&buffer timestamp:NULL error:&error];
@@ -60,7 +60,7 @@
     return text;
 }
 
-- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDWorkspace *)workspace {
+- (BOOL)matchesTextSearch:(NSString *)query inWorkspace:(UDGameWorkspace *)workspace {
     if (query.length == 0) return YES;
     // TODO: replace with LSP / cache
     NSString *t = [self text:workspace];

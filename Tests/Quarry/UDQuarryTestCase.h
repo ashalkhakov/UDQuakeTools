@@ -1,10 +1,10 @@
 #import <XCTest/XCTest.h>
 #import <AppKit/AppKit.h>
 
-#import "UDWorkspaceWindowController.h"
+#import "UQTestWindow.h"
 #import "UDBaseEditorViewController.h"
 
-@class UDEditorTabManager, UDWorkspaceDocument, UDDeclEditorViewController, UDReferencePicker;
+@class UDDeclEditorViewController, UDReferencePicker;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,33 +32,36 @@ NSString * _Nullable UDDoom3InstallPath(void);
 - (NSDictionary *)workspaceSettingsWithBasePath:(NSString *)basePath
                                        savePath:(NSString *)savePath;
 
-/// Opens a workspace document the way File > Open does for a .qworkspace
-/// file (read the settings, make and show the workspace window). The
-/// document is closed in -tearDown. Returns nil (after an XCTFail) when the
-/// workspace does not start or the window does not load.
-- (nullable UDWorkspaceWindowController *)openWorkspaceWithSettings:(NSDictionary *)settings;
+/// Opens a Quarry project the way UDCode opens a folder with a .qworkspace
+/// (UDCode's UDQuakeTools extension: its project, its Decls navigator, its
+/// editors), in a window of the test's (UQTestWindow), closed in -tearDown.
+/// Returns nil (after an XCTFail) when the game does not start.
+- (nullable UQTestWindow *)openWorkspaceWithSettings:(NSDictionary *)settings;
 
-/// A workspace document's window controller, once it has started (nil before).
-- (nullable UDWorkspaceWindowController *)workspaceWindowControllerOf:(UDWorkspaceDocument *)document;
 
 /// Closes a workspace opened with -openWorkspaceWithSettings: early (to
 /// reopen it fresh and see what was saved).
-- (void)closeWorkspace:(UDWorkspaceWindowController *)controller;
+- (void)closeWorkspace:(UQTestWindow *)controller;
 
-- (UDEditorTabManager *)tabManagerOf:(UDWorkspaceWindowController *)controller;
+- (UQTestWindow *)tabManagerOf:(UQTestWindow *)controller;
 
 /// Expands the outline down to the slash-separated path ("pda/admin_moses")
 /// and returns the row of its last component, or -1 (after an XCTFail).
-- (NSInteger)revealOutlinePath:(NSString *)path inController:(UDWorkspaceWindowController *)controller;
+- (NSInteger)revealOutlinePath:(NSString *)path inController:(UQTestWindow *)controller;
 
 /// Selects the outline row for path — which is what opens an editor tab —
 /// and returns the editor of the tab that is then selected.
+/// The item at @a path chosen in the Decls tree, its tab opened: its Quarry
+/// editor; nil for a text document's tab (a script's: UDCode's own editor),
+/// the tab's document the window's selectedDocument.
 - (nullable __kindof UDBaseEditorViewController *)openOutlinePath:(NSString *)path
-                                                     inController:(UDWorkspaceWindowController *)controller;
+                                                     inController:(UQTestWindow *)controller;
 
 /// Every item of the main outline, fully expanded, as slash-separated paths
 /// of display names.
-- (NSArray<NSString *> *)expandedOutlinePathsInController:(UDWorkspaceWindowController *)controller;
+- (NSArray<NSString *> *)expandedOutlinePathsInController:(UQTestWindow *)controller;
+/// A row's label, as the tree shows it.
+- (NSString *)labelOfItem:(id)item inOutline:(NSOutlineView *)outline;
 
 /// Runs the run loop until condition holds or timeout passes.
 - (BOOL)spinUntil:(BOOL (^)(void))condition timeout:(NSTimeInterval)timeout;

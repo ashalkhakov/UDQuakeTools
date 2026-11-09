@@ -15,7 +15,7 @@
 #endif
 #import <CoreData/CoreData.h>
 
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "UDDeclManagedObjects.h"
 #import "UDDeclIncrementalStore.h"
@@ -31,7 +31,7 @@
 @interface UDDeclIncrementalStoreTests : XCTestCase
 @property (nonatomic, strong) NSString *rootDir;
 @property (nonatomic, strong) NSString *fullGameDirPath;
-@property (nonatomic, strong) UDWorkspace *workspace;
+@property (nonatomic, strong) UDGameWorkspace *workspace;
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @end
 
@@ -216,7 +216,7 @@ static NSString *const UDMaterialFixture =
         @"fs_copyfiles": @"0",
         @"fs_caseSensitiveOS": @"1",
     };
-    self.workspace = [[UDWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
+    self.workspace = [[UDGameWorkspace alloc] initWithDictionary:dict rootDirectory:self.rootDir];
 
     NSError *error = nil;
     XCTAssertTrue([self.workspace startup:&error], @"workspace startup failed: %@", error);

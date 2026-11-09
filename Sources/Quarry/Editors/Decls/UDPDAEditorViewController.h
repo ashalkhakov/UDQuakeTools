@@ -2,7 +2,7 @@
 
 @class UDDeclBase, UDDeclPDA, UDDeclEmail, UDDeclVideo, UDDeclAudio;
 
-@class UDWorkspace;
+@class UDGameWorkspace;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSObjectController *objectController;
 /// Where the pickers' names come from.
-@property (nonatomic, weak, nullable) UDWorkspace *workspace;
+@property (nonatomic, weak, nullable) UDGameWorkspace *workspace;
 @property (nonatomic, strong, readonly, nullable) UDReferencePicker *referencePicker;
 /// The picker of the field whose "…" has tag @a tag (subclasses say).
 - (nullable UDReferenceField *)referenceFieldForTag:(NSInteger)tag;

@@ -1,5 +1,6 @@
 #import "UDTransportController.h"
 #import "UDQuarryTestCase.h"
+#import "UQFindViewController.h"
 
 #import "UDDeclManagedObjects.h"
 #import "UDMaterialParser.h"
@@ -7,13 +8,11 @@
 #import "UDDeclTextChecker.h"
 #import "UDMD5Mesh.h"
 #import "idFileSystem.h"
-#import "UDEditorTabManager.h"
 #import "UDPDAEditorViewController.h"
 #import "UDEntityDefEditorViewController.h"
 #import "UDTextEditorViewController.h"
 #import "UDMaterialEditorViewController.h"
-#import "UDWorkspace.h"
-#import "UDWorkspaceDocument.h"
+#import "UDGameWorkspace.h"
 #import "UDBaseDocument.h"
 #import "idDeclManager.h"
 #import "idUserInterface.h"
@@ -84,7 +83,7 @@
     [super tearDown];
 }
 
-- (UDWorkspaceWindowController *)openDoom3 {
+- (UQTestWindow *)openDoom3 {
     return [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.installPath
                                                                       savePath:self.savePath]];
 }
@@ -93,13 +92,13 @@
 
 - (void)testTheOutlineListsTheRetailDecls {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     NSOutlineView *outline = controller.outlineView;
     NSMutableSet *topLevel = [NSMutableSet set];
     for (NSInteger row = 0; row < outline.numberOfRows; row++) {
-        [topLevel addObject:[[outline itemAtRow:row] name]];
+        [topLevel addObject:[self labelOfItem:[outline itemAtRow:row] inOutline:outline]];
     }
     for (NSString *group in @[@"material", @"table", @"skin", @"sound", @"entityDef", @"mapDef", @"model", @"fx", @"particle", @"articulatedFigure", @"pda", @"email", @"audio", @"video", @"script", @"guis"]) {
         XCTAssertTrue([topLevel containsObject:group], @"the outline should have a %@ group; it has %@", group, topLevel);
@@ -112,7 +111,7 @@
         XCTAssertTrue([paths containsObject:path], @"the outline should list %@", path);
     }
 
-    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    idDeclManager *declManager = controller.workspace.declManager;
     NSUInteger materials = 0;
     for (id decl in [declManager declsOfType:DECL_MATERIAL forceParse:NO]) {
         (void)decl;
@@ -126,9 +125,9 @@
 /// the programs, at once.
 - (void)testThePickersListTheRetailNamesAtOnce {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     NSDictionary<NSNumber *, NSString *> *expected = @{
         @(UDReferenceImages): @"textures/base_wall/lfwall27d.tga",
         @(UDReferenceMaterials): @"textures/base_wall/lfwall27d",
@@ -157,7 +156,7 @@
 
 - (void)testTheNameFilterNarrowsTheOutline {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     NSUInteger everything = [self expandedOutlinePathsInController:controller].count;
@@ -183,26 +182,29 @@
 
 - (void)testTheTextSearchFindsDeclsByContent {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    controller.textFilterField.stringValue = @"Martian Buddy";
-    [controller textContainsFilterChanged:controller.textFilterField];
+    // Find in Decls, the extension's
+    UQFindViewController *find = [[UQFindViewController alloc] initWithProject:controller.quarry];
+    (void)find.view;
+    find.searchField.stringValue = @"Martian Buddy";
+    [find search:find.searchField];
 
-    NSOutlineView *results = controller.searchOutlineView;
+    NSOutlineView *results = find.outlineView;
     [results expandItem:nil expandChildren:YES];
     NSMutableArray *names = [NSMutableArray array];
     for (NSInteger row = 0; row < results.numberOfRows; row++) {
         id item = [results itemAtRow:row];
         [names addObject:[results.dataSource outlineView:results objectValueForTableColumn:results.tableColumns.firstObject byItem:item]];
     }
-    XCTAssertTrue([names containsObject:@"email/admin_moses_email_1"],
+    XCTAssertTrue([names containsObject:@"admin_moses_email_1"] && [names containsObject:@"email"],
                   @"the email that mentions Martian Buddy should be found; got %@", names);
 }
 
 - (void)testARetailMaterialOpensInTheMaterialEditor {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     UDBaseEditorViewController *editor = [self openOutlinePath:@"material/textures/base_wall/lfwall27d" inController:controller];
@@ -230,7 +232,7 @@
 
 - (void)testAPDAOpensInThePDAEditor {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     UDPDAEditorViewController *editor = [self openOutlinePath:@"pda/admin_moses" inController:controller];
@@ -256,7 +258,7 @@
 
 - (void)testARetailEntityDefInheritsThroughItsChain {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     UDEntityDefEditorViewController *editor = [self openOutlinePath:@"entityDef/monster_zombie_fat" inController:controller];
@@ -276,10 +278,10 @@
 
 - (void)testEveryRetailSoundShaderParses {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    idDeclManager *declManager = controller.workspace.declManager;
     NSUInteger shaders = 0;
     NSMutableArray<NSString *> *problems = [NSMutableArray array];
     for (idDeclBase *decl in [declManager declsOfType:DECL_SOUND forceParse:NO]) {
@@ -305,10 +307,10 @@
 
 - (void)testEveryRetailParticleParses {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    idDeclManager *declManager = controller.workspace.declManager;
     NSUInteger particles = 0;
     NSMutableArray<NSString *> *problems = [NSMutableArray array];
     for (idDeclBase *decl in [declManager declsOfType:DECL_PARTICLE forceParse:NO]) {
@@ -331,10 +333,10 @@
 
 - (void)testEveryRetailFXParses {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    idDeclManager *declManager = controller.workspace.declManager;
     NSUInteger fxs = 0;
     NSMutableArray<NSString *> *problems = [NSMutableArray array];
     for (idDeclBase *decl in [declManager declsOfType:DECL_FX forceParse:NO]) {
@@ -353,10 +355,10 @@
 
 - (void)testEveryRetailMaterialIsReadAsTheEngineReadsItAndWrittenAsItWas {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     idDeclManager *declManager = workspace.declManager;
     NSUInteger materials = 0;
     NSMutableArray<NSString *> *defaulted = [NSMutableArray array];
@@ -412,10 +414,10 @@
 
 - (void)testEveryRetailArticulatedFigureParsesAndIsWrittenTheSameTwice {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    idDeclManager *declManager = ((UDWorkspaceDocument *)controller.document).workspace.declManager;
+    idDeclManager *declManager = controller.workspace.declManager;
     NSUInteger figures = 0;
     NSMutableArray<NSString *> *problems = [NSMutableArray array];
     NSMutableArray<NSString *> *unstable = [NSMutableArray array];
@@ -445,13 +447,13 @@
 
 - (void)testEveryRetailFiguresBodiesAreOnItsModelsJoints {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     // Where the figure's model and its .md5mesh are there (retail lacks some
     // of both: env_hellcage_long's mesh, char_npc's modelDef), its bodies
     // are on the mesh's joints.
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     NSUInteger checked = 0;
     NSMutableArray<NSString *> *missing = [NSMutableArray array];
     for (idDeclBase *decl in [workspace.declManager declsOfType:DECL_AF forceParse:NO]) {
@@ -482,10 +484,10 @@
 
 - (void)testEveryRetailGuiLoadsAndDraws {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     idFileList *list = [workspace.fileSystem listFilesTree:@"guis" extension:@".gui" sorted:YES inGameDir:nil error:NULL];
@@ -535,9 +537,9 @@ static BOOL UDSameTriangles(UDTriangleList *a, UDTriangleList *b, NSString **why
 
 - (void)testEveryRetailGuiSeeksAsItRunsFrameByFrame {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     UDGuiPlayer *skipping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
     UDGuiPlayer *stepping = [[UDGuiPlayer alloc] initWithWorkspace:workspace];
     for (UDGuiPlayer *player in @[skipping, stepping]) {
@@ -574,7 +576,7 @@ static BOOL UDSameTriangles(UDTriangleList *a, UDTriangleList *b, NSString **why
 
 - (void)testTheRetailMainMenuRunsInTheViewer {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
     [controller.window orderFront:nil];
     UDBaseEditorViewController *editor = [self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
@@ -645,9 +647,9 @@ static BOOL UDHasStrayStateKeys(idWindow *window) {
 
 - (void)testEveryRetailGuiIsWrittenBackAsTheEditorWritesIt {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];
@@ -723,9 +725,9 @@ static void UDCollectScripts(idWindow *window, NSString *gui, NSMutableArray<NSS
 
 - (void)testEveryRetailGuisScriptsReadAsStatements {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
-    UDWorkspace *workspace = ((UDWorkspaceDocument *)controller.document).workspace;
+    UDGameWorkspace *workspace = controller.workspace;
     idUserInterfaceManager *manager = [[idUserInterfaceManager alloc] initWithFileSystem:workspace.fileSystem declManager:workspace.declManager];
     [manager managerInit];
     rvGEWorkspace *editor = [[rvGEWorkspace alloc] initWithManager:manager];
@@ -758,7 +760,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
 
 - (void)testTheRetailMainMenuIsDesignedWithItsCurtainHidden {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
     [controller.window orderFront:nil];
     UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
@@ -780,7 +782,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
 
 - (void)testTheRetailMainMenuIsDesignedAtTheSlidersTime {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
     [controller.window orderFront:nil];
     UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/mainmenu.gui" inController:controller];
@@ -824,7 +826,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
 
 - (void)testTheLayersOverARetailGuiAreClickedThrough {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
     [controller.window orderFront:nil];
     UDGuiEditorViewController *editor = (UDGuiEditorViewController *)[self openOutlinePath:@"guis/comm1/commterminal.gui" inController:controller];
@@ -851,7 +853,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
 
 - (void)testEditingARetailPDASavesAnOverrideOutsideThePaks {
     if (self.installPath == nil) return;
-    UDWorkspaceWindowController *controller = [self openDoom3];
+    UQTestWindow *controller = [self openDoom3];
     if (controller == nil) return;
 
     UDPDAEditorViewController *editor = [self openOutlinePath:@"pda/admin_moses" inController:controller];
@@ -882,7 +884,7 @@ static double UDMeanBrightness(NSBitmapImageRep *rep) {
 
     // A fresh workspace over the same install and save path sees the edit.
     [self closeWorkspace:controller];
-    UDWorkspaceWindowController *reopened = [self openDoom3];
+    UQTestWindow *reopened = [self openDoom3];
     UDPDAEditorViewController *again = [self openOutlinePath:@"pda/admin_moses" inController:reopened];
     XCTAssertEqualObjects([self textFieldBoundTo:@"fullName" inView:again.view].stringValue, @"Jonathan Q. Moses");
     XCTAssertEqual([again.emailArrayController.arrangedObjects count], 3U, @"the emails come back with the PDA");

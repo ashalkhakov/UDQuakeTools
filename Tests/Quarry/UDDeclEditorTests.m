@@ -1,9 +1,8 @@
 #import "UDTransportController.h"
-#import "UDWorkspace.h"
+#import "UDGameWorkspace.h"
 #import "UDQuarryTestCase.h"
 
 #import "UDDeclDocument.h"
-#import "UDEditorTabManager.h"
 #import <UDCodeKit/UDCodeKit.h>
 #import "UDNewDeclWindowController.h"
 #import "UDTextEditorViewController.h"
@@ -21,7 +20,6 @@
 #import "UDFXModel.h"
 #import "UDDeclManagedObjects.h"
 #import "idDeclManager.h"
-#import "UDWorkspaceWindowController.h"
 
 static NSString *const UDFixtureDefs =
     @"entityDef udtest_fixture {\n"
@@ -194,7 +192,7 @@ static NSString *const UDFixtureParticles =
                       atomically:YES encoding:NSUTF8StringEncoding error:NULL];
 }
 
-- (UDWorkspaceWindowController *)openFixtureWorkspace {
+- (UQTestWindow *)openFixtureWorkspace {
     return [self openWorkspaceWithSettings:[self workspaceSettingsWithBasePath:self.basePath savePath:self.savePath]];
 }
 
@@ -205,14 +203,14 @@ static NSString *const UDFixtureParticles =
     return text ?: @"";
 }
 
-- (void)save:(UDWorkspaceWindowController *)controller {
+- (void)save:(UQTestWindow *)controller {
     [NSApp sendAction:@selector(saveDocument:) to:controller from:nil];
     [self spinUntil:^BOOL{ return NO; } timeout:0.1];
 }
 
 /// File > New Declaration…, filled in as given; nil for what is left as it is.
 - (void)newDeclOfType:(NSString *)typeName name:(NSString *)name file:(nullable NSString *)file
-         inController:(UDWorkspaceWindowController *)controller
+         inController:(UQTestWindow *)controller
          defaultFile:(NSString *_Nullable *_Nullable)defaultFile {
     __block BOOL asked = NO;
     __block NSString *shownFile = nil;
@@ -238,7 +236,7 @@ static NSString *const UDFixtureParticles =
 #pragma mark - New Declaration (DialogDeclNew)
 
 - (void)testANewDeclStartsAsItsTypesDefaultInItsFolder {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
     NSString *shownFile = nil;
     [self newDeclOfType:@"entityDef" name:@"udtest_fresh" file:nil inController:controller defaultFile:&shownFile];
@@ -256,7 +254,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testANewDeclGoesInTheFileItIsGiven {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
     [self newDeclOfType:@"sound" name:@"udtest_buzz" file:@"sound/udtest.sndshd" inController:controller defaultFile:NULL];
     [self save:controller];
@@ -268,7 +266,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testCancellingNewDeclarationCreatesNothing {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
     [self whenModalWindowAppears:^(NSWindow *window) {
         [[self buttonTitled:@"Cancel" inView:window.contentView] performClick:nil];
@@ -285,63 +283,51 @@ static NSString *const UDFixtureParticles =
     return [textView.textStorage attribute:NSForegroundColorAttributeName atIndex:range.location effectiveRange:NULL];
 }
 
-- (void)testADeclIsHighlightedAsADecl {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
-    if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
-    XCTAssertTrue([editor isKindOfClass:[UDTextEditorViewController class]], @"a modelDef opens as text, not %@", editor);
-    NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
-
-    // Its comments and strings, each in a colour of their own.
-    BOOL highlighted = [self spinUntil:^BOOL{
-        NSColor *comment = [self colorOf:@"// the crate" inTextView:textView];
-        NSColor *string = [self colorOf:@"\"skins/udtest/crate\"" inTextView:textView];
-        return comment != nil && string != nil && ![comment isEqual:string] &&
-               ![comment isEqual:textView.textColor] && ![string isEqual:textView.textColor];
-    } timeout:5.0];
-    XCTAssertTrue(highlighted, @"the decl grammar colours the decl: comment %@, string %@, text %@",
-                  [self colorOf:@"// the crate" inTextView:textView], [self colorOf:@"\"skins/udtest/crate\"" inTextView:textView],
-                  textView.textColor);
-}
-
-- (NSArray<UDDiagnosticItem *> *)testFindingsOf:(UDTextEditorViewController *)editor {
-    return [editor.diagnosticStore.allDiagnostics filteredArrayUsingPredicate:
+/// What Test Declaration found, the front document's issues.
+- (NSArray<UDDiagnosticItem *> *)testFindingsIn:(UQTestWindow *)controller {
+    return [controller.selectedDocument.diagnosticStore.allDiagnostics filteredArrayUsingPredicate:
             [NSPredicate predicateWithFormat:@"source == 'test'"]];
 }
 
+/// @a text typed into the front document's text at @a offset.
+- (void)type:(NSString *)text at:(NSUInteger)offset length:(NSUInteger)length in:(UQTestWindow *)controller {
+    UDTextModel *model = controller.selectedDocument.textModel;
+    UDPosition from = [model getPositionAt:(NSInteger)offset], to = [model getPositionAt:(NSInteger)(offset + length)];
+    [model applyEdits:@[ [[UDTextModelEdit alloc] initWithRange:PTRangeMake(from.line, from.column, to.line, to.column) text:text] ]];
+}
+
 - (void)testTestReportsWhatTheLexerSays {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
-    NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
-    XCTAssertEqual([self testFindingsOf:editor].count, 0U);
+    // a decl of no editor of its own: a text document, UDCode's editor's
+    XCTAssertNil([self openOutlinePath:@"model/udtest_crate" inController:controller]);
+    NSString *text = [controller.selectedDocument.textModel getValue];
+    XCTAssertEqual([self testFindingsIn:controller].count, 0U);
 
     // A string left open, typed above its blend.
-    NSRange duration = [textView.string rangeOfString:@"\tmesh"];
-    NSInteger line = [[textView.string substringToIndex:duration.location] componentsSeparatedByString:@"\n"].count;
-    [textView setSelectedRange:NSMakeRange(duration.location, 0)];
-    [textView insertText:@"\t\tname\t\"oops\n"];
+    NSRange mesh = [text rangeOfString:@"\tmesh"];
+    NSInteger line = [[text substringToIndex:mesh.location] componentsSeparatedByString:@"\n"].count;
+    [self type:@"\t\tname\t\"oops\n" at:mesh.location length:0 in:controller];
     [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
     // The lexer's error, at its line (and the braces it leaves open after it).
-    NSArray<UDDiagnosticItem *> *findings = [[self testFindingsOf:editor] filteredArrayUsingPredicate:
+    NSArray<UDDiagnosticItem *> *findings = [[self testFindingsIn:controller] filteredArrayUsingPredicate:
         [NSPredicate predicateWithFormat:@"message CONTAINS 'newline inside string'"]];
-    XCTAssertEqual(findings.count, 1U, @"the lexer's error: %@", [self testFindingsOf:editor]);
+    XCTAssertEqual(findings.count, 1U, @"the lexer's error: %@", [self testFindingsIn:controller]);
     XCTAssertEqual(findings.firstObject.line, line, @"on the line it is about");
 
-    [textView insertText:@" "];
-    XCTAssertEqual([self testFindingsOf:editor].count, 0U, @"an edit takes what a Test found away");
+    [self type:@" " at:0 length:0 in:controller];
+    XCTAssertEqual([self testFindingsIn:controller].count, 0U, @"an edit takes what a Test found away");
 }
 
 - (void)testTestFindsABraceNeverClosed {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     if (controller == nil) return;
-    UDTextEditorViewController *editor = [self openOutlinePath:@"model/udtest_crate" inController:controller];
-    NSTextView *textView = [editor valueForKeyPath:@"editor.textView"];
-    NSRange last = [textView.string rangeOfString:@"}" options:NSBackwardsSearch];
-    [textView setSelectedRange:last];
-    [textView insertText:@""];
+    [self openOutlinePath:@"model/udtest_crate" inController:controller];
+    NSString *text = [controller.selectedDocument.textModel getValue];
+    NSRange last = [text rangeOfString:@"}" options:NSBackwardsSearch];
+    [self type:@"" at:last.location length:last.length in:controller];
     [NSApp sendAction:@selector(testDecl:) to:controller from:nil];
-    NSArray<UDDiagnosticItem *> *findings = [self testFindingsOf:editor];
+    NSArray<UDDiagnosticItem *> *findings = [self testFindingsIn:controller];
     XCTAssertEqual(findings.count, 1U, @"the brace: %@", findings);
     XCTAssertEqual(findings.firstObject.line, 1, @"where it opened");
     XCTAssertEqual(findings.firstObject.severity, UDDiagnosticSeverityError);
@@ -349,14 +335,14 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The entityDef editor (DialogEntityDefEditor)
 
-- (UDEntityDefEditorViewController *)openLampIn:(UDWorkspaceWindowController *)controller {
+- (UDEntityDefEditorViewController *)openLampIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"entityDef/udtest_lamp" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"an entityDef opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDEntityDefEditorViewController class]] ? (UDEntityDefEditorViewController *)editor : nil;
 }
 
 - (void)testAnEntityDefOpensWithItsOwnAndInheritedPairs {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDEntityDefEditorViewController *editor = [self openLampIn:controller];
     if (editor == nil) return;
 
@@ -379,7 +365,7 @@ static NSString *const UDFixtureParticles =
 /// The selected pair's value in the entry its type takes: the editor_*
 /// key's type, else the key's, else the value's; each edit its text.
 - (void)testASpawnArgIsEnteredAsItsType {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDEntityDefEditorViewController *editor = [self openLampIn:controller];
     if (editor == nil) return;
     NSMutableArray *pairs = [editor.entityDef.keyValues mutableCopy];
@@ -443,7 +429,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingAnEntityDefsPairsSavesThem {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDEntityDefEditorViewController *editor = [self openLampIn:controller];
     if (editor == nil) return;
 
@@ -477,7 +463,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAnUnknownInheritIsAnIssue {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDEntityDefEditorViewController *editor = [self openLampIn:controller];
     if (editor == nil) return;
     editor.entityDef.inherit = @"udtest_nothing";
@@ -489,7 +475,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAMapDefOpensInTheEntityDefEditor {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDBaseEditorViewController *editor = [self openOutlinePath:@"mapDef/udtest/yard" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDEntityDefEditorViewController class]], @"%@", editor);
     XCTAssertEqualObjects([((UDEntityDefEditorViewController *)editor).keyValuesController.arrangedObjects valueForKey:@"value"], (@[@"Yard"]));
@@ -497,14 +483,14 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The sound shader editor
 
-- (UDSoundEditorViewController *)openSound:(NSString *)name in:(UDWorkspaceWindowController *)controller {
+- (UDSoundEditorViewController *)openSound:(NSString *)name in:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:[@"sound/" stringByAppendingString:name] inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDSoundEditorViewController class]], @"a sound shader opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDSoundEditorViewController class]] ? (UDSoundEditorViewController *)editor : nil;
 }
 
 - (void)testASoundShaderOpensWithItsParametersAndSamples {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSoundEditorViewController *editor = [self openSound:@"udtest_hum" in:controller];
     if (editor == nil) return;
 
@@ -524,7 +510,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingASoundShaderSavesIt {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSoundEditorViewController *editor = [self openSound:@"udtest_hum" in:controller];
     if (editor == nil) return;
 
@@ -554,7 +540,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testWhereTheEngineGivesUpOnAShaderIsAnIssue {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDSoundEditorViewController *editor = [self openSound:@"udtest_broken" in:controller];
     if (editor == nil) return;
     NSArray *messages = [editor.diagnosticStore.allDiagnostics valueForKey:@"message"];
@@ -563,14 +549,14 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The particle editor (DialogParticleEditor)
 
-- (UDParticleEditorViewController *)openSparkIn:(UDWorkspaceWindowController *)controller {
+- (UDParticleEditorViewController *)openSparkIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"particle/udtest_spark" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDParticleEditorViewController class]], @"a particle opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDParticleEditorViewController class]] ? (UDParticleEditorViewController *)editor : nil;
 }
 
 - (void)testAParticleOpensWithItsStages {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *editor = [self openSparkIn:controller];
     if (editor == nil) return;
 
@@ -589,7 +575,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingAStageIsAnEditOfTheParticle {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *editor = [self openSparkIn:controller];
     if (editor == nil) return;
 
@@ -624,7 +610,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testTheParticleInspectorFollowsTheStages {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *editor = [self openSparkIn:controller];
     if (editor == nil) return;
     XCTAssertEqualObjects([editor.inspectorPanes valueForKey:@"title"], (@[@"Particle", @"Stage"]));
@@ -654,7 +640,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testTheParticlePreviewDrawsTheSystemAsTheEngineDoes {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *editor = [self openSparkIn:controller];
     if (editor == nil) return;
     XCTAssertNotNil(editor.preview);
@@ -678,14 +664,14 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The FX editor
 
-- (UDFXEditorViewController *)openFXIn:(UDWorkspaceWindowController *)controller {
+- (UDFXEditorViewController *)openFXIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"fx/fx/udtest_spark" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDFXEditorViewController class]], @"an fx opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDFXEditorViewController class]] ? (UDFXEditorViewController *)editor : nil;
 }
 
 - (void)testAnFXOpensWithItsActions {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
 
@@ -718,7 +704,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingAnActionIsAnEditOfTheFX {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
     [editor.actionsController setSelectionIndex:0];
@@ -759,14 +745,14 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The AF editor
 
-- (UDAFEditorViewController *)openCrateIn:(UDWorkspaceWindowController *)controller {
+- (UDAFEditorViewController *)openCrateIn:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:@"articulatedFigure/udtest_crate" inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDAFEditorViewController class]], @"a figure opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDAFEditorViewController class]] ? (UDAFEditorViewController *)editor : nil;
 }
 
 - (void)testAnArticulatedFigureOpensWithItsBodiesAndConstraints {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDAFEditorViewController *editor = [self openCrateIn:controller];
     if (editor == nil) return;
 
@@ -801,7 +787,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testTheInspectorIsLaidOutFromTheTop {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDAFEditorViewController *editor = [self openCrateIn:controller];
     if (editor == nil) return;
     NSView *inspector = editor.documentInspectorView;
@@ -816,7 +802,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingBodiesAndConstraintsIsAnEditOfTheFigure {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDAFEditorViewController *editor = [self openCrateIn:controller];
     if (editor == nil) return;
 
@@ -865,7 +851,7 @@ static NSString *const UDFixtureParticles =
 #pragma mark - Pickers
 
 - (void)testAPickerChoosesWhatAFieldNames {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *particle = [self openSparkIn:controller];
     if (particle == nil) return;
     [self pick:1 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
@@ -920,7 +906,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAStagesRegisterIsEditedAsAnExpression {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
     [editor.stagesController setSelectionIndex:0];
@@ -946,7 +932,7 @@ static NSString *const UDFixtureParticles =
 /// The keywords a field takes offered beside it; a cube map and a
 /// program picked by the names the engine looks them up by.
 - (void)testAStagesKeywordsAreOfferedAndItsCubeMapAndProgramPicked {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
     NSComboBox *sort = [self viewBoundTo:@"sort" ofClass:[NSComboBox class] inView:editor.documentInspectorView];
@@ -988,8 +974,8 @@ static NSString *const UDFixtureParticles =
 }
 
 /// The title of the inspector pane the window shows.
-- (nullable NSString *)paneShownIn:(UDWorkspaceWindowController *)controller {
-    for (UDEditorPane *pane in [controller valueForKey:@"inspectorPanes"]) {
+- (nullable NSString *)paneShownIn:(UQTestWindow *)controller {
+    for (NSViewController *pane in controller.inspectors) {
         if (pane.view.superview == controller.inspectorHost) return pane.title;
     }
     return nil;
@@ -1006,7 +992,7 @@ static NSString *const UDFixtureParticles =
 /// stage chosen, they were out of reach where the list can't be emptied, as
 /// on GNUstep); a click in the list shows the stage's pane.
 - (void)testTheDeclarationsOwnKeywordsHaveAPaneOfTheirOwn {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     NSArray *cases = @[@[@"Material", @"Stage", @"materialDescription", @"Glow"], @[@"FX", @"Action", @"bindTo", @""],
                        @[@"Particle", @"Stage", @"depthHack", @"0.001"], @[@"Figure", @"Body", @"totalMass", @"40"]];
     for (NSArray *one in cases) {
@@ -1034,7 +1020,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEveryInspectorControlHasHelp {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDParticleEditorViewController *particle = [self openSparkIn:controller];
     [self checkHelpUnder:particle.documentInspectorView of:@"particle"];
     [self checkHelpUnder:particle.inspectorView of:@"particle stage"];
@@ -1056,7 +1042,7 @@ static NSString *const UDFixtureParticles =
 
 #pragma mark - The material editor
 
-- (UDMaterialEditorViewController *)openMaterial:(NSString *)name in:(UDWorkspaceWindowController *)controller {
+- (UDMaterialEditorViewController *)openMaterial:(NSString *)name in:(UQTestWindow *)controller {
     UDBaseEditorViewController *editor = [self openOutlinePath:[@"material/" stringByAppendingString:name] inController:controller];
     XCTAssertTrue([editor isKindOfClass:[UDMaterialEditorViewController class]], @"a material opens in its editor, not %@", editor);
     return [editor isKindOfClass:[UDMaterialEditorViewController class]] ? (UDMaterialEditorViewController *)editor : nil;
@@ -1068,7 +1054,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAMaterialOpensWithItsKeywordsStagesAndImages {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
 
@@ -1111,7 +1097,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAStagesBlendIsAKeywordOrTwoFactors {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/decal" in:controller];
     if (editor == nil) return;
     [editor.stagesController setSelectionIndex:0];
@@ -1182,7 +1168,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testAStageIsDraggedToAnotherPlace {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
     NSPopUpButton *lighting = [self viewWithToolTip:@"add lighting stage" inView:editor.view];
@@ -1206,7 +1192,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testEditingAMaterialChangesOnlyWhatIsEdited {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
 
@@ -1263,7 +1249,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testTheFXPreviewPlaysItsActions {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
     XCTAssertNotNil(editor.preview);
@@ -1281,7 +1267,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testThePreviewsTimeCanBeScrubbed {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDFXEditorViewController *editor = [self openFXIn:controller];
     if (editor == nil) return;
 
@@ -1320,7 +1306,7 @@ static NSString *const UDFixtureParticles =
 }
 
 - (void)testTheMaterialPreviewDrawsItAsTheEngineDoes {
-    UDWorkspaceWindowController *controller = [self openFixtureWorkspace];
+    UQTestWindow *controller = [self openFixtureWorkspace];
     UDMaterialEditorViewController *editor = [self openMaterial:@"textures/udtest/glow" in:controller];
     if (editor == nil) return;
     XCTAssertNotNil(editor.materialPreview);

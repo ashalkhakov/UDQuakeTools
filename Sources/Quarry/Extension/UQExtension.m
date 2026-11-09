@@ -23,7 +23,8 @@ const TSLanguage *tree_sitter_iddecl(void);
 
 /// The README's screenshots asked for ($UQ_OPEN): editors are remembered for it.
 static BOOL UQScreenshotScene(void) {
-    return NSProcessInfo.processInfo.environment[@"UQ_OPEN"].length > 0;
+    NSString *open = NSProcessInfo.processInfo.environment[@"UQ_OPEN"];
+    return open.length > 0;
 }
 
 @implementation UQExtension {
@@ -107,7 +108,8 @@ static BOOL UQScreenshotScene(void) {
                 UDGuiEditorViewController *gui = (UDGuiEditorViewController *)self->_lastHost.editor;
                 if (event.length && [gui isKindOfClass:[UDGuiEditorViewController class]]) [self _design:gui event:event tries:50];
                 id controller = weakWorkbench.window.windowController;
-                if (NSProcessInfo.processInfo.environment[@"UQ_DEBUG"].length && [controller respondsToSelector:@selector(startDebugging:)]) {
+                NSString *debug = NSProcessInfo.processInfo.environment[@"UQ_DEBUG"];
+                if (debug.length && [controller respondsToSelector:@selector(startDebugging:)]) {
                     [NSApp sendAction:@selector(startDebugging:) to:controller from:nil];
                 }
             });

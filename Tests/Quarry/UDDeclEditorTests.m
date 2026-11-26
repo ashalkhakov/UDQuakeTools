@@ -870,10 +870,24 @@ static NSString *const UDFixtureParticles =
     [particle.editingContext processPendingChanges];
     XCTAssertEqualObjects(particle.particle.stages.firstObject.material, @"textures/udtest/spark", @"one Undo");
 
-    // Cancel changes nothing
+    // Up and Down in the filter move the choice; Escape cancels, which changes
+    // nothing. The commands as the key bindings send them: made from their
+    // names (on GNUstep not always == @selector()), Escape there complete:.
     [particle.stagesController setSelectionIndex:0];
     [self pick:2 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
-        [picker cancel:nil];
+        id filter = picker;
+        XCTAssertGreaterThan(picker.shownNames.count, 1U, @"%@", picker.shownNames);
+        [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(@"moveDown:")]);
+        XCTAssertEqual(picker.table.selectedRow, 1, @"Down: the next name");
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(@"moveUp:")]);
+        XCTAssertEqual(picker.table.selectedRow, 0, @"Up: back");
+#ifdef GNUSTEP
+        NSString *escape = @"complete:";
+#else
+        NSString *escape = @"cancelOperation:";
+#endif
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(escape)]);
     }];
     XCTAssertEqual(particle.particle.stages.firstObject.speedTable.length, 0U);
 

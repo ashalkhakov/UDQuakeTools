@@ -14,6 +14,7 @@
 #import "UDGame.h"
 #import "UDGameDetectionService.h"
 #import "UDFileActionService.h"
+#import <objc/runtime.h>
 
 /* ------------------------------------------------------------------ */
 #pragma mark - Private interface
@@ -727,13 +728,13 @@ willDisplayCell:(id)cell
     NSString *selPath = [self _selectedPath];
     BOOL hasSel = (selPath.length > 0);
 
-    if (action == @selector(deleteSelected:) ||
-        action == @selector(renameSelected:) ||
-        action == @selector(extractSelected:)) {
+    if (sel_isEqual(action, @selector(deleteSelected:)) ||
+        sel_isEqual(action, @selector(renameSelected:)) ||
+        sel_isEqual(action, @selector(extractSelected:))) {
         return hasSel;
     }
 
-    if (action == @selector(openSelected:)) {
+    if (sel_isEqual(action, @selector(openSelected:))) {
         return hasSel && [self _selectedIsLeaf];
     }
 

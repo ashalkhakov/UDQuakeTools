@@ -12,6 +12,7 @@
 #import "idUserInterface.h"
 #import "UDReferencePicker.h"
 #import "idDeclManager.h"
+#import <objc/runtime.h>
 
 /// A statement dragged in the outline: its path (indexes down the tree).
 static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-statement-path";
@@ -167,12 +168,12 @@ static NSPasteboardType const UDGuiStatementPathType = @"org.udquaketools.gui-st
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
-    if (item.action == @selector(addEvent:)) {
+    if (sel_isEqual(item.action, @selector(addEvent:))) {
         NSString *event = item.representedObject;
         if ([rvGEScript parameterOfKey:[rvGEScript keyOfEvent:event parameter:@"x"]] != nil) return YES;
         return [[self _wrapper].scriptDict getString:event defaultString:nil] == nil;
     }
-    if (item.action == @selector(addStatement:)) {
+    if (sel_isEqual(item.action, @selector(addStatement:))) {
         if ([item.representedObject isEqual:@"else"]) {
             id selected = self.selectedStatement;
             return [selected isKindOfClass:[rvGEScriptStatement class]] && [selected isIf] && [selected elseStatements] == nil;

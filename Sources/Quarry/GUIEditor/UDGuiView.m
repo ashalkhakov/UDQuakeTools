@@ -8,6 +8,7 @@
 #import "UDOverlay.h"
 #import "rvGEWorkspace.h"
 #import "idMath.h"
+#import <objc/runtime.h>
 
 #ifdef __APPLE__
 #define UDCompositeCopy NSCompositingOperationCopy
@@ -534,10 +535,10 @@ static int UDEventMilliseconds(NSEvent *event) {
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
     rvGEWorkspace *design = self.workspace;
-    if (item.action == @selector(copy:) || item.action == @selector(delete:)) {
+    if (sel_isEqual(item.action, @selector(copy:)) || sel_isEqual(item.action, @selector(delete:))) {
         return design != nil && [design.selections num] > 0;
     }
-    if (item.action == @selector(paste:)) {
+    if (sel_isEqual(item.action, @selector(paste:))) {
         return design != nil && [design canPaste];
     }
     return YES;

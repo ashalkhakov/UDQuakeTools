@@ -7,6 +7,7 @@
 #import "UDGameWorkspace.h"
 #import "UDParticlePreview.h"
 #import "UDTransportController.h"
+#import <objc/runtime.h>
 
 static UDDiagnosticSource const UDMaterialParseSource = @"parse";
 static UDDiagnosticSource const UDMaterialImagesSource = @"references";
@@ -183,10 +184,10 @@ static NSPasteboardType const UDMaterialStageRowType = @"org.udquaketools.materi
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
-    if (menuItem.action == @selector(copy:)) {
+    if (sel_isEqual(menuItem.action, @selector(copy:))) {
         return [self selectedStage] != NSNotFound;
     }
-    if (menuItem.action == @selector(paste:)) {
+    if (sel_isEqual(menuItem.action, @selector(paste:))) {
         return [[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString] != nil;
     }
     return YES;

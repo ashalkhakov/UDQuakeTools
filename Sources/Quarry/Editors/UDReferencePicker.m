@@ -7,6 +7,7 @@
 #import "UDGameWorkspace.h"
 #import "idDeclManager.h"
 #import "idFileSystem.h"
+#import <objc/runtime.h>
 
 @interface UDReferencePicker () <NSTextFieldDelegate>
 @property (nonatomic, copy) NSString *pickerTitle;
@@ -229,22 +230,29 @@
     self.okButton.enabled = self.shownNames.count > 0;
 }
 
-/// Up and down in the filter move the table's choice; Return chooses.
+/// Up and down in the filter move the table's choice; Return chooses; Escape
+/// cancels (cancelOperation: on macOS, complete: from GNUstep's key bindings;
+/// on macOS complete: is Option-Esc, completion). By name: the key bindings'
+/// selectors are made from names, on GNUstep not always == @selector().
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)command {
     NSInteger row = self.table.selectedRow;
-    if (command == @selector(moveDown:) || command == @selector(moveUp:)) {
-        NSInteger next = row + (command == @selector(moveDown:) ? 1 : -1);
+    if (sel_isEqual(command, @selector(moveDown:)) || sel_isEqual(command, @selector(moveUp:))) {
+        NSInteger next = row + (sel_isEqual(command, @selector(moveDown:)) ? 1 : -1);
         if (next >= 0 && next < (NSInteger)self.shownNames.count) {
             [self.table selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)next] byExtendingSelection:NO];
             [self.table scrollRowToVisible:next];
         }
         return YES;
     }
-    if (command == @selector(insertNewline:)) {
+    if (sel_isEqual(command, @selector(insertNewline:))) {
         [self ok:nil];
         return YES;
     }
-    if (command == @selector(cancelOperation:)) {
+    BOOL escape = sel_isEqual(command, @selector(cancelOperation:));
+#ifdef GNUSTEP
+    escape = escape || sel_isEqual(command, @selector(complete:));
+#endif
+    if (escape) {
         [self cancel:nil];
         return YES;
     }

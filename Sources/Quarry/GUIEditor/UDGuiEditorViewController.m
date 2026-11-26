@@ -27,6 +27,7 @@
 #import "rvGEScript.h"
 #import "rvGETransformer.h"
 #import <UDCodeKit/UDDiagnosticStore.h>
+#import <objc/runtime.h>
 
 static UDDiagnosticSource const UDGuiParseSource = @"gui";
 /// The workspace's settings the editor's options are kept in (the
@@ -616,35 +617,35 @@ static NSString *const UDGuiEditorTool = @"GUIEditor";
     rvGEWorkspace *design = self.designWorkspace;
     int selected = [design.selections num];
     SEL action = item.action;
-    if (action == @selector(bringToFront:) || action == @selector(bringForward:) || action == @selector(sendToBack:)
-        || action == @selector(sendBackward:) || action == @selector(copyWindows:) || action == @selector(deleteWindows:)) {
+    if (sel_isEqual(action, @selector(bringToFront:)) || sel_isEqual(action, @selector(bringForward:)) || sel_isEqual(action, @selector(sendToBack:))
+        || sel_isEqual(action, @selector(sendBackward:)) || sel_isEqual(action, @selector(copyWindows:)) || sel_isEqual(action, @selector(deleteWindows:))) {
         return selected > 0;
     }
-    if (action == @selector(makeChild:) || action == @selector(alignWindows:) || action == @selector(makeSameSize:)) {
+    if (sel_isEqual(action, @selector(makeChild:)) || sel_isEqual(action, @selector(alignWindows:)) || sel_isEqual(action, @selector(makeSameSize:))) {
         return selected > 1;
     }
-    if (action == @selector(pasteWindows:)) {
+    if (sel_isEqual(action, @selector(pasteWindows:))) {
         return [design canPaste];
     }
-    if (action == @selector(showScripts:) || action == @selector(showProperties:)) {
+    if (sel_isEqual(action, @selector(showScripts:)) || sel_isEqual(action, @selector(showProperties:))) {
         return selected == 1;
     }
-    if (action == @selector(toggleGrid:)) {
+    if (sel_isEqual(action, @selector(toggleGrid:))) {
         item.state = design.options.gridVisible ? NSControlStateValueOn : NSControlStateValueOff;
         return design != nil;
     }
-    if (action == @selector(toggleGridSnap:)) {
+    if (sel_isEqual(action, @selector(toggleGridSnap:))) {
         item.state = design.options.gridSnap ? NSControlStateValueOn : NSControlStateValueOff;
         return design != nil;
     }
-    if (action == @selector(toggleStatusBar:)) {
+    if (sel_isEqual(action, @selector(toggleStatusBar:))) {
         item.state = design.options.statusBarVisible ? NSControlStateValueOn : NSControlStateValueOff;
         return design != nil;
     }
-    if (action == @selector(zoomIn:) || action == @selector(zoomOut:) || action == @selector(zoomToFit:)) {
+    if (sel_isEqual(action, @selector(zoomIn:)) || sel_isEqual(action, @selector(zoomOut:)) || sel_isEqual(action, @selector(zoomToFit:))) {
         return self.guiView != nil;
     }
-    if (action == @selector(showGuiEditorOptions:)) {
+    if (sel_isEqual(action, @selector(showGuiEditorOptions:))) {
         return design != nil && self.view.window.attachedSheet == nil;
     }
     return [super validateMenuItem:item];

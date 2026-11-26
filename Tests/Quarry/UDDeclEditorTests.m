@@ -856,6 +856,16 @@ static NSString *const UDFixtureParticles =
     if (particle == nil) return;
     [self pick:1 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
         XCTAssertTrue([picker.shownNames containsObject:@"textures/udtest/glow"], @"the material decls: %@", picker.shownNames);
+        // Up and Down in the filter move the choice, sent as the key bindings
+        // send them: made from their names (on GNUstep not always ==
+        // @selector()).
+        id filter = picker;
+        XCTAssertGreaterThan(picker.shownNames.count, 1U, @"%@", picker.shownNames);
+        [picker.table selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(@"moveDown:")]);
+        XCTAssertEqual(picker.table.selectedRow, 1, @"Down: the next name");
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(@"moveUp:")]);
+        XCTAssertEqual(picker.table.selectedRow, 0, @"Up: back");
         picker.filterField.stringValue = @"GLOW";
         [picker filterChanged:picker.filterField];
         XCTAssertGreaterThan(picker.shownNames.count, 0U);
@@ -870,10 +880,18 @@ static NSString *const UDFixtureParticles =
     [particle.editingContext processPendingChanges];
     XCTAssertEqualObjects(particle.particle.stages.firstObject.material, @"textures/udtest/spark", @"one Undo");
 
-    // Cancel changes nothing
+    // Escape cancels, which changes nothing: as the key bindings send it,
+    // made from its name (on GNUstep not always == @selector()), complete:
+    // there.
     [particle.stagesController setSelectionIndex:0];
     [self pick:2 in:particle under:particle.inspectorView with:^(UDReferencePicker *picker) {
-        [picker cancel:nil];
+        id filter = picker;
+#ifdef GNUSTEP
+        NSString *escape = @"complete:";
+#else
+        NSString *escape = @"cancelOperation:";
+#endif
+        XCTAssertTrue([filter control:picker.filterField textView:nil doCommandBySelector:NSSelectorFromString(escape)]);
     }];
     XCTAssertEqual(particle.particle.stages.firstObject.speedTable.length, 0U);
 

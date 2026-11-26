@@ -8,6 +8,7 @@
 #import "UDDeclTextChecker.h"
 #import "UDDeclManagedObjects.h"
 #import <UDCodeKit/UDCodeKit.h>
+#import <objc/runtime.h>
 
 @interface UDTextEditorViewController () <UDDiagnosticTextViewDelegate>
 @property (nonatomic, weak) IBOutlet NSView *editorHost;
@@ -154,10 +155,10 @@
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
-    if (menuItem.action == @selector(jumpToDefinition:)) {
+    if (sel_isEqual(menuItem.action, @selector(jumpToDefinition:))) {
         return self.session.lspCoordinator != nil;
     }
-    if (menuItem.action == @selector(testDecl:)) {
+    if (sel_isEqual(menuItem.action, @selector(testDecl:))) {
         return self.item.kind == UDWorkspaceItemKindDecl && self.diagnosticStore != nil;
     }
     return YES;
